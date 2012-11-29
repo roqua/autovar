@@ -1,11 +1,11 @@
 # visualize
 
-visualize <- function(columns,labels=columns,type=c('PIE','BAR','LINE'),title="",...) {
+visualize <- function(columns,labels=columns,type=c('PIE','BAR','DOT'),title="",...) {
   visualize_method <- match.arg(type)
   visualize_method <- switch(visualize_method,
     PIE = visualize_pie,
     BAR = visualize_bar,
-    LINE = visualize_line
+    DOT = visualize_dot
   )
   if (length(columns) != length(labels)) {
     error("Length of columns is not the same as length of labels")
@@ -50,8 +50,8 @@ visualize_pie <- function(columns,labels,main,colors,...) {
   pie(columns,labels=labels,main=main,col=colors,...)
 }
 
-visualize_line <- function(columns,labels,main,colors,...) {
-  cat("visualize_line")
+visualize_dot <- function(columns,labels,main,colors,...) {
+  dotchart(columns,main=main,col=colors,labels=labels,...)
 }
 
 visualize_bar <- function(columns,labels,main,colors,...) {
@@ -61,4 +61,6 @@ visualize_bar <- function(columns,labels,main,colors,...) {
 #visualize(c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),
 #          labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='BAR',horiz='TRUE')
 #visualize(c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),
-#          labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='BAR')
+#          labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='PIE')
+#visualize(c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),
+#          labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='DOT')
