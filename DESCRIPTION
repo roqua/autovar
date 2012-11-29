@@ -1,0 +1,12 @@
+Package: autovar
+Version: 0.1-0
+Date: 2012-11-03
+Title: Automated Vector Autoregression Model Creation
+Authors@R: c(person("Ando","Emerencia",role = c("aut","cre"),
+                    email = "ando.emerencia@gmail.com"))
+Author: Ando Emerencia
+Maintainer: Ando Emerencia <ando.emerencia@gmail.com>
+Depends: foreign, norm
+Description: A package to simplify the process from raw SPSS or
+    STATA data to VAR models.
+License: Unlimited
