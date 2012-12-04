@@ -3,6 +3,7 @@
 # order_by defines the chronological order in which fields are seen
 order_by <- function(id_field,impute_method=c('ONE_MISSING','NONE')) {
   av_state$impute_method <<- match.arg(impute_method)
+  av_state$order_by <<- id_field
   order_method <- switch(av_state$impute_method,
     ONE_MISSING = order_by_impute_one_missing,
     NONE = order_by_impute_none
@@ -21,8 +22,10 @@ order_by_impute_one_missing <- function(id_field,data_frame) {
       error("More than one field is NA")
     }
     imputed_val <- missing_in_range(getElement(data_frame,id_field))
-    cat("order_by_impute_one_missing imputed",imputed_val,"for one row of",frame_identifier(data_frame),"\n")
-    data_frame[is.na(getElement(data_frame,id_field)),][[id_field]] <- imputed_val
+    if (is.null(imputed_val)) {
+      cat("order_by_impute_one_missing imputed",imputed_val,"for one row of",frame_identifier(data_frame),"\n")
+      data_frame[is.na(getElement(data_frame,id_field)),][[id_field]] <- imputed_val
+    }
   }
   data_frame[with(data_frame, order(getElement(data_frame,id_field))), ]
 }
@@ -60,7 +63,12 @@ missing_in_range <- function(sorting_column) {
     infreq <- order(tab)[[1]]
     freq <- order(tab)[[2]]
     idx <- which(diffs == infreq)
-    ordered_column[idx]+freq
+    if (length(idx) == 0) {
+      warning("could not determine a valid substitute for the NA value")
+      NULL
+    } else {
+      ordered_column[idx]+freq
+    }
   }
 }
 
