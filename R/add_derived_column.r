@@ -1,9 +1,10 @@
 # add_derived_column
 
-add_derived_column <- function(name,columns,operation=c('SUM')) {
+add_derived_column <- function(name,columns,operation=c('SUM','LN')) {
   operation <- match.arg(operation)
   operation <- switch(operation,
-    SUM = add_derived_column_sum
+    SUM = add_derived_column_sum,
+    LN = add_derived_column_ln
   )
   i <- 0
   for (data_frame in av_state$data) {
@@ -21,4 +22,11 @@ add_derived_column_sum <- function(columns,data_frame) {
     csum <- csum + data_column
   }
   csum
+}
+
+add_derived_column_ln <- function(column,data_frame) {
+  data_column <- data_frame[[column]]
+  # for ln, default value is 1
+  data_column[is.na(data_column)] <- 1
+  log(data_column)
 }
