@@ -19,7 +19,7 @@ order_by_impute_one_missing <- function(id_field,data_frame) {
 #  cat("order_by_impute_one_missing",id_field,class(data_frame),dim(data_frame),"\n")
   if (any(is.na(getElement(data_frame,id_field)))) {
     if (sum(is.na(getElement(data_frame,id_field))) != 1) {
-      error("More than one field is NA")
+      stop("More than one field is NA")
     }
     imputed_val <- missing_in_range(getElement(data_frame,id_field))
     if (is.null(imputed_val)) {

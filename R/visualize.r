@@ -14,7 +14,7 @@ visualize_column <- function(column,...) {
   } else if (class(av_state$data[[1]][[column]]) == "numeric") {
     visualize_scale_column(column,...)
   } else {
-    error(paste("unknown column class",class(av_state$data[[1]][[column]]),
+    stop(paste("unknown column class",class(av_state$data[[1]][[column]]),
      "for column",column))
   }
 }
@@ -84,7 +84,7 @@ visualize_columns <- function(columns,labels=columns,type=c('PIE','BAR','DOT'),t
     DOT = visualize_dot
   )
   if (length(columns) != length(labels)) {
-    error("Length of columns is not the same as length of labels")
+    stop("Length of columns is not the same as length of labels")
   }
   idx <- 0
   n<-length(av_state$data)
@@ -102,10 +102,10 @@ visualize_columns <- function(columns,labels=columns,type=c('PIE','BAR','DOT'),t
       i <- i+1
       clabel <- labels[[i]]
       ccolor <- ccolors[[i]]
-      totalcolumn <- sum(data_frame[[column]], na.rm=TRUE)
       if (class(data_frame[[column]]) != "numeric") {
         warning(paste("cannot plot nonnumeric column",column))
       } else {
+        totalcolumn <- sum(data_frame[[column]], na.rm=TRUE)
         if (totalcolumn > 0) {
           slices <- c(slices,totalcolumn)
           used_columns <- c(used_columns,clabel)
