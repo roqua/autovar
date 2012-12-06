@@ -1,16 +1,20 @@
 # load_file
 
 # loads the file and saves the current directory
-load_file <- function(filename,working_dir = NA, file_type = c('SPSS','STATA')) {
+load_file <- function(filename,file_type = c('SPSS','STATA')) {
   if (missing(file_type)) {
     file_type <- determine_file_type(filename)
   }
-  if (missing(working_dir)) {
-    working_dir <- paste(gsub('\\\\','/',system('pwd',intern=TRUE)),'/',sep="")
+  working_dir <- paste(gsub('\\\\','/',system('pwd',intern=TRUE)),'/',sep="")
+  file_name <- paste(working_dir,filename,sep="")
+  if (!file.exists(file_name)) {
+    if (!file.exists(filename)) {
+      halt(paste("File does not exist:",filename))
+    }
+    # NOTE: filename needs to include the full and valid path for SPSS export to work.
+    file_name <- filename
   }
-  
-  av_state$working_dir <<- working_dir
-  av_state$file_name <<- paste(av_state$working_dir,filename,sep="")
+  av_state$file_name <<- file_name
   av_state$file_type <<- match.arg(file_type)
 
   switch(av_state$file_type,
