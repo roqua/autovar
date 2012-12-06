@@ -7,7 +7,7 @@ Autovar is an R package for automating and simplifying the process from raw SPSS
 Selecting data
 --------------
 
-Currently, one data set can be operated on at at time. The data set, along with any metadata associated with it, is stored in the global variable `av_state`. This variable supports the print command (`print av_state`).
+Currently, one data set can be operated on at at time. The data set, along with any metadata associated with it, is stored in the global variable `av_state`. This variable supports the print command (`print(av_state)`).
 
 
 ### load_file
