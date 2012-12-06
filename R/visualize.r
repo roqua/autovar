@@ -147,8 +147,6 @@ visualize_line <- function(column,y,main,acc=FALSE,...) {
         y[i] <- yv + y[i-1]
       }
     }
-  } else {
-    print('acc is false')
   }
   xla <- 'index'
   if (!is.null(av_state$order_by)) {

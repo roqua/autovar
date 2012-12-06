@@ -1,11 +1,11 @@
-autovar
+Autovar
 =======
 
-A package to automate and simplify the process from raw SPSS or STATA data to VAR models.
+Autovar is an R package for automating and simplifying the process from raw SPSS or STATA data to VAR models.
 
 
-Reading data files
-------------------
+Selecting data
+--------------
 
 Currently, one data set can be operated on at at time. The data set, along with any metadata associated with it, is stored in the global variable `av_state`. This variable supports the print command (`print av_state`).
 
@@ -33,7 +33,7 @@ Example: `load_file("../data/input/RuwedataAngela.sav")`
 
 The `group_by` function splits up the initial data set into multiple sets based on their value for `id_field`.
 
-For example, if we have a data set with a field named `id`  that has values ranging from 11 to 15, calling `group_by(id)` will set `av_state$data` to a list of five items. This list is ordered by the value of the id field. Then, we can use `av_state$data[[1]]` (or equivalently, `av_state$data[['11']]`) to retrieve the rows in the data set that have `id` 11. Likewise, use `av_state$data[[2]]` or `av_state$data[['12']]` for rows with `id` 12.
+For example, if we have a data set with a field named `id`  that has values ranging from 11 to 15, calling `group_by('id')` will set `av_state$data` to a list of five items. This list is ordered by the value of the id field. Then, we can use `av_state$data[[1]]` (or equivalently, `av_state$data[['11']]`) to retrieve the rows in the data set that have `id` 11. Likewise, use `av_state$data[[2]]` or `av_state$data[['12']]` for rows with `id` 12.
 
 Other than adjusting `av_state$data`, the `group_by` function creates the following variables in the `av_state` list:
 
@@ -42,9 +42,61 @@ Other than adjusting `av_state$data`, the `group_by` function creates the follow
 
 ### order_by
 
-    order_by(id_field,impute_method=c('ONE_MISSING','ADD_MISSING','NONE'))
+    order_by(id_field,impute_method=c('ONE_MISSING','ADD_MISSING','NONE'),begin)
+
+The `order_by` function sorts the rows in the data set(s) of `av_state$data`. The supplied `id_field` parameter is often a measurement index (e.g., `'tijdstip'`).
+
+The `impute_method` argument has three possible values:
+
+* `ONE_MISSING` - Only works when the `id_field` in each data_subset is an integer range with exactly one value missing and exactly one `NA` value. The `NA` value is then substituted by the missing index.
+* `ADD_MISSING` - Does not work when one or more rows have an NA value for `id_field`. Only works for integer ranges of `id_field` with single increments. Works by finding adding rows for all missing values in the range between the minimum and maximum value of `id_field`. All values in the added rows are `NA` except for the `id_field` and the field used for grouping the data (if there was one).
+* `NONE` - No imputation is performed.
+
+After the substitutions, the data sets in `av_state$data` are sorted by their `id_field` value. This sorting step moves any rows with value `NA` for the `id_field` to the end.
+
+Other than adjusting `av_state$data`, the `order_by` function creates the following variables in the `av_state` list:
+
+* `impute_method` - the `impute_method` used.
+* `order_by` - the `id_field` used.
+
+Example: `order_by('tijdstip',impute_method='ONE_MISSING')`
+
+
+### select_range
+
+    select_range(subset_id='multiple',column,begin,end)
+
+The `select_range` function selects which rows of a data set should be included. If the data set is grouped into multiple data sets, the `subset_id` argument needs to be supplied, allowing the function to work individually per data set.
+
+The `column` argument specifies which column the begin and end values should be taken over. This argument is optional, and if it is missing, the value of `av_state$order_by` will be substituted.
+
+Either the `begin` or the `end` argument need to be specified. The column does not need to be sorted for this function to work. Values are included if they are `>= begin` and `<= end`, if specified. This does not remove `NA` values.
+
+Example: `select_range('1',begin=20,end=40)`
 
 
 Modifying and adding columns
 ----------------------------
+
+
+### set_first_timestamp
+
+
+### impute_missing_values
+
+
+### add_derived_column
+
+
+Outputting data
+---------------
+
+
+### visualize
+
+
+### export_to_file
+
+
+### print(av_state)
 
