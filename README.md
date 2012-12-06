@@ -10,6 +10,8 @@ Reading data files
 Currently, one data set can be operated on at at time. The data set, along with any metadata associated with it, is stored in the global variable `av_state`. This variable supports the print command (`print av_state`).
 
 
+### load_file
+
     load_file(filename,file_type = c('SPSS','STATA'))
 
 The `file_type` argument is optional. When not specified, it is determined from the `filename`, i.e., `.dta` extensions are treated as STATA files and `.sav` extensions are treated as SPSS files.
@@ -24,6 +26,8 @@ This function creates the following variables in the `av_state` list:
 Example: `load_file("../data/input/RuwedataAngela.sav")`
 
 
+### group_by
+
     group_by(id_field)
 
 
@@ -35,6 +39,8 @@ Other than adjusting `av_state$data`, the `group_by` function creates the follow
 
 * `group_by` - the `id_field` used for grouping the data.
 
+
+### order_by
 
     order_by(id_field,impute_method=c('ONE_MISSING','ADD_MISSING','NONE'))
 

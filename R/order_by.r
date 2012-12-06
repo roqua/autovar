@@ -105,4 +105,4 @@ order_by_impute_add_missing <- function(id_field,data_frame) {
   data_frame[with(data_frame, order(getElement(data_frame,id_field))), ]
 }
 
-print(order_by_impute_add_missing('tijdstip',data.frame(id=rep(1,times=5),tijdstip=c(1,3,5,6,7),home=6:10)))
+#print(order_by_impute_add_missing('tijdstip',data.frame(id=rep(1,times=5),tijdstip=c(1,3,5,6,7),home=6:10)))
