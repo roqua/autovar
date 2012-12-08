@@ -30,14 +30,13 @@ visualize_scale_column <- function(column,type=c('LINE','BOX'),title="",...) {
   x<-floor(sqrt(n))
   y<-ceiling(n/x)
   getOption("device")()
-  old.par <- par(no.readonly = TRUE)
-  par(mfrow=c(x,y))
+  op <- par(mfrow=c(x,y))
   for (data_frame in av_state$data) {
     idx <- idx+1
     data_frame[[column]][is.na(data_frame[[column]])] <- 0
     visualize_method(column,data_frame[[column]],paste(title,visualize_sub_title(idx),sep=''),...)
   }
-  par(old.par)
+  par(op)
 }
 
 visualize_categorical_column <- function(column,type=c('PIE','BAR','DOT'),title="",...) {
@@ -53,8 +52,7 @@ visualize_categorical_column <- function(column,type=c('PIE','BAR','DOT'),title=
   y<-ceiling(n/x)
   getOption("device")()
   old.par <- par(no.readonly = TRUE)
-  par(oma = c( 0, 0, 3, 0 ))
-  par(mfrow=c(x,y))
+  par(oma = c( 0, 0, 3, 0 ),mfrow=c(x,y))
   for (data_frame in av_state$data) {
     clevels <- levels(data_frame[[column]])
     used_levels <- NULL
