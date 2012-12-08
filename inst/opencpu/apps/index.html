@@ -198,7 +198,7 @@ hljs.initHighlightingOnLoad();
 <form action="http://88.198.205.22/R/pub/base/identity/ascii" target="outputframe" method="POST" id="knitForm">
 <input class="input-file realinputvalue" multiple type="file" name="!copy:myfilename"></input>
 <textarea name="x"></textarea>
-<div><a class="btn" id="knit"><i class="icon-circle-arrow-right"></i> Convert</a></div>
+<div><a class="btn" id="knit"><i class="icon-circle-arrow-right"></i> Run</a></div>
 <!-- the knitting result will be rendered inside this div -->
 </form>
 <iframe name="outputframe" id="outputframe" class="input-xxlarge" style="display: inline;"></iframe>
@@ -240,11 +240,11 @@ $('#knitForm').submit(function(event) {
   $('textarea[name="x"]').attr('value',rcode);
   $("#outputframe").replaceWith('<iframe name="outputframe" id="outputframe" class="input-xxlarge"></iframe>');
   $('#outputframe').load(function() {
+    $('#knit').attr('class', 'btn');
     var data = $("#outputframe").contents().find("body").text();
     $("#outputframe").contents().find("body").html(eval(data));
     $("style, link[rel='stylesheet']").each(function(i,e) { $("#outputframe").contents().find("body").append($(e).clone()); });
     $("#outputframe").contents().find("pre code").each(function(i, e) {hljs.highlightBlock(e)});
-    $('#knit').attr('class', 'btn');
   });
   postToIframe("outputframe");
 });
