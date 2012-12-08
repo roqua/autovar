@@ -29,12 +29,15 @@ visualize_scale_column <- function(column,type=c('LINE','BOX'),title="",...) {
   n<-length(av_state$data)
   x<-floor(sqrt(n))
   y<-ceiling(n/x)
+  getOption("device")()
+  old.par <- par(no.readonly = TRUE)
   par(mfrow=c(x,y))
   for (data_frame in av_state$data) {
     idx <- idx+1
     data_frame[[column]][is.na(data_frame[[column]])] <- 0
     visualize_method(column,data_frame[[column]],paste(title,visualize_sub_title(idx),sep=''),...)
   }
+  par(old.par)
 }
 
 visualize_categorical_column <- function(column,type=c('PIE','BAR','DOT'),title="",...) {
@@ -90,6 +93,8 @@ visualize_columns <- function(columns,labels=columns,type=c('PIE','BAR','DOT'),t
   n<-length(av_state$data)
   x<-floor(sqrt(n))
   y<-ceiling(n/x)
+  getOption("device")()
+  old.par <- par(no.readonly = TRUE)
   par(mfrow=c(x,y))
   for (data_frame in av_state$data) {
     used_columns <- NULL
@@ -115,6 +120,7 @@ visualize_columns <- function(columns,labels=columns,type=c('PIE','BAR','DOT'),t
     }
     visualize_method(slices,labels=used_columns,main=paste(title,visualize_sub_title(idx),sep=''),colors=colors,...)
   }
+  par(old.par)
 }
 
 visualize_sub_title <- function(idx) {
