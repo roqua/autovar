@@ -24,9 +24,8 @@ store_file <- function(filename,file_type = c('SPSS','STATA')) {
   system(tarcmd,intern=TRUE)
   if (!interactive()) {
     system(paste("rm",tarfiles),intern=TRUE)
-    system(paste("mv ",filename,".tar /var/www/default/output",sep=""),intern=TRUE)
-    paste("/output/",filename,".tar",sep="")
   }
+  paste(working_dir,filename,".tar",sep="")
 }
 
 store_file_stata <- function(...) {
