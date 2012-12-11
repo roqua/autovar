@@ -23,7 +23,7 @@ store_file <- function(filename,file_type = c('SPSS','STATA')) {
   #print(tarcmd)
   system(tarcmd,intern=TRUE)
   if (!interactive()) {
-    system(paste("rm",tarfiles),intern=TRUE)
+    #system(paste("rm",tarfiles),intern=TRUE)
   }
   paste(working_dir,filename,".tar",sep="")
 }
