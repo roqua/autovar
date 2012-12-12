@@ -87,6 +87,18 @@ Modifying and adding columns
 
 ### add_derived_column
 
+    add_derived_column(name,columns,operation=c('SUM','LN','MINUTES_TO_HOURS'))
+
+The `add_derived_column` function adds a new column, based on existing columns, to all identified groups in the current data set. The `name` argument holds the name of the new column.
+
+The `operation` argument has three possible values:
+
+* `SUM` - The new column is the sum of the columns specified in the `columns` argument. So for this option, the `columns` argument is an array of column names. Values in the summation of columns that are `NA` are treated as if they're zero. Columns that are not numeric are transformed to numeric. For example, `Factor` columns are transformed to numbers starting at 0 for the first factor level.
+* `LN` - The new column is the natural logarithm of the specified column in `columns`. Thus, for this option, the `columns` argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are `NA` are left as `NA` in the new column. Naturally, values in the original column that are `0` are `-Inf` in the new column.
+* `MINUTES_TO_HOURS` - The new column is the values of the specified column divided by 60. Thus, for this option, the `columns` argument is simply the name of a single column. This operation does nto work on columns that are not numeric. Values in the original column that are `NA` are left as `NA` in the new column.
+
+Example: `add_derived_column('SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4','PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),operation='SUM')`, `add_derived_column('lnSomBewegUur','SomBewegUur',operation='LN')`, or  `add_derived_column('SomBewegUur','SomBewegen',operation='MINUTES_TO_HOURS')`.
+
 
 Outputting data
 ---------------
@@ -94,8 +106,24 @@ Outputting data
 
 ### visualize
 
+    visualize(columns,...)
 
-### export_to_file
+The `visualize` function works with single or multiple columns. When given an array of multiple columns as `columns` argument, all columns have to be of the numeric class. This function creates a combined plot with individual plots for each identified group in the current data set. Any supplied arguments other than the ones described are passed on to the plotting functions.
+
+When given the name of a single column as `columns` argument, this function behaves differently depending on the class of the column:
+
+* If the class of the column is `factor`, the column is seen as a categorical column, and the following arguments are accepted: `visualize(column,type=c('PIE','BAR','DOT'),title="",...)`. All plots  also accept the `xlab` argument, e.g., `xlab='minuten'`. Furthermore,  when the type is `BAR`, an additional argument `horiz` can be supplied (`horiz` is `FALSE` by default), which will draw horizontal bar charts rather than vertical ones. Example: `visualize('PHQ1')`.
+* If the class of the column is `numeric`, the column is seen as a scale column, and the following arguments are accepted: `visualize(column,type=c('LINE','BOX'),title="",...)`. Furthermore, when the type is `LINE`, an additional argument `acc` can be supplied (`acc` is `FALSE` by default), which will plot lines of accumulated values rather than the individual values. Example: `visualize('minuten_sport',type='LINE',acc=TRUE)`.
+
+When the `columns` argument is given an array of column names, the sums of the columns are displayed in the plots. For this to work, all columns have to be of the numeric class. When given an array of column names as the `columns` argument, the function accepts the following arguments: `visualize(columns,labels=columns,type=c('PIE','BAR','DOT'),title="",...)`. The arguments of this function work much like the ones described above for individual `factor` columns. The added optional `labels` argument should be an array of strings, with the same length as the `columns` argument, to specify custom names for the columns.
+
+Examples for using visualize with multiple columns: 
+
+    visualize(c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'), labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='BAR',horiz=TRUE)
+    visualize(c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),type='DOT',xlab='minuten')
+
+
+### store_file
 
 
 ### print(av_state)

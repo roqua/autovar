@@ -49,7 +49,8 @@ add_derived_column_ln <- function(column,data_frame) {
     stop(paste("column",column,"is not numeric"))
   }
   # for ln, default value is 1
-  data_column[is.na(data_column)] <- 1
+  # don't do this here, we might want to impute these later
+  #data_column[is.na(data_column)] <- 1
   log(data_column)
 }
 
