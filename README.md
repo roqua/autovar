@@ -42,7 +42,7 @@ Other than adjusting `av_state$data`, the `group_by` function creates the follow
 
 ### order_by
 
-    order_by(id_field,impute_method=c('ONE_MISSING','ADD_MISSING','NONE'),begin)
+    order_by(id_field,impute_method=c('ONE_MISSING','ADD_MISSING','NONE'))
 
 The `order_by` function sorts the rows in the data set(s) of `av_state$data`. The supplied `id_field` parameter is often a measurement index (e.g., `'tijdstip'`).
 
