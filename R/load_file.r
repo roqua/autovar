@@ -26,6 +26,8 @@ load_file <- function(filename,file_type = c('SPSS','STATA')) {
     SPSS = load_file_spss(av_state$file_name),
     STATA = load_file_stata(av_state$file_name)
   )
+  cat("load_file loaded",av_state$file_type,"file with",length(av_state$data[[1]]),"columns:\n")
+  print(names(av_state$data[[1]]))
 }
 
 determine_file_type <- function(filename) {
