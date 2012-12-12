@@ -2,8 +2,12 @@
 
 # loads the file and saves the current directory
 load_file <- function(filename,file_type = c('SPSS','STATA')) {
+  real_file_name <- filename
+  if (!is.null(attr(filename,"filename"))) {
+    real_file_name <- attr(filename,"filename")
+  }
   if (missing(file_type)) {
-    file_type <- determine_file_type(filename)
+    file_type <- determine_file_type(real_file_name)
   }
   working_dir <- paste(gsub('\\\\','/',system('pwd',intern=TRUE)),'/',sep="")
   file_name <- paste(working_dir,filename,sep="")
@@ -15,6 +19,7 @@ load_file <- function(filename,file_type = c('SPSS','STATA')) {
     file_name <- filename
   }
   av_state$file_name <<- file_name
+  av_state$real_file_name <<- real_file_name
   av_state$file_type <<- match.arg(file_type)
 
   switch(av_state$file_type,
@@ -35,11 +40,11 @@ determine_file_type <- function(filename) {
 }
 
 load_file_spss <- function(filename) {
-  cat("load_file_spss",filename,"\n")
+  #cat("load_file_spss",filename,"\n")
   av_state$raw_data <<- read_spss(filename, to.data.frame=TRUE)
   av_state$data <<- list(multiple=av_state$raw_data)
 }
 
 load_file_stata <- function(filename) {
-  cat("load_file_stata",filename,"\n")
+  cat("load_file_stata",filename,"(not implemented)\n")
 }
