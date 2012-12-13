@@ -11,15 +11,20 @@
     textarea {
       font-size: 12px;
       font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
-      min-height: 600px;
-      width: 96%;
+      width: 100%;
+      overflow: auto;
+      vertical-align: top;
+      resize: vertical;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+       box-sizing: border-box;
     }
     #outputframe {
       border: 1px lightgray solid;
-      width: 96%;
-      min-height: 96%;
-      height: 96%;
-      max-height: 96%;
+      width: 100%;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
     }
     #syntax {
       float: right;
@@ -33,13 +38,17 @@
       top: -10px;
       margin-bottom: -10px;
     }
+    form {
+      margin: 0;
+    }
   </style>
 <style type="text/css">
 body, td {
    font-family: sans-serif;
    background-color: white;
    font-size: 12px;
-   margin: 8px;
+   margin-top: 16px;
+   margin-bottom: 16px;
 }
 
 tt, code, pre {
@@ -213,7 +222,7 @@ hljs.initHighlightingOnLoad();
 <p>Select .sav or .dta file containing the data set:<br/>
 <input class="input-file realinputvalue" type="file" name="!copy:myfilename"></input></p>
 <p>Enter R code:<button type="button" class="btn" id="loadexample"><i class="icon-list-alt"></i> Load Example Script</button></p>
-<div><textarea name="x"></textarea></div>
+<textarea name="x" id="x"></textarea>
 <p><a class="btn btn-primary" id="knit"><i class="icon-circle-arrow-right icon-white"></i> Run</a>
 <a class="btn" id="knitdl"><i class="icon-download"></i> Download Results</a>
 <a href="https://github.com/roqua/autovar/blob/master/README.md" id="syntax" target="_blank">View syntax help</a></p>
@@ -234,7 +243,16 @@ function postToIframe(target){
 	paramform.attr("target", target);
 	return true;
 }
-
+function resizeBoxes() {
+    /* LEFT */
+    var xheight = $(window).height()-$("#x").offset().top-76;
+    $("#x").height(xheight);
+    
+    /* RIGHT */
+    var outputheight = $(window).height()-$("#outputframe").offset().top-18;
+    $("#outputframe").height(outputheight);
+}
+$(document).ready(function() {
 $('textarea[name="x"]').attr('value', 'print(av_state)\n');
 $('#loadexample').click(function() {
   $('#knitForm').find('textarea[name="x"]').val("# datafile can be retrieved using av_state$data[['multiple']]\n\n# group_by needs a column name\n# (you can comment this line and it will show one graph instead of 5)\ngroup_by('id')\n# data can now be retrieved as av_state$data[['1']], av_state$data[['2']], etc.\n\n\n# impute_method can be 'NONE' or 'ONE_MISSING'\norder_by('tijdstip',impute_method='ONE_MISSING')\n\nselect_range('1',begin=20,end=40)\n\n\n# operation can be 'SUM', 'LN', or 'MINUTES_TO_HOURS'.\n# The sum operation replaces values that are NA with 0 (analogously, 1 for LN op).\nadd_derived_column('sum_minuten_licht',c('minuten_werk_licht','minuten_licht_huishouden','minuten_woonwerk'),operation='SUM')\nadd_derived_column('sum_minuten_zwaar',c('minuten_zwaar_werk','minuten_zwaarhuishouden'),operation='SUM')\n\nbewegen_columns <- c('minuten_sport','minuten_woonwerk','minuten_werk_licht',\n                    'minuten_zwaar_werk','minuten_licht_huishouden',\n                    'minuten_zwaarhuishouden','minuten_vrijetijd')\nadd_derived_column('SomBewegen',bewegen_columns,operation='SUM')\nadd_derived_column('SomBewegUur','SomBewegen',operation='MINUTES_TO_HOURS')\n\nadd_derived_column('SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4','PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),operation='SUM')\n\nphq_soma_columns = c('PHQ3','PHQ4','PHQ5','PHQ8')\nphq_cog_columns = c('PHQ1','PHQ2','PHQ6','PHQ7','PHQ9')\nadd_derived_column('PHQ_Somatisch',phq_soma_columns,operation='SUM')\nadd_derived_column('PHQ_Cognitief',phq_cog_columns,operation='SUM')\n\nadd_derived_column('lnSomPHQ','SomPHQ',operation='LN')\nadd_derived_column('lnSomBewegUur','SomBewegUur',operation='LN')\n\nprint(av_state)\n\nvisualize('PHQ1')\n#print(av_state)\n\n# type can be 'PIE', 'BAR', or 'DOT'\n# all accept xlab, e.g., xlab='minuten'\n# 'BAR' accepts horiz=TRUE\n#visualize(c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),\n#          labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='PIE')\n#visualize(c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),\n#          labels=c('licht werk','zwaar werk','vrije tijd','sport'),\n#          type='BAR',horiz=TRUE)\n#visualize(c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),\n#          labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='DOT',xlab='minuten')\n\n# type can be''PIE', 'BAR', or 'DOT' for categorical columns\n#visualize('PHQ1')\n#visualize('PHQ1',type='DOT')\n\n# type can be 'LINE' or 'BOX' for scale columns\n#visualize('minuten_sport',type='BOX')\n# type 'LINE' can have 'ACC' = TRUE to do accumulative line\n#visualize('minuten_sport',type='LINE',acc=TRUE)\n");
@@ -273,7 +291,8 @@ $('#knitForm').submit(function(event) {
               'markdownToHTML(text = knit(text = "```{r}\n' + term + '\n```\n")))}';
   /* Send the data using post and put the results in a div */
   $('textarea[name="x"]').attr('value',rcode);
-  $("#outputframe").replaceWith('<iframe name="outputframe" id="outputframe" class="input-xxlarge"></iframe>');
+  /*$("#outputframe").replaceWith('<iframe name="outputframe" id="outputframe" class="input-xxlarge"></iframe>');*/
+  $("#outputframe").contents("");
   $('#outputframe').load(function() {
   $('#knit,#knitdl').removeClass('disabled');
   var data = $("#outputframe").contents().find("body").text();
@@ -286,12 +305,19 @@ $('#knitForm').submit(function(event) {
     }
     $("#outputframe").contents().find("body").html(cont);
   } else {
-    $("#outputframe").contents().find("body").html(eval(data));
+    if (data.indexOf("<pre>") != -1) {
+      $("#outputframe").contents().find("body").html(eval(data));
+    } else {
+      $("#outputframe").contents().find("body").html(data);
+    }
   }
     $("style, link[rel='stylesheet']").each(function(i,e) { $("#outputframe").contents().find("body").append($(e).clone()); });
     $("#outputframe").contents().find("pre code").each(function(i, e) {hljs.highlightBlock(e)});
   });
   postToIframe("outputframe");
+});
+$(window).resize(resizeBoxes);
+resizeBoxes();
 });
 </script>
 
