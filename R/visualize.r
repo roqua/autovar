@@ -57,8 +57,15 @@ visualize_categorical_column <- function(column,type=c('PIE','BAR','DOT'),title=
     idx <- idx+1
     slices <- NULL
     colors <- NULL
-    ccolors <- rainbow(length(clevels))
-    i <- 0
+    ccolors <- rainbow(length(clevels)+1)
+    i <- 1
+    ccolor <- ccolors[[i]]
+    totalcolumn <- length(which(is.na(data_frame[[column]])))
+    if (totalcolumn > 0) {
+      slices <- c(slices,totalcolumn)
+      used_levels <- c(used_levels,'NA')
+      colors <- c(colors,ccolor)
+    }
     for (clevel in clevels) {
       i <- i+1
       ccolor <- ccolors[[i]]
