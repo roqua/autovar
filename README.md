@@ -27,6 +27,8 @@ This function creates the following variables in the `av_state` list:
 
 Example: `load_file("../data/input/RuwedataAngela.sav")`
 
+This function prints the columns of the loaded data set. The abbreviation `(scl)` is used to denote scale (numeric) columns, and `(ctg)` is used to denote categorical (factor) columns.
+
 
 ### group_by
 

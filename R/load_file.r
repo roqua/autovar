@@ -27,7 +27,23 @@ load_file <- function(filename,file_type = c('SPSS','STATA')) {
     STATA = load_file_stata(av_state$file_name)
   )
   cat("load_file loaded",av_state$file_type,"file with",length(av_state$data[[1]]),"columns:\n")
-  print(names(av_state$data[[1]]))
+  print(column_names_output())
+}
+
+column_names_output <- function() {
+  dnames <- NULL
+  for (name in names(av_state$data[[1]])) {
+    column_type <- decorate_class(class(av_state$data[[1]][[name]]))
+    dnames <- c(dnames,paste(name," (",column_type,")",sep=""))
+  }
+  dnames
+}
+
+decorate_class <- function(classname) {
+  switch(classname,
+    factor = "ctg",
+    numeric = "scl"
+  )
 }
 
 determine_file_type <- function(filename) {
