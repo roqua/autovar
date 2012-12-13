@@ -23,7 +23,8 @@ store_file <- function(filename,inline_data,file_type = c('SPSS','STATA')) {
   }
   tarfiles <- store_func(working_dir,filename,file_type)
   
-  tarcmd <- paste("tar -cvvf ",filename,".tar ",tarfiles,sep="")
+  tarcmd <- paste("tar -cvvf \"",filename,".tar\" ",tarfiles,sep="")
+  cat(tarcmd,"\n")
   system(tarcmd,intern=TRUE)
 
   #if (!interactive()) {
@@ -38,7 +39,7 @@ store_file_separate <- function(working_dir,filename,file_type) {
     data_frame <- av_state$data[[name]]
     datafile<-paste(filename,"_",name,".txt",sep="")
     codefile<-paste(filename,"_",name,".sps",sep="")
-    tarfiles <- paste(tarfiles,datafile,codefile)
+    tarfiles <- paste(tarfiles,adQuote(datafile),adQuote(codefile))
     switch(file_type,
       SPSS = writeMyForeignSPSS(df = data_frame,datafile = paste(working_dir,datafile,sep=""),codefile = paste(working_dir,codefile,sep="")),
       STATA = store_file_stata_separate(df = data_frame,datafile = paste(working_dir,datafile,sep=""),codefile = paste(working_dir,codefile,sep=""))
@@ -52,7 +53,7 @@ store_file_inline <- function(working_dir,filename,file_type) {
   for (name in names(av_state$data)) {
     data_frame <- av_state$data[[name]]
     codefile<-paste(filename,"_",name,".sps",sep="")
-    tarfiles <- paste(tarfiles,codefile)
+    tarfiles <- paste(tarfiles,adQuote(codefile))
     switch(file_type,
       SPSS = writeMyForeignSPSS_inline(df = data_frame,codefile = paste(working_dir,codefile,sep="")),
       STATA = store_file_stata_inline(df = data_frame,codefile = paste(working_dir,codefile,sep=""))
