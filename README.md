@@ -125,6 +125,19 @@ Examples for using visualize with multiple columns:
 
 ### store_file
 
+    store_file(filename = av_state$real_file_name,file_type = c('SPSS','STATA'))
+
+The `store_file` function will export all groups in the active data set to individual output files named after. All output files are subsequently packed in a .tar file that can be downloaded.
+
+Both arguments are optional. When the `filename` argument is missing, the filename of the input file is substituted.
+
+Currently, only the `SPSS` `file_type` is supported. The `.sps` file that comes with the `SPSS` exports may require manual adjusting, as the fully quantified file path to the data set needs to be specified for it to work (relative file paths do not work).
+
+Example: `store_file()`
+
 
 ### print(av_state)
 
+    print(av_state)
+
+This command shows the current state of the data set.

@@ -3,6 +3,9 @@
 # stores a file to disk
 # file name is a name you give to it
 store_file <- function(filename,file_type = c('SPSS','STATA')) {
+  if (missing(filename)) {
+    filename <- av_state$real_file_name
+  }
   if (missing(file_type)) {
     file_type <- 'SPSS'
   }
@@ -25,7 +28,7 @@ store_file <- function(filename,file_type = c('SPSS','STATA')) {
   if (!interactive()) {
     #system(paste("rm",tarfiles),intern=TRUE)
   }
-  paste(working_dir,filename,".tar",sep="")
+  cat("store_file: created",paste(working_dir,filename,".tar",sep=""),"\n")
 }
 
 store_file_stata <- function(...) {
