@@ -242,6 +242,7 @@ $('#loadexample').click(function() {
 $('#knit').click(function() {
   $('#knit,#knitdl').addClass('disabled');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
+  $('#knitForm').find('textarea[name="x"]').val("load_file(myfilename)\n"+oldtextarea)
   $('#knitForm').attr("action","http://88.198.205.22/R/pub/base/identity/ascii");
   $('#knitForm').submit();
   $('#knitForm').find('textarea[name="x"]').val(oldtextarea);
@@ -249,7 +250,7 @@ $('#knit').click(function() {
 $('#knitdl').click(function() {
   $('#knit,#knitdl').addClass('disabled');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
-  $('#knitForm').find('textarea[name="x"]').append("\nstore_file()\n");
+  $('#knitForm').find('textarea[name="x"]').val("load_file(myfilename)\n"+oldtextarea+"\nstore_file()\n");
   $('#knitForm').attr("action","http://88.198.205.22/R/pub/base/identity/save");
   $('#knitForm').submit();
   $('#knitForm').find('textarea[name="x"]').val(oldtextarea);
@@ -267,7 +268,7 @@ $('#knitForm').submit(function(event) {
   var $form = $( this ),
       term = $form.find('textarea[name="x"]').val().replace(/\\/g, '\\\\').replace(/"/g, '\\"'),
       url = $form.attr('action'),
-      rcode = '{library(autovar); library(knitr); library(markdown); load_file(myfilename);' +
+      rcode = '{library(autovar); library(knitr); library(markdown);' +
               'sub(".*<body>(.*)</body>.*", "\\\\1", ' +
               'markdownToHTML(text = knit(text = "```{r}\n' + term + '\n```\n")))}';
   /* Send the data using post and put the results in a div */
