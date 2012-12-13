@@ -133,6 +133,8 @@ Both arguments are optional. When the `filename` argument is missing, the filena
 
 Currently, only the `SPSS` `file_type` is supported. The `.sps` file that comes with the `SPSS` exports may require manual adjusting, as the fully quantified file path to the data set needs to be specified for it to work (relative file paths do not work).
 
+In the web application, this function does not need to be called explicitly. It is appended to the code when the Download button is clicked.
+
 Example: `store_file()`
 
 
