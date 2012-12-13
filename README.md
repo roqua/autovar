@@ -127,13 +127,13 @@ Examples for using visualize with multiple columns:
 
 ### store_file
 
-    store_file(filename = av_state$real_file_name,file_type = c('SPSS','STATA'))
+    store_file(filename,inline_data,file_type = c('SPSS','STATA'))
 
 **In the web application, this function does not need to be called explicitly. It is appended to the code when the Download button is clicked.**
 
 The `store_file` function will export all groups in the active data set to individual output files named after. All output files are subsequently packed in a .tar file that can be downloaded.
 
-Both arguments are optional. When the `filename` argument is missing, the filename of the input file is substituted.
+All arguments are optional. When the `filename` argument is missing, the filename of the input file is substituted. The `inline_data` argument determines whether or not the data should be stored inline or in a separate file. If this argument is missing, inline storage is used for data sets with less than 81 columns, and separate storage is used otherwise.
 
 Currently, only the `SPSS` `file_type` is supported. The `.sps` file that comes with the `SPSS` exports may require manual adjusting, as the fully quantified file path to the data set needs to be specified for it to work (relative file paths do not work).
 

@@ -291,8 +291,8 @@ $('#knitForm').submit(function(event) {
               'markdownToHTML(text = knit(text = "```{r}\n' + term + '\n```\n")))}';
   /* Send the data using post and put the results in a div */
   $('textarea[name="x"]').attr('value',rcode);
-  /*$("#outputframe").replaceWith('<iframe name="outputframe" id="outputframe" class="input-xxlarge"></iframe>');*/
-  $("#outputframe").contents("");
+  $("#outputframe").replaceWith('<iframe name="outputframe" id="outputframe" class="input-xxlarge"></iframe>');
+  resizeBoxes();
   $('#outputframe').load(function() {
   $('#knit,#knitdl').removeClass('disabled');
   var data = $("#outputframe").contents().find("body").text();
