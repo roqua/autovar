@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -88,10 +87,6 @@ h6 {
    font-size:0.8em;
 }
 
-a:visited {
-   color: rgb(50%, 0%, 50%);
-}
-
 pre {
    margin-top: 0;
    width: 100%;
@@ -104,6 +99,14 @@ pre code {
 
 code.r {
    background-color: rgb(240, 240, 240);
+}
+
+code.warning {
+   color: #c09853;
+}
+
+code.error {
+   color: #b94a48;
 }
 
 table, td, th {
@@ -229,7 +232,7 @@ hljs.initHighlightingOnLoad();
 <div class="span6">
 <form action="http://88.198.205.22/R/pub/base/identity/ascii" target="outputframe" method="POST" id="knitForm">
 <p>Select .sav or .dta file containing the data set:<br/>
-<input class="input-file realinputvalue" type="file" name="!copy:myfilename"></input></p>
+<input class="input-file realinputvalue" type="file" name="!copy:myfilename" /></p>
 <p>Enter R code:<button type="button" class="btn" id="loadexample"><i class="icon-list-alt"></i> Load Example Script</button></p>
 <textarea name="x" id="x"></textarea>
 <p><a class="btn btn-primary" id="knit"><i class="icon-circle-arrow-right icon-white"></i> Run</a>
@@ -239,7 +242,7 @@ hljs.initHighlightingOnLoad();
 </form>
 </div>
 <div class="span6">
-<iframe name="outputframe" id="outputframe" class="input-xxlarge" style="display: inline;"></iframe>
+<iframe name="outputframe" id="outputframe" style="display: inline;"></iframe>
 <div id="result"></div>
 </div>
 </div>
@@ -300,7 +303,7 @@ $('#knitForm').submit(function(event) {
               'markdownToHTML(text = knit(text = "```{r}\n' + term + '\n```\n")))}';
   /* Send the data using post and put the results in a div */
   $('textarea[name="x"]').attr('value',rcode);
-  $("#outputframe").replaceWith('<iframe name="outputframe" id="outputframe" class="input-xxlarge"></iframe>');
+  $("#outputframe").replaceWith('<iframe name="outputframe" id="outputframe"></iframe>');
   resizeBoxes();
   $('#outputframe').load(function() {
   $('#knit,#knitdl').removeClass('disabled');
@@ -315,6 +318,8 @@ $('#knitForm').submit(function(event) {
     $("#outputframe").contents().find("body").html(cont);
   } else {
     if (data.indexOf("<pre>") != -1) {
+      data = data.replace(/(<code)(>## Warning: )/g,'$1 class=\\"warning\\"$2');
+      data = data.replace(/(<code)(>## Error: )/g,'$1 class=\\"error\\"$2');
       $("#outputframe").contents().find("body").html(eval(data));
     } else {
       $("#outputframe").contents().find("body").html(data);
