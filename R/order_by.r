@@ -20,7 +20,9 @@ order_by <- function(id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISS
     av_state$data[[i]] <<- order_method(id_field,data_frame)
     missing_after <- calc_missing(av_state$data[[i]])
     if (missing_before != missing_after) {
-      cat(paste("order_by: missing values went from",missing_before,"to",missing_after,"for subset",i,"\n"))
+      cat(paste("order_by: missing values went from ",
+                missing_before," to ",missing_after," for subset ",i,
+                " (",used_impute_method,")\n", sep=""))
     }
   }
 }
@@ -37,7 +39,7 @@ determine_impute_method <- function(id_field,data_frame) {
 can_do_one_missing <- function(id_field,data_frame) {
   any(is.na(getElement(data_frame,id_field))) &&
   sum(is.na(getElement(data_frame,id_field))) == 1 &&
-  !is.null(missing_in_range(data_frame[[id_field]]),no_warn = TRUE)
+  !is.null(missing_in_range(data_frame[[id_field]],no_warn = TRUE))
 }
 can_do_add_missing <- function(id_field,data_frame) {
   !any(is.na(data_frame[[id_field]]))
@@ -50,7 +52,8 @@ order_by_impute_one_missing <- function(id_field,data_frame) {
     }
     imputed_val <- missing_in_range(getElement(data_frame,id_field))
     if (!is.null(imputed_val)) {
-      cat("order_by_impute_one_missing imputed",imputed_val,"for one row of",frame_identifier(data_frame),"\n")
+      cat("order_by_impute_one_missing imputed",imputed_val,
+          "for one row of",frame_identifier(data_frame),"\n")
       data_frame[is.na(getElement(data_frame,id_field)),][[id_field]] <- imputed_val
     }
   }

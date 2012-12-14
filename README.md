@@ -87,12 +87,13 @@ Outputting data
 
 ### order_by
 
-    order_by(id_field,impute_method=c('ONE_MISSING','ADD_MISSING','NONE'))
+    order_by(id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISSING','NONE'))
 
 The `order_by` function determines the order of the data rows as they appear in ther output of the `store_file` function. The supplied `id_field` parameter is often a measurement index (e.g., `'tijdstip'`).
 
 The `impute_method` argument has three possible values:
 
+* `BEST_FIT` - This is not an impute method itself, but tells the system to determine the optimal impute method and use that. This is the default choice for `impute_method` when it is not specified.
 * `ONE_MISSING` - Only works when the `id_field` in each data_subset is an integer range with exactly one value missing and exactly one `NA` value. The `NA` value is then substituted by the missing index.
 * `ADD_MISSING` - Does not work when one or more rows have an NA value for `id_field`. Only works for integer ranges of `id_field` with single increments. Works by adding rows for all missing values in the range between the minimum and maximum value of `id_field`. All values in the added rows are `NA` except for the `id_field` and the field used for grouping the data (if there was one).
 * `NONE` - No imputation is performed.
