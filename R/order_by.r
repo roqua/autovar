@@ -98,7 +98,7 @@ order_by_impute_none <- function(id_field,data_frame) {
 order_by_impute_add_missing <- function(id_field,data_frame) {
   sorting_column <- getElement(data_frame,id_field)
   if (any(is.na(sorting_column))) {
-    halt(paste("Some fields are NA, they need to be assigned an",
+    stop(paste("Some fields are NA, they need to be assigned an",
                id_field,"before we can determine which rows are missing."))
   }
   ordered_column <- sort(sorting_column)

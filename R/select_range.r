@@ -4,16 +4,16 @@
 select_range <- function(subset_id='multiple',column,begin,end) {
   data_frame <- av_state$data[[subset_id]]
   if (is.null(data_frame)) {
-    halt(paste(subset_id,"does not identify a data set"))
+    stop(paste(subset_id,"does not identify a data set"))
   }
   if (missing(column)) {
-    if (is.null(av_state$order_by)) { halt("please supply a column argument") }
+    if (is.null(av_state$order_by)) { stop("please supply a column argument") }
     column <- av_state$order_by
   }
   data_column <- data_frame[[column]]
-  if (is.null(data_column)) { halt(paste("column does not exist:",column)) }
+  if (is.null(data_column)) { stop(paste("column does not exist:",column)) }
   if (missing(begin) && missing(end)) {
-    halt("either begin or end need to be specified")
+    stop("either begin or end need to be specified")
   }
   condition <- NULL
   if (missing(begin)) {
