@@ -20,8 +20,6 @@
     }
     #outputframe {
       border: 1px lightgray solid;
-      padding-left: 8px;
-      padding-right: 8px;
       width: 100%;
       -webkit-border-radius: 4px;
       -moz-border-radius: 4px;
@@ -56,7 +54,7 @@ body, td {
    font-size: 12px;
    margin-top: 16px;
    margin-bottom: 16px;
-   padding: 0 !important;
+   padding: 0;
 }
 
 tt, code, pre {
@@ -306,27 +304,30 @@ $('#knitForm').submit(function(event) {
   $("#outputframe").replaceWith('<iframe name="outputframe" id="outputframe"></iframe>');
   resizeBoxes();
   $('#outputframe').load(function() {
-  $('#knit,#knitdl').removeClass('disabled');
-  var data = $("#outputframe").contents().find("body").text();
-  if ($('#knitForm').attr("action") == "http://88.198.205.22/R/pub/base/identity/save") {
-    var jsono = JSON.parse(data);
-    var cont = "";
-    for (file in jsono.files) {
-      var filepath = "http://88.198.205.22/R/tmp/" + jsono.files[file] + "/bin"
-      cont = cont + "<a href='"+filepath+"'>"+file+"</a><br/>";
-    }
-    $("#outputframe").contents().find("body").html(cont);
-  } else {
-    if (data.indexOf("<pre>") != -1) {
-      data = data.replace(/(<code)(>## Warning: )/g,'$1 class=\\"warning\\"$2');
-      data = data.replace(/(<code)(>## Error: )/g,'$1 class=\\"error\\"$2');
-      $("#outputframe").contents().find("body").html(eval(data));
+    $('#knit,#knitdl').removeClass('disabled');
+    var data = $("#outputframe").contents().find("body").text();
+    if ($('#knitForm').attr("action") == "http://88.198.205.22/R/pub/base/identity/save") {
+      var jsono = JSON.parse(data);
+      var cont = "";
+      for (file in jsono.files) {
+        var filepath = "http://88.198.205.22/R/tmp/" + jsono.files[file] + "/bin"
+        cont = cont + "<a href='"+filepath+"'>"+file+"</a><br/>";
+      }
+      $("#outputframe").contents().find("body").html(cont);
     } else {
-      $("#outputframe").contents().find("body").html(data);
+      if (data.indexOf("<pre>") != -1) {
+        data = data.replace(/(<code)(>## Warning: )/g,'$1 class=\\"warning\\"$2');
+        data = data.replace(/(<code)(>## Error: )/g,'$1 class=\\"error\\"$2');
+        $("#outputframe").contents().find("body").html(eval(data));
+      } else {
+        $("#outputframe").contents().find("body").html(data);
+      }
     }
-  }
-    $("style, link[rel='stylesheet']").each(function(i,e) { $("#outputframe").contents().find("body").append($(e).clone()); });
+    $("style, link[rel='stylesheet']").each(function(i,e) {
+      $("#outputframe").contents().find("body").append($(e).clone());
+    });
     $("#outputframe").contents().find("pre code").each(function(i, e) {hljs.highlightBlock(e)});
+    $("#outputframe").contents().find("body").css('padding-left','8px').css('padding-right','8px');
   });
   postToIframe("outputframe");
 });

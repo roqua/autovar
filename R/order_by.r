@@ -48,18 +48,6 @@ missing_in_range <- function(sorting_column) {
   ordered_column <- sort(sorting_column)
   mmin <- min(ordered_column)
   mmax <- max(ordered_column)
-  last_elem <- NA
-  ldiff <- NA
-  for (elem in ordered_column) {
-    if (!is.na(last_elem)) {
-      cdiff <- last_elem - elem
-      if (!is.na(ldiff)) {
-        
-      }
-      ldiff <- cdiff
-    }
-    last_elem <- elem
-  }
   diffs <- ordered_column[2:length(ordered_column)]-ordered_column[1:length(ordered_column)-1]
   tab <- table(diffs)
   if (length(order(tab)) == 1) {

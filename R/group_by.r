@@ -15,7 +15,11 @@ split_up <- function(data_frame,id_field) {
   data <- list()
   indices <- sort(unique(getElement(data_frame,id_field)))
   for (i in indices) {
-    data[[as.character(i)]] <- data_frame[getElement(data_frame,id_field) == i,]
+    data[[as.character(i)]] <- data_frame[which(getElement(data_frame,id_field) == i),]
+  }
+  if (any(is.na(unique(getElement(data_frame,id_field))))) {
+    data[[length(data)+1]] <- data_frame[which(is.na(getElement(data_frame,id_field))),]
+    names(data)[[length(data)]] <- "NA"
   }
   data
 }
