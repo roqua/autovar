@@ -2,7 +2,6 @@
 
 # loads the file and saves the current directory
 load_file <- function(filename,file_type = c('SPSS','STATA')) {
-  print('file being loaded')
   real_file_name <- filename
   if (!is.null(attr(filename,"filename"))) {
     real_file_name <- attr(filename,"filename")

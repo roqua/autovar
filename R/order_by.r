@@ -28,8 +28,11 @@ order_by <- function(id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISS
 determine_impute_method <- function(id_field,data_frame) {
   if (can_do_one_missing(id_field,data_frame)) {
     'ONE_MISSING'
-  } else if (can_do_add_missing(id_field,data_frame
-
+  } else if (can_do_add_missing(id_field,data_frame)) {
+    'ADD_MISSING'
+  } else {
+    'NONE'
+  }
 }
 can_do_one_missing <- function(id_field,data_frame) {
   any(is.na(getElement(data_frame,id_field))) &&
