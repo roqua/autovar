@@ -94,7 +94,7 @@ The `order_by` function determines the order of the data rows as they appear in 
 The `impute_method` argument has three possible values:
 
 * `ONE_MISSING` - Only works when the `id_field` in each data_subset is an integer range with exactly one value missing and exactly one `NA` value. The `NA` value is then substituted by the missing index.
-* `ADD_MISSING` - Does not work when one or more rows have an NA value for `id_field`. Only works for integer ranges of `id_field` with single increments. Works by finding adding rows for all missing values in the range between the minimum and maximum value of `id_field`. All values in the added rows are `NA` except for the `id_field` and the field used for grouping the data (if there was one).
+* `ADD_MISSING` - Does not work when one or more rows have an NA value for `id_field`. Only works for integer ranges of `id_field` with single increments. Works by adding rows for all missing values in the range between the minimum and maximum value of `id_field`. All values in the added rows are `NA` except for the `id_field` and the field used for grouping the data (if there was one).
 * `NONE` - No imputation is performed.
 
 After the substitutions, the data sets in `av_state$data` are sorted by their `id_field` value. This sorting step moves any rows with value `NA` for the `id_field` to the end.
