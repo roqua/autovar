@@ -33,3 +33,7 @@ print.av_state <- function(x,...) {
   cat("\n")
   invisible(x)
 }
+
+print_state <- function() {
+  print(av_state)
+}

@@ -142,8 +142,8 @@ Currently, only the `SPSS` `file_type` is supported. The `.sps` file that comes 
 Example: `store_file()`
 
 
-### print(av_state)
+### print_state()
 
-    print(av_state)
+    print_state()
 
-This command shows the current state of the data set.
+This command shows the current state of the data set. This is an alias to `print(av_state)`.
