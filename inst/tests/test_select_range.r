@@ -18,9 +18,14 @@ test_that('select_range needs a column argument',{
   expect_error(select_range(1),'either begin or end')
 })
 
-test_that('select_range only accepts valid columns',{
+test_that('select_range accepts only valid columns',{
   load_test_data()
   expect_error(select_range(1,column='nonexistant',begin=1),'column does not exist')
+})
+
+test_that('select_range accepts only numeric columns',{
+  load_test_data()
+  expect_error(select_range(1,column='home'),'has to be numeric')
 })
 
 test_that('select_range needs either begin or end specified',{

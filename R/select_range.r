@@ -15,6 +15,9 @@ select_range <- function(subset_id='multiple',column,begin,end) {
   }
   data_column <- data_frame[[column]]
   if (is.null(data_column)) { stop(paste("column does not exist:",column)) }
+  if (class(data_column) != 'numeric') {
+    stop(paste("column",column,"has to be numeric, but is",class(data_column)))
+  }
   if (missing(begin) && missing(end)) {
     stop("either begin or end need to be specified")
   }
