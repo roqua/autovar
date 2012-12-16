@@ -2,6 +2,12 @@
 
 # order_by defines the chronological order in which fields are seen
 order_by <- function(id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISSING','NONE')) {
+  if (!is.null(av_state$order_by)) {
+    stop("order_by can only be called once")
+  }
+  if (class(av_state$data[[1]][[id_field]]) != 'numeric') {
+    stop(paste("id_field",id_field,"has to be numeric, but is",class(av_state$data[[1]][[id_field]])))
+  }
   av_state$order_by <<- id_field
   impute_method <- match.arg(impute_method)
   i <- 0
@@ -123,12 +129,3 @@ order_by_impute_add_missing <- function(id_field,data_frame) {
   }
   data_frame[with(data_frame, order(getElement(data_frame,id_field))), ]
 }
-
-determine_input_method <- function(id_field) {
-  
-
-
-  'NONE'
-}
-
-#print(order_by_impute_add_missing('tijdstip',data.frame(id=rep(1,times=5),tijdstip=c(1,3,5,6,7),home=6:10)))

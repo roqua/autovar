@@ -15,7 +15,8 @@ load_file <- function(filename,file_type = c('SPSS','STATA')) {
     if (!file.exists(filename)) {
       stop(paste("File does not exist:",filename))
     }
-    # NOTE: filename needs to include the full and valid path for SPSS export to work.
+    # NOTE: filename needs to include the full and valid path for SPSS export to work
+    # if the data is stored in a separate file
     file_name <- filename
   }
   av_state$file_name <<- file_name

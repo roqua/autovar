@@ -44,6 +44,29 @@ Other than adjusting `av_state$data`, the `group_by` function creates the follow
 * `group_by` - the `id_field` used for grouping the data.
 
 
+### order_by
+
+    order_by(id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISSING','NONE'))
+
+The `order_by` function determines the order of the data rows as they appear in ther output of the `store_file` function. The supplied `id_field` parameter is often a measurement index (e.g., `'tijdstip'`). The `id_field` column has to be numeric.
+
+The `impute_method` argument has three possible values:
+
+* `BEST_FIT` - This is not an impute method itself, but tells the system to determine the optimal impute method and use that. This is the default choice for `impute_method` when it is not specified.
+* `ONE_MISSING` - Only works when the `id_field` in each data_subset is an integer range with exactly one value missing and exactly one `NA` value. The `NA` value is then substituted by the missing index.
+* `ADD_MISSING` - Does not work when one or more rows have an NA value for `id_field`. Only works for integer ranges of `id_field` with single increments. Works by adding rows for all missing values in the range between the minimum and maximum value of `id_field`. All values in the added rows are `NA` except for the `id_field` and the field used for grouping the data (if there was one).
+* `NONE` - No imputation is performed.
+
+After the substitutions, the data sets in `av_state$data` are sorted by their `id_field` value. This sorting step moves any rows with value `NA` for the `id_field` to the end.
+
+Other than adjusting `av_state$data`, the `order_by` function creates the following variables in the `av_state` list:
+
+* `impute_method` - the `impute_method` used.
+* `order_by` - the `id_field` used.
+
+Example: `order_by('tijdstip',impute_method='ONE_MISSING')`
+
+
 ### select_range
 
     select_range(subset_id='multiple',column,begin,end)
@@ -84,28 +107,6 @@ Example: `add_derived_column('SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4','PHQ5','PHQ6
 
 Outputting data
 ---------------
-
-### order_by
-
-    order_by(id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISSING','NONE'))
-
-The `order_by` function determines the order of the data rows as they appear in ther output of the `store_file` function. The supplied `id_field` parameter is often a measurement index (e.g., `'tijdstip'`).
-
-The `impute_method` argument has three possible values:
-
-* `BEST_FIT` - This is not an impute method itself, but tells the system to determine the optimal impute method and use that. This is the default choice for `impute_method` when it is not specified.
-* `ONE_MISSING` - Only works when the `id_field` in each data_subset is an integer range with exactly one value missing and exactly one `NA` value. The `NA` value is then substituted by the missing index.
-* `ADD_MISSING` - Does not work when one or more rows have an NA value for `id_field`. Only works for integer ranges of `id_field` with single increments. Works by adding rows for all missing values in the range between the minimum and maximum value of `id_field`. All values in the added rows are `NA` except for the `id_field` and the field used for grouping the data (if there was one).
-* `NONE` - No imputation is performed.
-
-After the substitutions, the data sets in `av_state$data` are sorted by their `id_field` value. This sorting step moves any rows with value `NA` for the `id_field` to the end.
-
-Other than adjusting `av_state$data`, the `order_by` function creates the following variables in the `av_state` list:
-
-* `impute_method` - the `impute_method` used.
-* `order_by` - the `id_field` used.
-
-Example: `order_by('tijdstip',impute_method='ONE_MISSING')`
 
 
 ### visualize

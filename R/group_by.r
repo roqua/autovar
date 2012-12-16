@@ -3,7 +3,10 @@
 # group_by splits the data
 group_by <- function(id_field) {
   if (missing(id_field)) { stop("missing id_field parameter") }
-  
+  if (!is.null(av_state$group_by)) {
+    stop("group_by can only be called once")
+  }
+
   av_state$group_by <<- id_field
   av_state$data <<- split_up(getElement(av_state$data,names(av_state$data)[1]),id_field)
   

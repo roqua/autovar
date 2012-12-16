@@ -7,6 +7,7 @@ Authors@R: c(person("Ando","Emerencia",role = c("aut","cre"),
 Author: Ando Emerencia
 Maintainer: Ando Emerencia <ando.emerencia@gmail.com>
 Depends: foreign, norm
+Suggests: testthat
 Description: A package to simplify the process from raw SPSS or
     STATA data to VAR models.
 License: Unlimited
