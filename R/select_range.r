@@ -2,6 +2,9 @@
 
 # select_range selects a subset of rows to be kept
 select_range <- function(subset_id='multiple',column,begin,end) {
+  if (class(subset_id) == 'numeric' && !any(subset_id == 1:length(av_state$data))) {
+    stop(paste(subset_id,"does not identify a data set"))
+  }
   data_frame <- av_state$data[[subset_id]]
   if (is.null(data_frame)) {
     stop(paste(subset_id,"does not identify a data set"))

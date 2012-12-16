@@ -48,7 +48,7 @@ load_test_data <- function() {
   av_state$real_file_name <<- 'data_test.sav'
   av_state$file_type <<- 'SPSS'
   av_state$raw_data <<- generate_test_data()
-  av_state$data <<- list('1'=av_state$raw_data)
+  av_state$data <<- list('multiple'=av_state$raw_data)
 }
 
 generate_test_data <- function() {

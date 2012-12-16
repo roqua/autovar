@@ -25,25 +25,25 @@ test_that('split_up makes two subsets when there are two distinct values for the
   a <- data.frame(id=c(2,rep(1,times=3),2),tijdstip=c(1,3,5,6,7),home=c('yes','no','yes',NA,'yes'))  
   b <- split_up(a,'id')
   d <- list()
-  d[['1']] <- data.frame(id=rep(1,times=3),tijdstip=c(3,5,6),home=c('no','yes',NA))
-  d[['2']] <- data.frame(id=rep(2,times=2),tijdstip=c(1,7),home=factor(c('yes','yes'),levels=c('no','yes')))
-  expect_equivalent(b,d)
+  d[['1']] <- a[c(2,3,4),]
+  d[['2']] <- a[c(1,5),]
+  expect_equal(b,d)
 })
 
-test_that('split_up filters out any NA values for id_field in a separate subset',{
+test_that('split_up filters out any NA values for id_field into a separate subset',{
   a <- data.frame(id=c(NA,rep(1,times=3),NA),tijdstip=c(1,3,5,6,7),home=c('yes','no','yes',NA,'yes'))  
   b <- split_up(a,'id')
   d <- list()
-  d[['1']] <- data.frame(id=rep(1,times=3),tijdstip=c(3,5,6),home=c('no','yes',NA))
-  d[['2']] <- data.frame(id=as.numeric(rep(NA,times=2)),tijdstip=c(1,7),home=factor(c('yes','yes'),levels=c('no','yes')))
-  expect_equivalent(b,d)
+  d[['1']] <- a[c(2,3,4),]
+  d[['NA']] <- a[c(1,5),]
+  expect_equal(b,d)
 })
 
 test_that('split_up doesnt sort rows in subsets but does sort its subset by id_field',{
   a <- data.frame(id=c(2,rep(1,times=3),2),tijdstip=c(7,3,5,6,1),home=c('yes','no','yes',NA,'yes'))  
   b <- split_up(a,'id')
   d <- list()
-  d[['1']] <- data.frame(id=rep(1,times=3),tijdstip=c(3,5,6),home=c('no','yes',NA))
-  d[['2']] <- data.frame(id=rep(2,times=2),tijdstip=c(7,1),home=factor(c('yes','yes'),levels=c('no','yes')))
-  expect_equivalent(b,d)
+  d[['1']] <- a[c(2,3,4),]
+  d[['2']] <- a[c(1,5),]
+  expect_equal(b,d)
 })
