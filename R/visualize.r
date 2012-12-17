@@ -20,8 +20,8 @@ visualize_column <- function(column,...) {
 }
 
 visualize_scale_column <- function(column,type=c('LINE','BOX'),title="",...) {
-  visualize_method <- match.arg(type)
-  visualize_method <- switch(visualize_method,
+  visualize_methodr <- match.arg(type)
+  visualize_method <- switch(visualize_methodr,
     LINE = visualize_line,
     BOX = visualize_box
   )
@@ -29,8 +29,8 @@ visualize_scale_column <- function(column,type=c('LINE','BOX'),title="",...) {
   n<-length(av_state$data)
   x<-floor(sqrt(n))
   y<-ceiling(n/x)
-  if (type == 'BOX') {
-    op <- par(mfrow=c(x,y))  
+  if (visualize_methodr == 'BOX') {
+    op <- par(mfrow=c(x,y))
   } else {
     op <- par(oma=c(0,3,2,0),mfrow=c(x,y))
   }
@@ -179,9 +179,14 @@ visualize_line <- function(column,y,main,acc=FALSE,...) {
   if (!is.null(av_state$order_by)) {
     xla <- paste(av_state$order_by,'index')
   }
-  plot(1:length(y),y=y,type='p',main=main,
-   ylab='',xlab=xla,pch=18,yaxt="n",...)
-  axis(2,at=mat,labels=mlabels, las=2)
+  if (acc || length(mat) > 10) {
+    plot(1:length(y),y=y,type='p',main=main,
+         ylab='',xlab=xla,pch=18,...)
+  } else {
+    plot(1:length(y),y=y,type='p',main=main,
+         ylab='',xlab=xla,pch=18,yaxt="n",...)
+    axis(2,at=mat,labels=mlabels, las=2)
+  }
   lines(1:length(y),y=y,type='l',...)
   title(main=column,outer=TRUE)
   #coords <- data.frame(cbind(1:length(y),y))
