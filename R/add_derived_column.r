@@ -12,6 +12,7 @@ add_derived_column <- function(name,columns,operation=c('SUM','LN','MINUTES_TO_H
     i <- i+1
     av_state$data[[i]][[name]] <<- operation(columns,data_frame)
   }
+  av_state$last_warning <<- NULL
 }
 
 add_derived_column_sum <- function(columns,data_frame) {
@@ -26,7 +27,7 @@ add_derived_column_sum <- function(columns,data_frame) {
       if (warnflag) {
         warnflag <- FALSE
         mywarn <- paste("column",column,"is not numeric: converting...")
-        if (!is.null(av_state$last_warning) && av_state$last_warning != mywarn) {
+        if (is.null(av_state$last_warning) || av_state$last_warning != mywarn) {
           av_state$last_warning <<- mywarn
           warning(mywarn)
         }
