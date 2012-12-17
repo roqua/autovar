@@ -29,57 +29,67 @@ visualize_scale_column <- function(column,type=c('LINE','BOX'),title="",...) {
   n<-length(av_state$data)
   x<-floor(sqrt(n))
   y<-ceiling(n/x)
-  op <- par(mfrow=c(x,y))
+  if (type == 'BOX') {
+    op <- par(mfrow=c(x,y))  
+  } else {
+    op <- par(oma=c(0,3,2,0),mfrow=c(x,y))
+  }
   for (data_frame in av_state$data) {
     idx <- idx+1
-    data_frame[[column]][is.na(data_frame[[column]])] <- 0
+    if (class(data_frame[[column]]) != "factor") {
+      data_frame[[column]][is.na(data_frame[[column]])] <- 0
+    }
     visualize_method(column,data_frame[[column]],paste(title,visualize_sub_title(idx),sep=''),...)
   }
   par(op)
 }
 
-visualize_categorical_column <- function(column,type=c('PIE','BAR','DOT'),title="",...) {
+visualize_categorical_column <- function(column,type=c('PIE','BAR','DOT','LINE'),title="",...) {
   visualize_method <- match.arg(type)
-  visualize_method <- switch(visualize_method,
-    PIE = visualize_pie,
-    BAR = visualize_bar,
-    DOT = visualize_dot
-  )
-  idx <- 0
-  n<-length(av_state$data)
-  x<-floor(sqrt(n))
-  y<-ceiling(n/x)
-  old.par <- par(no.readonly = TRUE)
-  par(oma = c( 0, 0, 3, 0 ),mfrow=c(x,y))
-  for (data_frame in av_state$data) {
-    clevels <- levels(data_frame[[column]])
-    used_levels <- NULL
-    idx <- idx+1
-    slices <- NULL
-    colors <- NULL
-    ccolors <- rainbow(length(clevels)+1)
-    i <- 1
-    ccolor <- ccolors[[i]]
-    totalcolumn <- length(which(is.na(data_frame[[column]])))
-    if (totalcolumn > 0) {
-      slices <- c(slices,totalcolumn)
-      used_levels <- c(used_levels,'NA')
-      colors <- c(colors,ccolor)
-    }
-    for (clevel in clevels) {
-      i <- i+1
+  if (visualize_method == 'LINE') {
+    visualize_scale_column(column,type=visualize_method)
+  } else {
+    visualize_method <- switch(visualize_method,
+      PIE = visualize_pie,
+      BAR = visualize_bar,
+      DOT = visualize_dot
+    )
+    idx <- 0
+    n<-length(av_state$data)
+    x<-floor(sqrt(n))
+    y<-ceiling(n/x)
+    old.par <- par(no.readonly = TRUE)
+    par(oma = c( 0, 0, 3, 0 ),mfrow=c(x,y))
+    for (data_frame in av_state$data) {
+      clevels <- levels(data_frame[[column]])
+      used_levels <- NULL
+      idx <- idx+1
+      slices <- NULL
+      colors <- NULL
+      ccolors <- rainbow(length(clevels)+1)
+      i <- 1
       ccolor <- ccolors[[i]]
-      totalcolumn <- length(which(data_frame[[column]] == clevel))
+      totalcolumn <- length(which(is.na(data_frame[[column]])))
       if (totalcolumn > 0) {
         slices <- c(slices,totalcolumn)
-        used_levels <- c(used_levels,clevel)
+        used_levels <- c(used_levels,'NA')
         colors <- c(colors,ccolor)
       }
+      for (clevel in clevels) {
+        i <- i+1
+        ccolor <- ccolors[[i]]
+        totalcolumn <- length(which(data_frame[[column]] == clevel))
+        if (totalcolumn > 0) {
+          slices <- c(slices,totalcolumn)
+          used_levels <- c(used_levels,clevel)
+          colors <- c(colors,ccolor)
+        }
+      }
+      visualize_method(slices,labels=used_levels,main=paste(title,visualize_sub_title(idx),sep=''),colors=colors,...)
     }
-    visualize_method(slices,labels=used_levels,main=paste(title,visualize_sub_title(idx),sep=''),colors=colors,...)
+    mtext(column,outer = TRUE)
+    par(old.par)
   }
-  mtext(column,outer = TRUE)
-  par(old.par)
 }
 
 visualize_columns <- function(columns,labels=columns,type=c('PIE','BAR','DOT'),title="",...) {
@@ -147,6 +157,9 @@ visualize_bar <- function(columns,labels,main,colors,...) {
 }
 
 visualize_line <- function(column,y,main,acc=FALSE,...) {
+  yorig <- y
+  y <- as.numeric(y)
+  y[is.na(y)] <- 0
   if (acc) {
     i <- 0
     for (yv in y) {
@@ -156,13 +169,21 @@ visualize_line <- function(column,y,main,acc=FALSE,...) {
       }
     }
   }
+  mat <- sort(as.numeric(unique(y)))
+  mlabels <- as.character(mat)
+  if (class(yorig) == 'factor' && !acc) {
+    mat <- 0:length(levels(yorig))
+    mlabels <- c('NA',levels(yorig))
+  }
   xla <- 'index'
   if (!is.null(av_state$order_by)) {
     xla <- paste(av_state$order_by,'index')
   }
   plot(1:length(y),y=y,type='p',main=main,
-   ylab=column,xlab=xla,pch=18,...)
+   ylab='',xlab=xla,pch=18,yaxt="n",...)
+  axis(2,at=mat,labels=mlabels, las=2)
   lines(1:length(y),y=y,type='l',...)
+  title(main=column,outer=TRUE)
   #coords <- data.frame(cbind(1:length(y),y))
   #names(coords) <- c("x", "y")
   #lines(as.data.frame(with(coords, list(x = spline(x)$y, y = spline(y)$y))),...)
