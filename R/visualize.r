@@ -171,11 +171,3 @@ visualize_line <- function(column,y,main,acc=FALSE,...) {
 visualize_box <- function(column,y,main,...) {
   boxplot(y,main=main,ylab=column,...)
 }
-
-#visualize(c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),
-#          labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='BAR',horiz='TRUE')
-#visualize(c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),
-#          labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='PIE')
-#visualize(c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),
-#          labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='DOT')
-#visualize('minuten_sport',type='LINE',acc=TRUE)
