@@ -15,14 +15,23 @@ test_that('order_by() sets the order_by attribute',{
 test_that('order_by() can only be called once',{
   load_test_data()
   capture.output({
-    order_by('id')
+    order_by('tijdstip')
   })
-  expect_error(order_by('id'),'called once')
+  expect_error(order_by('tijdstip'),'called once')
 })
 
 test_that('order_by() can only be with a numeric id_field',{
   load_test_data()
   expect_error(order_by('home'),'has to be numeric')
+})
+
+test_that('order_by() prints a warning when called with a sequence it cant complete',{
+  load_test_data()
+  av_state$data[[1]]$tijdstip <<- c(1,2,NA,5,6)
+  expect_warning(order_by('tijdstip'),'are still NA')
+  load_test_data()
+  av_state$data[[1]]$tijdstip <<- c(1,2,NA,5,6)
+  expect_warning(order_by('tijdstip'),'are still nonsequential')
 })
 
 test_that('order_by() does ADD_MISSING imputation and ordering correctly',{

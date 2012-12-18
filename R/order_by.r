@@ -11,6 +11,8 @@ order_by <- function(id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISS
   av_state$order_by <<- id_field
   impute_method <- match.arg(impute_method)
   i <- 0
+  missings <- {}
+  nonsequential <- {}
   for (data_frame in av_state$data) {
     i <- i+1
     used_impute_method <- impute_method
@@ -30,7 +32,47 @@ order_by <- function(id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISS
                 missing_before," to ",missing_after," for subset ",i,
                 " (",used_impute_method,")\n", sep=""))
     }
+    nonsequential[i] <- is_nonsequential(av_state$data[[i]][[id_field]])
+    missings[i] <- length(which(is.na(av_state$data[[i]][[id_field]])))
   }
+  if (sum(missings) > 0) {
+    warning(paste("order_by: some values of the",id_field,"column are still NA:",missings_report(missings,names(av_state$data))))
+  }
+  if (any(nonsequential)) {
+    warning(paste("order_by: some subsets of the",id_field,"column are still nonsequential: subset ids:",names(av_state$data)[which(nonsequential)]))
+  }
+}
+
+is_nonsequential <- function(column_data) {
+  curval <- column_data[1]
+  flag = FALSE
+  i <- 2
+  while (i <= length(column_data)) {
+    new_val <- column_data[i]
+    if (is.null(new_val) || is.null(curval) || new_val != curval+1) {
+      flag = TRUE
+      break
+    }
+    curval <- new_val
+    i <- i+1
+  }
+  flag
+}
+
+missings_report <- function(missings,names) {
+  msg <- ''
+  i <- 0
+  for (missing in missings) {
+    i <- i+1
+    if (missing > 0) {
+      name <- names[i]
+      if (msg != '') {
+        msg <- paste(msg,', ',sep='')
+      }
+      msg <- paste(msg,av_state$group_by,' ',name,': ',missing,' missing',sep='')
+    }
+  }
+  msg
 }
 
 determine_impute_method <- function(id_field,data_frame) {
@@ -98,9 +140,6 @@ missing_in_range <- function(sorting_column, no_warn = FALSE) {
 
 order_by_impute_none <- function(id_field,data_frame) {
   sorting_column <- getElement(data_frame,id_field)
-  if (any(is.na(sorting_column))) {
-    warning(paste("Some rows have an NA value for the sorting attribute,",id_field))
-  }
   data_frame[with(data_frame, order(sorting_column)), ]
 }
 

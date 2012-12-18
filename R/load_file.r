@@ -65,5 +65,6 @@ load_file_spss <- function(filename) {
 }
 
 load_file_stata <- function(filename) {
-  cat("load_file_stata",filename,"(not implemented)\n")
+  av_state$raw_data <<- read.dta(filename)
+  av_state$data <<- list(multiple=av_state$raw_data)
 }
