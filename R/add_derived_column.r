@@ -29,7 +29,7 @@ add_derived_column_sum <- function(columns,data_frame) {
         mywarn <- paste("column",column,"is not numeric: converting...")
         if (is.null(av_state$last_warning) || av_state$last_warning != mywarn) {
           av_state$last_warning <<- mywarn
-          warning(mywarn)
+          cat(mywarn,"\n",sep="")
         }
       }
       data_column <- as.numeric(data_column) -1

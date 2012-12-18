@@ -45,6 +45,6 @@ test_that('sum gives the correct output for numeric columns',{
 
 test_that('sum gives the correct output for categorical columns',{
   load_test_data()
-  expect_warning(add_derived_column('new',c('home','home'),operation='SUM'),'converting')
+  expect_output(add_derived_column('new',c('home','home'),operation='SUM'),'converting')
   expect_equivalent(av_state$data[[1]],cbind(generate_test_data(),c(2,0,2,0,2)))
 })
