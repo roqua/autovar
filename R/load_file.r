@@ -42,7 +42,7 @@ column_names_output <- function() {
 
 decorate_class <- function(classname) {
   switch(classname,
-    factor = "ctg",
+    factor = "nom",
     numeric = "scl"
   )
 }

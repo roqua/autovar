@@ -10,7 +10,7 @@ visualize <- function(columns,...) {
 
 visualize_column <- function(column,...) {
   if (class(av_state$data[[1]][[column]]) == "factor") {
-    visualize_categorical_column(column,...)
+    visualize_nominal_column(column,...)
   } else if (class(av_state$data[[1]][[column]]) == "numeric") {
     visualize_scale_column(column,...)
   } else {
@@ -44,7 +44,7 @@ visualize_scale_column <- function(column,type=c('LINE','BOX'),title="",...) {
   par(op)
 }
 
-visualize_categorical_column <- function(column,type=c('PIE','BAR','DOT','LINE'),title="",...) {
+visualize_nominal_column <- function(column,type=c('PIE','BAR','DOT','LINE'),title="",...) {
   visualize_method <- match.arg(type)
   if (visualize_method == 'LINE') {
     visualize_scale_column(column,type=visualize_method)
