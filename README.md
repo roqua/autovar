@@ -105,6 +105,14 @@ The `operation` argument has three possible values:
 Example: `add_derived_column('SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4','PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),operation='SUM')`, `add_derived_column('lnSomBewegUur','SomBewegUur',operation='LN')`, or  `add_derived_column('SomBewegUur','SomBewegen',operation='MINUTES_TO_HOURS')`.
 
 
+Vector Autoregression
+---------------------
+
+
+### set_var_variables
+
+
+
 Outputting data
 ---------------
 
