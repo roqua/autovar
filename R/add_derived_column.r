@@ -52,6 +52,13 @@ add_derived_column_ln <- function(column,data_frame) {
   # for ln, default value is 1
   # don't do this here, we might want to impute these later
   #data_column[is.na(data_column)] <- 1
+  
+  # scale minimum value to 
+  inc <- 1-min(data_column,na.rm=TRUE)
+  if (inc > 0) {
+    cat("add_derived_column_ln: increasing all values of column",column,"by",inc,"\n")
+    data_column <- data_column+inc
+  }
   log(data_column)
 }
 

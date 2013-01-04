@@ -16,6 +16,24 @@ test_that('ln gives the correct output',{
   expect_equivalent(av_state$data[[1]],cbind(generate_test_data(),log(generate_test_data()$tijdstip)))
 })
 
+test_that('ln does not change NA values',{
+  load_test_data()
+  av_state$data[[1]]$tijdstip[2] <<- NA
+  add_derived_column('new','tijdstip',operation='LN')
+  modded_test_data <- generate_test_data()
+  modded_test_data$tijdstip[2] <- NA
+  expect_equivalent(av_state$data[[1]],cbind(modded_test_data,log(modded_test_data$tijdstip)))
+})
+
+test_that('ln translates valuesto a minimum of 1',{
+  load_test_data()
+  av_state$data[[1]]$tijdstip[2] <<- -2
+  add_derived_column('new','tijdstip',operation='LN')
+  modded_test_data <- generate_test_data()
+  modded_test_data$tijdstip[2] <- -2
+  expect_equivalent(av_state$data[[1]],cbind(modded_test_data,log(modded_test_data$tijdstip+3)))
+})
+
 test_that('mtoh only accepts existing columns',{
   load_test_data()
   expect_error(add_derived_column('new','nonexistant',operation='MINUTES_TO_HOURS'),'does not exist')
