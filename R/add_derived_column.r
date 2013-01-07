@@ -10,18 +10,18 @@ add_derived_column <- function(name,columns,operation=c('SUM','LN','MINUTES_TO_H
   i <- 0
   for (data_frame in av_state$data) {
     i <- i+1
-    av_state$data[[i]][[name]] <<- operation(columns,data_frame)
+    av_state$data[[i]][[name]] <<- operation(columns,data_frame,i)
   }
   av_state$last_warning <<- NULL
 }
 
-add_derived_column_sum <- function(columns,data_frame) {
+add_derived_column_sum <- function(columns,data_frame,subset) {
   csum <- 0
   warnflag <- TRUE
   for (column in columns) {
     data_column <- data_frame[[column]]
     if (is.null(data_column)) {
-      stop(paste("column",column,"does not exist"))
+      stop(paste("column",column,"does not exist for subset",subset))
     }
     if (class(data_column) != 'numeric') {
       if (warnflag) {
@@ -29,7 +29,7 @@ add_derived_column_sum <- function(columns,data_frame) {
         mywarn <- paste("column",column,"is not numeric: converting...")
         if (is.null(av_state$last_warning) || av_state$last_warning != mywarn) {
           av_state$last_warning <<- mywarn
-          cat(mywarn,"\n",sep="")
+          cat(mywarn," (for subset ",subset,")\n",sep="")
         }
       }
       data_column <- as.numeric(data_column) -1
@@ -41,13 +41,13 @@ add_derived_column_sum <- function(columns,data_frame) {
   csum
 }
 
-add_derived_column_ln <- function(column,data_frame) {
+add_derived_column_ln <- function(column,data_frame,subset) {
   data_column <- data_frame[[column]]
   if (is.null(data_column)) {
-    stop(paste("column",column,"does not exist"))
+    stop(paste("column",column,"does not exist for subset",subset))
   }
   if (class(data_column) != 'numeric') {
-    stop(paste("column",column,"is not numeric"))
+    stop(paste("column",column,"is not numeric for subset",subset))
   }
   # for ln, default value is 1
   # don't do this here, we might want to impute these later
@@ -56,19 +56,20 @@ add_derived_column_ln <- function(column,data_frame) {
   # scale minimum value to 
   inc <- 1-min(data_column,na.rm=TRUE)
   if (inc > 0) {
-    cat("add_derived_column_ln: increasing all values of column",column,"by",inc,"\n")
+    cat("add_derived_column_ln: increasing all values of column",
+        column,"by",inc,"for subset",subset,"\n")
     data_column <- data_column+inc
   }
   log(data_column)
 }
 
-add_derived_column_mtoh <- function(column,data_frame) {
+add_derived_column_mtoh <- function(column,data_frame,subset) {
   data_column <- data_frame[[column]]
   if (is.null(data_column)) {
-    stop(paste("column",column,"does not exist"))
+    stop(paste("column",column,"does not exist for subset",subset))
   }
   if (class(data_column) != 'numeric') {
-    stop(paste("column",column,"is not numeric"))
+    stop(paste("column",column,"is not numeric for subset",subset))
   }
   data_column <- data_column/60
   data_column
