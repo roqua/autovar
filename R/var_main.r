@@ -21,12 +21,13 @@ var_main <- function(vars,lag_max=14,significance=0.05,exogenous_max_iterations=
     stop(paste("invalid subset specified:",av_state$subset))
   }
   
-  # check if endoegnous columns exist
+  # check if endogenous columns exist
   if (is.null(av_state$data[[av_state$subset]][av_state$vars])) {
     stop(paste("invalid endogenous columns specified:",av_state$vars))
   }
-  
-  av_state$model_queue <<- list(list())
+  default_model <- list()
+  class(default_model) <- 'var_model'
+  av_state$model_queue <<- list(default_model)
   av_state$accepted_models <<- list()
   i <- 1
   while (TRUE) {
@@ -37,8 +38,10 @@ var_main <- function(vars,lag_max=14,significance=0.05,exogenous_max_iterations=
     if (model_evaluation$model_valid) {
       # model is valid
       accepted_model <- list(parameters=model,varest=model_evaluation$varest)
+      class(accepted_model) <- 'var_modelres'
       av_state$accepted_models <<- add_to_queue(av_state$accepted_models,
                                                 accepted_model)
+      
     }
     i <- i+1
   }

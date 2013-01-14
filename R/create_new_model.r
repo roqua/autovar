@@ -3,7 +3,9 @@
 create_new_model <- function(old_model,...) {
   # we are not removing varest because it shouldn't exist
   # in this range
-  merge_lists(old_model,list(...))
+  res <- merge_lists(old_model,list(...))
+  class(res) <- 'var_model'
+  res
 }
 
 merge_lists <- function(old, new) {

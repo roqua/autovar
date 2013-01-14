@@ -34,7 +34,7 @@ get_data_columns <- function(model) {
     colnames(exodta) <- exovrs
   }
 
-  list(endogenous <- endo, exogenous <- exodta)
+  list(endogenous = endo, exogenous = exodta)
 }
 
 apply_log_transform <- function(model) {

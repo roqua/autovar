@@ -25,7 +25,7 @@ test_that('ln does not change NA values',{
   expect_equivalent(av_state$data[[1]],cbind(modded_test_data,log(modded_test_data$tijdstip)))
 })
 
-test_that('ln translates valuesto a minimum of 1',{
+test_that('ln translates values to a minimum of 1',{
   load_test_data()
   av_state$data[[1]]$tijdstip[2] <<- -2
   expect_output(add_derived_column('new','tijdstip',operation='LN'),'increasing')

@@ -4,7 +4,6 @@ evaluate_model <- function(model) {
   # should return a list with model_valid, and varest
   res <- list(model_valid=TRUE,varest=NULL)
   
-  
   dta <- get_data_columns(model)
   # this returns a list with fields: endogenous, exogenous
   
@@ -22,6 +21,10 @@ evaluate_model <- function(model) {
     for (lag in lags) {
       new_model <- create_new_model(model,lag=lag)
       av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
+      
+      # test
+      #new_modele <- create_new_model(new_model,apply_log_transform=TRUE)
+      #av_state$model_queue <<- add_to_queue(av_state$model_queue,new_modele)
     }
   } else {
     cat("\n",paste(rep('-',times=20),collapse=''),"\n",sep='')

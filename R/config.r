@@ -25,10 +25,44 @@ print.av_state <- function(x,...) {
         cat(paste(dim(x[[i]])[1],'samples with',dim(x[[i]])[2],'features'),"\n")
       }
     } else {
-      cat(x[[i]],"\n")
+      if (class(x[[i]]) == 'list') {
+        print(x[[i]])
+      } else {
+        cat(x[[i]],"\n")
+      }
     }
   }
   cat("\n")
+  invisible(x)
+}
+
+print.var_model <- function(x,...) {
+  str <- ""
+  nn <- names(x)
+  ll <- length(x)
+  for (i in seq_len(ll)) {
+    if (str != '') {
+      str <- paste(str,", ",sep='')
+    }
+    str <- paste(str,nn[i],": ",x[[i]],sep='')
+  }
+  cat(str,"\n")
+  invisible(x)
+}
+
+print.var_modelres <- function(x,...) {
+  str <- ""
+  str2 <- ""
+  nn <- names(x$parameters)
+  ll <- length(x$parameters)
+  for (i in seq_len(ll)) {
+    if (str2 != '') {
+      str2 <- paste(str2,", ",sep='')
+    }
+    str2 <- paste(str2,nn[i],": ",x$parameters[[i]],sep='')
+  }
+  str <- paste(str,model_score(x$varest)," : ",str2,sep='')
+  cat(str,"\n")
   invisible(x)
 }
 
