@@ -28,14 +28,46 @@ evaluate_model <- function(model) {
     }
   } else {
     cat("\n",paste(rep('-',times=20),collapse=''),"\n",sep='')
-    cat("Lag length:",model$lag,"\n")
+    cat("Model parameters: ")
+    print(model)
     
     # get the var estimate for this model. This is the 'var' command in STATA.
     res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
     
-    
     # run all the tests and queue potential models...
     
+    # stability test
+    if (!model_is_stable(res$varest)) {
+      res$model_valid <- FALSE
+      # determine whether to continue with this model
+    }
+    
+    # portmanteau tests on residuals and squares of residuals
+    ptests <- wntestq(res$varest)
+    fail_names <- NULL
+    sqflag <- FALSE
+    siflag <- FALSE
+    for (i in 1:(dim(ptests)[1])) {
+      test <- ptests[i,]
+      if (!test$passes_test) {
+        res$model_valid <- FALSE
+        if (test$is_squared && !sqflag) {
+          sqflag <- TRUE
+          # squares of residuals significant: heteroskedasticity: apply log transform
+          if (!apply_log_transform(model)) {
+            cat("\n> Squares of residuals significant: heteroskedasticity: queueing model with log transform.\n")
+            new_model <- create_new_model(model,apply_log_transform=TRUE)
+            av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
+          }
+        } else if (!test$is_squared && !siflag) {
+          siflag <- TRUE
+          # autocorrelation in residuals, refine model by adding more lags
+          # (done implicitly)
+        }
+      }
+    }
+    
+    # Jarque-Bera, Skewness, Kurtosis tests
     
   }
   res
