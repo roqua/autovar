@@ -1,34 +1,9 @@
-# set_var_variables
-
-# NOTE: this function no longer works. it will be removed later.
-set_var_variables <- function(vrs,exovrs=NULL,lag.max=10,significance=0.05) {
-  # vrs is a list of variables
-  cat("\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
-  cat("Starting VAR with variables:",vrs,"\n")
-  exodta <- NULL
-  
-  models = NULL
-  for (lag in lags) {
-
-    
-    cat("\nGoodness of fit statistics (low values = better models)\n")
-    print(estat_ic(model))
-
-    model_is_stable(model)
-    residuals_are_normally_distributed(model)
-    wntestq(model)
-  }
-  model
-}
-
-
-
-
 # varnorm <-> Jarque-Bera <-> normality.test()
 # The Skewness, Kurtosis, and JB tests (of the residuals)
 # cannot be significant
 
-residuals_are_normally_distributed <- function(varest) {
+varnorm <- function(varest) {
+  ret_fail_columns <- NULL
   errors <- NULL
   nt <- normality.test(varest,multivariate.only=FALSE)
   tests <- c('JB','Skewness','Kurtosis')
@@ -41,18 +16,27 @@ residuals_are_normally_distributed <- function(varest) {
   }
   if (!is.null(errors)) {
     cat('  Multivariate normality test failed for:',errors,"\n")
+    ret_fail_columns <- av_state$vars
   }
   failing_columns <- resid_failing_columns(nt)
   if (!is.null(failing_columns)) {
     cat('  Univariate JB test failed for:',failing_columns,"\n")
+    for (column in failing_columns) {
+      real_column <- unprefix_ln(column)
+      if (!(real_column %in% ret_fail_columns)) {
+        ret_fail_columns <- c(ret_fail_columns,real_column)
+      }
+    }
   }
   if (is.null(errors) && is.null(failing_columns)) {
     cat("PASS: Unable to reject null hypothesis that residuals are normally distributed.\n")
-    TRUE
   } else {
     cat("FAIL: Residuals are significantly not normally distributed.\n")
-    FALSE
   }
+  if (!is.null(ret_fail_columns)) {
+    ret_fail_columns <- powerset(ret_fail_columns)
+  }
+  ret_fail_columns
 }
 
 resid_failing_columns <- function(normtest) {
@@ -67,4 +51,13 @@ resid_failing_columns <- function(normtest) {
   ret
 }
 
-
+powerset <- function(lst) {
+  res <- NULL
+  for (i in 1:length(lst)) {
+    cmbs <- combn(lst,i)
+    for (j in 1:(dim(cmbs)[[2]])) {
+      res <- c(res,list(cmbs[,j]))
+    }
+  }
+  res
+}

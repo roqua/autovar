@@ -30,22 +30,27 @@ var_main <- function(vars,lag_max=14,significance=0.05,exogenous_max_iterations=
   av_state$model_queue <<- list(default_model)
   av_state$accepted_models <<- list()
   i <- 1
+  model_cnt <- 0
   while (TRUE) {
     if (i > length(av_state$model_queue)) { break }
     # do stuff
     model <- av_state$model_queue[[i]]
     model_evaluation <- evaluate_model(model)
+    if (!is.null(model_evaluation$varest)) {
+      model_cnt <- model_cnt +1
+    }
     if (model_evaluation$model_valid) {
       # model is valid
       accepted_model <- list(parameters=model,varest=model_evaluation$varest)
       class(accepted_model) <- 'var_modelres'
       av_state$accepted_models <<- add_to_queue(av_state$accepted_models,
                                                 accepted_model)
-      
     }
     i <- i+1
   }
-  cat("Done. Processed",i-1,"models\n")
+  cat("\nDone. Processed",model_cnt,"models, of which",
+      length(av_state$accepted_models),
+      "were accepted:\n")
   av_state$accepted_models <<- sort_models(av_state$accepted_models)
   print(av_state$accepted_models)
 }

@@ -36,32 +36,43 @@ print.av_state <- function(x,...) {
   invisible(x)
 }
 
-print.var_model <- function(x,...) {
-  str <- ""
+var_model_to_string <- function(x) {
+  str <- "\n  "
   nn <- names(x)
   ll <- length(x)
-  for (i in seq_len(ll)) {
-    if (str != '') {
-      str <- paste(str,", ",sep='')
-    }
-    str <- paste(str,nn[i],": ",x[[i]],sep='')
+  nns <- seq_len(ll)
+  if (!is.null(names(x))) {
+    nns <- sort(names(x),index.return=TRUE)
+    nns <- nns$ix
   }
-  cat(str,"\n")
+  for (i in nns) {
+    if (str != '\n  ') {
+      str <- paste(str,"\n  ",sep='')
+    }
+    if (class(x[[i]]) == "data.frame") {
+      strr <- "<"
+      for (name in names(x[[i]])) {
+        if (strr != '<') {
+          strr <- paste(strr,"| ",sep='')
+        }
+        strr <- paste(strr,name,": ",paste(x[[i]][[name]],collapse=', '),sep='')
+      }
+      strr <- paste(strr,">",sep='')
+      str <- paste(str,nn[i],": ",strr,sep='')
+    } else {
+      str <- paste(str,nn[i],": ",x[[i]],sep='')
+    }
+  }
+  str
+}
+print.var_model <- function(x,...) {
+  cat(var_model_to_string(x),"\n")
   invisible(x)
 }
 
 print.var_modelres <- function(x,...) {
-  str <- ""
-  str2 <- ""
-  nn <- names(x$parameters)
-  ll <- length(x$parameters)
-  for (i in seq_len(ll)) {
-    if (str2 != '') {
-      str2 <- paste(str2,", ",sep='')
-    }
-    str2 <- paste(str2,nn[i],": ",x$parameters[[i]],sep='')
-  }
-  str <- paste(str,model_score(x$varest)," : ",str2,sep='')
+  str <- paste(printed_model_score(x$varest)," : ",
+               var_model_to_string(x$parameters),sep='')
   cat(str,"\n")
   invisible(x)
 }

@@ -53,6 +53,11 @@ prefix_ln <- function(str) {
   paste('ln',str,sep="")
 }
 
+unprefix_ln <- function(str) {
+  sub("^ln",'',str)
+}
+
+
 get_outliers_column <- function(cname, iteration) {
   target_column <- paste(cname,'_',iteration,sep='')
   if (!column_exists(target_column)) {
@@ -70,7 +75,7 @@ get_outliers_column <- function(cname, iteration) {
       # remove outliers beyond 2 std
       std_factor <- 2
     }
-    cat("removing outliers outside of ",std_factor,
+    cat("Removing outliers outside of ",std_factor,
         "x std. min: ",mu-std_factor*std,", max: ",
         mu+std_factor*std,"\n",sep='')
     av_state$data[[av_state$subset]][[target_column]] <<- 

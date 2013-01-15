@@ -1,9 +1,11 @@
 # evaluate_model
 
 evaluate_model <- function(model) {
+  # for debugging
+  av_state$current_model <<- model
+  
   # should return a list with model_valid, and varest
   res <- list(model_valid=TRUE,varest=NULL)
-  
   dta <- get_data_columns(model)
   # this returns a list with fields: endogenous, exogenous
   
@@ -13,18 +15,14 @@ evaluate_model <- function(model) {
   # if model does not specify a lag, then this model is invalid,
   # the possibly optimal var orders should be determined (varsoc in STATA),
   # and those models should run again.
-  if (is.null(model$lag)) {
+  if (is.null(model$lag) || model$lag == -1) {
     res$model_valid <- FALSE
     lags <- determine_var_order(endodta,exogen=exodta,lag.max=av_state$lag_max)
     # lags is now a list of possibly optimal VAR orders (integers)
-    cat("Creating",length(lags),"VAR model(s) with lags:",lags,"\n\n")
+    cat("> Queueing",length(lags),"VAR model(s) with lags:",lags,"\n\n")
     for (lag in lags) {
       new_model <- create_new_model(model,lag=lag)
       av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
-      
-      # test
-      #new_modele <- create_new_model(new_model,apply_log_transform=TRUE)
-      #av_state$model_queue <<- add_to_queue(av_state$model_queue,new_modele)
     }
   } else {
     cat("\n",paste(rep('-',times=20),collapse=''),"\n",sep='')
@@ -56,7 +54,7 @@ evaluate_model <- function(model) {
           # squares of residuals significant: heteroskedasticity: apply log transform
           if (!apply_log_transform(model)) {
             cat("\n> Squares of residuals significant: heteroskedasticity: queueing model with log transform.\n")
-            new_model <- create_new_model(model,apply_log_transform=TRUE)
+            new_model <- create_new_model(model,apply_log_transform=TRUE,lag=-1)
             av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
           }
         } else if (!test$is_squared && !siflag) {
@@ -68,7 +66,51 @@ evaluate_model <- function(model) {
     }
     
     # Jarque-Bera, Skewness, Kurtosis tests
+    vns <- varnorm(res$varest)
+    if (!is.null(vns)) {
+      res$model_valid <- FALSE
+      cat('\n> JB test failed. Queueing model(s) with more strict outlier removal\n')
+      # vns is a powerset of vn, minus the empty set
+      for (vn in vns) {
+        new_exogvars <- NULL
+        old_exogvars <- NULL
+        if (!is.null(model$exogenous_variables)) {
+          old_exogvars <- model$exogenous_variables
+          new_exogvars <- old_exogvars
+          for (i in 1:nr_rows(old_exogvars)) {
+            exovar <- old_exogvars[i,]
+            if (exovar$variable %in% vn) {
+              new_exogvars[i,]$iteration <- min(exovar$iteration +1,
+                                                av_state$exogenous_max_iterations)
+            }
+          }
+          for (name in vn) {
+            if (!(name %in% old_exogvars$variable)) {
+              new_exogvars <- rbind(new_exogvars,rep(NA,times=dim(new_exogvars)[[2]]))
+              new_exogvars[dim(new_exogvars)[[1]],][['variable']] <- name
+              new_exogvars[dim(new_exogvars)[[1]],][['iteration']] <- 1
+            }
+          }
+        } else {
+          new_exogvars <- data.frame(variable=vn,
+                                     iteration=rep(1,times=length(vn)),
+                                     stringsAsFactors=FALSE)
+        }
+        if (is.null(old_exogvars) || 
+              dim(new_exogvars) != dim(old_exogvars) || 
+              new_exogvars != old_exogvars) {
+          new_model <- create_new_model(model,exogenous_variables=new_exogvars,
+                                        lag=-1)
+          av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
+        }
+      }
+    }
     
+    # if all tests pass, print some info about this model
+    if (res$model_valid) {
+      cat('\n> Model valid. Printing estat ic (low values = better models):\n')
+      print(estat_ic(res$varest))
+    }
   }
   res
 }

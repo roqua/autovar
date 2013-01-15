@@ -6,6 +6,13 @@ model_score <- function(varest) {
   es$AIC+es$BIC
 }
 
+printed_model_score <- function(varest) {
+  # low values == better models
+  es <- estat_ic(varest)
+  paste("(AIC: ",round(es$AIC,digits=3),
+        ", BIC: ",round(es$BIC,digits=3),")",sep='')
+}
+
 estat_ic <- function(varest) {
   varsum <- summary(varest)
   nobs <- varsum$obs
