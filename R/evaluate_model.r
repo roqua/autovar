@@ -108,9 +108,12 @@ evaluate_model <- function(model) {
     
     # if all tests pass, print some info about this model
     if (res$model_valid) {
-      cat('\n> Model valid. Printing estat ic (low values = better models):\n')
+      cat('\n> End of tests. Model valid.\n Printing estat ic (low values = better models):\n')
       print(estat_ic(res$varest))
+    } else {
+      cat("\n> End of tests. Model invalid.\n")
     }
+    cat(paste(rep('-',times=20),collapse=''),"\n\n",sep='')
   }
   res
 }
