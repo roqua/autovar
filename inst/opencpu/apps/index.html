@@ -36,7 +36,7 @@
       position: relative;
       right: 0px;
     }
-    #loadexample {
+    .loadexample {
       float: right;
       position: relative;
       right: 0px;
@@ -231,7 +231,7 @@ hljs.initHighlightingOnLoad();
 <form action="http://88.198.205.22/R/pub/base/identity/ascii" target="outputframe" method="POST" id="knitForm">
 <p>Select .sav or .dta file containing the data set:<br/>
 <input class="input-file realinputvalue" type="file" name="!copy:myfilename" /></p>
-<p>Enter R code:<button type="button" class="btn" id="loadexample"><i class="icon-list-alt"></i> Load Example Script</button></p>
+<p>Enter R code:<button type="button" class="loadexample" id="loadexample2"><i class="icon-list-alt"></i> Example Script 2</button><button type="button" class="loadexample" id="loadexample1"><i class="icon-list-alt"></i> Example Script 1</button></p>
 <textarea name="x" id="x"></textarea>
 <p><a class="btn btn-primary" id="knit"><i class="icon-circle-arrow-right icon-white"></i> Run</a>
 <a class="btn" id="knitdl"><i class="icon-download"></i> Download Results</a>
@@ -264,9 +264,13 @@ function resizeBoxes() {
 }
 $(document).ready(function() {
 $('textarea[name="x"]').attr('value', 'print_state()\n');
-$('#loadexample').click(function() {
+$('#loadexample1').click(function() {
   $('#knitForm').find('textarea[name="x"]').val("group_by('id')\norder_by('tijdstip')\nselect_range('2',begin=29)\n\nbewegen_columns <- c('minuten_sport','minuten_woonwerk','minuten_werk_licht',\n                    'minuten_zwaar_werk','minuten_licht_huishouden',\n                    'minuten_zwaarhuishouden','minuten_vrijetijd')\nadd_derived_column('SomBewegen',bewegen_columns,operation='SUM')\nadd_derived_column('SomBewegUur','SomBewegen',operation='MINUTES_TO_HOURS')\n\nadd_derived_column('SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4','PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),operation='SUM')\n\nphq_soma_columns = c('PHQ3','PHQ4','PHQ5','PHQ8')\nphq_cog_columns = c('PHQ1','PHQ2','PHQ6','PHQ7','PHQ9')\nadd_derived_column('PHQ_Somatisch',phq_soma_columns,operation='SUM')\nadd_derived_column('PHQ_Cognitief',phq_cog_columns,operation='SUM')\n\nadd_derived_column('lnSomPHQ','SomPHQ',operation='LN')\nadd_derived_column('lnSomBewegUur','SomBewegUur',operation='LN')\n\nprint_state()\n");
 });
+$('#loadexample2').click(function() {
+  $('#knitForm').find('textarea[name="x"]').val("group_by('id')\norder_by('Day')\nadd_derived_column('Activity_hours','Activity', operation='MINUTES_TO_HOURS')\nvar_main(c('Activity_hours','Depression'))\n");
+});
+
 $('#knit').click(function() {
   $('#knit,#knitdl').addClass('disabled');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
