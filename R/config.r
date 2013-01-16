@@ -36,6 +36,28 @@ print.av_state <- function(x,...) {
   invisible(x)
 }
 
+exogvars_to_string <- function(x,model) {
+  str <- "<"
+  for (i in 1:nr_rows(x)) {
+    exovar <- model$exogenous_variables[i,]
+    if (i != 1) {
+      str <- paste(str,"; ",sep='')
+    }
+    str <- paste(str,
+                 std_factor_for_iteration(exovar$iteration),
+                 "x std of ",
+                 prefix_ln_cond(exovar$variable,model),sep='')
+    outliers <- get_outliers_as_string(exovar$variable,exovar$iteration,model)
+    if (outliers == '') {
+      str <- paste(str,' (empty)',sep='')
+    } else {
+      str <- paste(str,' (obs.: ',outliers,')',sep='')
+    }
+  }
+  str <- paste(str,">",sep='')
+  str
+}
+
 var_model_to_string <- function(x) {
   str <- "\n  "
   nn <- names(x)
@@ -50,15 +72,7 @@ var_model_to_string <- function(x) {
       str <- paste(str,"\n  ",sep='')
     }
     if (class(x[[i]]) == "data.frame") {
-      strr <- "<"
-      for (name in names(x[[i]])) {
-        if (strr != '<') {
-          strr <- paste(strr,"| ",sep='')
-        }
-        strr <- paste(strr,name,": ",paste(x[[i]][[name]],collapse=', '),sep='')
-      }
-      strr <- paste(strr,">",sep='')
-      str <- paste(str,nn[i],": ",strr,sep='')
+      str <- paste(str,nn[i],": ",exogvars_to_string(x[[i]],x),sep='')
     } else {
       str <- paste(str,nn[i],": ",x[[i]],sep='')
     }

@@ -23,9 +23,7 @@ get_data_columns <- function(model) {
     exovrs <- NULL
     for (i in 1:nr_rows(model$exogenous_variables)) {
       exovar <- model$exogenous_variables[i,]
-      cname <- ifelse(apply_log_transform(model),
-                      prefix_ln(exovar$variable),
-                      exovar$variable)
+      cname <- prefix_ln_cond(exovar$variable,model)
       exovr <- get_outliers_column(cname,iteration=exovar$iteration)
       exovrs <- c(exovrs,exovr)
     }
@@ -49,6 +47,14 @@ column_exists <- function(name) {
   any(name == names(av_state$data[[av_state$subset]]))
 }
 
+prefix_ln_cond <- function(str,model) {
+  if (apply_log_transform(model)) {
+    prefix_ln(str)
+  } else {
+    str
+  }
+}
+
 prefix_ln <- function(str) {
   paste('ln',str,sep="")
 }
@@ -64,22 +70,34 @@ get_outliers_column <- function(cname, iteration) {
     dta <- av_state$data[[av_state$subset]][[cname]]
     std <- sd(dta)
     mu <- mean(dta)
-    std_factor <- NULL
-    if (iteration == 1) {
-      # remove outliers beyond 3xstd
-      std_factor <- 3
-    } else if (iteration == 2) {
-      # remove outliers beyond 2.5x std
-      std_factor <- 2.5
-    } else {
-      # remove outliers beyond 2 std
-      std_factor <- 2
-    }
+    std_factor <- std_factor_for_iteration(iteration)
     cat("Removing outliers outside of ",std_factor,
         "x std. min: ",mu-std_factor*std,", max: ",
         mu+std_factor*std,"\n",sep='')
     av_state$data[[av_state$subset]][[target_column]] <<- 
-      ((dta <= mu-std_factor*std) | (dta > mu+std_factor*std))+0
+      ((dta < mu-std_factor*std) | (dta > mu+std_factor*std))+0
   }
   target_column
+}
+
+std_factor_for_iteration <- function(iteration) {
+  std_factor <- NULL
+  if (iteration == 1) {
+    # remove outliers beyond 3xstd
+    std_factor <- 3
+  } else if (iteration == 2) {
+    # remove outliers beyond 2.5x std
+    std_factor <- 2.5
+  } else {
+    # remove outliers beyond 2 std
+    std_factor <- 2
+  }
+  std_factor
+}
+
+get_outliers_as_string <- function(name,iteration,model) {
+  cname <- prefix_ln_cond(name,model)
+  column_name <- get_outliers_column(cname,iteration=iteration)
+  column <- av_state$data[[av_state$subset]][[column_name]]
+  paste(which(column == 1),collapse=', ')
 }

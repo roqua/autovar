@@ -14,14 +14,8 @@ model_is_stable <- function(varest) {
 }
 
 varstable_graph <- function(varest) {
-  nvars <- varest$K
-  mat <- matrix(nrow=nvars,ncol=nvars)
-  i <- 0
-  for (lm in varest$varresult) {
-    i <- i+1
-    mat[,i] <- lm$coefficients[1:nvars]
-  }
-  eigvals <- eigen(mat,only.values=TRUE)$values
-  ret <- data.frame(Eigenvalue=eigvals,Modulus=Mod(eigvals))
+  eigvals <- roots(varest,modulus=FALSE)
+  mod_eigvals <- roots(varest,modulus=TRUE)
+  ret <- data.frame(Eigenvalue=eigvals,Modulus=mod_eigvals)
   ret
 }

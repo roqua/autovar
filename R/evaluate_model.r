@@ -134,3 +134,9 @@ run_var <- function(data,lag,...) {
   m <- VAR(data,p = lag,...)
   m
 }
+
+print_tests <- function(varest) {
+ model_is_stable(varest)
+ wntestq(varest)
+ varnorm(varest)
+}
