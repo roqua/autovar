@@ -50,7 +50,7 @@ var_main <- function(vars,lag_max=14,significance=0.05,exogenous_max_iterations=
   }
   cat("\nDone. Processed",model_cnt,"models, of which",
       length(av_state$accepted_models),
-      "were accepted:\n")
+      "were valid:\n")
   av_state$accepted_models <<- sort_models(av_state$accepted_models)
   print(av_state$accepted_models)
 }
