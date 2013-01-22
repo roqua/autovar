@@ -33,7 +33,7 @@ var_main <- function(vars,lag_max=14,significance=0.05,exogenous_max_iterations=
   model_cnt <- 0
   while (TRUE) {
     if (i > length(av_state$model_queue)) { break }
-    # do stuff
+    # pop a model and process it
     model <- av_state$model_queue[[i]]
     model_evaluation <- evaluate_model(model)
     if (!is.null(model_evaluation$varest)) {

@@ -11,6 +11,7 @@ evaluate_model <- function(model) {
   
   endodta <- dta$endogenous
   exodta <- dta$exogenous
+  res$model_valid <- dta$model_valid
   
   # if model does not specify a lag, then this model is invalid,
   # the possibly optimal var orders should be determined (varsoc in STATA),
@@ -32,7 +33,7 @@ evaluate_model <- function(model) {
     # get the var estimate for this model. This is the 'var' command in STATA.
     res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
     
-    # run all the tests and queue potential models...
+    # run all the tests and queue potential models:
     
     # stability test
     if (!model_is_stable(res$varest)) {
