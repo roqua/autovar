@@ -26,7 +26,7 @@ sample_kurtosis <- function(x) {
   dnom <- ((1/n)*sumquads)^2
   sk <- (num/dnom)
   chii <- ((sk-3)^2)*n/24
-  data.frame(Kurtosis=sk,chi2=chii,df=1,P=pchisq(chii,1,lower.tail=(chii<=1)))
+  data.frame(Kurtosis=sk,chi2=chii,df=1,P=chi_squared_prob(chii,1))
 }
 
 sample_skewness <- function(x) {
@@ -42,7 +42,7 @@ sample_skewness <- function(x) {
   dnom <- ((1/n)*sumquads)^(3/2)
   sk <- (num/dnom)
   chii <- (sk^2)*n/6
-  data.frame(Skewness=sk,chi2=chii,df=1,P=pchisq(chii,1,lower.tail=(chii<=1)))
+  data.frame(Skewness=sk,chi2=chii,df=1,P=chi_squared_prob(chii,1))
 }
 
 jb_test <- function(x) {
@@ -51,7 +51,7 @@ jb_test <- function(x) {
   k <- sample_kurtosis(x)
   jb <- (n/6)*(s$Skewness^2 + (1/4)*(k$Kurtosis-3)^2)
   df <- s$df+k$df
-  data.frame(chi2=jb,df=df,P=pchisq(jb,df,lower.tail=(jb<=df)))
+  data.frame(chi2=jb,df=df,P=chi_squared_prob(jb,df))
 }
 
 jb <- function(varest) {
@@ -62,7 +62,6 @@ jb <- function(varest) {
   jbtab <- NULL
   for (i in 1:(dim(resids)[2])) {
     x <- resids[,i]
-    name <- names[[i]]
     if (i == 1) {
       jbtab <- jb_test(x)
     } else {
@@ -74,7 +73,7 @@ jb <- function(varest) {
     df <- sum(jbtab$df)
     jbtab <- rbind(jbtab,data.frame(chi2=chi2,
                                 df=df,
-                                P=pchisq(chi2,df,lower.tail=(chi2<=df))))
+                                P=chi_squared_prob(chi2,df)))
     names <- c(names,'ALL')
     dimnames(jbtab)[[1]] <- names
   }
@@ -84,7 +83,6 @@ jb <- function(varest) {
   names <- dimnames(resids)[[2]]
   for (i in 1:(dim(resids)[2])) {
     x <- resids[,i]
-    name <- names[[i]]
     if (i == 1) {
       sktab <- sample_skewness(x)
     } else {
@@ -98,7 +96,7 @@ jb <- function(varest) {
                    data.frame(Skewness=NA,
                               chi2=chi2,
                                 df=df,
-                                P=pchisq(chi2,df,lower.tail=(chi2<=df))))
+                                P=chi_squared_prob(chi2,df)))
     names <- c(names,'ALL')
     dimnames(sktab)[[1]] <- names
   }
@@ -108,7 +106,6 @@ jb <- function(varest) {
   names <- dimnames(resids)[[2]]
   for (i in 1:(dim(resids)[2])) {
     x <- resids[,i]
-    name <- names[[i]]
     if (i == 1) {
       kttab <- sample_kurtosis(x)
     } else {
@@ -122,7 +119,7 @@ jb <- function(varest) {
                    data.frame(Kurtosis=NA,
                               chi2=chi2,
                               df=df,
-                              P=pchisq(chi2,df,lower.tail=(chi2<=df))))
+                              P=chi_squared_prob(chi2,df)))
     names <- c(names,'ALL')
     dimnames(kttab)[[1]] <- names
   }

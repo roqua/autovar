@@ -29,6 +29,7 @@ var_main <- function(vars,lag_max=14,significance=0.05,exogenous_max_iterations=
   class(default_model) <- 'var_model'
   av_state$model_queue <<- list(default_model)
   av_state$accepted_models <<- list()
+  av_state$rejected_models <<- list()
   i <- 1
   model_cnt <- 0
   while (TRUE) {
@@ -45,6 +46,12 @@ var_main <- function(vars,lag_max=14,significance=0.05,exogenous_max_iterations=
       class(accepted_model) <- 'var_modelres'
       av_state$accepted_models <<- add_to_queue(av_state$accepted_models,
                                                 accepted_model)
+    } else if (!is.null(model_evaluation$varest)) {
+      # model was rejected
+      rejected_model <- list(parameters=model,varest=model_evaluation$varest)
+      class(rejected_model) <- 'var_modelres'
+      av_state$rejected_models <<- add_to_queue(av_state$rejected_models,
+                                                rejected_model)
     }
     i <- i+1
   }

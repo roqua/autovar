@@ -85,7 +85,7 @@ print.var_model <- function(x,...) {
 }
 
 print.var_modelres <- function(x,...) {
-  str <- paste(printed_model_score(x$varest)," : ",
+  str <- paste(printed_model_score(x$varest)," : ",vargranger_line(x$varest),
                var_model_to_string(x$parameters),sep='')
   cat(str,"\n")
   invisible(x)

@@ -76,7 +76,8 @@ portmanteau_test <- function(varest) {
 
 chi_squared_prob <- function(q,h) {
   # measurement is significant either when very high or very low
-  pchisq(q,h,lower.tail=(q <= h))
+  # pchisq(q,h,lower.tail=(q <= h))
+  pchisq(q,h,lower.tail=FALSE)
 }
 portmanteau_test_statistic <- function(data,n,h) {
   # first we must center the data around zero

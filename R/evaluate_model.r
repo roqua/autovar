@@ -140,6 +140,7 @@ print_tests <- function(varest) {
  model_is_stable(varest)
  wntestq(varest)
  varnorm(varest)
+ vargranger(varest)
  cat("\n")
  print(estat_ic(varest))
 }
