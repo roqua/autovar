@@ -16,7 +16,13 @@ Currently, one data set can be operated on at at time. The data set, along with 
     
 **In the web application, this function does not need to be called explicitly. It is always prepended to the code.**
 
+This function prints the columns of the loaded data set. The abbreviation `(scl)` is used to denote scale (numeric) columns, and `(nom)` is used to denote nominal (factor) columns.
+
+#### Arguments
+
 The `file_type` argument is optional. When not specified, it is determined from the `filename`, i.e., `.dta` extensions are treated as STATA files and `.sav` extensions are treated as SPSS files.
+
+#### Results
 
 This function creates the following variables in the `av_state` list:
 
@@ -25,15 +31,14 @@ This function creates the following variables in the `av_state` list:
 * `raw_data` - The raw file data as it is read, before any added columns, imputations, sorting, or splitting.
 * `data` - The current data set. Initially, `data` is a list containing a single item, such that `raw_data` is identical to `data[['multiple']]`.
 
-Example: `load_file("../data/input/RuwedataAngela.sav")`
+#### Syntax
 
-This function prints the columns of the loaded data set. The abbreviation `(scl)` is used to denote scale (numeric) columns, and `(nom)` is used to denote nominal (factor) columns.
+Example: `load_file("../data/input/RuwedataAngela.sav")`
 
 
 ### group_by
 
     group_by(id_field)
-
 
 The `group_by` function splits up the initial data set into multiple sets based on their value for `id_field`.
 
