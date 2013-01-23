@@ -109,8 +109,48 @@ Vector Autoregression
 ---------------------
 
 
-### set_var_variables
+### var_main
 
+    var_main(vars,lag_max=14,significance=0.05,exogenous_max_iterations=3,subset=1,log_level=av_state$log_level)
+
+The `var_main` function generates and tests possible VAR models for the specified variables. The only required argument is `vars`, which should be a vector of variables.
+
+The `lag_max` argument limits the highest possible number of lags that will be used in a model. This number sets the maximum limit in the search for optimal lags.
+
+The `significance` argument is the maximum P-value for which results are seen as significant. This argument is used in Granger causality tests, Portmanteau tests, and Jarque-Bera tests.
+
+The `exogenous_max_iterations` argument determines how many times we should try to exclude additional outliers for a variable. The `exogenous_max_iterations` argument should be a number between 1 and 3:
+
+* `1` - When Jarque-Bera tests fail, having `exogenous_max_iterations = 1` will only try with removing 3x std. outliers for variables using exogenous variables.
+* `2` - When `exogenous_max_iterations = 2`, the program will also try removing 2.5x std. outliers if JB tests still fail.
+* `3` - When `exogenous_max_iterations = 3`, the program will also try removing 2x std. outliers if JB tests still fail.
+
+The `subset` argument specifies which data subset the VAR analysis should run on. The VAR analysis only runs on one data subset at a time. If not specified, the first subset is used (corresponding to `av_state$data[[1]]`).
+
+The `log_level` argument sets the minimum level of output that should be shown. It should be a number between 0 and 3. `0` = debug, `1` = test detail, `2` = test outcomes, `3` = normal. The default is set to the value of `av_state$log_level` or if that doesn't exist, to `0`. If the `log_level` parameter was specified, the original value of `av_state$log_level` will be restored at the end of `var_main`.
+
+The `var_main` function sets the following variables in the `av_state` list:
+
+* `significance` - the `significance` used.
+* `lag_max` - the `lag_max` used.
+* `exogenous_max_iterations` - the `exogenous_max_iterations` used.
+* `vars` - the `vars` used.
+* `subset` - the `subset` used.
+* `log_level` - the `log_level` used. This setting is restored at the end of `var_main` to its original value.
+* `model_queue` - the list of models specified by only parameters, used as the main queue in `var_main`. This is a a list of objects with class `var_model`.
+* `accepted_models` - the sorted list of accepted models and their var results. This is a a list of objects with class `var_modelres`. Each accepted model has properties `parameters` to retrieve the model parameters, and `varest` to retrieve the var result.
+* `rejected_models` - the list of rejected models and their var results (excluding those from `model_queue` that did not have a specified lag). This is a a list of objects with class `var_modelres`. Each accepted model has properties `parameters` to retrieve the model parameters, and `varest` to retrieve the var result.
+
+Example: `var_main(c('Activity_hours','Depression'),log_level=2)`
+
+
+### print_tests
+
+    print_tests(varest)
+
+The `print_tests` function prints the output of the tests for a var model. Note that its output can be altered by the value of `av_state$log_level`. The tests it shows are the Eingevalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the Granger causality Wald tests, and estat ic.
+
+Example: `print_tests(av_state$accepted_models[[1]]$varest)` or `print_tests(av_state$rejected_models[[1]]$varest)`
 
 
 Outputting data
