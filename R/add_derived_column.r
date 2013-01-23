@@ -29,7 +29,7 @@ add_derived_column_sum <- function(columns,data_frame,subset) {
         mywarn <- paste("column",column,"is not numeric: converting...")
         if (is.null(av_state$last_warning) || av_state$last_warning != mywarn) {
           av_state$last_warning <<- mywarn
-          cat(mywarn," (for subset ",subset,")\n",sep="")
+          scat(2,mywarn," (for subset ",subset,")\n",sep="")
         }
       }
       data_column <- as.numeric(data_column) -1
@@ -56,7 +56,7 @@ add_derived_column_ln <- function(column,data_frame,subset) {
   # scale minimum value to 
   inc <- 1-min(data_column,na.rm=TRUE)
   if (inc > 0) {
-    cat("add_derived_column_ln: increasing all values of column",
+    scat(2,"add_derived_column_ln: increasing all values of column",
         column,"by",inc,"for subset",subset,"\n")
     data_column <- data_column+inc
   }

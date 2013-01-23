@@ -10,7 +10,7 @@ group_by <- function(id_field) {
   av_state$group_by <<- id_field
   av_state$data <<- split_up(getElement(av_state$data,names(av_state$data)[1]),id_field)
   
-  cat("group_by: identified ",length(av_state$data),
+  scat(2,"group_by: identified ",length(av_state$data),
       " groups based on distinct values for attribute '",id_field,"'\n",sep="")
 }
 

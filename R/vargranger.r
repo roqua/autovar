@@ -8,14 +8,14 @@ vargranger <- function(varest) {
   if (dim(varest$y)[[2]] > 2) {
     stop("the current vargranger implementation only works for two variables")
   }
-  cat("\nGranger causality Wald tests\n")
+  scat(2,"\nGranger causality Wald tests\n")
   res <- vargranger_aux(varest)
-  print(res)
+  sprint(1,res)
   tos <- vargranger_to_string(res)
   if (tos != '') {
-    cat('Vargranger causes: ',tos,'\n',sep='')
+    scat(2,'Vargranger causes: ',tos,'\n',sep='')
   } else {
-    cat('No significant Granger causes detected.\n')
+    scat(2,'No significant Granger causes detected.\n')
   }
   tos
 }

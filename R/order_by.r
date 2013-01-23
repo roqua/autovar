@@ -28,7 +28,7 @@ order_by <- function(id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISS
     av_state$data[[i]] <<- order_method(id_field,data_frame)
     missing_after <- calc_missing(av_state$data[[i]])
     if (missing_before != missing_after) {
-      cat(paste("order_by: missing values went from ",
+      scat(2,paste("order_by: missing values went from ",
                 missing_before," to ",missing_after," for subset ",i,
                 " (",used_impute_method,")\n", sep=""))
     }
@@ -100,7 +100,7 @@ order_by_impute_one_missing <- function(id_field,data_frame) {
     }
     imputed_val <- missing_in_range(getElement(data_frame,id_field))
     if (!is.null(imputed_val)) {
-      cat("order_by_impute_one_missing imputed",imputed_val,
+      scat(2,"order_by_impute_one_missing imputed",imputed_val,
           "for one row of",frame_identifier(data_frame),"\n")
       data_frame[is.na(getElement(data_frame,id_field)),][[id_field]] <- imputed_val
     }
@@ -158,7 +158,7 @@ order_by_impute_add_missing <- function(id_field,data_frame) {
   }
   for(i in mmin:mmax) {
     if (!any(sorting_column == i)) {
-      cat(paste("order_by: adding a row with",id_field,"=",i,"\n"))
+      scat(2,paste("order_by: adding a row with",id_field,"=",i,"\n"))
       data_frame <- rbind(data_frame,rep(NA,times=dim(data_frame)[[2]]))
       data_frame[dim(data_frame)[[1]],][[id_field]] <- i
       if (!is.null(av_state$group_by)) {

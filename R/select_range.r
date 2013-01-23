@@ -33,7 +33,7 @@ select_range <- function(subset_id='multiple',column,begin,end) {
   av_state$data[[subset_id]] <<- data_frame[which(condition),]
   missing_after <- calc_missing(av_state$data[[subset_id]])
   if (missing_before != missing_after) {
-    cat(paste("select_range: missing values went from",missing_before,"to",missing_after,"for subset",subset_id,"\n"))
+    scat(2,paste("select_range: missing values went from",missing_before,"to",missing_after,"for subset",subset_id,"\n"))
   }
 }
 

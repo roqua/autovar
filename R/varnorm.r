@@ -130,9 +130,9 @@ jb <- function(varest) {
 varnorm <- function(varest) {
   r <- jb(varest)
   ret_fail_columns <- NULL
-  
-  cat("\nJarque-Bera test\n")
-  print(r$jb)
+  scat(2,"\nJarque-Bera, Skewness, and Kurtosis tests\n")
+  scat(1,"  Jarque-Bera test:\n")
+  sprint(1,r$jb)
   names <- dimnames(r$jb)[[1]]
   fails <- NULL
   for (i in 1:(dim(r$jb)[1])) {
@@ -150,11 +150,11 @@ varnorm <- function(varest) {
     }
   }
   if (!is.null(fails)) {
-    cat("  Failed for: ",paste(fails,collapse=', '),'\n',sep='')
+    scat(1,"  Failed for: ",paste(fails,collapse=', '),'\n',sep='')
   }
   
-  cat("\nSkewness test\n")
-  print(r$sk)
+  scat(1,"  Skewness test:\n")
+  sprint(1,r$sk)
   names <- dimnames(r$sk)[[1]]
   fails <- NULL
   for (i in 1:(dim(r$sk)[1])) {
@@ -172,11 +172,11 @@ varnorm <- function(varest) {
     }
   }
   if (!is.null(fails)) {
-    cat("  Failed for: ",paste(fails,collapse=', '),'\n',sep='')
+    scat(1,"  Failed for: ",paste(fails,collapse=', '),'\n',sep='')
   }
   
-  cat("\nKurtosis test\n")
-  print(r$kt)
+  scat(1,"  Kurtosis test:\n")
+  sprint(1,r$kt)
   names <- dimnames(r$kt)[[1]]
   fails <- NULL
   for (i in 1:(dim(r$kt)[1])) {
@@ -194,13 +194,13 @@ varnorm <- function(varest) {
     }
   }
   if (!is.null(fails)) {
-    cat("  Failed for: ",paste(fails,collapse=', '),'\n',sep='')
+    scat(1,"  Failed for: ",paste(fails,collapse=', '),'\n',sep='')
   }
   
   if (is.null(ret_fail_columns)) {
-    cat("PASS: Unable to reject null hypothesis that residuals are normally distributed.\n")
+    scat(2,"PASS: Unable to reject null hypothesis that residuals are normally distributed.\n")
   } else {
-    cat("FAIL: Residuals are significantly not normally distributed.\n")
+    scat(2,"FAIL: Residuals are significantly not normally distributed.\n")
   }
   if (!is.null(ret_fail_columns)) {
     ret_fail_columns <- powerset(ret_fail_columns)

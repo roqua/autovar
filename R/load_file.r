@@ -27,8 +27,8 @@ load_file <- function(filename,file_type = c('SPSS','STATA')) {
     SPSS = load_file_spss(av_state$file_name),
     STATA = load_file_stata(av_state$file_name)
   )
-  cat("load_file loaded",av_state$file_type,"file with",length(av_state$data[[1]]),"columns:\n")
-  print(column_names_output())
+  scat(2,"load_file loaded",av_state$file_type,"file with",length(av_state$data[[1]]),"columns:\n")
+  sprint(2,column_names_output())
 }
 
 column_names_output <- function() {
@@ -59,7 +59,6 @@ determine_file_type <- function(filename) {
 }
 
 load_file_spss <- function(filename) {
-  #cat("load_file_spss",filename,"\n")
   av_state$raw_data <<- read_spss(filename, to.data.frame=TRUE)
   av_state$data <<- list(multiple=av_state$raw_data)
 }

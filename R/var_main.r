@@ -2,19 +2,25 @@
 
 # runs the model queue
 # sets global parameters
-var_main <- function(vars,lag_max=14,significance=0.05,exogenous_max_iterations=3,subset=1) {
+var_main <- function(vars,lag_max=14,significance=0.05,
+                     exogenous_max_iterations=3,subset=1,log_level=av_state$log_level) {
   # lag_max is the global maximum lags used
   # significance is the limit
   # exogenous_max_iterations is the maximum number individual outliers that can be removed
   # subset is the chosen subset of data
-  cat("\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
-  cat("Starting VAR with variables: ",vars,", for subset: ",subset,"\n",sep='')
+  # log_level is the minimum log level that will be printed
+  # (0 = debug, 1 = test detail, 2= test outcomes, 3 = normal)
+  real_log_level <- av_state$log_level
+  scat(3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
+  scat(3,"Starting VAR with variables: ",paste(vars,collapse=', '),
+       ", for subset: ",subset,"\n",sep='')
   
   av_state$significance <<- significance  
   av_state$lag_max <<- lag_max
   av_state$exogenous_max_iterations <<- exogenous_max_iterations
   av_state$vars <<- vars
   av_state$subset <<- subset
+  av_state$log_level <<- log_level
   
   # check if subset exists
   if (is.null(av_state$data[[av_state$subset]])) {
@@ -36,7 +42,7 @@ var_main <- function(vars,lag_max=14,significance=0.05,exogenous_max_iterations=
     if (i > length(av_state$model_queue)) { break }
     # pop a model and process it
     model <- av_state$model_queue[[i]]
-    model_evaluation <- evaluate_model(model)
+    model_evaluation <- evaluate_model(model,i)
     if (!is.null(model_evaluation$varest)) {
       model_cnt <- model_cnt +1
     }
@@ -55,9 +61,11 @@ var_main <- function(vars,lag_max=14,significance=0.05,exogenous_max_iterations=
     }
     i <- i+1
   }
-  cat("\nDone. Processed",model_cnt,"models, of which",
+  scat(3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
+  scat(3,"\nDone. Processed",model_cnt,"models, of which",
       length(av_state$accepted_models),
       "were valid:\n")
   av_state$accepted_models <<- sort_models(av_state$accepted_models)
-  print(av_state$accepted_models)
+  sprint(3,av_state$accepted_models)
+  av_state$log_level <<- real_log_level
 }

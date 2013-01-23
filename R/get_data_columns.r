@@ -75,7 +75,7 @@ get_outliers_column <- function(cname, iteration) {
     std <- sd(dta)
     mu <- mean(dta)
     std_factor <- std_factor_for_iteration(iteration)
-    cat("Removing outliers outside of ",std_factor,
+    scat(1,"Removing outliers outside of ",std_factor,
         "x std. min: ",mu-std_factor*std,", max: ",
         mu+std_factor*std,"\n",sep='')
     av_state$data[[av_state$subset]][[target_column]] <<- 
@@ -92,11 +92,11 @@ is_outliers_column_valid <- function(cname,iteration) {
                           av_state$data[[av_state$subset]][[paste(cname,'_',iteration-1,sep='')]]))) {
     std_factor <- std_factor_for_iteration(iteration)
     if (iteration == 1) {
-      cat("\n> Removing ",std_factor,"x std. outliers for ",
-          target_column," has no effect. Marking model as invalid.\n",sep='')
+      scat(2,"\n> Removing ",std_factor,"x std. outliers for ",
+          cname," has no effect. Marking model as invalid.\n",sep='')
     } else {
-      cat("\n> Removing ",std_factor,"x std. outliers for ",
-          target_column," has the same effect as removing ",
+      scat(2,"\n> Removing ",std_factor,"x std. outliers for ",
+          cname," has the same effect as removing ",
           std_factor_for_iteration(iteration-1),
           "x std. outliers. Marking model as invalid.\n",sep='')
     }
@@ -122,7 +122,11 @@ std_factor_for_iteration <- function(iteration) {
 
 get_outliers_as_string <- function(name,iteration,model) {
   cname <- prefix_ln_cond(name,model)
-  column_name <- get_outliers_column(cname,iteration=iteration)
-  column <- av_state$data[[av_state$subset]][[column_name]]
-  paste(which(column == 1),collapse=', ')
+  if (is.null(av_state$data[[av_state$subset]][[cname]])) {
+    '???'
+  } else {
+    column_name <- get_outliers_column(cname,iteration=iteration)
+    column <- av_state$data[[av_state$subset]][[column_name]]
+    paste(which(column == 1),collapse=', ')
+  }
 }

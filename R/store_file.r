@@ -26,7 +26,7 @@ store_file <- function(filename,inline_data,file_type = c('SPSS','STATA')) {
   tarcmd <- paste("tar -cvvf \"",filename,".tar\" ",tarfiles,sep="")
   system(tarcmd,intern=TRUE)
 
-  cat("store_file: created",paste(working_dir,filename,".tar",sep=""),"\n")
+  scat(2,"store_file: created",paste(working_dir,filename,".tar",sep=""),"\n")
 }
 
 store_file_separate <- function(working_dir,filename,file_type) {
