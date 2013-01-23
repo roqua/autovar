@@ -71,7 +71,13 @@ vargranger_to_string <- function(res) {
     if (row$P <= av_state$significance) {
       str <- c(str,paste(unprefix_ln(row$Excluded),
                          ' Granger causes ',
-                         unprefix_ln(row$Equation),sep=''))
+                         unprefix_ln(row$Equation),
+                         ' (',signif(row$P,digits=3),')',sep=''))
+    } else if (row$P <= 2*av_state$significance) {
+      str <- c(str,paste(unprefix_ln(row$Excluded),
+                         ' almost Granger causes ',
+                         unprefix_ln(row$Equation),
+                         ' (',signif(row$P,digits=3),')',sep=''))
     }
   }
   if (!is.null(str)) {
