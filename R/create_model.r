@@ -14,7 +14,8 @@ merge_lists <- function(old, new) {
   #res <- sapply(rnames,
   #              function(i) { ifelse(i %in% nnames,new[[i]],old[[i]]) },
   #              simplify = FALSE)
-  # fix for complex objects (e.g., data frames)
+  # the above implementation does not work for
+  # complex objects (e.g., data frames)
   res <- list()
   nnames <- sort(unique(c(names(old), names(new))))
   for (nname in nnames) {
