@@ -118,7 +118,7 @@ The `add_derived_column` function adds a new column, based on existing columns, 
 The `operation` argument has three possible values:
 
 * `SUM` - The new column is the sum of the columns specified in the `columns` argument. So for this option, the `columns` argument is an array of column names. Values in the summation of columns that are `NA` are treated as if they're zero. Columns that are not numeric are transformed to numeric. For example, `Factor` columns are transformed to numbers starting at 0 for the first factor level.
-* `LN` - The new column is the natural logarithm of the specified column in `columns`. Thus, for this option, the `columns` argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are `NA` are left as `NA` in the new column. Naturally, values in the original column that are `0` are `-Inf` in the new column.
+* `LN` - The new column is the natural logarithm of the specified column in `columns`. Thus, for this option, the `columns` argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are `NA` are left as `NA` in the new column. Note that values are increased if necessary so that the resulting column has no negative values.
 * `MINUTES_TO_HOURS` - The new column is the values of the specified column divided by 60. Thus, for this option, the `columns` argument is simply the name of a single column. This operation does nto work on columns that are not numeric. Values in the original column that are `NA` are left as `NA` in the new column.
 
 #### Syntax
