@@ -2,7 +2,9 @@
 
 # load default values
 .onLoad <- function(libname,pkgname) {
-  reset_state()
+  if (!exists('av_state',where='.GlobalEnv')) {
+    reset_state()
+  }
 }
 
 print.av_state <- function(x,...) {
