@@ -42,6 +42,7 @@
       right: 0px;
       top: -10px;
       margin-bottom: -10px;
+      margin-left: 3px;
     }
     form {
       margin: 0;
@@ -231,7 +232,8 @@ hljs.initHighlightingOnLoad();
 <form action="http://88.198.205.22/R/pub/base/identity/ascii" target="outputframe" method="POST" id="knitForm">
 <p>Select .sav or .dta file containing the data set:<br/>
 <input class="input-file realinputvalue" type="file" name="!copy:myfilename" /></p>
-<p>Enter R code:<button type="button" class="loadexample" id="loadexample2"><i class="icon-list-alt"></i> Example Script 2</button><button type="button" class="loadexample" id="loadexample1"><i class="icon-list-alt"></i> Example Script 1</button></p>
+<p>Enter R code:<button type="button" class="loadexample btn" id="loadexample2"><i class="icon-list-alt"></i> Example Script 2</button>
+<button type="button" class="loadexample btn" id="loadexample1"><i class="icon-list-alt"></i> Example Script 1</button></p>
 <textarea name="x" id="x"></textarea>
 <p><a class="btn btn-primary" id="knit"><i class="icon-circle-arrow-right icon-white"></i> Run</a>
 <a class="btn" id="knitdl"><i class="icon-download"></i> Download Results</a>

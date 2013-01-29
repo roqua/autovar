@@ -10,6 +10,12 @@ var_main <- function(vars,lag_max=14,significance=0.05,
   # subset is the chosen subset of data
   # log_level is the minimum log level that will be printed
   # (0 = debug, 1 = test detail, 2= test outcomes, 3 = normal)
+  if (!(log_level %in% 0:4)) {
+    stop(paste("log_level needs to be in 0:4"))
+  }
+  if (!(exogenous_max_iterations %in% 1:3)) {
+    stop(paste("exogenous_max_iterations needs to be in 1:3"))
+  }
   real_log_level <- av_state$log_level
   scat(3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   scat(3,"Starting VAR with variables: ",paste(vars,collapse=', '),
