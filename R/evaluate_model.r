@@ -26,7 +26,7 @@ evaluate_model <- function(model,index) {
     # lags is now a list of possibly optimal VAR orders (integers)
     scat(2,"\n> Queueing",length(lags),"VAR model(s) with lags:",lags,"\n")
     for (lag in lags) {
-      new_model <- create_new_model(model,lag=lag)
+      new_model <- create_model(model,lag=lag)
       av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
     }
     scat(2,"\n> End of tests. Did not run tests because no lag specified.\n")
@@ -58,7 +58,7 @@ evaluate_model <- function(model,index) {
           # squares of residuals significant: heteroskedasticity: apply log transform
           if (!apply_log_transform(model)) {
             scat(2,"\n> Squares of residuals significant: heteroskedasticity: queueing model with log transform.\n")
-            new_model <- create_new_model(model,apply_log_transform=TRUE,lag=-1)
+            new_model <- create_model(model,apply_log_transform=TRUE,lag=-1)
             av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
           }
         } else if (!test$is_squared && !siflag) {
@@ -103,7 +103,7 @@ evaluate_model <- function(model,index) {
         if (is.null(old_exogvars) || 
               dim(new_exogvars) != dim(old_exogvars) || 
               new_exogvars != old_exogvars) {
-          new_model <- create_new_model(model,exogenous_variables=new_exogvars,
+          new_model <- create_model(model,exogenous_variables=new_exogvars,
                                         lag=-1)
           av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
         }
