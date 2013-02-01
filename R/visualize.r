@@ -170,7 +170,7 @@ visualize_line <- function(column,y,main,acc=FALSE,...) {
     }
   }
   mat <- sort(as.numeric(unique(y)))
-  mlabels <- as.character(mat)
+  mlabels <- as.character(signif(mat,digits=2))
   if (class(yorig) == 'factor' && !acc) {
     mat <- 0:length(levels(yorig))
     mlabels <- c('NA',levels(yorig))
