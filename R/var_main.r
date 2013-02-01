@@ -10,6 +10,7 @@ var_main <- function(vars,lag_max=14,significance=0.05,
   # subset is the chosen subset of data
   # log_level is the minimum log level that will be printed
   # (0 = debug, 1 = test detail, 2= test outcomes, 3 = normal)
+  if (is.null(log_level)) { log_level <- 0 }
   if (!(log_level %in% 0:4)) {
     stop(paste("log_level needs to be in 0:4"))
   }
