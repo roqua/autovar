@@ -175,7 +175,7 @@ Example: `var_main(c('Activity_hours','Depression'),log_level=2)`
 
     var_info(varest)
 
-The `var_info` function prints the output of the tests for a var model. Note that its output can be altered by the value of `av_state$log_level`. The tests it shows are the Eingevalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the Granger causality Wald tests, and estat ic.
+The `var_info` function prints the output of the tests for a var model. Note that its output can be altered by the value of `av_state$log_level`. The tests it shows are the Eigenvalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the Granger causality Wald tests, and estat ic.
 
 #### Syntax
 
