@@ -15,9 +15,9 @@ wntestq <- function(varest) {
     scat(1,"  ",test$name,':\n',sep="")
     scat(1,'    Portmanteau (Q) statistic = ',test$q,"\n",sep="")
     if (test$passes_test) {  
-      scat(1,'    Prob <> chi2(',test$df,') = ',test$p,"\n",sep="")
+      scat(1,'    Prob > chi2(',test$df,') = ',test$p,"\n",sep="")
     } else {
-      scat(1,'    Prob <> chi2(',test$df,') = ',test$p," <-- FAILED\n",sep="")
+      scat(1,'    Prob > chi2(',test$df,') = ',test$p," <-- FAILED\n",sep="")
       fail_names <- c(fail_names,test$name)
     }
   }
