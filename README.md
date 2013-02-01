@@ -171,15 +171,15 @@ The `var_main` function sets the following variables in the `av_state` list:
 Example: `var_main(c('Activity_hours','Depression'),log_level=2)`
 
 
-### print_tests
+### var_info
 
-    print_tests(varest)
+    var_info(varest)
 
-The `print_tests` function prints the output of the tests for a var model. Note that its output can be altered by the value of `av_state$log_level`. The tests it shows are the Eingevalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the Granger causality Wald tests, and estat ic.
+The `var_info` function prints the output of the tests for a var model. Note that its output can be altered by the value of `av_state$log_level`. The tests it shows are the Eingevalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the Granger causality Wald tests, and estat ic.
 
 #### Syntax
 
-Example: `print_tests(av_state$accepted_models[[1]]$varest)` or `print_tests(av_state$rejected_models[[1]]$varest)`
+Example: `var_info(av_state$accepted_models[[1]]$varest)` or `var_info(av_state$rejected_models[[1]]$varest)`
 
 
 Outputting data

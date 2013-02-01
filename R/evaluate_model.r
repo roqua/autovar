@@ -140,11 +140,12 @@ run_var <- function(data,lag,...) {
   m
 }
 
-print_tests <- function(varest) {
- model_is_stable(varest)
- wntestq(varest)
- varnorm(varest)
- vargranger(varest)
- cat("\nestat ic\n")
- print(estat_ic(varest))
+var_info <- function(varest) {
+  print(summary(varest))
+  model_is_stable(varest)
+  wntestq(varest)
+  varnorm(varest)
+  vargranger(varest)
+  cat("\nestat ic\n")
+  print(estat_ic(varest))
 }
