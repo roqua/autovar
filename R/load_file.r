@@ -9,7 +9,7 @@ load_file <- function(filename,file_type = c('SPSS','STATA')) {
   if (missing(file_type)) {
     file_type <- determine_file_type(real_file_name)
   }
-  working_dir <- paste(gsub('\\\\','/',system('pwd',intern=TRUE)),'/',sep="")
+  working_dir <- paste(getwd(),'/',sep="")
   file_name <- paste(working_dir,filename,sep="")
   if (!file.exists(file_name)) {
     if (!file.exists(filename)) {

@@ -14,7 +14,7 @@ store_file <- function(filename,inline_data,file_type = c('SPSS','STATA')) {
   if (missing(file_type)) {
     file_type <- 'SPSS'
   }
-  working_dir <- paste(gsub('\\\\','/',system('pwd',intern=TRUE)),'/',sep="")
+  working_dir <- paste(getwd(),'/',sep="")
   store_func <- NULL
   if (inline_data) {
     store_func <- store_file_inline
