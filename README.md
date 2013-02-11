@@ -106,6 +106,13 @@ Modifying and adding columns
 
 ### impute_missing_values
 
+    impute_missing_values(columns,subset_ids='ALL',type=c('SIMPLE','EM'))
+
+
+#### Syntax
+
+Example: `impute_missing_values('norm_bewegen')` or `impute_missing_values(c('norm_bewegen','minuten_woonwerk'),subset_ids=1)`
+
 
 ### add_derived_column
 
