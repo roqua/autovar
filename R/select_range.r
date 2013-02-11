@@ -30,10 +30,16 @@ select_range <- function(subset_id='multiple',column,begin,end) {
     condition <- data_column <= end & data_column >= begin
   }
   missing_before <- calc_missing(av_state$data[[subset_id]])
+  rows_remaining <- length(which(condition))
+  rows_cut <- dim(data_frame)[1] - rows_remaining
+  if (rows_cut > 0) {
+    scat(2,"select_range: for subset ",subset_id,", number of rows cut: ",
+        rows_cut,", number of rows remaining: ",rows_remaining,"\n",sep='')
+  }
   av_state$data[[subset_id]] <<- data_frame[which(condition),]
   missing_after <- calc_missing(av_state$data[[subset_id]])
   if (missing_before != missing_after) {
-    scat(2,paste("select_range: missing values went from",missing_before,"to",missing_after,"for subset",subset_id,"\n"))
+    scat(2,paste("select_range: for subset ",subset_id,", missing values went from ",missing_before," to ",missing_after,"\n",sep=""))
   }
 }
 
