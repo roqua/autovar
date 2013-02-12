@@ -108,6 +108,18 @@ Modifying and adding columns
 
     impute_missing_values(columns,subset_ids='ALL',type=c('SIMPLE','EM'))
 
+The `impute_missing_values` function can impute data for values that are missing (i.e., for values that are `NA`).
+
+#### Arguments
+
+The `columns` argument can be a single column or a list of column names. It is the only argument that is required.
+
+The `subset_ids` argument can be a single subset, a range of subsets (both of which are identified by their index), or it can be the word `'ALL'` (default). In the latter case, the selected columns of all data subsets are processed.
+
+The `type` argument has three possible values:
+
+* `SIMPLE` - The value of the missing data is determined by up to five values surrounding the value (2 before, 3 after, unless at the start or end of the range). For numeric (scl) columns, the mean of these values is chosen as value. For factor (nom) columns, the mode of these values is chosen as value.
+* `EM` - Em imputation. Currently not implemented.
 
 #### Syntax
 
