@@ -114,7 +114,7 @@ The `impute_missing_values` function can impute data for values that are missing
 
 The `columns` argument can be a single column or a list of column names. It is the only argument that is required.
 
-The `subset_ids` argument can be a single subset, a range of subsets (both of which are identified by their index), or it can be the word `'ALL'` (default). In the latter case, the selected columns of all data subsets are processed.
+The `subset_ids` argument can be a single subset, a range of subsets (both of which are identified by their indices), or it can be the word `'ALL'` (default). In the latter case, the selected columns of all data subsets are processed.
 
 The `type` argument has three possible values:
 
