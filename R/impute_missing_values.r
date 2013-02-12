@@ -12,6 +12,7 @@ impute_missing_values <- function(columns,subset_ids='ALL',type=c('SIMPLE','EM')
   if (subset_ids == 'ALL') {
     subset_ids <- 1:length(av_state$data)
   }
+  missing_before <- calc_missing_all()
   for (subset_id in subset_ids) {
     if (class(subset_id) == 'numeric' && !any(subset_id == 1:length(av_state$data))) {
       warning(paste(subset_id,"does not identify a data set, skipping..."))
@@ -31,6 +32,18 @@ impute_missing_values <- function(columns,subset_ids='ALL',type=c('SIMPLE','EM')
       impute_method(subset_id,column)
     }
   }
+  missing_after <- calc_missing_all()
+  if (missing_before != missing_after) {
+    scat(2,paste("impute_missing_values: imputed data for ",missing_before-missing_after," NA values.\n",sep=""))
+  }
+}
+
+calc_missing_all <- function() {
+  na_cnt <- 0
+  for (subset_id in 1:length(av_state$data)) {
+    na_cnt <- na_cnt+sum(is.na(av_state$data[[subset_id]]))
+  }
+  na_cnt
 }
 
 impute_em <- function(subset_id,column) {
