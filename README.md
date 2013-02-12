@@ -108,7 +108,7 @@ Modifying and adding columns
 
     impute_missing_values(columns,subset_ids='ALL',type=c('SIMPLE','EM'))
 
-The `impute_missing_values` function can impute data for values that are missing (i.e., for values that are `NA`).
+The `impute_missing_values` function can impute data for values that are missing (i.e., for values that are `NA`). It outputs for every subset how many values were imputed (for all columns total) along with a percentage (following `<=`). This percentage is the percentage of the column with the highest percentage of imputed values, i.e., if multiple columns were specified, it is the percentage of values that were imputed of the column that had relatively most `NA` values.
 
 #### Arguments
 

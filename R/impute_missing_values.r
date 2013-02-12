@@ -12,6 +12,7 @@ impute_missing_values <- function(columns,subset_ids='ALL',type=c('SIMPLE','EM')
   if (subset_ids == 'ALL') {
     subset_ids <- 1:length(av_state$data)
   }
+  scat(2,paste("impute_missing_values: imputing values for columns: ",paste(columns,collapse=', '),"...\n",sep=""))
   missing_before <- calc_missing_all()
   for (subset_id in subset_ids) {
     if (class(subset_id) == 'numeric' && !any(subset_id == 1:length(av_state$data))) {
@@ -23,6 +24,7 @@ impute_missing_values <- function(columns,subset_ids='ALL',type=c('SIMPLE','EM')
       warning(paste(subset_id,"does not identify a data set, skipping..."))
       next
     }
+    missing_before_columns <- calc_missing_in_columns(subset_id,columns)
     for (column in columns) {
       data_column <- data_frame[[column]]
       if (is.null(data_column)) { 
@@ -31,11 +33,41 @@ impute_missing_values <- function(columns,subset_ids='ALL',type=c('SIMPLE','EM')
       }
       impute_method(subset_id,column)
     }
+    missing_after_columns <- calc_missing_in_columns(subset_id,columns)
+    if (missing_before_columns$na_cnt != missing_after_columns$na_cnt) {
+      scat(2,paste("impute_missing_values: imputed ",
+                   missing_before_columns$string,
+                   " missing values for subset ",subset_id,"\n",sep=""))
+    }
   }
   missing_after <- calc_missing_all()
   if (missing_before != missing_after) {
-    scat(2,paste("impute_missing_values: imputed data for ",missing_before-missing_after," NA values.\n",sep=""))
+    scat(2,paste("impute_missing_values: imputed a total of ",missing_before-missing_after," values.\n",sep=""))
   }
+}
+
+calc_missing_in_columns <- function(subset_id,columns) {
+  na_cnt <- 0
+  tot_cnt <- 0
+  max_perc <- 0
+  for (column in columns) {
+    na_cnt <- na_cnt + sum(is.na(av_state$data[[subset_id]][[column]]))
+    tot_cnt <- tot_cnt + length(is.na(av_state$data[[subset_id]][[column]]))
+    perc <- sum(is.na(av_state$data[[subset_id]][[column]]))/
+            length(is.na(av_state$data[[subset_id]][[column]]))
+    if (perc > max_perc) {
+      max_perc <- perc
+    }
+  }
+  list(tot_cnt=tot_cnt,
+       na_cnt=na_cnt,
+       string=paste(na_cnt," (<=",round(100*max_perc,digits=2),"%)",sep=""))
+}
+
+calc_missing <- function(data_frame) {
+  na_cnt <- sum(is.na(data_frame))
+  tot_cnt <- length(is.na(data_frame))
+  paste(round(100*na_cnt/tot_cnt,digits=2),"% (",na_cnt,")",sep="")
 }
 
 calc_missing_all <- function() {
@@ -51,7 +83,6 @@ impute_em <- function(subset_id,column) {
 }
 
 impute_simple <- function(subset_id,column) {
-  #cat("impute_simple: subset_id",subset_id,"column:",column,"\n")
   # check whether there are NA values:
   if (any(is.na(av_state$data[[subset_id]][[column]]))) {
     # what type is the column?
@@ -85,7 +116,14 @@ surrounding_vals <- function(subset_id,column,idx) {
   sortres <- sort(c(idx,indices),index.return=TRUE)
   index <- which(sortres$ix == 1)
   lefttail <- indices[max(index-2,1):index-1]
-  righttail <- indices[index:min(index+1,length(indices))]
+  righttail <- NULL
+  if (index <= length(indices)) {
+    if (index == 1) {
+      righttail <- indices[index:min(index+2,length(indices))]
+    } else {
+      righttail <- indices[index:min(index+1,length(indices))]
+    }
+  }
   c(lefttail,righttail)
 }
 
