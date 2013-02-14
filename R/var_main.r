@@ -3,7 +3,8 @@
 # runs the model queue
 # sets global parameters
 var_main <- function(vars,lag_max=14,significance=0.05,
-                     exogenous_max_iterations=3,subset=1,log_level=av_state$log_level) {
+                     exogenous_max_iterations=3,subset=1,log_level=av_state$log_level,
+                     include_restricted_models=FALSE) {
   # lag_max is the global maximum lags used
   # significance is the limit
   # exogenous_max_iterations is the maximum number individual outliers that can be removed
@@ -28,6 +29,7 @@ var_main <- function(vars,lag_max=14,significance=0.05,
   av_state$vars <<- vars
   av_state$subset <<- subset
   av_state$log_level <<- log_level
+  av_state$include_restricted_models <<- include_restricted_models
   
   # check if subset exists
   if (is.null(av_state$data[[av_state$subset]])) {

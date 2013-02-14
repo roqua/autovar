@@ -151,7 +151,7 @@ Vector Autoregression
 
 ### var_main
 
-    var_main(vars,lag_max=14,significance=0.05,exogenous_max_iterations=3,subset=1,log_level=av_state$log_level)
+    var_main(vars,lag_max=14,significance=0.05,exogenous_max_iterations=3,subset=1,log_level=av_state$log_level,include_restricted_models=FALSE)
 
 The `var_main` function generates and tests possible VAR models for the specified variables. The only required argument is `vars`, which should be a vector of variables.
 
@@ -170,6 +170,8 @@ The `exogenous_max_iterations` argument determines how many times we should try 
 The `subset` argument specifies which data subset the VAR analysis should run on. The VAR analysis only runs on one data subset at a time. If not specified, the first subset is used (corresponding to `av_state$data[[1]]`).
 
 The `log_level` argument sets the minimum level of output that should be shown. It should be a number between 0 and 3. `0` = debug, `1` = test detail, `2` = test outcomes, `3` = normal. The default is set to the value of `av_state$log_level` or if that doesn't exist, to `0`. If the `log_level` parameter was specified, the original value of `av_state$log_level` will be restored at the end of `var_main`.
+
+The `include_restricted_models` argument defaults to `FALSE`. When set to `TRUE`, the number of evaluated models is effectively doubled. Each model will be evaluated normally and in a restricted form. The restricted form removes nonsignificant coefficients from the formula. Setting `include_restricted_models` to `TRUE` can thus lead to finding additional solutions at the cost of twice the normal computation time.
 
 #### Results
 

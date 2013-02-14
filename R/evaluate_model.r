@@ -25,9 +25,18 @@ evaluate_model <- function(model,index) {
     lags <- determine_var_order(endodta,exogen=exodta,lag.max=av_state$lag_max)
     # lags is now a list of possibly optimal VAR orders (integers)
     scat(2,"\n> Queueing",length(lags),"VAR model(s) with lags:",lags,"\n")
-    for (lag in lags) {
-      new_model <- create_model(model,lag=lag)
-      av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
+    if (av_state$include_restricted_models) {
+      for (lag in lags) {
+        new_model <- create_model(model,lag=lag,restrict=TRUE)
+        av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
+        new_model <- create_model(model,lag=lag,restrict=FALSE)
+        av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
+      }
+    } else {
+      for (lag in lags) {
+        new_model <- create_model(model,lag=lag)
+        av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
+      }
     }
     scat(2,"\n> End of tests. Did not run tests because no lag specified.\n")
     scat(2,paste(rep('-',times=20),collapse=''),"\n\n",sep='')
@@ -35,7 +44,10 @@ evaluate_model <- function(model,index) {
   
     # get the var estimate for this model. This is the 'var' command in STATA.
     res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
-    
+    # remove nonsignificant coefficients from the formula
+    if (!is.null(model$restrict) && model$restrict) {
+      res$varest <- restrict(res$varest,method="ser")
+    }
     # run all the tests and queue potential models:
     
     # stability test
