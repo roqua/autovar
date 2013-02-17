@@ -13,23 +13,7 @@ powerset <- function(lst) {
   res
 }
 
-sample_kurtosis <- function(x) {
-  n <- length(x)
-  smu <- mean(x)
-  sumfourths <- 0
-  sumquads <- 0
-  for (i in 1:n) {
-    sumfourths <- sumfourths + (x[[i]] - smu)^4
-    sumquads <- sumquads + (x[[i]] - smu)^2
-  }
-  num <- (1/n)*sumfourths
-  dnom <- ((1/n)*sumquads)^2
-  sk <- (num/dnom)
-  chii <- ((sk-3)^2)*n/24
-  data.frame(Kurtosis=sk,chi2=chii,df=1,P=chi_squared_prob(chii,1))
-}
-
-sample_skewness <- function(x) {
+sample_skewness <- function(x,m) {
   n <- length(x)
   smu <- mean(x)
   sumfourths <- 0
@@ -38,17 +22,42 @@ sample_skewness <- function(x) {
     sumfourths <- sumfourths + (x[[i]] - smu)^3
     sumquads <- sumquads + (x[[i]] - smu)^2
   }
-  num <- (1/n)*sumfourths
-  dnom <- ((1/n)*sumquads)^(3/2)
+  num <- (1/(n))*sumfourths
+  dnom <- ((1/(n-m))*sumquads)^(3/2)
   sk <- (num/dnom)
-  chii <- (sk^2)*n/6
+  chii <- (sk^2)*n/6 # this is always correct
   data.frame(Skewness=sk,chi2=chii,df=1,P=chi_squared_prob(chii,1))
 }
 
-jb_test <- function(x) {
+sample_kurtosis <- function(x,m) {
   n <- length(x)
-  s <- sample_skewness(x)
-  k <- sample_kurtosis(x)
+  smu <- mean(x)
+  sumfourths <- 0
+  sumquads <- 0
+  for (i in 1:n) {
+    sumfourths <- sumfourths + (x[[i]] - smu)^4
+    sumquads <- sumquads + (x[[i]] - smu)^2
+  }
+  num <- (1/(n))*sumfourths
+  dnom <- ((1/(n-m))*sumquads)^2
+  sk <- (num/dnom)
+  chii <- ((sk-3)^2)*n/24 # this is always correct
+  data.frame(Kurtosis=sk,chi2=chii,df=1,P=chi_squared_prob(chii,1))
+}
+
+nr_pars_estimated_average <- function(varest) {
+  r <- 0
+  for (lm in varest$varresult) {
+    r <- r+length(lm$coefficients)
+  }
+  r <- r/length(varest$varresult)
+  r
+}
+
+jb_test <- function(x,m) {
+  n <- length(x)
+  s <- sample_skewness(x,m)
+  k <- sample_kurtosis(x,m)
   jb <- (n/6)*(s$Skewness^2 + (1/4)*(k$Kurtosis-3)^2)
   df <- s$df+k$df
   data.frame(chi2=jb,df=df,P=chi_squared_prob(jb,df))
@@ -57,15 +66,16 @@ jb_test <- function(x) {
 jb <- function(varest) {
   resids <- resid(varest)
   names <- dimnames(resids)[[2]]
-  
+  m <- nr_pars_estimated_average(varest)
+
   # JB test
   jbtab <- NULL
   for (i in 1:(dim(resids)[2])) {
     x <- resids[,i]
     if (i == 1) {
-      jbtab <- jb_test(x)
+      jbtab <- jb_test(x,m)
     } else {
-      jbtab <- rbind(jbtab,jb_test(x))
+      jbtab <- rbind(jbtab,jb_test(x,m))
     }
   }
   if (!is.null(jbtab)) {
@@ -84,9 +94,9 @@ jb <- function(varest) {
   for (i in 1:(dim(resids)[2])) {
     x <- resids[,i]
     if (i == 1) {
-      sktab <- sample_skewness(x)
+      sktab <- sample_skewness(x,m)
     } else {
-      sktab <- rbind(sktab,sample_skewness(x))
+      sktab <- rbind(sktab,sample_skewness(x,m))
     }
   }
   if (!is.null(sktab)) {
@@ -107,9 +117,9 @@ jb <- function(varest) {
   for (i in 1:(dim(resids)[2])) {
     x <- resids[,i]
     if (i == 1) {
-      kttab <- sample_kurtosis(x)
+      kttab <- sample_kurtosis(x,m)
     } else {
-      kttab <- rbind(kttab,sample_kurtosis(x))
+      kttab <- rbind(kttab,sample_kurtosis(x,m))
     }
   }
   if (!is.null(kttab)) {
