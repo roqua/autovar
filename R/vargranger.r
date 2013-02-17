@@ -9,12 +9,7 @@ vargranger <- function(varest) {
     stop("the current vargranger implementation only works for two variables")
   }
   scat(2,"\nGranger causality Wald tests\n")
-  res <- NULL
-  if (av_state$small) {
-    res <- vargranger_aux_small(varest)
-  } else {
-    res <- vargranger_aux(varest)
-  }
+  res <- vargranger_call(varest)
   sprint(1,res)
   tos <- vargranger_to_string(res)
   if (tos != '') {
@@ -33,6 +28,14 @@ df_in_rows <- function(df) {
     }
   }
   lst
+}
+
+vargranger_call <- function(varest) {
+  if (av_state$small) {
+    vargranger_aux_small(varest)
+  } else {
+    vargranger_aux(varest)
+  }
 }
 
 vargranger_aux <- function(varest) {
@@ -100,7 +103,7 @@ get_named <- function(arr,name) {
   }
 }
 
-vargranger_to_string <- function(res) {
+vargranger_to_string <- function(res,include_significance=TRUE) {
   # res is a vargranger_aux result
   str <- NULL
   for (row in df_in_rows(res)) {
@@ -108,12 +111,16 @@ vargranger_to_string <- function(res) {
       str <- c(str,paste(unprefix_ln(row$Excluded),
                          ' Granger causes ',
                          unprefix_ln(row$Equation),
-                         ' (',signif(row$P,digits=3),')',sep=''))
+                         ifelse(include_significance,
+                                paste(' (',signif(row$P,digits=3),')',sep=''),
+                                ''),sep=''))
     } else if (row$P <= 2*av_state$significance) {
       str <- c(str,paste(unprefix_ln(row$Excluded),
                          ' almost Granger causes ',
                          unprefix_ln(row$Equation),
-                         ' (',signif(row$P,digits=3),')',sep=''))
+                         ifelse(include_significance,
+                                paste(' (',signif(row$P,digits=3),')',sep=''),
+                                ''),sep=''))
     }
   }
   if (!is.null(str)) {
@@ -124,6 +131,28 @@ vargranger_to_string <- function(res) {
   str
 }
 
-vargranger_line <- function(varest) {
-  vargranger_to_string(vargranger_aux(varest))
+vargranger_line <- function(varest,...) {
+  vargranger_to_string(vargranger_call(varest),...)
+}
+
+vargranger_list <- function(lst) {
+  tbl <- table(sapply(lst,function(x) vargranger_line(x$varest,include_significance=FALSE)))
+  tdescs <- names(tbl)
+  tfreq <- sum(tbl)
+  descs <- NULL
+  freqs <- NULL
+  percs <- NULL
+  for (i in 1:length(tbl)) {
+    desc <- tdescs[[i]]
+    freq <- tbl[[i]]
+    perc <- format_as_percentage(freq/tfreq)
+    descs <- c(descs,desc)
+    freqs <- c(freqs,freq)
+    percs <- c(percs,perc)
+  }
+  data.frame(desc=descs,freq=freqs,perc=percs,stringsAsFactors=FALSE)
+}
+
+format_as_percentage <- function(frac) {
+  paste(round(100*frac,digits=2),"%",sep='')
 }

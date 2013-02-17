@@ -86,7 +86,6 @@ evaluate_model <- function(model,index) {
     if (!is.null(vns)) {
       res$model_valid <- FALSE
       scat(2,'\n> JB test failed. Queueing model(s) with more strict outlier removal\n')
-      #print(vns)
       # vns is a powerset of vn, minus the empty set
       for (vn in vns) {
         new_exogvars <- NULL
@@ -108,14 +107,15 @@ evaluate_model <- function(model,index) {
               new_exogvars[dim(new_exogvars)[[1]],][['iteration']] <- 1
             }
           }
+          new_exogvars[,] <- new_exogvars[order(new_exogvars$variable),]
         } else {
-          new_exogvars <- data.frame(variable=vn,
+          new_exogvars <- data.frame(variable=sort(vn),
                                      iteration=rep(1,times=length(vn)),
                                      stringsAsFactors=FALSE)
         }
-        if (is.null(old_exogvars) || 
-              dim(new_exogvars) != dim(old_exogvars) || 
-              new_exogvars != old_exogvars) {
+        if (is.null(old_exogvars) ||
+              any(dim(new_exogvars) != dim(old_exogvars)) ||
+              any(new_exogvars != old_exogvars)) {
           new_model <- create_model(model,exogenous_variables=new_exogvars,
                                         lag=-1)
           av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)

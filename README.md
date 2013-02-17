@@ -151,7 +151,7 @@ Vector Autoregression
 
 ### var_main
 
-    var_main(vars,lag_max=14,significance=0.05,exogenous_max_iterations=3,
+    var_main(vars,lag_max=7,significance=0.05,exogenous_max_iterations=3,
              subset=1,log_level=av_state$log_level,include_restricted_models=FALSE,
              small=FALSE,include_model=NULL)
 

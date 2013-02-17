@@ -2,7 +2,7 @@
 
 # runs the model queue
 # sets global parameters
-var_main <- function(vars,lag_max=14,significance=0.05,
+var_main <- function(vars,lag_max=7,significance=0.05,
                      exogenous_max_iterations=3,subset=1,log_level=av_state$log_level,
                      include_restricted_models=FALSE,small=FALSE,include_model=NULL) {
   # lag_max is the global maximum lags used
@@ -82,8 +82,23 @@ var_main <- function(vars,lag_max=14,significance=0.05,
   scat(3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   scat(3,"\nDone. Processed",model_cnt,"models, of which",
       length(av_state$accepted_models),
-      "were valid:\n")
-  av_state$accepted_models <<- sort_models(av_state$accepted_models)
-  sprint(3,av_state$accepted_models)
+      ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n")
+  print_granger_statistics()
+  if (length(av_state$accepted_models) > 0) {
+    scat(3,"\nThe valid models:\n")
+    av_state$accepted_models <<- sort_models(av_state$accepted_models)
+    sprint(3,av_state$accepted_models)
+  }
   av_state$log_level <<- real_log_level
+}
+
+print_granger_statistics <- function() {
+  lst <- c(av_state$accepted_models,av_state$rejected_models)
+  scat(3,"\nGranger causality summary of all",length(lst),"processed models:\n")
+  glist <- vargranger_list(lst)
+  for (i in 1:nr_rows(glist)) {
+    gres <- glist[i,]
+    if (gres$desc == '') { next }
+    scat(3,"  ",gres$perc,"\t",gres$desc,"\n",sep='')
+  }
 }
