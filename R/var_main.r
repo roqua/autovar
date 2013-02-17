@@ -4,7 +4,7 @@
 # sets global parameters
 var_main <- function(vars,lag_max=14,significance=0.05,
                      exogenous_max_iterations=3,subset=1,log_level=av_state$log_level,
-                     include_restricted_models=FALSE) {
+                     include_restricted_models=FALSE,small=FALSE,include_model=NULL) {
   # lag_max is the global maximum lags used
   # significance is the limit
   # exogenous_max_iterations is the maximum number individual outliers that can be removed
@@ -30,7 +30,8 @@ var_main <- function(vars,lag_max=14,significance=0.05,
   av_state$subset <<- subset
   av_state$log_level <<- log_level
   av_state$include_restricted_models <<- include_restricted_models
-  
+  av_state$small <<- small
+
   # check if subset exists
   if (is.null(av_state$data[[av_state$subset]])) {
     stop(paste("invalid subset specified:",av_state$subset))
@@ -43,6 +44,14 @@ var_main <- function(vars,lag_max=14,significance=0.05,
   default_model <- list()
   class(default_model) <- 'var_model'
   av_state$model_queue <<- list(default_model)
+  if (!is.null(include_model)) {
+    if (class(include_model) != 'list') {
+      stop(paste("the include_model object has to be of class list"))
+    }
+    new_model <- merge_lists(default_model,include_model)
+    class(new_model) <- "var_model"
+    av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
+  }
   av_state$accepted_models <<- list()
   av_state$rejected_models <<- list()
   i <- 1

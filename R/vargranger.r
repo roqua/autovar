@@ -9,7 +9,12 @@ vargranger <- function(varest) {
     stop("the current vargranger implementation only works for two variables")
   }
   scat(2,"\nGranger causality Wald tests\n")
-  res <- vargranger_aux(varest)
+  res <- NULL
+  if (av_state$small) {
+    res <- vargranger_aux_small(varest)
+  } else {
+    res <- vargranger_aux(varest)
+  }
   sprint(1,res)
   tos <- vargranger_to_string(res)
   if (tos != '') {
@@ -38,10 +43,37 @@ vargranger_aux <- function(varest) {
       gres <- NULL
       tryCatch(gres <- causality(varest,cause=exname)$Granger,error=function(e) { })
       if (is.null(gres)) { next }
+      df <- get_named(gres$parameter,'df1')
+      chi2 <- gres$statistic[1,1]*df
+      P <- chi_squared_prob(chi2,df)
+      if (is.null(res)) {
+        res <- data.frame(Equation=eqname,
+                          Excluded=exname,
+                          chi2=chi2,df=df,
+                          P=P,
+                          stringsAsFactors=FALSE)
+      } else {
+        res <- rbind(res,list(eqname,exname,chi2,df,P))
+      }
+    }
+  }
+  res
+}
+
+vargranger_aux_small <- function(varest) {
+  res <- NULL
+  for (eqname in dimnames(varest$y)[[2]]) {
+    for (exname in dimnames(varest$y)[[2]]) {
+      if (exname == eqname) { next }
+      gres <- NULL
+      tryCatch(gres <- causality(varest,cause=exname)$Granger,error=function(e) { })
+      if (is.null(gres)) { next }
       F <- gres$statistic[1,1]
       df <- get_named(gres$parameter,'df1')
-      df_r <- get_named(gres$parameter,'df2')
-      P <- gres$p.value[1,1]
+      #df_r <- get_named(gres$parameter,'df2')
+      df_r <- vargranger_df_r(varest)
+      #P <- gres$p.value[1,1]
+      P <- pf(F,df,df_r,lower.tail=FALSE)
       if (is.null(res)) {
         res <- data.frame(Equation=eqname,
                           Excluded=exname,
@@ -54,6 +86,10 @@ vargranger_aux <- function(varest) {
     }
   }
   res
+}
+
+vargranger_df_r <- function(varest) {
+  varest$obs-nr_pars_estimated_average(varest)
 }
 
 get_named <- function(arr,name) {

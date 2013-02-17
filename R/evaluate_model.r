@@ -86,6 +86,7 @@ evaluate_model <- function(model,index) {
     if (!is.null(vns)) {
       res$model_valid <- FALSE
       scat(2,'\n> JB test failed. Queueing model(s) with more strict outlier removal\n')
+      #print(vns)
       # vns is a powerset of vn, minus the empty set
       for (vn in vns) {
         new_exogvars <- NULL
