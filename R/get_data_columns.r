@@ -1,6 +1,4 @@
-# get_data_columns
-
-get_data_columns <- function(model) {
+get_data_columns <- function(av_state,model) {
   exodta <- NULL
   endo <- NULL
   model_valid <- TRUE
@@ -11,8 +9,8 @@ get_data_columns <- function(model) {
   if (apply_log_transform(model)) {
     for (name in vrs) {
       ln_name <- prefix_ln(name)
-      if (!column_exists(ln_name)) {
-        add_derived_column(ln_name,name,operation='LN')
+      if (!column_exists(av_state,ln_name)) {
+        av_state <- add_derived_column(av_state,ln_name,name,operation='LN',av_state$log_level)
       }
     }
     vrs <- sapply(vrs,prefix_ln,USE.NAMES=FALSE)
@@ -25,8 +23,12 @@ get_data_columns <- function(model) {
     for (i in 1:nr_rows(model$exogenous_variables)) {
       exovar <- model$exogenous_variables[i,]
       cname <- prefix_ln_cond(exovar$variable,model)
-      exovr <- get_outliers_column(cname,iteration=exovar$iteration)
-      if (!is_outliers_column_valid(cname,exovar$iteration)) {
+      res_outliers_column <- get_outliers_column(av_state,
+                                                 cname,
+                                                 iteration=exovar$iteration)
+      av_state <- res_outliers_column$av_state
+      exovr <- res_outliers_column$target_column
+      if (!is_outliers_column_valid(av_state,cname,exovar$iteration)) {
         model_valid <- FALSE
       }
       exovrs <- c(exovrs,exovr)
@@ -35,8 +37,8 @@ get_data_columns <- function(model) {
     exodta <- as.matrix(exodta)
     colnames(exodta) <- exovrs
   }
-
-  list(endogenous = endo, exogenous = exodta, model_valid = model_valid)
+  list(av_state = av_state,endogenous = endo, 
+       exogenous = exodta, model_valid = model_valid)
 }
 
 apply_log_transform <- function(model) {
@@ -47,7 +49,7 @@ nr_rows <- function(df) {
   dim(df)[1]
 }
 
-column_exists <- function(name) {
+column_exists <- function(av_state,name) {
   any(name == names(av_state$data[[av_state$subset]]))
 }
 
@@ -68,23 +70,23 @@ unprefix_ln <- function(str) {
 }
 
 
-get_outliers_column <- function(cname, iteration) {
+get_outliers_column <- function(av_state,cname,iteration) {
   target_column <- paste(cname,'_',iteration,sep='')
-  if (!column_exists(target_column)) {
+  if (!column_exists(av_state,target_column)) {
     dta <- av_state$data[[av_state$subset]][[cname]]
     std <- sd(dta)
     mu <- mean(dta)
     std_factor <- std_factor_for_iteration(iteration)
-    scat(1,"Removing outliers outside of ",std_factor,
+    scat(av_state$log_level,1,"Removing outliers outside of ",std_factor,
         "x std. min: ",mu-std_factor*std,", max: ",
         mu+std_factor*std,"\n",sep='')
-    av_state$data[[av_state$subset]][[target_column]] <<- 
+    av_state$data[[av_state$subset]][[target_column]] <- 
       ((dta < mu-std_factor*std) | (dta > mu+std_factor*std))+0
   }
-  target_column
+  list(target_column=target_column,av_state=av_state)
 }
 
-is_outliers_column_valid <- function(cname,iteration) {
+is_outliers_column_valid <- function(av_state,cname,iteration) {
   model_valid <- TRUE
   target_column <- paste(cname,'_',iteration,sep='')
   if ((iteration == 1 && all(av_state$data[[av_state$subset]][[target_column]] == 0)) ||
@@ -92,10 +94,10 @@ is_outliers_column_valid <- function(cname,iteration) {
                           av_state$data[[av_state$subset]][[paste(cname,'_',iteration-1,sep='')]]))) {
     std_factor <- std_factor_for_iteration(iteration)
     if (iteration == 1) {
-      scat(2,"\n> Removing ",std_factor,"x std. outliers for ",
+      scat(av_state$log_level,2,"\n> Removing ",std_factor,"x std. outliers for ",
           cname," has no effect. Marking model as invalid.\n",sep='')
     } else {
-      scat(2,"\n> Removing ",std_factor,"x std. outliers for ",
+      scat(av_state$log_level,2,"\n> Removing ",std_factor,"x std. outliers for ",
           cname," has the same effect as removing ",
           std_factor_for_iteration(iteration-1),
           "x std. outliers. Marking model as invalid.\n",sep='')
@@ -120,12 +122,12 @@ std_factor_for_iteration <- function(iteration) {
   std_factor
 }
 
-get_outliers_as_string <- function(name,iteration,model) {
+get_outliers_as_string <- function(av_state,name,iteration,model) {
   cname <- prefix_ln_cond(name,model)
   if (is.null(av_state$data[[av_state$subset]][[cname]])) {
     '???'
   } else {
-    column_name <- get_outliers_column(cname,iteration=iteration)
+    column_name <- get_outliers_column(av_state,cname,iteration=iteration)$target_column
     column <- av_state$data[[av_state$subset]][[column_name]]
     paste(which(column == 1),collapse=', ')
   }

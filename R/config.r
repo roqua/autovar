@@ -1,12 +1,5 @@
 # config
 
-# load default values
-.onLoad <- function(libname,pkgname) {
-  if (!exists('av_state',where='.GlobalEnv')) {
-    reset_state()
-  }
-}
-
 print.av_state <- function(x,...) {
   nn <- names(x)
   ll <- length(x)
@@ -29,7 +22,9 @@ print.av_state <- function(x,...) {
     } else if (nn[i] %in% c('model_queue','accepted_models','rejected_models')) {
       cat("list with",length(x[[i]]),"models\n")
     } else {
-      if (class(x[[i]]) %in% c('list','var_model')) {
+      if (class(x[[i]]) == 'var_model') {
+        print(x[[i]],x)
+      } else if (class(x[[i]]) == 'list') {
         print(x[[i]])
       } else {
         cat(x[[i]],"\n")
@@ -40,7 +35,7 @@ print.av_state <- function(x,...) {
   invisible(x)
 }
 
-exogvars_to_string <- function(x,model) {
+exogvars_to_string <- function(av_state,x,model) {
   str <- "<"
   for (i in 1:nr_rows(x)) {
     exovar <- model$exogenous_variables[i,]
@@ -51,7 +46,10 @@ exogvars_to_string <- function(x,model) {
                  std_factor_for_iteration(exovar$iteration),
                  "x std of ",
                  prefix_ln_cond(exovar$variable,model),sep='')
-    outliers <- get_outliers_as_string(exovar$variable,exovar$iteration,model)
+    outliers <- '???'
+    if (!is.null(av_state)) {
+      outliers <- get_outliers_as_string(av_state,exovar$variable,exovar$iteration,model)
+    }
     if (outliers == '') {
       str <- paste(str,' (empty)',sep='')
     } else {
@@ -62,7 +60,7 @@ exogvars_to_string <- function(x,model) {
   str
 }
 
-var_model_to_string <- function(x) {
+var_model_to_string <- function(av_state,x) {
   str <- "\n  "
   nn <- names(x)
   ll <- length(x)
@@ -76,42 +74,55 @@ var_model_to_string <- function(x) {
       str <- paste(str,"\n  ",sep='')
     }
     if (class(x[[i]]) == "data.frame") {
-      str <- paste(str,nn[i],": ",exogvars_to_string(x[[i]],x),sep='')
+      str <- paste(str,nn[i],": ",exogvars_to_string(av_state,x[[i]],x),sep='')
     } else {
       str <- paste(str,nn[i],": ",x[[i]],sep='')
     }
   }
   str
 }
-print.var_model <- function(x,...) {
-  cat(var_model_to_string(x),"\n")
+print.var_model <- function(x,av_state=NULL,...) {
+  cat(var_model_to_string(av_state,x),"\n")
   invisible(x)
 }
 
-print.var_modelres <- function(x,...) {
+print.var_modelres <- function(x,av_state=NULL,...) {
   str <- paste(printed_model_score(x$varest)," : ",vargranger_line(x$varest),
-               var_model_to_string(x$parameters),sep='')
+               var_model_to_string(av_state,x$parameters),sep='')
   cat(str,"\n")
   invisible(x)
 }
 
-reset_state <- function() {
-  x <- list()
-  class(x) <- 'av_state'
-  assign('av_state',x,pos='.GlobalEnv')
+print.model_list <- function(x,av_state=NULL,...) {
+  i <- 0
+  for (model in x) {
+    i <- i+1
+    cat("[[",i,"]]\n",sep='')
+    print(model,av_state)
+  }
+  cat("\n")
 }
 
-print_state <- function() {
-  print(av_state)
+new_av_state <- function() {
+  x <- list()
+  class(x) <- 'av_state'
+  x
+}
+
+assert_av_state <- function(av_state) {
+  if (is.null(av_state) || class(av_state) != 'av_state') {
+    stop("invalid av_state argument")
+  }
 }
 
 load_test_data <- function() {
-  reset_state()
-  av_state$file_name <<- 'data_test.sav'
-  av_state$real_file_name <<- 'data_test.sav'
-  av_state$file_type <<- 'SPSS'
-  av_state$raw_data <<- generate_test_data()
-  av_state$data <<- list('multiple'=av_state$raw_data)
+  av_state <- new_av_state()
+  av_state$file_name <- 'data_test.sav'
+  av_state$real_file_name <- 'data_test.sav'
+  av_state$file_type <- 'SPSS'
+  av_state$raw_data <- generate_test_data()
+  av_state$data <- list('multiple'=av_state$raw_data)
+  av_state
 }
 
 generate_test_data <- function() {

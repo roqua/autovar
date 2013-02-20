@@ -1,14 +1,15 @@
-# STABILITY TESTS
-
-model_is_stable <- function(varest) {
+# stability test
+model_is_stable <- function(varest,log_level=0) {
   vsg <- varstable_graph(varest)
-  scat(2,"\nEigenvalue stability condition\n")
-  sprint(1,vsg)
+  scat(log_level,2,"\nEigenvalue stability condition\n")
+  sprint(log_level,1,vsg)
   if (all(vsg$Modulus < 1)) {
-    scat(2,"PASS: All the eigen values lie in the unit circle. VAR satisfies stability condition.\n")
+    scat(log_level,2,
+         "PASS: All the eigen values lie in the unit circle. VAR satisfies stability condition.\n")
     TRUE
   } else {
-    scat(2,"FAIL: Not all the eigen values lie in the unit circle. VAR DOES NOT satisfy stability condition.\n")
+    scat(log_level,2,
+         "FAIL: Not all the eigen values lie in the unit circle. VAR DOES NOT satisfy stability condition.\n")
     FALSE
   }
 }

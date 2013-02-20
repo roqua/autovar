@@ -7,6 +7,8 @@ sort_models <- function(model_list) {
   } else {
     score_list <- sapply(model_list,function(x) model_score(x$varest))
     sortres <- sort(score_list,index.return=TRUE)
-    model_list[sortres$ix]
+    res <- model_list[sortres$ix]
+    class(res) <- class(model_list)
+    res
   }
 }

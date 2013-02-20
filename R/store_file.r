@@ -1,8 +1,7 @@
-# store_file
-
-# stores a file to disk
-# file name is a name you give to it
-store_file <- function(filename,inline_data,file_type = c('SPSS','STATA')) {
+# stores an av_state as a STATA readable dataset on disk
+# filename is a name you give to it
+store_file <- function(av_state,filename,inline_data,file_type = c('SPSS','STATA')) {
+  assert_av_state(av_state)
   if (missing(filename)) {
     filename <- av_state$real_file_name
   }
@@ -26,7 +25,7 @@ store_file <- function(filename,inline_data,file_type = c('SPSS','STATA')) {
   tarcmd <- paste("tar -cvvf \"",filename,".tar\" ",tarfiles,sep="")
   system(tarcmd,intern=TRUE)
 
-  scat(2,"store_file: created",paste(working_dir,filename,".tar",sep=""),"\n")
+  scat(av_state$log_level,2,"store_file: created",paste(working_dir,filename,".tar",sep=""),"\n")
 }
 
 store_file_separate <- function(working_dir,filename,file_type) {

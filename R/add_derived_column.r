@@ -8,16 +8,18 @@
 #' \item 'LN' - The new column is the natural logarithm of the specified column in columns. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column. Note that values are increased if necessary so that the resulting column has no negative values.
 #' \item 'MINUTES_TO_HOURS' - The new column is the values of the specified column divided by 60. Thus, for this option, the columns argument is simply the name of a single column. This operation does nto work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column.
 #' }
+#' @param log_level determines the verbosity of the output (a number between 0 and 3)
 #' @examples
-#' add_derived_column('SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4',
-#'                    'PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),
-#'                    operation='SUM')
-#' add_derived_column('lnSomBewegUur','SomBewegUur',
-#'                    operation='LN')
-#' add_derived_column('SomBewegUur','SomBewegen',
-#'                    operation='MINUTES_TO_HOURS')
+#' av_state <- add_derived_column(av_state,'SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4',
+#'                                'PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),
+#'                                operation='SUM')
+#' av_state <- add_derived_column(av_state,'lnSomBewegUur','SomBewegUur',
+#'                                operation='LN')
+#' av_state <- add_derived_column(av_state,'SomBewegUur','SomBewegen',
+#'                                operation='MINUTES_TO_HOURS')
 #' @export
-add_derived_column <- function(name,columns,operation=c('SUM','LN','MINUTES_TO_HOURS')) {
+add_derived_column <- function(av_state,name,columns,operation=c('SUM','LN','MINUTES_TO_HOURS'),log_level=0) {
+  assert_av_state(av_state)
   operation <- match.arg(operation)
   operation <- switch(operation,
     SUM = add_derived_column_sum,
@@ -27,12 +29,13 @@ add_derived_column <- function(name,columns,operation=c('SUM','LN','MINUTES_TO_H
   i <- 0
   for (data_frame in av_state$data) {
     i <- i+1
-    av_state$data[[i]][[name]] <<- operation(columns,data_frame,i)
+    av_state$data[[i]][[name]] <- operation(columns,data_frame,i,log_level)
   }
-  av_state$last_warning <<- NULL
+  # av_state$last_warning <- NULL
+  av_state
 }
 
-add_derived_column_sum <- function(columns,data_frame,subset) {
+add_derived_column_sum <- function(columns,data_frame,subset,log_level) {
   csum <- 0
   warnflag <- TRUE
   for (column in columns) {
@@ -44,10 +47,10 @@ add_derived_column_sum <- function(columns,data_frame,subset) {
       if (warnflag) {
         warnflag <- FALSE
         mywarn <- paste("column",column,"is not numeric: converting...")
-        if (is.null(av_state$last_warning) || av_state$last_warning != mywarn) {
-          av_state$last_warning <<- mywarn
-          scat(2,mywarn," (for subset ",subset,")\n",sep="")
-        }
+        #if (is.null(av_state$last_warning) || av_state$last_warning != mywarn) {
+          #av_state$last_warning <- mywarn
+          scat(log_level,2,mywarn," (for subset ",subset,")\n",sep="")
+        #}
       }
       data_column <- as.numeric(data_column) -1
     }
@@ -58,7 +61,7 @@ add_derived_column_sum <- function(columns,data_frame,subset) {
   csum
 }
 
-add_derived_column_ln <- function(column,data_frame,subset) {
+add_derived_column_ln <- function(column,data_frame,subset,log_level) {
   data_column <- data_frame[[column]]
   if (is.null(data_column)) {
     stop(paste("column",column,"does not exist for subset",subset))
@@ -73,14 +76,14 @@ add_derived_column_ln <- function(column,data_frame,subset) {
   # scale minimum value to 
   inc <- 1-min(data_column,na.rm=TRUE)
   if (inc > 0) {
-    scat(2,"add_derived_column_ln: increasing all values of column",
+    scat(log_level,2,"add_derived_column_ln: increasing all values of column",
         column,"by",inc,"for subset",subset,"\n")
     data_column <- data_column+inc
   }
   log(data_column)
 }
 
-add_derived_column_mtoh <- function(column,data_frame,subset) {
+add_derived_column_mtoh <- function(column,data_frame,subset,log_level) {
   data_column <- data_frame[[column]]
   if (is.null(data_column)) {
     stop(paste("column",column,"does not exist for subset",subset))

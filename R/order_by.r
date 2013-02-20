@@ -1,14 +1,13 @@
-# order_by
-
 # order_by defines the chronological order in which fields are seen
-order_by <- function(id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISSING','NONE')) {
+order_by <- function(av_state,id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISSING','NONE')) {
+  assert_av_state(av_state)
   if (!is.null(av_state$order_by)) {
     stop("order_by can only be called once")
   }
   if (class(av_state$data[[1]][[id_field]]) != 'numeric') {
     stop(paste("id_field",id_field,"has to be numeric, but is",class(av_state$data[[1]][[id_field]])))
   }
-  av_state$order_by <<- id_field
+  av_state$order_by <- id_field
   impute_method <- match.arg(impute_method)
   i <- 0
   missings <- {}
@@ -25,10 +24,10 @@ order_by <- function(id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISS
       NONE = order_by_impute_none
     )
     missing_before <- calc_missing(av_state$data[[i]])
-    av_state$data[[i]] <<- order_method(id_field,data_frame)
+    av_state$data[[i]] <- order_method(av_state$group_by,id_field,data_frame,av_state$log_level)
     missing_after <- calc_missing(av_state$data[[i]])
     if (missing_before != missing_after) {
-      scat(2,paste("order_by: missing values went from ",
+      scat(av_state$log_level,2,paste("order_by: missing values went from ",
                 missing_before," to ",missing_after," for subset ",i,
                 " (",used_impute_method,")\n", sep=""))
     }
@@ -36,11 +35,12 @@ order_by <- function(id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISS
     missings[i] <- length(which(is.na(av_state$data[[i]][[id_field]])))
   }
   if (sum(missings) > 0) {
-    warning(paste("order_by: some values of the",id_field,"column are still NA:",missings_report(missings,names(av_state$data))))
+    warning(paste("order_by: some values of the",id_field,"column are still NA:",missings_report(av_state$group_by,missings,names(av_state$data))))
   }
   if (any(nonsequential)) {
     warning(paste("order_by: some subsets of the",id_field,"column are still nonsequential: subset ids:",names(av_state$data)[which(nonsequential)]))
   }
+  av_state
 }
 
 is_nonsequential <- function(column_data) {
@@ -59,7 +59,7 @@ is_nonsequential <- function(column_data) {
   flag
 }
 
-missings_report <- function(missings,names) {
+missings_report <- function(group_by_field,missings,names) {
   msg <- ''
   i <- 0
   for (missing in missings) {
@@ -69,7 +69,7 @@ missings_report <- function(missings,names) {
       if (msg != '') {
         msg <- paste(msg,', ',sep='')
       }
-      msg <- paste(msg,av_state$group_by,' ',name,': ',missing,' missing',sep='')
+      msg <- paste(msg,group_by_field,' ',name,': ',missing,' missing',sep='')
     }
   }
   msg
@@ -93,26 +93,26 @@ can_do_add_missing <- function(id_field,data_frame) {
   !any(is.na(data_frame[[id_field]]))
 }
 
-order_by_impute_one_missing <- function(id_field,data_frame) {
+order_by_impute_one_missing <- function(group_by_field,id_field,data_frame,log_level) {
   if (any(is.na(getElement(data_frame,id_field)))) {
     if (sum(is.na(getElement(data_frame,id_field))) != 1) {
       stop("More than one field is NA")
     }
     imputed_val <- missing_in_range(getElement(data_frame,id_field))
     if (!is.null(imputed_val)) {
-      scat(2,"order_by_impute_one_missing imputed",imputed_val,
-          "for one row of",frame_identifier(data_frame),"\n")
+      scat(log_level,2,"order_by_impute_one_missing imputed",imputed_val,
+          "for one row of",frame_identifier(group_by_field,data_frame),"\n")
       data_frame[is.na(getElement(data_frame,id_field)),][[id_field]] <- imputed_val
     }
   }
   data_frame[with(data_frame, order(getElement(data_frame,id_field))), ]
 }
 
-frame_identifier <- function(data_frame) {
-  if (is.null(av_state[['group_by']])) {
+frame_identifier <- function(group_by_field,data_frame) {
+  if (is.null(group_by_field)) {
     ""
   } else {
-    id_field <- av_state[['group_by']]
+    id_field <- group_by_field
     paste(id_field,' = ',data_frame[[id_field]][1],sep='')
   }
 }
@@ -138,12 +138,12 @@ missing_in_range <- function(sorting_column, no_warn = FALSE) {
   }
 }
 
-order_by_impute_none <- function(id_field,data_frame) {
+order_by_impute_none <- function(group_by_field,id_field,data_frame,log_level) {
   sorting_column <- getElement(data_frame,id_field)
   data_frame[with(data_frame, order(sorting_column)), ]
 }
 
-order_by_impute_add_missing <- function(id_field,data_frame) {
+order_by_impute_add_missing <- function(group_by_field,id_field,data_frame,log_level) {
   sorting_column <- getElement(data_frame,id_field)
   if (any(is.na(sorting_column))) {
     stop(paste("Some fields are NA, they need to be assigned an",
@@ -153,16 +153,16 @@ order_by_impute_add_missing <- function(id_field,data_frame) {
   mmin <- min(ordered_column)
   mmax <- max(ordered_column)
   gbv <- NULL
-  if (!is.null(av_state$group_by)) {
-    gbv <- data_frame[1,][[av_state$group_by]]
+  if (!is.null(group_by_field)) {
+    gbv <- data_frame[1,][[group_by_field]]
   }
   for(i in mmin:mmax) {
     if (!any(sorting_column == i)) {
-      scat(2,paste("order_by: adding a row with",id_field,"=",i,"\n"))
+      scat(log_level,2,paste("order_by: adding a row with",id_field,"=",i,"\n"))
       data_frame <- rbind(data_frame,rep(NA,times=dim(data_frame)[[2]]))
       data_frame[dim(data_frame)[[1]],][[id_field]] <- i
-      if (!is.null(av_state$group_by)) {
-        data_frame[dim(data_frame)[[1]],][[av_state$group_by]] <- gbv
+      if (!is.null(group_by_field)) {
+        data_frame[dim(data_frame)[[1]],][[group_by_field]] <- gbv
       }
     }
   }

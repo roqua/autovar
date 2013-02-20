@@ -2,8 +2,9 @@
 \alias{add_derived_column}
 \title{Add a new column using data from other columns}
 \usage{
-  add_derived_column(name, columns,
-    operation = c("SUM", "LN", "MINUTES_TO_HOURS"))
+  add_derived_column(av_state, name, columns,
+    operation = c("SUM", "LN", "MINUTES_TO_HOURS"),
+    log_level = 0)
 }
 \arguments{
   \item{name}{the name of the new column}
@@ -33,18 +34,21 @@
   nto work on columns that are not numeric. Values in the
   original column that are NA are left as NA in the new
   column. }}
+
+  \item{log_level}{determines the verbosity of the output
+  (a number between 0 and 3)}
 }
 \description{
   This function adds a new column, based on existing
   columns, to all identified groups in the given data set.
 }
 \examples{
-add_derived_column('SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4',
-                   'PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),
-                   operation='SUM')
-add_derived_column('lnSomBewegUur','SomBewegUur',
-                   operation='LN')
-add_derived_column('SomBewegUur','SomBewegen',
-                   operation='MINUTES_TO_HOURS')
+av_state <- add_derived_column(av_state,'SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4',
+                               'PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),
+                               operation='SUM')
+av_state <- add_derived_column(av_state,'lnSomBewegUur','SomBewegUur',
+                               operation='LN')
+av_state <- add_derived_column(av_state,'SomBewegUur','SomBewegen',
+                               operation='MINUTES_TO_HOURS')
 }
 

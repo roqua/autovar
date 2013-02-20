@@ -1,5 +1,4 @@
 # Goodness of fit tests
-
 model_score <- function(varest) {
   # low values == better models
   es <- estat_ic(varest)

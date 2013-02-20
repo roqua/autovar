@@ -1,18 +1,15 @@
-# evaluate_model
-
-evaluate_model <- function(model,index) {
+evaluate_model <- function(av_state,model,index) {
   # for debugging
-  #av_state$current_model <<- model
+  #av_state$current_model <- model
   
-  scat(2,"\n",paste(rep('-',times=20),collapse=''),"\n",sep='')
-  scat(2,index,". Model parameters: ",sep='')
-  sprint(2,model)
+  scat(av_state$log_level,2,"\n",paste(rep('-',times=20),collapse=''),"\n",sep='')
+  scat(av_state$log_level,2,index,". Model parameters: ",sep='')
+  sprint(av_state$log_level,2,model)
   
   # should return a list with model_valid, and varest
   res <- list(model_valid=TRUE,varest=NULL)
-  dta <- get_data_columns(model)
-  # this returns a list with fields: endogenous, exogenous
-  
+  dta <- get_data_columns(av_state,model)
+  av_state <- dta$av_state  
   endodta <- dta$endogenous
   exodta <- dta$exogenous
   res$model_valid <- dta$model_valid
@@ -22,24 +19,24 @@ evaluate_model <- function(model,index) {
   # and those models should run again.
   if (is.null(model$lag) || model$lag == -1) {
     res$model_valid <- FALSE
-    lags <- determine_var_order(endodta,exogen=exodta,lag.max=av_state$lag_max)
+    lags <- determine_var_order(endodta,av_state$log_level,exogen=exodta,lag.max=av_state$lag_max)
     # lags is now a list of possibly optimal VAR orders (integers)
-    scat(2,"\n> Queueing",length(lags),"VAR model(s) with lags:",lags,"\n")
+    scat(av_state$log_level,2,"\n> Queueing",length(lags),"VAR model(s) with lags:",lags,"\n")
     if (av_state$include_restricted_models) {
       for (lag in lags) {
         new_model <- create_model(model,lag=lag,restrict=TRUE)
-        av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
+        av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
         new_model <- create_model(model,lag=lag,restrict=FALSE)
-        av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
+        av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
       }
     } else {
       for (lag in lags) {
         new_model <- create_model(model,lag=lag)
-        av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
+        av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
       }
     }
-    scat(2,"\n> End of tests. Did not run tests because no lag specified.\n")
-    scat(2,paste(rep('-',times=20),collapse=''),"\n\n",sep='')
+    scat(av_state$log_level,2,"\n> End of tests. Did not run tests because no lag specified.\n")
+    scat(av_state$log_level,2,paste(rep('-',times=20),collapse=''),"\n\n",sep='')
   } else {
   
     # get the var estimate for this model. This is the 'var' command in STATA.
@@ -48,16 +45,17 @@ evaluate_model <- function(model,index) {
     if (!is.null(model$restrict) && model$restrict) {
       res$varest <- restrict(res$varest,method="ser")
     }
+    res$varest <- set_varest_values(av_state,res$varest)
     # run all the tests and queue potential models:
     
     # stability test
-    if (!model_is_stable(res$varest)) {
+    if (!model_is_stable(res$varest,av_state$log_level)) {
       res$model_valid <- FALSE
       # determine whether to continue with this model
     }
     
     # portmanteau tests on residuals and squares of residuals
-    ptests <- wntestq(res$varest)
+    ptests <- wntestq(res$varest,av_state$log_level)
     fail_names <- NULL
     sqflag <- FALSE
     siflag <- FALSE
@@ -69,9 +67,9 @@ evaluate_model <- function(model,index) {
           sqflag <- TRUE
           # squares of residuals significant: heteroskedasticity: apply log transform
           if (!apply_log_transform(model)) {
-            scat(2,"\n> Squares of residuals significant: heteroskedasticity: queueing model with log transform.\n")
+            scat(av_state$log_level,2,"\n> Squares of residuals significant: heteroskedasticity: queueing model with log transform.\n")
             new_model <- create_model(model,apply_log_transform=TRUE,lag=-1)
-            av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
+            av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
           }
         } else if (!test$is_squared && !siflag) {
           siflag <- TRUE
@@ -82,10 +80,10 @@ evaluate_model <- function(model,index) {
     }
     
     # Jarque-Bera, Skewness, Kurtosis tests
-    vns <- varnorm(res$varest)
+    vns <- varnorm(res$varest,av_state$log_level)
     if (!is.null(vns)) {
       res$model_valid <- FALSE
-      scat(2,'\n> JB test failed. Queueing model(s) with more strict outlier removal\n')
+      scat(av_state$log_level,2,'\n> JB test failed. Queueing model(s) with more strict outlier removal\n')
       # vns is a powerset of vn, minus the empty set
       for (vn in vns) {
         new_exogvars <- NULL
@@ -118,30 +116,30 @@ evaluate_model <- function(model,index) {
               any(new_exogvars != old_exogvars)) {
           new_model <- create_model(model,exogenous_variables=new_exogvars,
                                         lag=-1)
-          av_state$model_queue <<- add_to_queue(av_state$model_queue,new_model)
+          av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
         }
       }
     }
     
     # if all tests pass, print some info about this model
     if (res$model_valid) {
-      scat(2,'\n> End of tests. Model valid.\n')
-      scat(1,'Printing estat ic (low values = better models):\n')
-      sprint(1,estat_ic(res$varest))
+      scat(av_state$log_level,2,'\n> End of tests. Model valid.\n')
+      scat(av_state$log_level,1,'Printing estat ic (low values = better models):\n')
+      sprint(av_state$log_level,1,estat_ic(res$varest))
     } else {
-      scat(2,"\n> End of tests. Model invalid.\n")
+      scat(av_state$log_level,2,"\n> End of tests. Model invalid.\n")
     }
-    scat(2,paste(rep('-',times=20),collapse=''),"\n\n",sep='')
+    scat(av_state$log_level,2,paste(rep('-',times=20),collapse=''),"\n\n",sep='')
   }
-  res
+  list(res=res,av_state=av_state)
 }
 
-determine_var_order <- function(dta,...) {
+determine_var_order <- function(dta,log_level,...) {
   # default type is const
   c <- VARselect(dta,...)
-  scat(1,"\nOptimum lag length according to selection criteria (up to a max of ",
+  scat(log_level,1,"\nOptimum lag length according to selection criteria (up to a max of ",
       list(...)$lag.max,"):\n",sep='')
-  sprint(1,c$selection)
+  sprint(log_level,1,c$selection)
   lags <- sort(unique(c$selection))
   lags
 }
@@ -153,12 +151,12 @@ run_var <- function(data,lag,...) {
   m
 }
 
-var_info <- function(varest) {
-  print(summary(varest))
-  model_is_stable(varest)
-  wntestq(varest)
-  varnorm(varest)
-  vargranger(varest)
-  cat("\nestat ic\n")
-  print(estat_ic(varest))
+var_info <- function(varest,log_level=0) {
+  sprint(log_level,1,summary(varest))
+  model_is_stable(varest,log_level)
+  wntestq(varest,log_level)
+  varnorm(varest,log_level)
+  vargranger(varest,log_level)
+  scat(log_level,2,"\nestat ic\n")
+  sprint(log_level,2,estat_ic(varest))
 }

@@ -1,25 +1,23 @@
-# visualize
-
-visualize <- function(columns,...) {
+visualize <- function(av_state,columns,...) {
   if (length(columns) == 1) {
-    visualize_column(columns,...)
+    visualize_column(av_state,columns,...)
   } else {
-    visualize_columns(columns,...)
+    visualize_columns(av_state,columns,...)
   }
 }
 
-visualize_column <- function(column,...) {
+visualize_column <- function(av_state,column,...) {
   if (class(av_state$data[[1]][[column]]) == "factor") {
-    visualize_nominal_column(column,...)
+    visualize_nominal_column(av_state,column,...)
   } else if (class(av_state$data[[1]][[column]]) == "numeric") {
-    visualize_scale_column(column,...)
+    visualize_scale_column(av_state,column,...)
   } else {
     stop(paste("unknown column class",class(av_state$data[[1]][[column]]),
      "for column",column))
   }
 }
 
-visualize_scale_column <- function(column,type=c('LINE','BOX'),title="",...) {
+visualize_scale_column <- function(av_state,column,type=c('LINE','BOX'),title="",...) {
   visualize_methodr <- match.arg(type)
   visualize_method <- switch(visualize_methodr,
     LINE = visualize_line,
@@ -39,12 +37,16 @@ visualize_scale_column <- function(column,type=c('LINE','BOX'),title="",...) {
     if (class(data_frame[[column]]) != "factor") {
       data_frame[[column]][is.na(data_frame[[column]])] <- 0
     }
-    visualize_method(column,data_frame[[column]],paste(title,visualize_sub_title(idx),sep=''),...)
+    visualize_method(av_state$order_by,column,data_frame[[column]],
+                     paste(title,
+                           visualize_sub_title(av_state[['group_by']],
+                                               av_state$data[[idx]]),sep=''),
+                     ...)
   }
   par(op)
 }
 
-visualize_nominal_column <- function(column,type=c('PIE','BAR','DOT','LINE'),title="",...) {
+visualize_nominal_column <- function(av_state,column,type=c('PIE','BAR','DOT','LINE'),title="",...) {
   visualize_method <- match.arg(type)
   if (visualize_method == 'LINE') {
     visualize_scale_column(column,type=visualize_method)
@@ -85,14 +87,18 @@ visualize_nominal_column <- function(column,type=c('PIE','BAR','DOT','LINE'),tit
           colors <- c(colors,ccolor)
         }
       }
-      visualize_method(slices,labels=used_levels,main=paste(title,visualize_sub_title(idx),sep=''),colors=colors,...)
+      visualize_method(slices,labels=used_levels,
+                       main=paste(title,
+                                  visualize_sub_title(av_state[['group_by']],
+                                                      av_state$data[[idx]]),sep=''),
+                       colors=colors,...)
     }
     mtext(column,outer = TRUE)
     par(old.par)
   }
 }
 
-visualize_columns <- function(columns,labels=columns,type=c('PIE','BAR','DOT'),title="",...) {
+visualize_columns <- function(av_state,columns,labels=columns,type=c('PIE','BAR','DOT'),title="",...) {
   visualize_method <- match.arg(type)
   visualize_method <- switch(visualize_method,
     PIE = visualize_pie,
@@ -130,17 +136,21 @@ visualize_columns <- function(columns,labels=columns,type=c('PIE','BAR','DOT'),t
         }
       }
     }
-    visualize_method(slices,labels=used_columns,main=paste(title,visualize_sub_title(idx),sep=''),colors=colors,...)
+    visualize_method(slices,labels=used_columns,
+                     main=paste(title,
+                                visualize_sub_title(av_state[['group_by']],
+                                                    av_state$data[[idx]]),sep=''),
+                     colors=colors,...)
   }
   par(old.par)
 }
 
-visualize_sub_title <- function(idx) {
-  if (is.null(av_state[['group_by']])) {
+visualize_sub_title <- function(group_by_field,data_subset) {
+  if (is.null(group_by_field)) {
     ""
   } else {
-    id_field <- av_state[['group_by']]
-    paste(' ',id_field,' = ',av_state$data[[idx]][[id_field]][1],sep='')
+    id_field <- group_by_field
+    paste(' ',id_field,' = ',data_subset[[id_field]][1],sep='')
   }
 }
 
@@ -156,7 +166,7 @@ visualize_bar <- function(columns,labels,main,colors,...) {
   barplot(columns,main=main,col=colors,names.arg=labels,...)
 }
 
-visualize_line <- function(column,y,main,acc=FALSE,...) {
+visualize_line <- function(order_by_field,column,y,main,acc=FALSE,...) {
   yorig <- y
   y <- as.numeric(y)
   y[is.na(y)] <- 0
@@ -176,8 +186,8 @@ visualize_line <- function(column,y,main,acc=FALSE,...) {
     mlabels <- c('NA',levels(yorig))
   }
   xla <- 'index'
-  if (!is.null(av_state$order_by)) {
-    xla <- paste(av_state$order_by,'index')
+  if (!is.null(order_by_field)) {
+    xla <- paste(order_by_field,'index')
   }
   if (acc || length(mat) > 10) {
     plot(1:length(y),y=y,type='p',main=main,
@@ -189,11 +199,8 @@ visualize_line <- function(column,y,main,acc=FALSE,...) {
   }
   lines(1:length(y),y=y,type='l',...)
   title(main=column,outer=TRUE)
-  #coords <- data.frame(cbind(1:length(y),y))
-  #names(coords) <- c("x", "y")
-  #lines(as.data.frame(with(coords, list(x = spline(x)$y, y = spline(y)$y))),...)
 }
 
-visualize_box <- function(column,y,main,...) {
+visualize_box <- function(order_by_field,column,y,main,...) {
   boxplot(y,main=main,ylab=column,...)
 }

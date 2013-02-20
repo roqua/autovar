@@ -1,30 +1,23 @@
-# wntestq <-> Portmeanteau <-> serial.test() <-- not used, rewritten
-#   Portmanteau test for white noise
-# wntestq in stata, test it on the residuals.
-# wntestq mag NIET significant zijn, want dan is de data niet normaal
-# -> If the tests for residuals are significant then we have to redefine our model by using more lags
-# Significance here means very small (<= 0.05) or very large (>= 0.95)
-# -> If the Portmanteau test for the squares of the residuals is significant, there is heteroskedasticity in the series. Then you may consider a logtransformation of your variables.
-
-wntestq <- function(varest) {
-  scat(2,"\nPortmanteau tests for white noise\n")
+# Portmanteau test for white noise
+wntestq <- function(varest,log_level=0) {
+  scat(log_level,2,"\nPortmanteau tests for white noise\n")
   ptests <- portmanteau_test(varest)
   fail_names <- NULL
   for (i in 1:(dim(ptests)[1])) {
     test <- ptests[i,]
-    scat(1,"  ",test$name,':\n',sep="")
-    scat(1,'    Portmanteau (Q) statistic = ',test$q,"\n",sep="")
+    scat(log_level,1,"  ",test$name,':\n',sep="")
+    scat(log_level,1,'    Portmanteau (Q) statistic = ',test$q,"\n",sep="")
     if (test$passes_test) {  
-      scat(1,'    Prob > chi2(',test$df,') = ',test$p,"\n",sep="")
+      scat(log_level,1,'    Prob > chi2(',test$df,') = ',test$p,"\n",sep="")
     } else {
-      scat(1,'    Prob > chi2(',test$df,') = ',test$p," <-- FAILED\n",sep="")
+      scat(log_level,1,'    Prob > chi2(',test$df,') = ',test$p," <-- FAILED\n",sep="")
       fail_names <- c(fail_names,test$name)
     }
   }
   if (is.null(fail_names)) {
-    scat(2,"PASS: There is no autocorrelation in the residuals.\n")
+    scat(log_level,2,"PASS: There is no autocorrelation in the residuals.\n")
   } else {
-    scat(2,"FAIL: There is still autocorrelation in the residuals for:",
+    scat(log_level,2,"FAIL: There is still autocorrelation in the residuals for:",
          paste(fail_names,collapse=', '),"\n")
   }
   ptests
@@ -57,7 +50,7 @@ portmanteau_test <- function(varest) {
     ns <- c(ns,name)
     ons <- c(ons,name)
     isq <- c(isq,FALSE)
-    pst <- c(pst,p > av_state$significance)
+    pst <- c(pst,p > av_state_significance(varest))
     # add the squares of the residuals
     data <- data^2
     q <- portmanteau_test_statistic(data,n,h)
@@ -68,7 +61,7 @@ portmanteau_test <- function(varest) {
     ns <- c(ns,paste(name,'squared'))
     ons <- c(ons,name)
     isq <- c(isq,TRUE)
-    pst <- c(pst,p > av_state$significance)
+    pst <- c(pst,p > av_state_significance(varest))
   }
   data.frame(name=ns,q=qs,p=ps,df=dfs,
              variable=ons,is_squared=isq,passes_test=pst,

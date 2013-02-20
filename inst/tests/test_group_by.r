@@ -1,24 +1,25 @@
 context('group_by')
 
 test_that('id_field is a required parameter',{
-  expect_error(group_by(),"missing id_field parameter")
+  av_state <- load_test_data()
+  expect_error(group_by(av_state),"missing id_field parameter")
 })
 
 test_that('group_by() sets the group_by flag in av_state',{
-  load_test_data()
+  av_state <- load_test_data()
   expect_true(is.null(av_state$group_by))
   capture.output({
-    group_by('id')
+    av_state <- group_by(av_state,'id')
   })
   expect_equal(av_state$group_by,'id')
 })
 
 test_that('group_by() can only be called once',{
-  load_test_data()
+  av_state <- load_test_data()
   capture.output({
-    group_by('id')
+    av_state <- group_by(av_state,'id')
   })
-  expect_error(group_by('id'),'called once')
+  expect_error(group_by(av_state,'id'),'called once')
 })
 
 test_that('split_up makes two subsets when there are two distinct values for the id_field',{

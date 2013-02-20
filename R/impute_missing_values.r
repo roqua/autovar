@@ -1,6 +1,5 @@
-# impute missing values
-
-impute_missing_values <- function(columns,subset_ids='ALL',type=c('SIMPLE','EM')) {
+impute_missing_values <- function(av_state,columns,subset_ids='ALL',type=c('SIMPLE','EM')) {
+  assert_av_state(av_state)
   if (missing(columns)) {
     stop("please supply a columns argument")
   }
@@ -12,8 +11,10 @@ impute_missing_values <- function(columns,subset_ids='ALL',type=c('SIMPLE','EM')
   if (subset_ids == 'ALL') {
     subset_ids <- 1:length(av_state$data)
   }
-  scat(2,paste("impute_missing_values: imputing values for columns: ",paste(columns,collapse=', '),"...\n",sep=""))
-  missing_before <- calc_missing_all()
+  scat(av_state$log_level,2,
+       paste("impute_missing_values: imputing values for columns: ",
+             paste(columns,collapse=', '),"...\n",sep=""))
+  missing_before <- calc_missing_all(av_state)
   for (subset_id in subset_ids) {
     if (class(subset_id) == 'numeric' && !any(subset_id == 1:length(av_state$data))) {
       warning(paste(subset_id,"does not identify a data set, skipping..."))
@@ -24,29 +25,33 @@ impute_missing_values <- function(columns,subset_ids='ALL',type=c('SIMPLE','EM')
       warning(paste(subset_id,"does not identify a data set, skipping..."))
       next
     }
-    missing_before_columns <- calc_missing_in_columns(subset_id,columns)
+    missing_before_columns <- calc_missing_in_columns(av_state,subset_id,columns)
     for (column in columns) {
       data_column <- data_frame[[column]]
-      if (is.null(data_column)) { 
+      if (is.null(data_column)) {
         stop(paste("column does not exist:",column,", skipping..."))
         next
       }
-      impute_method(subset_id,column)
+      av_state$data[[subset_id]][[column]] <- 
+        impute_method(av_state$data[[subset_id]][[column]])
     }
-    missing_after_columns <- calc_missing_in_columns(subset_id,columns)
+    missing_after_columns <- calc_missing_in_columns(av_state,subset_id,columns)
     if (missing_before_columns$na_cnt != missing_after_columns$na_cnt) {
-      scat(2,paste("impute_missing_values: imputed ",
+      scat(av_state$log_level,2,paste("impute_missing_values: imputed ",
                    missing_before_columns$string,
                    " missing values for subset ",subset_id,"\n",sep=""))
     }
   }
-  missing_after <- calc_missing_all()
+  missing_after <- calc_missing_all(av_state)
   if (missing_before != missing_after) {
-    scat(2,paste("impute_missing_values: imputed a total of ",missing_before-missing_after," values.\n",sep=""))
+    scat(av_state$log_level,2,
+         paste("impute_missing_values: imputed a total of ",
+               missing_before-missing_after," values.\n",sep=""))
   }
+  av_state
 }
 
-calc_missing_in_columns <- function(subset_id,columns) {
+calc_missing_in_columns <- function(av_state,subset_id,columns) {
   na_cnt <- 0
   tot_cnt <- 0
   max_perc <- 0
@@ -70,7 +75,7 @@ calc_missing <- function(data_frame) {
   paste(round(100*na_cnt/tot_cnt,digits=2),"% (",na_cnt,")",sep="")
 }
 
-calc_missing_all <- function() {
+calc_missing_all <- function(av_state) {
   na_cnt <- 0
   for (subset_id in 1:length(av_state$data)) {
     na_cnt <- na_cnt+sum(is.na(av_state$data[[subset_id]]))
@@ -78,41 +83,46 @@ calc_missing_all <- function() {
   na_cnt
 }
 
-impute_em <- function(subset_id,column) {
+impute_em <- function(column_data) {
   warning("impute_em: em imputation not implemented.")
+  column_data
 }
 
-impute_simple <- function(subset_id,column) {
+impute_simple <- function(column_data) {
   # check whether there are NA values:
-  if (any(is.na(av_state$data[[subset_id]][[column]]))) {
+  if (any(is.na(column_data))) {
     # what type is the column?
-    if (class(av_state$data[[subset_id]][[column]]) == "factor") {
-      impute_simple_factor(subset_id,column)
-    } else if (class(av_state$data[[subset_id]][[column]]) == "numeric") {
-      impute_simple_numeric(subset_id,column)
+    if (class(column_data) == "factor") {
+      impute_simple_factor(column_data)
+    } else if (class(column_data) == "numeric") {
+      impute_simple_numeric(column_data)
     } else {
       warning(paste("unknown column class",
-                    class(av_state$data[[subset_id]][[column]]),
-                    "for column",column))
+                    class(column_data),
+                    "for column"))
+      column_data
     }
+  } else {
+    column_data
   }
 }
 
-impute_simple_factor <- function(subset_id,column) {
-  na_vals <- which(is.na(av_state$data[[subset_id]][[column]]))
+impute_simple_factor <- function(column_data) {
+  na_vals <- which(is.na(column_data))
   for (idx in na_vals) {
-    surr <- surrounding_vals(subset_id,column,idx)
-    val <- mode_value(av_state$data[[subset_id]][[column]][surr])
-    av_state$data[[subset_id]][[column]][idx] <<- val
+    surr <- surrounding_vals(column_data,idx)
+    val <- mode_value(column_data[surr])
+    column_data[idx] <- val
   }
+  column_data
 }
 
 mode_value <- function(x) {
   names(sort(-table(x)))[1]
 }
 
-surrounding_vals <- function(subset_id,column,idx) {
-  indices <-  which(!is.na(av_state$data[[subset_id]][[column]]))
+surrounding_vals <- function(column_data,idx) {
+  indices <-  which(!is.na(column_data))
   sortres <- sort(c(idx,indices),index.return=TRUE)
   index <- which(sortres$ix == 1)
   lefttail <- indices[max(index-2,1):index-1]
@@ -127,11 +137,12 @@ surrounding_vals <- function(subset_id,column,idx) {
   c(lefttail,righttail)
 }
 
-impute_simple_numeric <- function(subset_id,column) {
-  na_vals <- which(is.na(av_state$data[[subset_id]][[column]]))
+impute_simple_numeric <- function(column_data) {
+  na_vals <- which(is.na(column_data))
   for (idx in na_vals) {
-    surr <- surrounding_vals(subset_id,column,idx)
-    val <- mean(av_state$data[[subset_id]][[column]][surr])
-    av_state$data[[subset_id]][[column]][idx] <<- val
+    surr <- surrounding_vals(column_data,idx)
+    val <- mean(column_data[surr])
+    column_data[idx] <- val
   }
+  column_data
 }

@@ -1,21 +1,17 @@
-# vargranger
-# if the exclusion of variable a is significant for the equation of variable b,
-# then a granger causes b.
-# also give a one line summary for results
-
-vargranger <- function(varest) {
+# Granger causality
+vargranger <- function(varest,log_level=0) {
   # TODO: make this function work when var has more than two variables
   if (dim(varest$y)[[2]] > 2) {
     stop("the current vargranger implementation only works for two variables")
   }
-  scat(2,"\nGranger causality Wald tests\n")
+  scat(log_level,2,"\nGranger causality Wald tests\n")
   res <- vargranger_call(varest)
-  sprint(1,res)
-  tos <- vargranger_to_string(res)
+  sprint(log_level,1,res)
+  tos <- vargranger_to_string(varest,res)
   if (tos != '') {
-    scat(2,'Vargranger causes: ',tos,'\n',sep='')
+    scat(log_level,2,'Vargranger causes: ',tos,'\n',sep='')
   } else {
-    scat(2,'No significant Granger causes detected.\n')
+    scat(log_level,2,'No significant Granger causes detected.\n')
   }
   tos
 }
@@ -31,7 +27,7 @@ df_in_rows <- function(df) {
 }
 
 vargranger_call <- function(varest) {
-  if (av_state$small) {
+  if (av_state_small(varest)) {
     vargranger_aux_small(varest)
   } else {
     vargranger_aux(varest)
@@ -103,18 +99,18 @@ get_named <- function(arr,name) {
   }
 }
 
-vargranger_to_string <- function(res,include_significance=TRUE) {
+vargranger_to_string <- function(varest,res,include_significance=TRUE) {
   # res is a vargranger_aux result
   str <- NULL
   for (row in df_in_rows(res)) {
-    if (row$P <= av_state$significance) {
+    if (row$P <= av_state_significance(varest)) {
       str <- c(str,paste(unprefix_ln(row$Excluded),
                          ' Granger causes ',
                          unprefix_ln(row$Equation),
                          ifelse(include_significance,
                                 paste(' (',signif(row$P,digits=3),')',sep=''),
                                 ''),sep=''))
-    } else if (row$P <= 2*av_state$significance) {
+    } else if (row$P <= 2*av_state_significance(varest)) {
       str <- c(str,paste(unprefix_ln(row$Excluded),
                          ' almost Granger causes ',
                          unprefix_ln(row$Equation),
@@ -132,7 +128,7 @@ vargranger_to_string <- function(res,include_significance=TRUE) {
 }
 
 vargranger_line <- function(varest,...) {
-  vargranger_to_string(vargranger_call(varest),...)
+  vargranger_to_string(varest,vargranger_call(varest),...)
 }
 
 vargranger_list <- function(lst) {

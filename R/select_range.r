@@ -1,7 +1,6 @@
-# select_range
-
 # select_range selects a subset of rows to be kept
-select_range <- function(subset_id='multiple',column,begin,end) {
+select_range <- function(av_state,subset_id='multiple',column,begin,end) {
+  assert_av_state(av_state)
   if (class(subset_id) == 'numeric' && !any(subset_id == 1:length(av_state$data))) {
     stop(paste(subset_id,"does not identify a data set"))
   }
@@ -33,14 +32,15 @@ select_range <- function(subset_id='multiple',column,begin,end) {
   rows_remaining <- length(which(condition))
   rows_cut <- dim(data_frame)[1] - rows_remaining
   if (rows_cut > 0) {
-    scat(2,"select_range: for subset ",subset_id,", number of rows cut: ",
+    scat(av_state$log_level,2,"select_range: for subset ",subset_id,", number of rows cut: ",
         rows_cut,", number of rows remaining: ",rows_remaining,"\n",sep='')
   }
-  av_state$data[[subset_id]] <<- data_frame[which(condition),]
+  av_state$data[[subset_id]] <- data_frame[which(condition),]
   missing_after <- calc_missing(av_state$data[[subset_id]])
   if (missing_before != missing_after) {
-    scat(2,paste("select_range: for subset ",subset_id,", missing values went from ",missing_before," to ",missing_after,"\n",sep=""))
+    scat(av_state$log_level,2,paste("select_range: for subset ",subset_id,", missing values went from ",missing_before," to ",missing_after,"\n",sep=""))
   }
+  av_state
 }
 
 # also used in order_by

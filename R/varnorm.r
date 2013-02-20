@@ -1,6 +1,84 @@
-# varnorm <-> Jarque-Bera <-> normality.test()
-# The Skewness, Kurtosis, and JB tests (of the residuals)
-# cannot be significant
+# Skewness, Kurtosis, and Jarque-Bera tests
+varnorm <- function(varest,log_level=0) {
+  r <- jb(varest)
+  ret_fail_columns <- NULL
+  scat(log_level,2,"\nJarque-Bera, Skewness, and Kurtosis tests\n")
+  scat(log_level,1,"  Jarque-Bera test:\n")
+  sprint(log_level,1,r$jb)
+  names <- dimnames(r$jb)[[1]]
+  fails <- NULL
+  for (i in 1:(dim(r$jb)[1])) {
+    if (r$jb$P[[i]] <= av_state_significance(varest)) {
+      column <- names[i]
+      fails <- c(fails,column)
+      if (column == 'ALL') {
+        ret_fail_columns <- av_state_vars(varest)
+      } else {
+        real_column <- unprefix_ln(column)
+        if (!(real_column %in% ret_fail_columns)) {
+          ret_fail_columns <- c(ret_fail_columns,real_column)
+        }
+      }
+    }
+  }
+  if (!is.null(fails)) {
+    scat(log_level,1,"  Failed for: ",paste(fails,collapse=', '),'\n',sep='')
+  }
+  
+  scat(log_level,1,"  Skewness test:\n")
+  sprint(log_level,1,r$sk)
+  names <- dimnames(r$sk)[[1]]
+  fails <- NULL
+  for (i in 1:(dim(r$sk)[1])) {
+    if (r$sk$P[[i]] <= av_state_significance(varest)) {
+      column <- names[i]
+      fails <- c(fails,column)
+      if (column == 'ALL') {
+        ret_fail_columns <- av_state_vars(varest)
+      } else {
+        real_column <- unprefix_ln(column)
+        if (!(real_column %in% ret_fail_columns)) {
+          ret_fail_columns <- c(ret_fail_columns,real_column)
+        }
+      }
+    }
+  }
+  if (!is.null(fails)) {
+    scat(log_level,1,"  Failed for: ",paste(fails,collapse=', '),'\n',sep='')
+  }
+  
+  scat(log_level,1,"  Kurtosis test:\n")
+  sprint(log_level,1,r$kt)
+  names <- dimnames(r$kt)[[1]]
+  fails <- NULL
+  for (i in 1:(dim(r$kt)[1])) {
+    if (r$kt$P[[i]] <= av_state_significance(varest)) {
+      column <- names[i]
+      fails <- c(fails,column)
+      if (column == 'ALL') {
+        ret_fail_columns <- av_state_vars(varest)
+      } else {
+        real_column <- unprefix_ln(column)
+        if (!(real_column %in% ret_fail_columns)) {
+          ret_fail_columns <- c(ret_fail_columns,real_column)
+        }
+      }
+    }
+  }
+  if (!is.null(fails)) {
+    scat(log_level,1,"  Failed for: ",paste(fails,collapse=', '),'\n',sep='')
+  }
+  
+  if (is.null(ret_fail_columns)) {
+    scat(log_level,2,"PASS: Unable to reject null hypothesis that residuals are normally distributed.\n")
+  } else {
+    scat(log_level,2,"FAIL: Residuals are significantly not normally distributed.\n")
+  }
+  if (!is.null(ret_fail_columns)) {
+    ret_fail_columns <- powerset(ret_fail_columns)
+  }
+  ret_fail_columns
+}
 
 powerset <- function(lst) {
   res <- NULL
@@ -135,85 +213,4 @@ jb <- function(varest) {
   }
   
   list(jb=jbtab,sk=sktab,kt=kttab)
-}
-
-varnorm <- function(varest) {
-  r <- jb(varest)
-  ret_fail_columns <- NULL
-  scat(2,"\nJarque-Bera, Skewness, and Kurtosis tests\n")
-  scat(1,"  Jarque-Bera test:\n")
-  sprint(1,r$jb)
-  names <- dimnames(r$jb)[[1]]
-  fails <- NULL
-  for (i in 1:(dim(r$jb)[1])) {
-    if (r$jb$P[[i]] <= av_state$significance) {
-      column <- names[i]
-      fails <- c(fails,column)
-      if (column == 'ALL') {
-        ret_fail_columns <- av_state$vars
-      } else {
-        real_column <- unprefix_ln(column)
-        if (!(real_column %in% ret_fail_columns)) {
-          ret_fail_columns <- c(ret_fail_columns,real_column)
-        }
-      }
-    }
-  }
-  if (!is.null(fails)) {
-    scat(1,"  Failed for: ",paste(fails,collapse=', '),'\n',sep='')
-  }
-  
-  scat(1,"  Skewness test:\n")
-  sprint(1,r$sk)
-  names <- dimnames(r$sk)[[1]]
-  fails <- NULL
-  for (i in 1:(dim(r$sk)[1])) {
-    if (r$sk$P[[i]] <= av_state$significance) {
-      column <- names[i]
-      fails <- c(fails,column)
-      if (column == 'ALL') {
-        ret_fail_columns <- av_state$vars
-      } else {
-        real_column <- unprefix_ln(column)
-        if (!(real_column %in% ret_fail_columns)) {
-          ret_fail_columns <- c(ret_fail_columns,real_column)
-        }
-      }
-    }
-  }
-  if (!is.null(fails)) {
-    scat(1,"  Failed for: ",paste(fails,collapse=', '),'\n',sep='')
-  }
-  
-  scat(1,"  Kurtosis test:\n")
-  sprint(1,r$kt)
-  names <- dimnames(r$kt)[[1]]
-  fails <- NULL
-  for (i in 1:(dim(r$kt)[1])) {
-    if (r$kt$P[[i]] <= av_state$significance) {
-      column <- names[i]
-      fails <- c(fails,column)
-      if (column == 'ALL') {
-        ret_fail_columns <- av_state$vars
-      } else {
-        real_column <- unprefix_ln(column)
-        if (!(real_column %in% ret_fail_columns)) {
-          ret_fail_columns <- c(ret_fail_columns,real_column)
-        }
-      }
-    }
-  }
-  if (!is.null(fails)) {
-    scat(1,"  Failed for: ",paste(fails,collapse=', '),'\n',sep='')
-  }
-  
-  if (is.null(ret_fail_columns)) {
-    scat(2,"PASS: Unable to reject null hypothesis that residuals are normally distributed.\n")
-  } else {
-    scat(2,"FAIL: Residuals are significantly not normally distributed.\n")
-  }
-  if (!is.null(ret_fail_columns)) {
-    ret_fail_columns <- powerset(ret_fail_columns)
-  }
-  ret_fail_columns
 }
