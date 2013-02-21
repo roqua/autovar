@@ -4,7 +4,7 @@ evaluate_model <- function(av_state,model,index) {
   
   scat(av_state$log_level,2,"\n",paste(rep('-',times=20),collapse=''),"\n",sep='')
   scat(av_state$log_level,2,index,". Model parameters: ",sep='')
-  sprint(av_state$log_level,2,model)
+  sprint(av_state$log_level,2,model,av_state)
   
   # should return a list with model_valid, and varest
   res <- list(model_valid=TRUE,varest=NULL)
