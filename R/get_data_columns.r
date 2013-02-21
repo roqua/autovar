@@ -110,14 +110,14 @@ is_outliers_column_valid <- function(av_state,cname,iteration) {
 std_factor_for_iteration <- function(iteration) {
   std_factor <- NULL
   if (iteration == 1) {
-    # remove outliers beyond 3xstd
-    std_factor <- 3
+    # remove outliers beyond 3.5xstd
+    std_factor <- 3.5
   } else if (iteration == 2) {
-    # remove outliers beyond 2.5x std
-    std_factor <- 2.5
+    # remove outliers beyond 3x std
+    std_factor <- 3
   } else {
-    # remove outliers beyond 2 std
-    std_factor <- 2
+    # remove outliers beyond 2.5 std
+    std_factor <- 2.5
   }
   std_factor
 }

@@ -12,11 +12,11 @@ Currently, one data set can be operated on at at time. The data set, along with 
 
 ### load_file
 
-    load_file(filename,file_type = c('SPSS','STATA'))
+    av_state <- load_file(filename,file_type = c('SPSS','STATA'))
     
-**In the web application, this function does not need to be called explicitly. It is always prepended to the code.**
+**In the web application, this function does not need to be called explicitly. It is always prepended to the code. Use the variable `d` to refer to the av_state for the selected data set.**
 
-This function prints the columns of the loaded data set. The abbreviation `(scl)` is used to denote scale (numeric) columns, and `(nom)` is used to denote nominal (factor) columns.
+This function prints the columns of the loaded data set. The abbreviation `(scl)` is used to denote scale (numeric) columns, and `(nom)` is used to denote nominal (factor) columns. The function returns an object of class `av_state`. Objects of this class are used throughout this package to store VAR data sets, models, and results.
 
 #### Arguments
 
@@ -33,16 +33,18 @@ This function creates the following variables in the `av_state` list:
 
 #### Syntax
 
-Example: `load_file("../data/input/RuwedataAngela.sav")`
+Example: `av_state <- load_file("../data/input/RuwedataAngela.sav")`
 
 
 ### group_by
 
-    group_by(id_field)
+    av_state <- group_by(av_state,id_field)
 
 The `group_by` function splits up the initial data set into multiple sets based on their value for `id_field`.
 
 For example, if we have a data set with a field named `id`  that has values ranging from 11 to 15, calling `group_by('id')` will set `av_state$data` to a list of five items. This list is ordered by the value of the id field. Then, we can use `av_state$data[[1]]` (or equivalently, `av_state$data[['11']]`) to retrieve the rows in the data set that have `id` 11. Likewise, use `av_state$data[[2]]` or `av_state$data[['12']]` for rows with `id` 12.
+
+The first argument to this function has to be an object of class `av_state`. A modified `av_state` object is returned.
 
 #### Results
 
@@ -53,11 +55,13 @@ Other than adjusting `av_state$data`, the `group_by` function creates the follow
 
 ### order_by
 
-    order_by(id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISSING','NONE'))
+    av_state <- order_by(av_state,id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISSING','NONE'))
 
 The `order_by` function determines the order of the data rows as they appear in ther output of the `store_file` function. The supplied `id_field` parameter is often a measurement index (e.g., `'tijdstip'`). The `id_field` column has to be numeric.
 
 #### Arguments
+
+The first argument to this function has to be an object of class `av_state`. A modified `av_state` object is returned.
 
 The `impute_method` argument has three possible values:
 
@@ -77,16 +81,18 @@ Other than adjusting `av_state$data`, the `order_by` function creates the follow
 
 #### Syntax
 
-Example: `order_by('tijdstip',impute_method='ONE_MISSING')`
+Example: `av_state <- order_by(av_state,'tijdstip',impute_method='ONE_MISSING')`
 
 
 ### select_range
 
-    select_range(subset_id='multiple',column,begin,end)
+    av_state <- select_range(av_state, subset_id='multiple',column,begin,end)
 
 The `select_range` function selects which rows of a data set should be included. If the data set is grouped into multiple data sets, the `subset_id` argument needs to be supplied, allowing the function to work individually per data set.
 
 #### Arguments
+
+The first argument to this function has to be an object of class `av_state`. A modified `av_state` object is returned.
 
 The `column` argument specifies which column the begin and end values should be taken over. This argument is optional, and if it is missing, the value of `av_state$order_by` will be substituted.
 
@@ -94,7 +100,7 @@ Either the `begin` or the `end` argument need to be specified. The column does n
 
 #### Syntax
 
-Example: `select_range('1',begin=20,end=40)`
+Example: `av_state <- select_range(av_state,'1',begin=20,end=40)`
 
 
 Modifying and adding columns
@@ -106,11 +112,13 @@ Modifying and adding columns
 
 ### impute_missing_values
 
-    impute_missing_values(columns,subset_ids='ALL',type=c('SIMPLE','EM'))
+    av_state <- impute_missing_values(av_state,columns,subset_ids='ALL',type=c('SIMPLE','EM'))
 
 The `impute_missing_values` function can impute data for values that are missing (i.e., for values that are `NA`). It outputs for every subset how many values were imputed (for all columns total) along with a percentage (following `<=`). This percentage is the percentage of the column with the highest percentage of imputed values, i.e., if multiple columns were specified, it is the percentage of values that were imputed of the column that had relatively most `NA` values.
 
 #### Arguments
+
+The first argument to this function has to be an object of class `av_state`. A modified `av_state` object is returned.
 
 The `columns` argument can be a single column or a list of column names. It is the only argument that is required.
 
@@ -123,16 +131,18 @@ The `type` argument has three possible values:
 
 #### Syntax
 
-Example: `impute_missing_values('norm_bewegen')` or `impute_missing_values(c('norm_bewegen','minuten_woonwerk'),subset_ids=1)`
+Example: `av_state <- impute_missing_values(av_state,'norm_bewegen')` or `av_state <- impute_missing_values(av_state,c('norm_bewegen','minuten_woonwerk'),subset_ids=1)`
 
 
 ### add_derived_column
 
-    add_derived_column(name,columns,operation=c('SUM','LN','MINUTES_TO_HOURS'))
+    av_state <- add_derived_column(av_state,name,columns,operation=c('SUM','LN','MINUTES_TO_HOURS'))
 
 The `add_derived_column` function adds a new column, based on existing columns, to all identified groups in the current data set. The `name` argument holds the name of the new column.
 
 #### Arguments
+
+The first argument to this function has to be an object of class `av_state`. A modified `av_state` object is returned.
 
 The `operation` argument has three possible values:
 
@@ -142,7 +152,7 @@ The `operation` argument has three possible values:
 
 #### Syntax
 
-Example: `add_derived_column('SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4','PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),operation='SUM')`, `add_derived_column('lnSomBewegUur','SomBewegUur',operation='LN')`, or  `add_derived_column('SomBewegUur','SomBewegen',operation='MINUTES_TO_HOURS')`.
+Example: `av_state <- add_derived_column(av_state,'SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4','PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),operation='SUM')`, `av_state <- add_derived_column(av_state,'lnSomBewegUur','SomBewegUur',operation='LN')`, or  `av_state <- add_derived_column(av_state,'SomBewegUur','SomBewegen',operation='MINUTES_TO_HOURS')`.
 
 
 Vector Autoregression
@@ -151,13 +161,15 @@ Vector Autoregression
 
 ### var_main
 
-    var_main(vars,lag_max=7,significance=0.05,exogenous_max_iterations=3,
-             subset=1,log_level=av_state$log_level,include_restricted_models=FALSE,
-             small=FALSE,include_model=NULL)
+    av_state <- var_main(av_state,vars,lag_max=7,significance=0.05,exogenous_max_iterations=3,
+                         subset=1,log_level=av_state$log_level,include_restricted_models=FALSE,
+                         small=FALSE,include_model=NULL)
 
 The `var_main` function generates and tests possible VAR models for the specified variables. The only required argument is `vars`, which should be a vector of variables.
 
 #### Arguments
+
+The first argument to this function has to be an object of class `av_state`. A modified `av_state` object is returned.
 
 The `lag_max` argument limits the highest possible number of lags that will be used in a model. This number sets the maximum limit in the search for optimal lags.
 
@@ -165,9 +177,9 @@ The `significance` argument is the maximum P-value for which results are seen as
 
 The `exogenous_max_iterations` argument determines how many times we should try to exclude additional outliers for a variable. The `exogenous_max_iterations` argument should be a number between 1 and 3:
 
-* `1` - When Jarque-Bera tests fail, having `exogenous_max_iterations = 1` will only try with removing 3x std. outliers for variables using exogenous variables.
-* `2` - When `exogenous_max_iterations = 2`, the program will also try removing 2.5x std. outliers if JB tests still fail.
-* `3` - When `exogenous_max_iterations = 3`, the program will also try removing 2x std. outliers if JB tests still fail.
+* `1` - When Jarque-Bera tests fail, having `exogenous_max_iterations = 1` will only try with removing 3.5x std. outliers for variables using exogenous variables.
+* `2` - When `exogenous_max_iterations = 2`, the program will also try removing 3x std. outliers if JB tests still fail.
+* `3` - When `exogenous_max_iterations = 3`, the program will also try removing 2.5x std. outliers if JB tests still fail.
 
 The `subset` argument specifies which data subset the VAR analysis should run on. The VAR analysis only runs on one data subset at a time. If not specified, the first subset is used (corresponding to `av_state$data[[1]]`).
 
@@ -179,7 +191,7 @@ The `small` argument defaults to `FALSE`. Its functionality corresponds to the `
 
 The `include_model` argument can be used to forcibly include a model in the evaluation. Included models have to be lists, and can specify the parameters `lag`, `exogenous_variables`, and `apply_log_transform`. For example:
 
-    var_main(c('Activity_hours','Depression'),
+    av_state <- var_main(av_state,c('Activity_hours','Depression'),
              log_level=3,
              small=TRUE,
              include_model=list(lag=3,
@@ -205,14 +217,16 @@ The `var_main` function sets the following variables in the `av_state` list:
 
 #### Syntax
 
-Example: `var_main(c('Activity_hours','Depression'),log_level=2)`
+Example: `av_state <- var_main(av_state,c('Activity_hours','Depression'),log_level=2)`
 
 
 ### var_info
 
-    var_info(varest)
+    var_info(varest,log_level=0)
 
 The `var_info` function prints the output of the tests for a var model. Note that its output can be altered by the value of `av_state$log_level`. The tests it shows are the Eigenvalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the Granger causality Wald tests, and estat ic.
+
+The `log_level` argument sets the verbosity of the output shown. It should be a number between 0 and 3. A lower level means more verbosity.
 
 #### Syntax
 
@@ -225,11 +239,13 @@ Outputting data
 
 ### visualize
 
-    visualize(columns,...)
+    visualize(av_state,columns,...)
 
 The `visualize` function works with single or multiple columns. When given an array of multiple columns as `columns` argument, all columns have to be of the numeric class. This function creates a combined plot with individual plots for each identified group in the current data set. Any supplied arguments other than the ones described are passed on to the plotting functions.
 
 #### Arguments
+
+The first argument to this function has to be an object of class `av_state`.
 
 When given the name of a single column as `columns` argument, this function behaves differently depending on the class of the column:
 
@@ -242,13 +258,13 @@ When the `columns` argument is given an array of column names, the sums of the c
 
 Examples for using visualize with multiple columns: 
 
-    visualize(c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'), labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='BAR',horiz=TRUE)
-    visualize(c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),type='DOT',xlab='minuten')
+    visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'), labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='BAR',horiz=TRUE)
+    visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),type='DOT',xlab='minuten')
 
 
 ### store_file
 
-    store_file(filename,inline_data,file_type = c('SPSS','STATA'))
+    store_file(av_state,filename,inline_data,file_type = c('SPSS','STATA'))
 
 **In the web application, this function does not need to be called explicitly. It is appended to the code when the Download button is clicked.**
 
@@ -256,17 +272,35 @@ The `store_file` function will export all groups in the active data set to indiv
 
 #### Arguments
 
-All arguments are optional. When the `filename` argument is missing, the filename of the input file is substituted. The `inline_data` argument determines whether or not the data should be stored inline or in a separate file. If this argument is missing, inline storage is used for data sets with less than 81 columns, and separate storage is used otherwise.
+The first argument to this function has to be an object of class `av_state`.
+
+All other arguments are optional. When the `filename` argument is missing, the filename of the input file is substituted. The `inline_data` argument determines whether or not the data should be stored inline or in a separate file. If this argument is missing, inline storage is used for data sets with less than 81 columns, and separate storage is used otherwise.
 
 Currently, only the `SPSS` `file_type` is supported. The `.sps` file that comes with the `SPSS` exports may require manual adjusting, as the fully quantified file path to the data set needs to be specified for it to work (relative file paths do not work).
 
 #### Syntax
 
-Example: `store_file()`
+Example: `store_file(av_state)`
 
 
-### print_state
+### print(av_state)
 
-    print_state()
+    print(av_state)
 
-This command shows the current state of the data set. This is an alias to `print(av_state)`.
+The `av_state` class supports the `print` command. This shows which parameters were used to construct the `av_state`.
+
+
+### print_accepted_models(av_state)
+
+    print_accepted_models(av_state)
+
+After when `av_state` is the result of a call to `var_main`, the above command can be used to show the list of accepted models.
+
+
+### print_rejected_models(av_state)
+
+    print_rejected_models(av_state)
+
+After when `av_state` is the result of a call to `var_main`, the above command can be used to show the list of rejected models.
+
+

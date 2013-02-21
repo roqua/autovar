@@ -266,7 +266,7 @@ function resizeBoxes() {
     $("#outputframe").height(outputheight);
 }
 $(document).ready(function() {
-$('textarea[name="x"]').attr('value', 'print_state()\n');
+$('textarea[name="x"]').attr('value', 'print(d)\n');
 $('#loadexample1').click(function() {
   $('#knitForm').find('textarea[name="x"]').val("d<-group_by(d,'id')\nd<-order_by(d,'tijdstip')\nd<-select_range(d,'2',begin=29)\n\nbewegen_columns <- c('minuten_sport','minuten_woonwerk','minuten_werk_licht',\n                    'minuten_zwaar_werk','minuten_licht_huishouden',\n                    'minuten_zwaarhuishouden','minuten_vrijetijd')\nd<-impute_missing_values(d,bewegen_columns)\nd<-add_derived_column(d,'SomBewegen',bewegen_columns,operation='SUM')\nd<-add_derived_column(d,'Activity_hours','SomBewegen',operation='MINUTES_TO_HOURS')\n\ndepression_columns <- c('PHQ1','PHQ2','PHQ3','PHQ4','PHQ5','PHQ6','PHQ7','PHQ8','PHQ9')\nd<-impute_missing_values(d,depression_columns)\nd<-add_derived_column(d,'Depression',depression_columns,operation='SUM')\n\nd<-var_main(d,c('Depression','Activity_hours'),subset=1,log_level=3)\nvisualize(d,'Depression')\nvisualize(d,'Activity_hours')\nvar_info(d$accepted_models[[1]]$varest)\n");
 });
