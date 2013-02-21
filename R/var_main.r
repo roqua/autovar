@@ -54,6 +54,8 @@ var_main <- function(av_state,vars,lag_max=7,significance=0.05,
   }
   av_state$accepted_models <- list()
   av_state$rejected_models <- list()
+  av_state$resids <- list()
+  av_state$log_resids <- list()
   i <- 1
   model_cnt <- 0
   while (TRUE) {

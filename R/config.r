@@ -1,4 +1,4 @@
-# config
+# global print and test functions
 
 print.av_state <- function(x,...) {
   nn <- names(x)
@@ -44,7 +44,7 @@ exogvars_to_string <- function(av_state,x,model) {
     }
     str <- paste(str,
                  std_factor_for_iteration(exovar$iteration),
-                 "x std of ",
+                 "x std of res. ",
                  prefix_ln_cond(exovar$variable,model),sep='')
     outliers <- '???'
     if (!is.null(av_state)) {

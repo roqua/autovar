@@ -46,6 +46,12 @@ evaluate_model <- function(av_state,model,index) {
       res$varest <- restrict(res$varest,method="ser")
     }
     res$varest <- set_varest_values(av_state,res$varest)
+    
+    # help the caching of residuals a bit by using stuff we already computed
+    if (is.null(model$exogenous_variables)) {
+      av_state <- store_residuals(av_state,model,resid(res$varest))
+    }
+    
     # run all the tests and queue potential models:
     
     # stability test

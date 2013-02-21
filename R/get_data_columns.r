@@ -10,7 +10,11 @@ get_data_columns <- function(av_state,model) {
     for (name in vrs) {
       ln_name <- prefix_ln(name)
       if (!column_exists(av_state,ln_name)) {
-        av_state <- add_derived_column(av_state,ln_name,name,operation='LN',av_state$log_level)
+        av_state <- add_derived_column(av_state,
+                                       ln_name,
+                                       name,
+                                       operation='LN',
+                                       log_level=av_state$log_level)
       }
     }
     vrs <- sapply(vrs,prefix_ln,USE.NAMES=FALSE)
@@ -19,26 +23,70 @@ get_data_columns <- function(av_state,model) {
   
   # check if exogenous_variables need to be created
   if (!is.null(model$exogenous_variables)) {
-    exovrs <- NULL
-    for (i in 1:nr_rows(model$exogenous_variables)) {
-      exovar <- model$exogenous_variables[i,]
-      cname <- prefix_ln_cond(exovar$variable,model)
-      res_outliers_column <- get_outliers_column(av_state,
-                                                 cname,
-                                                 iteration=exovar$iteration)
-      av_state <- res_outliers_column$av_state
-      exovr <- res_outliers_column$target_column
-      if (!is_outliers_column_valid(av_state,cname,exovar$iteration)) {
-        model_valid <- FALSE
+    gor <- get_orig_resids(model,av_state)
+    av_state <- gor$av_state
+    orig_resids <- gor$resids
+    nr_obs <- dim(av_state$data[[av_state$subset]])[[1]]
+    if (!is.null(orig_resids)) {
+      exovrs <- NULL
+      for (i in 1:nr_rows(model$exogenous_variables)) {
+        exovar <- model$exogenous_variables[i,]
+        cname <- prefix_ln_cond(exovar$variable,model)
+        cresids <- orig_resids[,cname]
+        exovr <- paste(exovar$variable,'_outliers',sep='')
+        av_state$data[[av_state$subset]][[exovr]] <-
+          get_outliers_column(cresids,exovar$iteration,nr_obs)
+        if (!is_outliers_column_valid(cresids,
+                                      exovar$iteration,
+                                      cname,
+                                      nr_obs,
+                                      av_state$log_level)) {
+          model_valid <- FALSE
+        }
+        exovrs <- c(exovrs,exovr)
       }
-      exovrs <- c(exovrs,exovr)
+      exodta <- av_state$data[[av_state$subset]][exovrs]
+      exodta <- as.matrix(exodta)
+      colnames(exodta) <- exovrs
     }
-    exodta <- av_state$data[[av_state$subset]][exovrs]
-    exodta <- as.matrix(exodta)
-    colnames(exodta) <- exovrs
   }
   list(av_state = av_state,endogenous = endo, 
        exogenous = exodta, model_valid = model_valid)
+}
+
+get_endodta <- function(model,av_state) {
+  vrs <- av_state$vars
+  if (apply_log_transform(model)) {
+    vrs <- sapply(vrs,prefix_ln,USE.NAMES=FALSE)
+  }
+  av_state$data[[av_state$subset]][vrs]
+}
+
+get_orig_resids <- function(model,av_state) {
+  resids <- NULL
+  if (!is.null(model$lag) && model$lag != -1) {
+    lstname <- ifelse(apply_log_transform(model),'log_resids','resids')
+    if (model$lag > length(av_state[[lstname]]) || is.null(av_state[[lstname]][[model$lag]])) {
+      # if residuals are not cached yet, cache them
+      #cat("get_orig_resids: caching for: log_transform:",apply_log_transform(model),
+      #    "lag:",model$lag,"\n")
+      endodta <- get_endodta(model,av_state)
+      varest <- run_var(data = endodta, lag = model$lag, exogen = NULL)
+      av_state[[lstname]][[model$lag]] <- resid(varest)
+    }
+    resids <- av_state[[lstname]][[model$lag]]
+  }
+  list(av_state = av_state,resids = resids)
+}
+
+store_residuals <- function(av_state,model,resids) {
+  lstname <- ifelse(apply_log_transform(model),'log_resids','resids')
+  if (model$lag > length(av_state[[lstname]]) || is.null(av_state[[lstname]][[model$lag]])) {
+    #cat("store_residuals: caching for: log_transform:",apply_log_transform(model),
+    #      "lag:",model$lag,"\n")
+    av_state[[lstname]][[model$lag]] <- resids
+  }
+  av_state
 }
 
 apply_log_transform <- function(model) {
@@ -69,38 +117,31 @@ unprefix_ln <- function(str) {
   sub("^ln",'',str)
 }
 
-
-get_outliers_column <- function(av_state,cname,iteration) {
-  target_column <- paste(cname,'_',iteration,sep='')
-  if (!column_exists(av_state,target_column)) {
-    dta <- av_state$data[[av_state$subset]][[cname]]
-    std <- sd(dta)
-    mu <- mean(dta)
-    std_factor <- std_factor_for_iteration(iteration)
-    scat(av_state$log_level,1,"Removing outliers outside of ",std_factor,
-        "x std. min: ",mu-std_factor*std,", max: ",
-        mu+std_factor*std,"\n",sep='')
-    av_state$data[[av_state$subset]][[target_column]] <- 
-      ((dta < mu-std_factor*std) | (dta > mu+std_factor*std))+0
+get_outliers_column <- function(dta,iteration,nr_obs) {
+  std <- sd(dta)
+  mu <- mean(dta)
+  std_factor <- std_factor_for_iteration(iteration)
+  res <- unname(((dta < mu-std_factor*std) | (dta > mu+std_factor*std))+0)
+  if (length(res) < nr_obs) {
+    res <- c(rep.int(0,nr_obs-length(res)),res)
   }
-  list(target_column=target_column,av_state=av_state)
+  res
 }
 
-is_outliers_column_valid <- function(av_state,cname,iteration) {
+is_outliers_column_valid <- function(dta,iteration,cname,nr_obs,log_level) {
   model_valid <- TRUE
-  target_column <- paste(cname,'_',iteration,sep='')
-  if ((iteration == 1 && all(av_state$data[[av_state$subset]][[target_column]] == 0)) ||
-    (iteration > 1 && all(av_state$data[[av_state$subset]][[target_column]] == 
-                          av_state$data[[av_state$subset]][[paste(cname,'_',iteration-1,sep='')]]))) {
+  outliers_column <- get_outliers_column(dta,iteration,nr_obs)
+  if ((iteration == 1 && all(outliers_column == 0)) ||
+        (iteration > 1 && all(outliers_column == get_outliers_column(dta,iteration-1,nr_obs)))) {
     std_factor <- std_factor_for_iteration(iteration)
     if (iteration == 1) {
-      scat(av_state$log_level,2,"\n> Removing ",std_factor,"x std. outliers for ",
-          cname," has no effect. Marking model as invalid.\n",sep='')
+      scat(log_level,2,"\n> Removing ",std_factor,"x std. outliers for ",
+           cname," residuals has no effect. Marking model as invalid.\n",sep='')
     } else {
-      scat(av_state$log_level,2,"\n> Removing ",std_factor,"x std. outliers for ",
-          cname," has the same effect as removing ",
-          std_factor_for_iteration(iteration-1),
-          "x std. outliers. Marking model as invalid.\n",sep='')
+      scat(log_level,2,"\n> Removing ",std_factor,"x std. outliers for ",
+           cname," residuals has the same effect as removing ",
+           std_factor_for_iteration(iteration-1),
+           "x std. outliers. Marking model as invalid.\n",sep='')
     }
     model_valid <- FALSE
   }
@@ -123,12 +164,14 @@ std_factor_for_iteration <- function(iteration) {
 }
 
 get_outliers_as_string <- function(av_state,name,iteration,model) {
-  cname <- prefix_ln_cond(name,model)
-  if (is.null(av_state$data[[av_state$subset]][[cname]])) {
+  orig_resids <- get_orig_resids(model,av_state)$resids
+  if (is.null(orig_resids)) {
     '???'
   } else {
-    column_name <- get_outliers_column(av_state,cname,iteration=iteration)$target_column
-    column <- av_state$data[[av_state$subset]][[column_name]]
+    cname <- prefix_ln_cond(name,model)
+    cresids <- orig_resids[,cname]
+    column <- get_outliers_column(cresids,iteration,
+                                  dim(av_state$data[[av_state$subset]])[[1]])
     paste(which(column == 1),collapse=', ')
   }
 }
