@@ -1,0 +1,53 @@
+\name{impute_missing_values}
+\alias{impute_missing_values}
+\title{Impute missing values}
+\usage{
+  impute_missing_values(av_state, columns,
+    subset_ids = "ALL", type = c("SIMPLE", "EM"))
+}
+\arguments{
+  \item{av_state}{an object of class \code{av_state}}
+
+  \item{columns}{the columns of which missing values should
+  be imputed. This argument can be a single column or a
+  list of column names.}
+
+  \item{subset_ids}{identifies which data subsets to impute
+  data for. This argument can be a single subset, a range
+  of subsets (both of which are identified by their
+  indices), or it can be the word \code{'ALL'} (default).
+  In the latter case, the selected columns of all data
+  subsets are processed.}
+
+  \item{type}{this argument has two possible values:
+  \itemize{ \item \code{'SIMPLE'} - The value of the
+  missing data is determined by up to five values
+  surrounding the value (2 before, 3 after, unless at the
+  start or end of the range). For numeric (scl) columns,
+  the mean of these values is chosen as value. For factor
+  (nom) columns, the mode of these values is chosen as
+  value. \item \code{'EM'} - Em imputation. Currently not
+  implemented. }}
+}
+\value{
+  This function returns the modified \code{av_state}
+  object.
+}
+\description{
+  This function can impute data for values that are missing
+  (i.e., for values that are \code{NA}). It outputs for
+  every subset how many values were imputed (for all
+  columns total) along with a percentage (following
+  \code{<=}). This percentage is the percentage of the
+  column with the highest percentage of imputed values,
+  i.e., if multiple columns were specified, it is the
+  percentage of values that were imputed of the column that
+  had relatively most \code{NA} values.
+}
+\examples{
+av_state <- load_file("../data/input/RuwedataAngela.sav")
+av_statea <- impute_missing_values(av_state,'norm_bewegen')
+av_stateb <- impute_missing_values(av_state,c('norm_bewegen',
+                                   'minuten_woonwerk'),subset_ids=1)
+}
+

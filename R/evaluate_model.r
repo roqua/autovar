@@ -157,6 +157,16 @@ run_var <- function(data,lag,...) {
   m
 }
 
+#' Print summary information and tests for a VAR model estimation
+#' 
+#' This function prints a summary and the output of the tests for a VAR model. The tests it shows are the Eigenvalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the Granger causality Wald tests, and Stata's \code{estat ic}.
+#' @param varest an object of class \code{varest}
+#' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity.
+#' @examples
+#' # av_state is the result of an earlier call to var_main
+#' var_info(av_state$accepted_models[[1]]$varest)
+#' var_info(av_state$rejected_models[[1]]$varest)
+#' @export
 var_info <- function(varest,log_level=0) {
   sprint(log_level,1,summary(varest))
   model_is_stable(varest,log_level)

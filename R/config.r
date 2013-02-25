@@ -19,7 +19,11 @@ print.av_state <- function(x,...) {
       } else {
         cat(paste(dim(x[[i]])[1],'samples with',dim(x[[i]])[2],'features'),"\n")
       }
-    } else if (nn[i] %in% c('model_queue','accepted_models','rejected_models')) {
+    } else if (nn[i] %in% c('model_queue',
+                            'accepted_models',
+                            'rejected_models',
+                            'resids',
+                            'log_resids')) {
       cat("list with",length(x[[i]]),"models\n")
     } else {
       if (class(x[[i]]) == 'var_model') {

@@ -7,7 +7,7 @@ Autovar is an R package for automating and simplifying the process from raw SPSS
 Selecting data
 --------------
 
-Currently, one data set can be operated on at at time. The data set, along with any metadata associated with it, is stored in the global variable `av_state`. This variable supports the print command (`print(av_state)`).
+Before calling any other function that takes an `av_state` argument, the function `load_file` needs to be called. It returns an `av_state` object that is used by the other functions. The `av_state` object supports the print command (`print(av_state)`).
 
 
 ### load_file
@@ -42,7 +42,7 @@ Example: `av_state <- load_file("../data/input/RuwedataAngela.sav")`
 
 The `group_by` function splits up the initial data set into multiple sets based on their value for `id_field`.
 
-For example, if we have a data set with a field named `id`  that has values ranging from 11 to 15, calling `group_by('id')` will set `av_state$data` to a list of five items. This list is ordered by the value of the id field. Then, we can use `av_state$data[[1]]` (or equivalently, `av_state$data[['11']]`) to retrieve the rows in the data set that have `id` 11. Likewise, use `av_state$data[[2]]` or `av_state$data[['12']]` for rows with `id` 12.
+For example, if we have a data set with a field named `id`  that has values ranging from 11 to 15, calling `av_state <- group_by(av_state,'id')` will set `av_state$data` to a list of five items. This list is ordered by the value of the id field. Then, we can use `av_state$data[[1]]` (or equivalently, `av_state$data[['11']]`) to retrieve the rows in the data set that have `id` 11. Likewise, use `av_state$data[[2]]` or `av_state$data[['12']]` for rows with `id` 12.
 
 The first argument to this function has to be an object of class `av_state`. A modified `av_state` object is returned.
 
@@ -57,7 +57,7 @@ Other than adjusting `av_state$data`, the `group_by` function creates the follow
 
     av_state <- order_by(av_state,id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISSING','NONE'))
 
-The `order_by` function determines the order of the data rows as they appear in ther output of the `store_file` function. The supplied `id_field` parameter is often a measurement index (e.g., `'tijdstip'`). The `id_field` column has to be numeric.
+The `order_by` function determines the order of the data rows in the data set. For vector autoregression, you may want to use this to make sure that the data set is sorted by the date/time column. The supplied `id_field` parameter is often a measurement index (e.g., `'tijdstip'`). The `id_field` column has to be numeric.
 
 #### Arguments
 
@@ -65,9 +65,9 @@ The first argument to this function has to be an object of class `av_state`. A m
 
 The `impute_method` argument has three possible values:
 
-* `BEST_FIT` - This is not an impute method itself, but tells the system to determine the optimal impute method and use that. This is the default choice for `impute_method` when it is not specified.
-* `ONE_MISSING` - Only works when the `id_field` in each data_subset is an integer range with exactly one value missing and exactly one `NA` value. The `NA` value is then substituted by the missing index.
-* `ADD_MISSING` - Does not work when one or more rows have an NA value for `id_field`. Only works for integer ranges of `id_field` with single increments. Works by adding rows for all missing values in the range between the minimum and maximum value of `id_field`. All values in the added rows are `NA` except for the `id_field` and the field used for grouping the data (if there was one).
+* `BEST_FIT` - This is not an impute method itself, but tells the function to determine the optimal impute method and use that. This is the default choice for `impute_method` when it is not specified.
+* `ONE_MISSING` - Only works when the `id_field` in each data subset is an integer range with exactly one value missing and exactly one `NA` value. The `NA` value is then substituted by the missing index.
+* `ADD_MISSING` - Does not work when one or more rows have an `NA` value for `id_field`. Only works for integer ranges of `id_field` with single increments. Works by adding rows for all missing values in the range between the minimum and maximum value of `id_field`. All values in the added rows are `NA` except for the `id_field` and the field used for grouping the data (if there was one).
 * `NONE` - No imputation is performed.
 
 #### Results
@@ -88,7 +88,7 @@ Example: `av_state <- order_by(av_state,'tijdstip',impute_method='ONE_MISSING')`
 
     av_state <- select_range(av_state, subset_id='multiple',column,begin,end)
 
-The `select_range` function selects which rows of a data set should be included. If the data set is grouped into multiple data sets, the `subset_id` argument needs to be supplied, allowing the function to work individually per data set.
+The `select_range` function selects which rows of a data set should be included. If the data set is grouped into multiple data sets, the `subset_id` argument needs to be supplied, telling the function to work per individual data set.
 
 #### Arguments
 
@@ -120,11 +120,11 @@ The `impute_missing_values` function can impute data for values that are missing
 
 The first argument to this function has to be an object of class `av_state`. A modified `av_state` object is returned.
 
-The `columns` argument can be a single column or a list of column names. It is the only argument that is required.
+The `columns` argument can be a single column or a list of column names. Besides `av_state`, it is the only argument that is required.
 
 The `subset_ids` argument can be a single subset, a range of subsets (both of which are identified by their indices), or it can be the word `'ALL'` (default). In the latter case, the selected columns of all data subsets are processed.
 
-The `type` argument has three possible values:
+The `type` argument has two possible values:
 
 * `SIMPLE` - The value of the missing data is determined by up to five values surrounding the value (2 before, 3 after, unless at the start or end of the range). For numeric (scl) columns, the mean of these values is chosen as value. For factor (nom) columns, the mode of these values is chosen as value.
 * `EM` - Em imputation. Currently not implemented.
@@ -165,7 +165,7 @@ Vector Autoregression
                          subset=1,log_level=av_state$log_level,include_restricted_models=FALSE,
                          small=FALSE,include_model=NULL)
 
-The `var_main` function generates and tests possible VAR models for the specified variables. The only required argument is `vars`, which should be a vector of variables.
+The `var_main` function generates and tests possible VAR models for the specified variables. Aside from `av_state`, the only required argument is `vars`, which should be a list of variables.
 
 #### Arguments
 
@@ -177,7 +177,7 @@ The `significance` argument is the maximum P-value for which results are seen as
 
 The `exogenous_max_iterations` argument determines how many times we should try to exclude additional outliers for a variable. The `exogenous_max_iterations` argument should be a number between 1 and 3:
 
-* `1` - When Jarque-Bera tests fail, having `exogenous_max_iterations = 1` will only try with removing 3.5x std. outliers for variables using exogenous variables.
+* `1` - When Jarque-Bera tests fail, having `exogenous_max_iterations = 1` will only try with removing 3.5x std. outliers for the residuals of variables using exogenous variables.
 * `2` - When `exogenous_max_iterations = 2`, the program will also try removing 3x std. outliers if JB tests still fail.
 * `3` - When `exogenous_max_iterations = 3`, the program will also try removing 2.5x std. outliers if JB tests still fail.
 
@@ -224,7 +224,7 @@ Example: `av_state <- var_main(av_state,c('Activity_hours','Depression'),log_lev
 
     var_info(varest,log_level=0)
 
-The `var_info` function prints the output of the tests for a var model. Note that its output can be altered by the value of `av_state$log_level`. The tests it shows are the Eigenvalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the Granger causality Wald tests, and estat ic.
+The `var_info` function prints a summary and the output of the tests for a var model. Note that its output can be altered by the value of `av_state$log_level`. The tests it shows are the Eigenvalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the Granger causality Wald tests, and estat ic.
 
 The `log_level` argument sets the verbosity of the output shown. It should be a number between 0 and 3. A lower level means more verbosity.
 
@@ -249,10 +249,10 @@ The first argument to this function has to be an object of class `av_state`.
 
 When given the name of a single column as `columns` argument, this function behaves differently depending on the class of the column:
 
-* If the class of the column is `factor`, the column is seen as a nominal column, and the following arguments are accepted: `visualize(column,type=c('PIE','BAR','DOT','LINE'),title="",...)`. All plots  also accept the `xlab` argument, e.g., `xlab='minuten'`. Furthermore,  when the type is `BAR`, an additional argument `horiz` can be supplied (`horiz` is `FALSE` by default), which will draw horizontal bar charts rather than vertical ones. To show values over time rather than total values, the `LINE` type can be used. Example: `visualize('PHQ1')`.
+* If the class of the column is `factor`, the column is seen as a nominal column, and the following arguments are accepted: `visualize(column,type=c('PIE','BAR','DOT','LINE'),title="",...)`. All plots  also accept the `xlab` argument, e.g., `xlab='minuten'`. Furthermore,  when the type is `BAR`, an additional argument `horiz` can be supplied (`horiz` is `FALSE` by default), which will draw horizontal bar charts instead of vertical ones. To show values over time rather than total values, the `LINE` type can be used. Example: `visualize('PHQ1')`.
 * If the class of the column is `numeric`, the column is seen as a scale column, and the following arguments are accepted: `visualize(column,type=c('LINE','BOX'),title="",...)`. Furthermore, when the type is `LINE`, an additional argument `acc` can be supplied (`acc` is `FALSE` by default), which will plot lines of accumulated values rather than the individual values. Example: `visualize('minuten_sport',type='LINE',acc=TRUE)`.
 
-When the `columns` argument is given an array of column names, the sums of the columns are displayed in the plots. For this to work, all columns have to be of the numeric class. When given an array of column names as the `columns` argument, the function accepts the following arguments: `visualize(columns,labels=columns,type=c('PIE','BAR','DOT'),title="",...)`. The arguments of this function work much like the ones described above for individual `factor` columns. The added optional `labels` argument should be an array of strings, with the same length as the `columns` argument, to specify custom names for the columns.
+When the `columns` argument is given a list of column names, the sums of the columns are displayed in the plots. For this to work, all columns have to be of the numeric class. When given a list of column names as the `columns` argument, the function accepts the following arguments: `visualize(columns,labels=columns,type=c('PIE','BAR','DOT'),title="",...)`. The arguments of this function work much like the ones described above for individual `factor` columns. The added optional `labels` argument should be a list of the same length as the `columns` argument, specifying custom names for the columns.
 
 #### Syntax
 
@@ -268,7 +268,7 @@ Examples for using visualize with multiple columns:
 
 **In the web application, this function does not need to be called explicitly. It is appended to the code when the Download button is clicked.**
 
-The `store_file` function will export all groups in the active data set to individual output files named after. All output files are subsequently packed in a .tar file that can be downloaded.
+The `store_file` function will export all groups in the active data set to individual output files. All output files are subsequently packed in a .tar file that can be downloaded.
 
 #### Arguments
 
@@ -294,13 +294,13 @@ The `av_state` class supports the `print` command. This shows which parameters w
 
     print_accepted_models(av_state)
 
-After when `av_state` is the result of a call to `var_main`, the above command can be used to show the list of accepted models.
+When `av_state` is the result of a call to `var_main`, the above command can be used to show the list of accepted models.
 
 
 ### print_rejected_models(av_state)
 
     print_rejected_models(av_state)
 
-After when `av_state` is the result of a call to `var_main`, the above command can be used to show the list of rejected models.
+When `av_state` is the result of a call to `var_main`, the above command can be used to show the list of rejected models.
 
 

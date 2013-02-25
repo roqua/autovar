@@ -1,15 +1,18 @@
 #' Add a new column using data from other columns
 #' 
 #' This function adds a new column, based on existing columns, to all identified groups in the given data set.
+#' @param av_state an object of class \code{av_state}
 #' @param name the name of the new column
 #' @param columns the existing columns that the new column will be based on
 #' @param operation this argument has three possible values: \itemize{
-#' \item 'SUM' - The new column is the sum of the columns specified in the columns argument. So for this option, the columns argument is an array of column names. Values in the summation of columns that are NA are treated as if they're zero. Columns that are not numeric are transformed to numeric. For example, Factor columns are transformed to numbers starting at 0 for the first factor level.
-#' \item 'LN' - The new column is the natural logarithm of the specified column in columns. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column. Note that values are increased if necessary so that the resulting column has no negative values.
-#' \item 'MINUTES_TO_HOURS' - The new column is the values of the specified column divided by 60. Thus, for this option, the columns argument is simply the name of a single column. This operation does nto work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column.
+#' \item \code{'SUM'} - The new column is the sum of the columns specified in the columns argument. So for this option, the columns argument is an array of column names. Values in the summation of columns that are NA are treated as if they're zero. Columns that are not numeric are transformed to numeric. For example, Factor columns are transformed to numbers starting at 0 for the first factor level.
+#' \item \code{'LN'} - The new column is the natural logarithm of the specified column in columns. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column. Note that values are increased if necessary so that the resulting column has no negative values.
+#' \item \code{'MINUTES_TO_HOURS'} - The new column is the values of the specified column divided by 60. Thus, for this option, the columns argument is simply the name of a single column. This operation does nto work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column.
 #' }
-#' @param log_level determines the verbosity of the output (a number between 0 and 3)
+#' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about converting columns or increasing values for the 'LN' option.
+#' @return This function returns the modified \code{av_state} object.
 #' @examples
+#' av_state <- load_file("../data/input/RuwedataAngela.sav")
 #' av_state <- add_derived_column(av_state,'SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4',
 #'                                'PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),
 #'                                operation='SUM')

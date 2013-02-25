@@ -1,5 +1,40 @@
-# runs the model queue
-# sets parameters in av_state
+#' Determine possibly optimal models for Vector Autoregression
+#'
+#' This function generates and tests possible VAR models for the specified variables. The only required arguments are \code{av_state} and \code{vars}.
+#' @param av_state an object of class \code{av_state}
+#' @param vars the list of variables on which to perform vector autoregression. These should be the names of existing columns in the data sets of \code{av_state}.
+#' @param lag_max limits the highest possible number of lags that will be used in a model. This number sets the maximum limit in the search for optimal lags.
+#' @param significance the maximum P-value for which results are seen as significant. This argument is used in Granger causality tests, Portmanteau tests, and Jarque-Bera tests.
+#' @param exogenous_max_iterations determines how many times we should try to exclude additional outliers for a variable. This argument should be a number between 1 and 3: \itemize{
+#' \item \code{1} - When Jarque-Bera tests fail, having \code{exogenous_max_iterations = 1} will only try with removing 3.5x std. outliers for the residuals of variables using exogenous dummy variables.
+#' \item \code{2} - When \code{exogenous_max_iterations = 2}, the program will also try with removing 3x std. outliers if JB tests still fail.
+#' \item \code{3} - When \code{exogenous_max_iterations = 3}, the program will also try with removing 2.5x std. outliers if JB tests still fail.
+#' }
+#' @param subset specifies which data subset the VAR analysis should run on. The VAR analysis only runs on one data subset at a time. If not specified, the first subset is used (corresponding to \code{av_state$data[[1]]}).
+#' @param log_level sets the minimum level of output that should be shown. It should be a number between 0 and 3. A lower level means more verbosity. \code{0} = debug, \code{1} = test detail, \code{2} = test outcomes, \code{3} = normal. The default is set to the value of \code{av_state$log_level} or if that doesn't exist, to \code{0}. If this argument was specified, the original value of \code{av_state$log_level} is be restored at the end of \code{var_main}.
+#' @param include_restricted_models defaults to \code{FALSE}. When set to \code{TRUE}, the number of evaluated models is effectively doubled. Each model will be evaluated normally and in a restricted form. The restricted form removes nonsignificant coefficients from the formula. Setting \code{include_restricted_models} to \code{TRUE} can thus lead to finding additional solutions at the cost of twice the normal computation time.
+#' @param small corresponds to the \code{small} argument of Stata's \code{var} function, and defaults to \code{FALSE}. This argument affects the outcome of the Granger causality test. When \code{small = TRUE}, the Granger causality test uses the F-distribution to gauge the statistic. When \code{small = FALSE}, the Granger causality test uses the Chi-squared distribution to gauge the statistic.
+#' @param include_model can be used to forcibly include a model in the evaluation. Included models have to be lists, and can specify the parameters \code{lag}, \code{exogenous_variables}, and \code{apply_log_transform}. For example: \code{
+#' av_state <- var_main(av_state,c('Activity_hours','Depression'),
+#'                      log_level=3,
+#'                      small=TRUE,
+#'                      include_model=list(lag=3,
+#'                         exogenous_variables=data.frame(variable="Depression",
+#'                         iteration=1,stringsAsFactors=FALSE),
+#'                         apply_log_transform=TRUE))
+#' var_info(av_state$rejected_models[[1]]$varest)
+#' }
+#' The above example includes a model with \code{lag=3} (so lags 1, 2, and 3 are included), the model is ran on the log-transformed variables, and includes an exogenous dummy variable that has a 1 where values of \code{log(Depression)} are more than 3.5xstd away from the mean (because \code{iteration=1}, see the description of the \code{exogenous_max_iterations} parameter above for the meaning of the iterations) and 0 everywhere else. The included model is added at the start of the list, so it can be retrieved (assuming a valid \code{lag} was specified) with either \code{av_state$accepted_models[[1]]} if the model was valid or \code{av_state$rejected_models[[1]]} if it was invalid. In the above example, some info about the included model is printed (assuming it was invalid).
+#' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
+#' @examples
+#' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta")
+#' av_state <- group_by(av_state,'id')
+#' av_state <- order_by(av_state,'Day')
+#' av_state <- add_derived_column(av_state,'Activity_hours','Activity',
+#'                                operation='MINUTES_TO_HOURS')
+#' av_state <- var_main(av_state,c('Activity_hours','Depression'),log_level=3)
+#' var_info(av_state$accepted_models[[1]]$varest)
+#' @export
 var_main <- function(av_state,vars,lag_max=7,significance=0.05,
                      exogenous_max_iterations=3,subset=1,log_level=av_state$log_level,
                      include_restricted_models=FALSE,small=FALSE,include_model=NULL) {
@@ -142,9 +177,26 @@ av_state_vars <- function(varest) {
   }
 }
 
+#' Print a list of accepted models after a call to var_main
+#' 
+#' This function prints the list of accepted models when \code{av_state} is the result of a call to \code{\link{var_main}}. The printed list of models is sorted by AIC+BIC score.
+#' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
+#' @examples
+#' # av_state is the result of a call to var_main
+#' print_accepted_models(av_state)
+#' @export
 print_accepted_models <- function(av_state) {
   print(av_state$accepted_models,av_state)
 }
+
+#' Print a list of rejected models after a call to var_main
+#' 
+#' This function prints the list of rejected models when \code{av_state} is the result of a call to \code{\link{var_main}}.
+#' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
+#' @examples
+#' # av_state is the result of a call to var_main
+#' print_rejected_models(av_state)
+#' @export
 print_rejected_models <- function(av_state) {
   print(av_state$rejected_models,av_state)
 }

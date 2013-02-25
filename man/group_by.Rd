@@ -1,0 +1,35 @@
+\name{group_by}
+\alias{group_by}
+\title{Split up a data set into different subsets}
+\usage{
+  group_by(av_state, id_field)
+}
+\arguments{
+  \item{av_state}{an object of class \code{av_state}}
+
+  \item{id_field}{the name of a column in the data set}
+}
+\value{
+  This function returns the modified \code{av_state}
+  object.
+}
+\description{
+  This function splits up the initial data set into
+  multiple sets based on their value for \code{id_field}.
+  For example, if we have a data set with a field named
+  \code{id} that has values ranging from 11 to 15, calling
+  \code{av_state <- group_by('id')} will set
+  \code{av_state$data} to a list of five items. This list
+  is ordered by the value of the id field. Then, we can use
+  \code{av_state$data[[1]]} (or equivalently,
+  \code{av_state$data[['11']]}) to retrieve the rows in the
+  data set that have \code{id} 11. Likewise, use
+  \code{av_state$data[[2]]} or \code{av_state$data[['12']]}
+  for rows with `id` 12. This function can only be called
+  once per \code{av_state}.
+}
+\examples{
+av_state <- load_file("../data/input/RuwedataAngela.sav")
+av_state <- group_by(av_state,'id')
+}
+
