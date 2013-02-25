@@ -73,10 +73,10 @@
 
   \item{include_model}{can be used to forcibly include a
   model in the evaluation. Included models have to be
-  lists, and can specify the parameters `lag`,
-  `exogenous_variables`, and `apply_log_transform`. For
-  example: \code{ av_state <-
-  var_main(av_state,c('Activity_hours','Depression'),
+  lists, and can specify the parameters \code{lag},
+  \code{exogenous_variables}, and
+  \code{apply_log_transform}. For example: \code{ av_state
+  <- var_main(av_state,c('Activity_hours','Depression'),
   log_level=3, small=TRUE, include_model=list(lag=3,
   exogenous_variables=data.frame(variable="Depression",
   iteration=1,stringsAsFactors=FALSE),

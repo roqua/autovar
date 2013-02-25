@@ -25,8 +25,8 @@
   \code{av_state$data[['11']]}) to retrieve the rows in the
   data set that have \code{id} 11. Likewise, use
   \code{av_state$data[[2]]} or \code{av_state$data[['12']]}
-  for rows with `id` 12. This function can only be called
-  once per \code{av_state}.
+  for rows with \code{id} 12. This function can only be
+  called once per \code{av_state}.
 }
 \examples{
 av_state <- load_file("../data/input/RuwedataAngela.sav")

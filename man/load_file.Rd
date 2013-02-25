@@ -6,11 +6,12 @@
     log_level = 0)
 }
 \arguments{
-  \item{filename}{and path of the data set to load. The
-  path can be relative to the current working directory.}
+  \item{filename}{path and filename of the data set to
+  load. The path can be relative to the current working
+  directory.}
 
-  \item{file_type}{specify whether the file contains STATA
-  or SPSS data. This argument is optional. When not
+  \item{file_type}{specifies whether the file contains
+  STATA or SPSS data. This argument is optional. When not
   specified, it is determined from the file name, i.e.,
   .dta extensions are treated as STATA files and .sav
   extensions are treated as SPSS files.}

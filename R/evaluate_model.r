@@ -90,6 +90,11 @@ evaluate_model <- function(av_state,model,index) {
     if (!is.null(vns)) {
       res$model_valid <- FALSE
       scat(av_state$log_level,2,'\n> JB test failed. Queueing model(s) with more strict outlier removal\n')
+      if (!apply_log_transform(model)) {
+        scat(av_state$log_level,2,"\n> Also queueing model with log transform.\n")
+        new_model <- create_model(model,apply_log_transform=TRUE,lag=-1)
+        av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+      }
       # vns is a powerset of vn, minus the empty set
       for (vn in vns) {
         new_exogvars <- NULL
