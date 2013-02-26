@@ -39,8 +39,7 @@ vargranger_aux <- function(varest) {
   for (eqname in dimnames(varest$y)[[2]]) {
     for (exname in dimnames(varest$y)[[2]]) {
       if (exname == eqname) { next }
-      gres <- NULL
-      tryCatch(gres <- causality(varest,cause=exname)$Granger,error=function(e) { })
+      gres <- granger_causality(varest,exname)
       if (is.null(gres)) { next }
       df <- get_named(gres$parameter,'df1')
       chi2 <- gres$statistic[1,1]*df
@@ -64,8 +63,7 @@ vargranger_aux_small <- function(varest) {
   for (eqname in dimnames(varest$y)[[2]]) {
     for (exname in dimnames(varest$y)[[2]]) {
       if (exname == eqname) { next }
-      gres <- NULL
-      tryCatch(gres <- causality(varest,cause=exname)$Granger,error=function(e) { })
+      gres <- granger_causality(varest,exname)
       if (is.null(gres)) { next }
       F <- gres$statistic[1,1]
       df <- get_named(gres$parameter,'df1')
@@ -85,6 +83,23 @@ vargranger_aux_small <- function(varest) {
     }
   }
   res
+}
+
+granger_causality <- function(varest,cause) {
+  varest <- process_restricted_varest(varest,cause)
+  gres <- NULL
+  tryCatch(gres <- causality(varest,cause=cause)$Granger,error=function(e) { })
+  gres
+}
+
+process_restricted_varest <- function(varest, cause) {
+  if (!is.null(varest$restrictions)) {
+    restricts <- b$restrictions[cause,]
+    excluded_names <- names(restricts)[which(restricts == 0)]
+    # 0 means exclude
+    varest$datamat <- varest$datamat[, !(colnames(varest$datamat) %in% excluded_names)]
+  }
+  varest
 }
 
 vargranger_df_r <- function(varest) {
