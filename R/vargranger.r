@@ -88,18 +88,36 @@ vargranger_aux_small <- function(varest) {
 granger_causality <- function(varest,cause) {
   varest <- process_restricted_varest(varest,cause)
   gres <- NULL
-  tryCatch(gres <- causality(varest,cause=cause)$Granger,error=function(e) { })
+  suppressWarnings(tryCatch(gres <- causality(varest,cause=cause)$Granger,error=function(e) { }))
   gres
 }
 
 process_restricted_varest <- function(varest, cause) {
   if (!is.null(varest$restrictions)) {
-    restricts <- varest$restrictions[cause,]
-    excluded_names <- names(restricts)[which(restricts == 0)]
+    #restricts <- varest$restrictions[cause,]
+    # TODO: does not work with >2 vars
+    orestricts <- varest$restrictions[other_varname(varest,cause),]
+    varest$p <- sum(orestricts[names(orestricts) %in% get_lag_varnames(varest,cause)])
+    #excluded_names <- names(restricts)[which(restricts == 0)]
+    excluded_names <- names(orestricts)[which(orestricts == 0)]
     # 0 means exclude
     varest$datamat <- varest$datamat[, !(colnames(varest$datamat) %in% excluded_names)]
   }
   varest
+}
+
+get_lag_varnames <- function(varest,varname) {
+  len <- length(colnames(varest$datamat))
+  lst <- NULL
+  for (i in 1:len) {
+    lst <- c(lst,paste(varname,'.l',i,sep=''))
+  }
+  lst
+}
+
+other_varname <- function(varest,cause) {
+  vars <- restriction_matrix_rownames(varest)
+  vars[which(vars != cause)]
 }
 
 vargranger_df_r <- function(varest) {

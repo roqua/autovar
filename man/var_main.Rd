@@ -2,11 +2,10 @@
 \alias{var_main}
 \title{Determine possibly optimal models for Vector Autoregression}
 \usage{
-  var_main(av_state, vars, lag_max = 7,
+  var_main(av_state, vars, lag_max = 2,
     significance = 0.05, exogenous_max_iterations = 3,
     subset = 1, log_level = av_state$log_level,
-    include_restricted_models = FALSE, small = FALSE,
-    include_model = NULL)
+    small = FALSE, include_model = NULL)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -52,15 +51,6 @@
   \code{0}. If this argument was specified, the original
   value of \code{av_state$log_level} is be restored at the
   end of \code{var_main}.}
-
-  \item{include_restricted_models}{defaults to
-  \code{FALSE}. When set to \code{TRUE}, the number of
-  evaluated models is effectively doubled. Each model will
-  be evaluated normally and in a restricted form. The
-  restricted form removes nonsignificant coefficients from
-  the formula. Setting \code{include_restricted_models} to
-  \code{TRUE} can thus lead to finding additional solutions
-  at the cost of twice the normal computation time.}
 
   \item{small}{corresponds to the \code{small} argument of
   Stata's \code{var} function, and defaults to

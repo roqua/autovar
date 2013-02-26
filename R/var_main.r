@@ -12,7 +12,6 @@
 #' }
 #' @param subset specifies which data subset the VAR analysis should run on. The VAR analysis only runs on one data subset at a time. If not specified, the first subset is used (corresponding to \code{av_state$data[[1]]}).
 #' @param log_level sets the minimum level of output that should be shown. It should be a number between 0 and 3. A lower level means more verbosity. \code{0} = debug, \code{1} = test detail, \code{2} = test outcomes, \code{3} = normal. The default is set to the value of \code{av_state$log_level} or if that doesn't exist, to \code{0}. If this argument was specified, the original value of \code{av_state$log_level} is be restored at the end of \code{var_main}.
-#' @param include_restricted_models defaults to \code{FALSE}. When set to \code{TRUE}, the number of evaluated models is effectively doubled. Each model will be evaluated normally and in a restricted form. The restricted form removes nonsignificant coefficients from the formula. Setting \code{include_restricted_models} to \code{TRUE} can thus lead to finding additional solutions at the cost of twice the normal computation time.
 #' @param small corresponds to the \code{small} argument of Stata's \code{var} function, and defaults to \code{FALSE}. This argument affects the outcome of the Granger causality test. When \code{small = TRUE}, the Granger causality test uses the F-distribution to gauge the statistic. When \code{small = FALSE}, the Granger causality test uses the Chi-squared distribution to gauge the statistic.
 #' @param include_model can be used to forcibly include a model in the evaluation. Included models have to be lists, and can specify the parameters \code{lag}, \code{exogenous_variables}, and \code{apply_log_transform}. For example: \code{
 #' av_state <- var_main(av_state,c('Activity_hours','Depression'),
@@ -35,9 +34,9 @@
 #' av_state <- var_main(av_state,c('Activity_hours','Depression'),log_level=3)
 #' var_info(av_state$accepted_models[[1]]$varest)
 #' @export
-var_main <- function(av_state,vars,lag_max=7,significance=0.05,
+var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      exogenous_max_iterations=3,subset=1,log_level=av_state$log_level,
-                     include_restricted_models=FALSE,small=FALSE,include_model=NULL) {
+                     small=FALSE,include_model=NULL) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -60,7 +59,6 @@ var_main <- function(av_state,vars,lag_max=7,significance=0.05,
   av_state$vars <- vars
   av_state$subset <- subset
   av_state$log_level <- log_level
-  av_state$include_restricted_models <- include_restricted_models
   av_state$small <- small
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')

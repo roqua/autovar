@@ -22,18 +22,9 @@ evaluate_model <- function(av_state,model,index) {
     lags <- determine_var_order(endodta,av_state$log_level,exogen=exodta,lag.max=av_state$lag_max)
     # lags is now a list of possibly optimal VAR orders (integers)
     scat(av_state$log_level,2,"\n> Queueing",length(lags),"VAR model(s) with lags:",lags,"\n")
-    if (av_state$include_restricted_models) {
-      for (lag in lags) {
-        new_model <- create_model(model,lag=lag,restrict=TRUE)
-        av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
-        new_model <- create_model(model,lag=lag,restrict=FALSE)
-        av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
-      }
-    } else {
-      for (lag in lags) {
-        new_model <- create_model(model,lag=lag)
-        av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
-      }
+    for (lag in lags) {
+      new_model <- create_model(model,lag=lag)
+      av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
     }
     scat(av_state$log_level,2,"\n> End of tests. Did not run tests because no lag specified.\n")
     scat(av_state$log_level,2,paste(rep('-',times=20),collapse=''),"\n\n",sep='')
@@ -42,13 +33,21 @@ evaluate_model <- function(av_state,model,index) {
     # get the var estimate for this model. This is the 'var' command in STATA.
     res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
     # remove nonsignificant coefficients from the formula
-    if (!is.null(model$restrict) && model$restrict) {
-      res$varest <- restrict(res$varest,method="ser")
+    if (is_restricted_model(model)) {
+      #res$varest <- restrict(res$varest,method="ser")
+      res$varest <- iterative_restrict(res$varest)
     }
     res$varest <- set_varest_values(av_state,res$varest)
     
+    # if we couldn't remove any terms, then the restricted model is equal
+    # to the original model, and we set it to invalid because it already exists
+    if (is_restricted_model(model) && is.null(res$varest$restrictions)) {
+      scat(av_state$log_level,2,"\n> Restricted model equivalent to unrestricted model. Setting as invalid.\n")
+      res$model_valid <- FALSE
+    }
+    
     # help the caching of residuals a bit by using stuff we already computed
-    if (is.null(model$exogenous_variables)) {
+    if (is.null(model$exogenous_variables) && !is_restricted_model(model)) {
       av_state <- store_residuals(av_state,model,resid(res$varest))
     }
     
@@ -72,7 +71,7 @@ evaluate_model <- function(av_state,model,index) {
         if (test$is_squared && !sqflag) {
           sqflag <- TRUE
           # squares of residuals significant: heteroskedasticity: apply log transform
-          if (!apply_log_transform(model)) {
+          if (!apply_log_transform(model) && !is_restricted_model(model)) {
             scat(av_state$log_level,2,"\n> Squares of residuals significant: heteroskedasticity: queueing model with log transform.\n")
             new_model <- create_model(model,apply_log_transform=TRUE,lag=-1)
             av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
@@ -89,45 +88,47 @@ evaluate_model <- function(av_state,model,index) {
     vns <- varnorm(res$varest,av_state$log_level)
     if (!is.null(vns)) {
       res$model_valid <- FALSE
-      scat(av_state$log_level,2,'\n> JB test failed. Queueing model(s) with more strict outlier removal\n')
-      if (!apply_log_transform(model)) {
-        scat(av_state$log_level,2,"\n> Also queueing model with log transform.\n")
-        new_model <- create_model(model,apply_log_transform=TRUE,lag=-1)
-        av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
-      }
-      # vns is a powerset of vn, minus the empty set
-      for (vn in vns) {
-        new_exogvars <- NULL
-        old_exogvars <- NULL
-        if (!is.null(model$exogenous_variables)) {
-          old_exogvars <- model$exogenous_variables
-          new_exogvars <- old_exogvars
-          for (i in 1:nr_rows(old_exogvars)) {
-            exovar <- old_exogvars[i,]
-            if (exovar$variable %in% vn) {
-              new_exogvars[i,]$iteration <- min(exovar$iteration +1,
-                                                av_state$exogenous_max_iterations)
-            }
-          }
-          for (name in vn) {
-            if (!(name %in% old_exogvars$variable)) {
-              new_exogvars <- rbind(new_exogvars,rep(NA,times=dim(new_exogvars)[[2]]))
-              new_exogvars[dim(new_exogvars)[[1]],][['variable']] <- name
-              new_exogvars[dim(new_exogvars)[[1]],][['iteration']] <- 1
-            }
-          }
-          new_exogvars[,] <- new_exogvars[order(new_exogvars$variable),]
-        } else {
-          new_exogvars <- data.frame(variable=sort(vn),
-                                     iteration=rep(1,times=length(vn)),
-                                     stringsAsFactors=FALSE)
-        }
-        if (is.null(old_exogvars) ||
-              any(dim(new_exogvars) != dim(old_exogvars)) ||
-              any(new_exogvars != old_exogvars)) {
-          new_model <- create_model(model,exogenous_variables=new_exogvars,
-                                        lag=-1)
+      if (!is_restricted_model(model)) {
+        scat(av_state$log_level,2,'\n> JB test failed. Queueing model(s) with more strict outlier removal\n')
+        if (!apply_log_transform(model)) {
+          scat(av_state$log_level,2,"\n> Also queueing model with log transform.\n")
+          new_model <- create_model(model,apply_log_transform=TRUE,lag=-1)
           av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+        }
+        # vns is a powerset of vn, minus the empty set
+        for (vn in vns) {
+          new_exogvars <- NULL
+          old_exogvars <- NULL
+          if (!is.null(model$exogenous_variables)) {
+            old_exogvars <- model$exogenous_variables
+            new_exogvars <- old_exogvars
+            for (i in 1:nr_rows(old_exogvars)) {
+              exovar <- old_exogvars[i,]
+              if (exovar$variable %in% vn) {
+                new_exogvars[i,]$iteration <- min(exovar$iteration +1,
+                                                  av_state$exogenous_max_iterations)
+              }
+            }
+            for (name in vn) {
+              if (!(name %in% old_exogvars$variable)) {
+                new_exogvars <- rbind(new_exogvars,rep(NA,times=dim(new_exogvars)[[2]]))
+                new_exogvars[dim(new_exogvars)[[1]],][['variable']] <- name
+                new_exogvars[dim(new_exogvars)[[1]],][['iteration']] <- 1
+              }
+            }
+            new_exogvars[,] <- new_exogvars[order(new_exogvars$variable),]
+          } else {
+            new_exogvars <- data.frame(variable=sort(vn),
+                                       iteration=rep(1,times=length(vn)),
+                                       stringsAsFactors=FALSE)
+          }
+          if (is.null(old_exogvars) ||
+                any(dim(new_exogvars) != dim(old_exogvars)) ||
+                any(new_exogvars != old_exogvars)) {
+            new_model <- create_model(model,exogenous_variables=new_exogvars,
+                                          lag=-1)
+            av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+          }
         }
       }
     }
@@ -135,6 +136,11 @@ evaluate_model <- function(av_state,model,index) {
     # if all tests pass, print some info about this model
     if (res$model_valid) {
       scat(av_state$log_level,2,'\n> End of tests. Model valid.\n')
+      if (!is_restricted_model(model)) {
+        scat(av_state$log_level,2,'\n> Queueing model with constraints.\n')
+        new_model <- create_model(model,restrict=TRUE)
+        av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+      }
       scat(av_state$log_level,1,'Printing estat ic (low values = better models):\n')
       sprint(av_state$log_level,1,estat_ic(res$varest))
     } else {
@@ -180,4 +186,10 @@ var_info <- function(varest,log_level=0) {
   vargranger(varest,log_level)
   scat(log_level,2,"\nestat ic\n")
   sprint(log_level,2,estat_ic(varest))
+}
+
+model_is_valid <- function(varest,log_level=3) {
+  model_is_stable(varest,log_level) &&
+    all(wntestq(varest,log_level)$passes_test) &&
+    is.null(varnorm(varest,log_level))
 }

@@ -93,6 +93,10 @@ apply_log_transform <- function(model) {
   !is.null(model$apply_log_transform) && model$apply_log_transform
 }
 
+is_restricted_model <- function(model) {
+  !is.null(model$restrict) && model$restrict
+}
+
 nr_rows <- function(df) {
   dim(df)[1]
 }

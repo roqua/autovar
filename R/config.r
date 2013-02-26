@@ -40,11 +40,11 @@ print.av_state <- function(x,...) {
 }
 
 exogvars_to_string <- function(av_state,x,model) {
-  str <- "<"
+  str <- "\n    "
   for (i in 1:nr_rows(x)) {
     exovar <- model$exogenous_variables[i,]
     if (i != 1) {
-      str <- paste(str,"; ",sep='')
+      str <- paste(str,"\n    ",sep='')
     }
     str <- paste(str,
                  std_factor_for_iteration(exovar$iteration),
@@ -60,11 +60,11 @@ exogvars_to_string <- function(av_state,x,model) {
       str <- paste(str,' (obs.: ',outliers,')',sep='')
     }
   }
-  str <- paste(str,">",sep='')
+  str <- paste(str,"",sep='')
   str
 }
 
-var_model_to_string <- function(av_state,x) {
+var_model_to_string <- function(av_state,x,skip_restrict=FALSE) {
   str <- "\n  "
   nn <- names(x)
   ll <- length(x)
@@ -74,6 +74,7 @@ var_model_to_string <- function(av_state,x) {
     nns <- nns$ix
   }
   for (i in nns) {
+    if (skip_restrict == TRUE && nn[i] == "restrict") { next }
     if (str != '\n  ') {
       str <- paste(str,"\n  ",sep='')
     }
@@ -92,7 +93,7 @@ print.var_model <- function(x,av_state=NULL,...) {
 
 print.var_modelres <- function(x,av_state=NULL,...) {
   str <- paste(printed_model_score(x$varest)," : ",vargranger_line(x$varest),
-               var_model_to_string(av_state,x$parameters),
+               var_model_to_string(av_state,x$parameters,skip_restrict=!is.null(av_state)),
                restrictions_toline(x$varest),sep='')
   cat(str,"\n")
   invisible(x)
