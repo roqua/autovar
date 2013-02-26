@@ -39,3 +39,4 @@ Collate:
     'varnorm.r'
     'visualize.r'
     'wntestq.r'
+    'iterative_restrict.r'

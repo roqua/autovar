@@ -92,9 +92,18 @@ print.var_model <- function(x,av_state=NULL,...) {
 
 print.var_modelres <- function(x,av_state=NULL,...) {
   str <- paste(printed_model_score(x$varest)," : ",vargranger_line(x$varest),
-               var_model_to_string(av_state,x$parameters),sep='')
+               var_model_to_string(av_state,x$parameters),
+               restrictions_toline(x$varest),sep='')
   cat(str,"\n")
   invisible(x)
+}
+
+restrictions_toline <- function(varest) {
+  r <- ''
+  if (!is.null(varest$restrictions)) {
+    r <- paste('\n  constraints: ',restrictions_tostring(varest),sep='')
+  }
+  r
 }
 
 print.model_list <- function(x,av_state=NULL,...) {

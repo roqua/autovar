@@ -94,7 +94,7 @@ granger_causality <- function(varest,cause) {
 
 process_restricted_varest <- function(varest, cause) {
   if (!is.null(varest$restrictions)) {
-    restricts <- b$restrictions[cause,]
+    restricts <- varest$restrictions[cause,]
     excluded_names <- names(restricts)[which(restricts == 0)]
     # 0 means exclude
     varest$datamat <- varest$datamat[, !(colnames(varest$datamat) %in% excluded_names)]
