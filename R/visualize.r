@@ -156,14 +156,14 @@ visualize_columns <- function(av_state,columns,labels=columns,type=c('LINE','PIE
         clabel <- labels[[i]]
         ccolor <- ccolors[[i]]
         if (class(data_frame[[column]]) != "numeric") {
-          warning(paste("cannot plot nonnumeric column",column))
-        } else {
-          totalcolumn <- sum(data_frame[[column]], na.rm=TRUE)
-          if (totalcolumn > 0) {
-            slices <- c(slices,totalcolumn)
-            used_columns <- c(used_columns,clabel)
-            colors <- c(colors,ccolor)
-          }
+          warning(paste("plotting nonnumeric column as numeric, converting...",column))
+          data_frame[[column]] <- as.numeric(data_frame[[column]])
+        }
+        totalcolumn <- sum(data_frame[[column]], na.rm=TRUE)
+        if (totalcolumn > 0) {
+          slices <- c(slices,totalcolumn)
+          used_columns <- c(used_columns,clabel)
+          colors <- c(colors,ccolor)
         }
       }
       visualize_method(slices,labels=used_columns,
@@ -188,6 +188,11 @@ visualize_lines <- function(av_state,columns,labels,title,...) {
     idx <- idx+1
     cdata <- NULL
     idvar <- NULL
+    for (column in columns) {
+      if (class(data_frame[[column]]) != 'numeric') {
+        data_frame[[column]] <- as.numeric(data_frame[[column]])
+      }
+    }
     if (!is.null(av_state$order_by)) {
       cdata <- data_frame[c(columns,av_state$order_by)]
       idvar <- av_state$order_by
