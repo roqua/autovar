@@ -94,21 +94,25 @@ varname_with_highest_pvalue <- function(varest) {
 varname_with_highest_pvalue_aux <- function(varest,eqname) {
   summ <- summary(varest)
   coefs <- summ$varresult[[eqname]]$coefficients
-  coefs <- coefs[sort.list(coefs[,4],decreasing=TRUE),]
-  varname <- NULL
-  pvalue <- NULL
-  model_valid <- FALSE
-  for (i in 1:(dim(coefs)[[1]])) {
-    model_valid <- TRUE
-    varname <- rownames(coefs)[[i]]
-    pvalue <- coefs[i,4]
-    if (model_is_valid_without_term(varest,eqname,varname)) { break }
-    model_valid <- FALSE
-  }
-  if (model_valid) {
-    list(eqname=eqname,varname=varname,pvalue=pvalue)
-  } else {
+  if (is.null(coefs) || dim(coefs)[[1]] == 1) {
     NULL
+  } else {
+    coefs <- coefs[sort.list(coefs[,4],decreasing=TRUE),]
+    varname <- NULL
+    pvalue <- NULL
+    model_valid <- FALSE
+    for (i in 1:(dim(coefs)[[1]])) {
+      model_valid <- TRUE
+      varname <- rownames(coefs)[[i]]
+      pvalue <- coefs[i,4]
+      if (model_is_valid_without_term(varest,eqname,varname)) { break }
+      model_valid <- FALSE
+    }
+    if (model_valid) {
+      list(eqname=eqname,varname=varname,pvalue=pvalue)
+    } else {
+      NULL
+    }
   }
 }
 
