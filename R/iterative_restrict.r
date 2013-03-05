@@ -94,6 +94,8 @@ varname_with_highest_pvalue <- function(varest) {
 varname_with_highest_pvalue_aux <- function(varest,eqname) {
   summ <- summary(varest)
   coefs <- summ$varresult[[eqname]]$coefficients
+  #cat("\nCoefficients for",eqname,"\n")
+  #print(coefs)
   if (is.null(coefs) || dim(coefs)[[1]] == 1) {
     NULL
   } else {
