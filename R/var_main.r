@@ -74,6 +74,15 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   if (is.null(av_state$data[[av_state$subset]][av_state$vars])) {
     stop(paste("invalid endogenous columns specified:",av_state$vars))
   }
+  
+  # make sure that the VAR columns are of the numeric type
+  for (mvar in av_state$vars) {
+    if (class(av_state$data[[av_state$subset]][[mvar]]) != "numeric") {
+      scat(av_state$log_level,2,"column",mvar,"is not numeric, converting...\n")
+      av_state$data[[av_state$subset]][[mvar]] <- 
+        as.numeric(av_state$data[[av_state$subset]][[mvar]])
+    }
+  }
   default_model <- list()
   class(default_model) <- 'var_model'
   av_state$model_queue <- list(default_model)
