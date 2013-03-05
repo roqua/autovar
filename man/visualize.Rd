@@ -34,25 +34,27 @@
   \code{visualize('minuten_sport',type='LINE',acc=TRUE)}
   (assuming \code{'minuten_sport'} is a \code{numeric}
   column). } When the \code{columns} argument is given a
-  list of column names, the sums of the columns are
-  displayed in the plots. For this to work, all columns
-  have to be of the numeric class. When given a list of
-  column names as the \code{columns} argument, the function
+  list of column names, the columns are either shown as
+  multiple lines in a line plot (when \code{type='LINE'}),
+  or the sums of the columns are displayed in the plots
+  (for any of the other types). When given a list of column
+  names as the \code{columns} argument, the function
   accepts the following arguments:
-  \code{visualize(columns,labels=columns,type=c('PIE','BAR','DOT'),
+  \code{visualize(columns,labels=columns,type=c('LINE','PIE','BAR','DOT'),
   title="",...)}. The arguments of this function work much
   like the ones described above for individual
   \code{factor} columns. The added optional \code{labels}
   argument should be a list of the same length as the
   \code{columns} argument, specifying custom names for the
-  columns.}
+  columns. This argument is ignored when
+  \code{type='LINE'}.}
 }
 \description{
   This function works with single or multiple columns. When
-  given a list of multiple columns as \code{columns}
-  argument, all columns have to be of the numeric class.
-  This function creates a combined plot with individual
-  plots for each identified group (if the
+  given an array of multiple columns as \code{columns}
+  argument, all nonnumeric columns are converted to numeric
+  class in the plot. This function creates a combined plot
+  with individual plots for each identified group (if the
   \code{\link{group_by}} was used) in the current data set.
   Any supplied arguments other than the ones described are
   passed on to the plotting functions.
@@ -71,5 +73,7 @@ visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar',
 visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar',
           'minuten_vrijetijd','minuten_sport'),
           type='DOT',xlab='minuten')
+visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar',
+          'minuten_vrijetijd','minuten_sport'))
 }
 

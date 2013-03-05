@@ -1,15 +1,15 @@
 #' Visualize columns of the data set
 #' 
-#' This function works with single or multiple columns. When given a list of multiple columns as \code{columns} argument, all columns have to be of the numeric class. This function creates a combined plot with individual plots for each identified group (if the \code{\link{group_by}} was used) in the current data set. Any supplied arguments other than the ones described are passed on to the plotting functions.
+#' This function works with single or multiple columns. When given an array of multiple columns as \code{columns} argument, all nonnumeric columns are converted to numeric class in the plot. This function creates a combined plot with individual plots for each identified group (if the \code{\link{group_by}} was used) in the current data set. Any supplied arguments other than the ones described are passed on to the plotting functions.
 #' @param av_state an object of class \code{av_state}
 #' @param columns specifies the columns to be displayed. When given the name of a single column, the function behaves differently depending on the class of the column: \itemize{
 #' \item If the class of the column is \code{factor}, the column is seen as a nominal column, and the following arguments are accepted: \code{visualize(column,type=c('PIE','BAR','DOT','LINE'),title="",...)}. All plots also accept the \code{xlab} argument, e.g., \code{xlab='minuten'}. Furthermore, when the type is \code{'BAR'}, an additional argument \code{horiz} can be supplied (\code{horiz} is \code{FALSE} by default), which will draw horizontal bar charts instead of vertical ones. To show values over time rather than total values, the \code{'LINE'} type can be used. Example: \code{visualize('PHQ1')} (assuming \code{'PHQ1'} is a \code{factor} column).
 #' \item If the class of the column is \code{numeric}, the column is seen as a scale column, and the following arguments are accepted: \code{visualize(column,type=c('LINE','BOX'),title="",...)}. Furthermore, when the type is \code{'LINE'}, an additional argument \code{acc} can be supplied (\code{acc} is \code{FALSE} by default), which will plot lines of accumulated values rather than the individual values. Example: \code{visualize('minuten_sport',type='LINE',acc=TRUE)} (assuming \code{'minuten_sport'} is a \code{numeric} column).
 #' }
-#' When the \code{columns} argument is given a list of column names, the sums of the columns are displayed in the plots. For this to work, all columns have to be of the numeric class. When given a list of column names as the \code{columns} argument, the function accepts the following arguments: 
-#' \code{visualize(columns,labels=columns,type=c('PIE','BAR','DOT'),
+#' When the \code{columns} argument is given a list of column names, the columns are either shown as multiple lines in a line plot (when \code{type='LINE'}), or the sums of the columns are displayed in the plots (for any of the other types). When given a list of column names as the \code{columns} argument, the function accepts the following arguments: 
+#' \code{visualize(columns,labels=columns,type=c('LINE','PIE','BAR','DOT'),
 #'                 title="",...)}.
-#' The arguments of this function work much like the ones described above for individual \code{factor} columns. The added optional \code{labels} argument should be a list of the same length as the \code{columns} argument, specifying custom names for the columns.
+#' The arguments of this function work much like the ones described above for individual \code{factor} columns. The added optional \code{labels} argument should be a list of the same length as the \code{columns} argument, specifying custom names for the columns. This argument is ignored when \code{type='LINE'}.
 #' @examples
 #' av_state <- load_file("../data/input/RuwedataAngela.sav")
 #' av_state <- add_derived_column(av_state,'sum_minuten_licht',
@@ -24,6 +24,8 @@
 #' visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar',
 #'           'minuten_vrijetijd','minuten_sport'),
 #'           type='DOT',xlab='minuten')
+#' visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar',
+#'           'minuten_vrijetijd','minuten_sport'))
 #' @export
 visualize <- function(av_state,columns,...) {
   assert_av_state(av_state)
@@ -157,7 +159,7 @@ visualize_columns <- function(av_state,columns,labels=columns,type=c('LINE','PIE
         clabel <- labels[[i]]
         ccolor <- ccolors[[i]]
         if (class(data_frame[[column]]) != "numeric") {
-          warning(paste("plotting nonnumeric column as numeric, converting...",column))
+          cat(paste("plotting nonnumeric column as numeric, converting...",column),"\n")
           data_frame[[column]] <- as.numeric(data_frame[[column]])
         }
         totalcolumn <- sum(data_frame[[column]], na.rm=TRUE)
@@ -209,7 +211,7 @@ visualize_lines <- function(av_state,columns,labels,title,...) {
             ggtitle(paste(title,visualize_sub_title(av_state[['group_by']], 
                                                     av_state$data[[idx]]),sep=''))
   }
-  plots[['ncol']] <- x
+  plots[['ncol']] <- 1 # x
   do.call(grid.arrange,plots)
 }
 

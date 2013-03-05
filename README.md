@@ -239,7 +239,7 @@ Outputting data
 
     visualize(av_state,columns,...)
 
-The `visualize` function works with single or multiple columns. When given an array of multiple columns as `columns` argument, all columns have to be of the numeric class. This function creates a combined plot with individual plots for each identified group in the current data set. Any supplied arguments other than the ones described are passed on to the plotting functions.
+The `visualize` function works with single or multiple columns. When given an array of multiple columns as `columns` argument, all nonnumeric columns are converted to numeric class in the plot. This function creates a combined plot with individual plots for each identified group in the current data set. Any supplied arguments other than the ones described are passed on to the plotting functions.
 
 #### Arguments
 
@@ -250,7 +250,7 @@ When given the name of a single column as `columns` argument, this function beha
 * If the class of the column is `factor`, the column is seen as a nominal column, and the following arguments are accepted: `visualize(column,type=c('PIE','BAR','DOT','LINE'),title="",...)`. All plots  also accept the `xlab` argument, e.g., `xlab='minuten'`. Furthermore,  when the type is `BAR`, an additional argument `horiz` can be supplied (`horiz` is `FALSE` by default), which will draw horizontal bar charts instead of vertical ones. To show values over time rather than total values, the `LINE` type can be used. Example: `visualize('PHQ1')`.
 * If the class of the column is `numeric`, the column is seen as a scale column, and the following arguments are accepted: `visualize(column,type=c('LINE','BOX'),title="",...)`. Furthermore, when the type is `LINE`, an additional argument `acc` can be supplied (`acc` is `FALSE` by default), which will plot lines of accumulated values rather than the individual values. Example: `visualize('minuten_sport',type='LINE',acc=TRUE)`.
 
-When the `columns` argument is given a list of column names, the sums of the columns are displayed in the plots. For this to work, all columns have to be of the numeric class. When given a list of column names as the `columns` argument, the function accepts the following arguments: `visualize(columns,labels=columns,type=c('PIE','BAR','DOT'),title="",...)`. The arguments of this function work much like the ones described above for individual `factor` columns. The added optional `labels` argument should be a list of the same length as the `columns` argument, specifying custom names for the columns.
+When the `columns` argument is given a list of column names, the columns are either shown as multiple lines in a line plot (when `type='LINE'`), or the sums of the columns are displayed in the plots (for any of the other types). When given a list of column names as the `columns` argument, the function accepts the following arguments: `visualize(columns,labels=columns,type=c('LINE','PIE','BAR','DOT'),title="",...)`. The arguments of this function work much like the ones described above for individual `factor` columns. The added optional `labels` argument should be a list of the same length as the `columns` argument, specifying custom names for the columns. This argument is ignored when `type='LINE'`.
 
 #### Syntax
 
@@ -258,6 +258,7 @@ Examples for using visualize with multiple columns:
 
     visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'), labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='BAR',horiz=TRUE)
     visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),type='DOT',xlab='minuten')
+    visualize(av_state,c('Klachten','ESM_1'))
 
 
 ### store_file
