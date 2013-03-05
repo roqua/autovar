@@ -26,6 +26,7 @@
 #'           type='DOT',xlab='minuten')
 #' @export
 visualize <- function(av_state,columns,...) {
+  assert_av_state(av_state)
   if (length(columns) == 1) {
     visualize_column(av_state,columns,...)
   } else {
@@ -197,7 +198,7 @@ visualize_lines <- function(av_state,columns,labels,title,...) {
       cdata <- data_frame[c(columns,av_state$order_by)]
       idvar <- av_state$order_by
     } else {
-      cdata <- cbind(data_frame[columns],1:(dim(cdata)[[1]]))
+      cdata <- cbind(data_frame[columns],1:(dim(data_frame[columns])[[1]]))
       dimnames(cdata)[[2]][[3]] <- 'index' # fix when index already exists
       idvar <- 'index'
     }
