@@ -200,9 +200,13 @@ visualize_lines <- function(av_state,columns,labels,title,...) {
       cdata <- data_frame[c(columns,av_state$order_by)]
       idvar <- av_state$order_by
     } else {
-      cdata <- cbind(data_frame[columns],1:(dim(data_frame[columns])[[1]]))
-      dimnames(cdata)[[2]][[3]] <- 'index' # fix when index already exists
       idvar <- 'index'
+      while (any(idvar == names(data_frame))) { 
+        id_var <- paste(idvar,'_',sep='')
+      }
+      dnames <- names(data_frame[columns])
+      cdata <- cbind(data_frame[columns],1:(dim(data_frame[columns])[[1]]))
+      names(cdata) <- c(dnames,idvar)
     }
     mdata <- melt(cdata,id.vars = idvar)
     plots[[idx]] <- ggplot(mdata, aes_string(x = idvar, y = 'value', colour = 'variable')) + 
