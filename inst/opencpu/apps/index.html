@@ -31,10 +31,17 @@
       -moz-box-sizing: border-box;
        box-sizing: border-box;
     }
-    #syntax {
+    #syntax, .dims {
       float: right;
       position: relative;
       right: 0px;
+      margin-left: 4px;
+    }
+    .input-minimini {
+      width: 15px;
+    }
+    .input-prepend {
+      margin-bottom: 0px;
     }
     .loadexample {
       float: right;
@@ -238,7 +245,16 @@ hljs.initHighlightingOnLoad();
 <textarea name="x" id="x"></textarea>
 <p><a class="btn btn-primary" id="knit"><i class="icon-circle-arrow-right icon-white"></i> Run</a>
 <a class="btn" id="knitdl"><i class="icon-download"></i> Download Results</a>
-<a href="https://github.com/roqua/autovar/blob/master/README.md" id="syntax" target="_blank">View syntax help</a></p>
+<a href="https://github.com/roqua/autovar/blob/master/README.md" id="syntax" target="_blank">View syntax help</a>
+<span class="input-prepend dims">
+<span class="add-on">Fig. height</span>
+<input type="text" id="fhei" class="input-minimini" value="7" />
+</span>
+<span class="input-prepend dims">
+<span class="add-on">Fig. width</span>
+<input type="text" id="fwid" class="input-minimini" value="9" />
+</span>
+</p>
 <!-- the knitting result will be rendered inside this div -->
 </form>
 </div>
@@ -305,10 +321,12 @@ $('#knitForm').submit(function(event) {
   /* get some values from elements on the page: */
   var $form = $( this ),
       term = $form.find('textarea[name="x"]').val().replace(/\\/g, '\\\\').replace(/"/g, '\\"'),
+      fwid = $form.find('input[id="fwid"]').val(),
+      fhei = $form.find('input[id="fhei"]').val(),
       url = $form.attr('action'),
       rcode = '{library(autovar); library(knitr); library(markdown);' +
               'sub(".*<body>(.*)</body>.*", "\\\\1", ' +
-              'markdownToHTML(text = knit(text = "```{r,fig.width=9}\n' + term + '\n```\n")))}';
+              'markdownToHTML(text = knit(text = "```{r,fig.width='+fwid+',fig.height='+fhei+'}\n' + term + '\n```\n")))}';
   /* Send the data using post and put the results in a div */
   $('textarea[name="x"]').attr('value',rcode);
   $("#outputframe").replaceWith('<iframe name="outputframe" id="outputframe"></iframe>');
