@@ -76,7 +76,7 @@ visualize_scale_column <- function(av_state,column,type=c('LINE','BOX'),title=""
 visualize_nominal_column <- function(av_state,column,type=c('PIE','BAR','DOT','LINE'),title="",...) {
   visualize_method <- match.arg(type)
   if (visualize_method == 'LINE') {
-    visualize_scale_column(column,type=visualize_method)
+    visualize_scale_column(av_state,column,type=visualize_method)
   } else {
     visualize_method <- switch(visualize_method,
       PIE = visualize_pie,
@@ -125,51 +125,86 @@ visualize_nominal_column <- function(av_state,column,type=c('PIE','BAR','DOT','L
   }
 }
 
-visualize_columns <- function(av_state,columns,labels=columns,type=c('PIE','BAR','DOT'),title="",...) {
+visualize_columns <- function(av_state,columns,labels=columns,type=c('LINE','PIE','BAR','DOT'),title="",...) {
   visualize_method <- match.arg(type)
-  visualize_method <- switch(visualize_method,
-    PIE = visualize_pie,
-    BAR = visualize_bar,
-    DOT = visualize_dot
-  )
+  if (visualize_method == 'LINE') {
+    visualize_lines(av_state,columns,labels,title,...)
+  } else {
+    visualize_method <- switch(visualize_method,
+      PIE = visualize_pie,
+      BAR = visualize_bar,
+      DOT = visualize_dot
+    )
+    if (length(columns) != length(labels)) {
+      stop("Length of columns is not the same as length of labels")
+    }
+    idx <- 0
+    n<-length(av_state$data)
+    x<-floor(sqrt(n))
+    y<-ceiling(n/x)
+    old.par <- par(no.readonly = TRUE)
+    par(mfrow=c(x,y))
+    for (data_frame in av_state$data) {
+      used_columns <- NULL
+      idx <- idx+1
+      slices <- NULL
+      colors <- NULL
+      ccolors <- rainbow(length(columns))
+      i <- 0
+      for (column in columns) {
+        i <- i+1
+        clabel <- labels[[i]]
+        ccolor <- ccolors[[i]]
+        if (class(data_frame[[column]]) != "numeric") {
+          warning(paste("cannot plot nonnumeric column",column))
+        } else {
+          totalcolumn <- sum(data_frame[[column]], na.rm=TRUE)
+          if (totalcolumn > 0) {
+            slices <- c(slices,totalcolumn)
+            used_columns <- c(used_columns,clabel)
+            colors <- c(colors,ccolor)
+          }
+        }
+      }
+      visualize_method(slices,labels=used_columns,
+                       main=paste(title,
+                                  visualize_sub_title(av_state[['group_by']],
+                                                      av_state$data[[idx]]),sep=''),
+                       colors=colors,...)
+    }
+    par(old.par)
+  }
+}
+
+visualize_lines <- function(av_state,columns,labels,title,...) {
   if (length(columns) != length(labels)) {
     stop("Length of columns is not the same as length of labels")
   }
   idx <- 0
   n<-length(av_state$data)
   x<-floor(sqrt(n))
-  y<-ceiling(n/x)
-  old.par <- par(no.readonly = TRUE)
-  par(mfrow=c(x,y))
+  plots <- list()
   for (data_frame in av_state$data) {
-    used_columns <- NULL
     idx <- idx+1
-    slices <- NULL
-    colors <- NULL
-    ccolors <- rainbow(length(columns))
-    i <- 0
-    for (column in columns) {
-      i <- i+1
-      clabel <- labels[[i]]
-      ccolor <- ccolors[[i]]
-      if (class(data_frame[[column]]) != "numeric") {
-        warning(paste("cannot plot nonnumeric column",column))
-      } else {
-        totalcolumn <- sum(data_frame[[column]], na.rm=TRUE)
-        if (totalcolumn > 0) {
-          slices <- c(slices,totalcolumn)
-          used_columns <- c(used_columns,clabel)
-          colors <- c(colors,ccolor)
-        }
-      }
+    cdata <- NULL
+    idvar <- NULL
+    if (!is.null(av_state$order_by)) {
+      cdata <- data_frame[c(columns,av_state$order_by)]
+      idvar <- av_state$order_by
+    } else {
+      cdata <- cbind(data_frame[columns],1:(dim(cdata)[[1]]))
+      dimnames(cdata)[[2]][[3]] <- 'index' # fix when index already exists
+      idvar <- 'index'
     }
-    visualize_method(slices,labels=used_columns,
-                     main=paste(title,
-                                visualize_sub_title(av_state[['group_by']],
-                                                    av_state$data[[idx]]),sep=''),
-                     colors=colors,...)
+    mdata <- melt(cdata,id.vars = idvar)
+    plots[[idx]] <- ggplot(mdata, aes_string(x = idvar, y = 'value', colour = 'variable')) + 
+            geom_line() + 
+            geom_point() +
+            ggtitle(paste(title,visualize_sub_title(av_state[['group_by']], 
+                                                    av_state$data[[idx]]),sep=''))
   }
-  par(old.par)
+  plots[['ncol']] <- x
+  do.call(grid.arrange,plots)
 }
 
 visualize_sub_title <- function(group_by_field,data_subset) {

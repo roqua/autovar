@@ -8,7 +8,10 @@ Author: Ando Emerencia
 Maintainer: Ando Emerencia <ando.emerencia@gmail.com>
 Depends:
     foreign,
+    ggplot2,
+    gridExtra,
     norm,
+    reshape2,
     vars
 Suggests:
     testthat,
