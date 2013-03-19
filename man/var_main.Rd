@@ -11,7 +11,7 @@
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
 
-  \item{vars}{the list of variables on which to perform
+  \item{vars}{the vector of variables on which to perform
   vector autoregression. These should be the names of
   existing columns in the data sets of \code{av_state}.}
 

@@ -10,7 +10,7 @@
 
   \item{columns}{the columns of which missing values should
   be imputed. This argument can be a single column or a
-  list of column names.}
+  vector of column names.}
 
   \item{subset_ids}{identifies which data subsets to impute
   data for. This argument can be a single subset, a range

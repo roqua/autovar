@@ -2,7 +2,7 @@
 #'
 #' This function generates and tests possible VAR models for the specified variables. The only required arguments are \code{av_state} and \code{vars}.
 #' @param av_state an object of class \code{av_state}
-#' @param vars the list of variables on which to perform vector autoregression. These should be the names of existing columns in the data sets of \code{av_state}.
+#' @param vars the vector of variables on which to perform vector autoregression. These should be the names of existing columns in the data sets of \code{av_state}.
 #' @param lag_max limits the highest possible number of lags that will be used in a model. This number sets the maximum limit in the search for optimal lags.
 #' @param significance the maximum P-value for which results are seen as significant. This argument is used in Granger causality tests, Portmanteau tests, and Jarque-Bera tests.
 #' @param exogenous_max_iterations determines how many times we should try to exclude additional outliers for a variable. This argument should be a number between 1 and 3: \itemize{

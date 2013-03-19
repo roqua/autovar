@@ -34,17 +34,17 @@
   \code{visualize('minuten_sport',type='LINE',acc=TRUE)}
   (assuming \code{'minuten_sport'} is a \code{numeric}
   column). } When the \code{columns} argument is given a
-  list of column names, the columns are either shown as
+  vector of column names, the columns are either shown as
   multiple lines in a line plot (when \code{type='LINE'}),
   or the sums of the columns are displayed in the plots
-  (for any of the other types). When given a list of column
-  names as the \code{columns} argument, the function
+  (for any of the other types). When given a vector of
+  column names as the \code{columns} argument, the function
   accepts the following arguments:
   \code{visualize(columns,labels=columns,type=c('LINE','PIE','BAR','DOT'),
   title="",...)}. The arguments of this function work much
   like the ones described above for individual
   \code{factor} columns. The added optional \code{labels}
-  argument should be a list of the same length as the
+  argument should be a vector of the same length as the
   \code{columns} argument, specifying custom names for the
   columns. This argument is ignored when
   \code{type='LINE'}.}

@@ -120,7 +120,7 @@ The `impute_missing_values` function can impute data for values that are missing
 
 The first argument to this function has to be an object of class `av_state`. A modified `av_state` object is returned.
 
-The `columns` argument can be a single column or a list of column names. Besides `av_state`, it is the only argument that is required.
+The `columns` argument can be a single column or a vector of column names. Besides `av_state`, it is the only argument that is required.
 
 The `subset_ids` argument can be a single subset, a range of subsets (both of which are identified by their indices), or it can be the word `'ALL'` (default). In the latter case, the selected columns of all data subsets are processed.
 
@@ -165,7 +165,7 @@ Vector Autoregression
                          subset=1,log_level=av_state$log_level,
                          small=FALSE,include_model=NULL,exogenous_variables=NULL)
 
-The `var_main` function generates and tests possible VAR models for the specified variables. Aside from `av_state`, the only required argument is `vars`, which should be a list of variables.
+The `var_main` function generates and tests possible VAR models for the specified variables. Aside from `av_state`, the only required argument is `vars`, which should be a vector of variables.
 
 #### Arguments
 
@@ -211,9 +211,9 @@ The `var_main` function sets the following variables in the `av_state` list:
 * `vars` - the `vars` used.
 * `subset` - the `subset` used.
 * `log_level` - the `log_level` used. This setting is restored at the end of `var_main` to its original value.
-* `model_queue` - the list of models specified by only parameters, used as the main queue in `var_main`. This is a a list of objects with class `var_model`.
-* `accepted_models` - the sorted list of accepted models and their var results. This is a a list of objects with class `var_modelres`. Each accepted model has properties `parameters` to retrieve the model parameters, and `varest` to retrieve the var result.
-* `rejected_models` - the list of rejected models and their var results (excluding those from `model_queue` that did not have a specified lag). This is a a list of objects with class `var_modelres`. Each accepted model has properties `parameters` to retrieve the model parameters, and `varest` to retrieve the var result.
+* `model_queue` - the list of models specified by only parameters, used as the main queue in `var_main`. This is a list of objects with class `var_model`.
+* `accepted_models` - the sorted list of accepted models and their var results. This is a list of objects with class `var_modelres`. Each accepted model has properties `parameters` to retrieve the model parameters, and `varest` to retrieve the var result.
+* `rejected_models` - the list of rejected models and their var results (excluding those from `model_queue` that did not have a specified lag). This is a list of objects with class `var_modelres`. Each accepted model has properties `parameters` to retrieve the model parameters, and `varest` to retrieve the var result.
 
 #### Syntax
 
@@ -252,7 +252,7 @@ When given the name of a single column as `columns` argument, this function beha
 * If the class of the column is `factor`, the column is seen as a nominal column, and the following arguments are accepted: `visualize(column,type=c('PIE','BAR','DOT','LINE'),title="",...)`. All plots  also accept the `xlab` argument, e.g., `xlab='minuten'`. Furthermore,  when the type is `BAR`, an additional argument `horiz` can be supplied (`horiz` is `FALSE` by default), which will draw horizontal bar charts instead of vertical ones. To show values over time rather than total values, the `LINE` type can be used. Example: `visualize('PHQ1')`.
 * If the class of the column is `numeric`, the column is seen as a scale column, and the following arguments are accepted: `visualize(column,type=c('LINE','BOX'),title="",...)`. Furthermore, when the type is `LINE`, an additional argument `acc` can be supplied (`acc` is `FALSE` by default), which will plot lines of accumulated values rather than the individual values. Example: `visualize('minuten_sport',type='LINE',acc=TRUE)`.
 
-When the `columns` argument is given a list of column names, the columns are either shown as multiple lines in a line plot (when `type='LINE'`), or the sums of the columns are displayed in the plots (for any of the other types). When given a list of column names as the `columns` argument, the function accepts the following arguments: `visualize(columns,labels=columns,type=c('LINE','PIE','BAR','DOT'),title="",...)`. The arguments of this function work much like the ones described above for individual `factor` columns. The added optional `labels` argument should be a list of the same length as the `columns` argument, specifying custom names for the columns. This argument is ignored when `type='LINE'`.
+When the `columns` argument is given a vector of column names, the columns are either shown as multiple lines in a line plot (when `type='LINE'`), or the sums of the columns are displayed in the plots (for any of the other types). When given a vector of column names as the `columns` argument, the function accepts the following arguments: `visualize(columns,labels=columns,type=c('LINE','PIE','BAR','DOT'),title="",...)`. The arguments of this function work much like the ones described above for individual `factor` columns. The added optional `labels` argument should be a vector of the same length as the `columns` argument, specifying custom names for the columns. This argument is ignored when `type='LINE'`.
 
 #### Syntax
 
