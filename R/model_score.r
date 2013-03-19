@@ -17,6 +17,8 @@ estat_ic <- function(varest) {
   nobs <- varsum$obs
   k <- nr_parameters_est(varest)
   ll <- varsum$logLik
+  # k = tparms
+  # nobs = T
   aic <- -2*ll + 2*k
   bic <- -2*ll + log(nobs)*k
   res <- data.frame(Obs=nobs,
