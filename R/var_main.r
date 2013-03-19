@@ -94,6 +94,16 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
         as.numeric(av_state$data[[av_state$subset]][[mvar]])
     }
   }
+  
+  # make sure that the exogenous columns are of the numeric type
+  for (mvar in av_state$exogenous_variables) {
+    if (class(av_state$data[[av_state$subset]][[mvar]]) != "numeric") {
+      scat(av_state$log_level,2,"column",mvar,"is not numeric, converting...\n")
+      av_state$data[[av_state$subset]][[mvar]] <- 
+        as.numeric(av_state$data[[av_state$subset]][[mvar]])
+    }
+  }
+  
   default_model <- list()
   class(default_model) <- 'var_model'
   av_state$model_queue <- list(default_model)
@@ -125,14 +135,12 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
       # model is valid
       accepted_model <- list(parameters=model,varest=model_evaluation$varest)
       class(accepted_model) <- 'var_modelres'
-      av_state$accepted_models <- add_to_queue(av_state$accepted_models,
-                                                accepted_model,av_state$log_level)
+      av_state$accepted_models <- c(av_state$accepted_models,list(accepted_model))
     } else if (!is.null(model_evaluation$varest)) {
       # model was rejected
       rejected_model <- list(parameters=model,varest=model_evaluation$varest)
       class(rejected_model) <- 'var_modelres'
-      av_state$rejected_models <- add_to_queue(av_state$rejected_models,
-                                                rejected_model,av_state$log_level)
+      av_state$rejected_models <- c(av_state$rejected_models,list(rejected_model))
     }
     i <- i+1
   }
