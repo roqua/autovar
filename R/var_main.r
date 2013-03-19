@@ -24,6 +24,7 @@
 #' var_info(av_state$rejected_models[[1]]$varest)
 #' }
 #' The above example includes a model with \code{lag=3} (so lags 1, 2, and 3 are included), the model is ran on the log-transformed variables, and includes an exogenous dummy variable that has a 1 where values of \code{log(Depression)} are more than 3.5xstd away from the mean (because \code{iteration=1}, see the description of the \code{exogenous_max_iterations} parameter above for the meaning of the iterations) and 0 everywhere else. The included model is added at the start of the list, so it can be retrieved (assuming a valid \code{lag} was specified) with either \code{av_state$accepted_models[[1]]} if the model was valid or \code{av_state$rejected_models[[1]]} if it was invalid. In the above example, some info about the included model is printed (assuming it was invalid).
+#' @param exogenous_variables should be a vector of variable names that already exist in the given data set, that will be supplied to every VAR model as exogenous variables.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta")
@@ -36,7 +37,7 @@
 #' @export
 var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      exogenous_max_iterations=3,subset=1,log_level=av_state$log_level,
-                     small=FALSE,include_model=NULL) {
+                     small=FALSE,include_model=NULL,exogenous_variables=NULL) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -60,6 +61,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$subset <- subset
   av_state$log_level <- log_level
   av_state$small <- small
+  av_state$exogenous_variables <- exogenous_variables
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   scat(av_state$log_level,3,"Starting VAR with variables: ",paste(vars,collapse=', '),
@@ -71,8 +73,17 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   }
   
   # check if endogenous columns exist
-  if (is.null(av_state$data[[av_state$subset]][av_state$vars])) {
-    stop(paste("invalid endogenous columns specified:",av_state$vars))
+  for (varname in av_state$vars) {
+    if (!(varname %in% names(av_state$data[[av_state$subset]]))) {
+      stop(paste("non-existant endogenous column specified:",varname))
+    }
+  }
+  
+  # check if exogenous columns exist
+  for (varname in av_state$exogenous_variables) {
+    if (!(varname %in% names(av_state$data[[av_state$subset]]))) {
+      stop(paste("non-existant exogenous column specified:",varname))
+    }
   }
   
   # make sure that the VAR columns are of the numeric type

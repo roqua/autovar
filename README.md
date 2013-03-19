@@ -163,7 +163,7 @@ Vector Autoregression
 
     av_state <- var_main(av_state,vars,lag_max=7,significance=0.05,exogenous_max_iterations=3,
                          subset=1,log_level=av_state$log_level,
-                         small=FALSE,include_model=NULL)
+                         small=FALSE,include_model=NULL,exogenous_variables=NULL)
 
 The `var_main` function generates and tests possible VAR models for the specified variables. Aside from `av_state`, the only required argument is `vars`, which should be a list of variables.
 
@@ -198,6 +198,8 @@ The `include_model` argument can be used to forcibly include a model in the eval
     var_info(av_state$rejected_models[[1]]$varest)
 
 The above example includes a model with `lag=3` (so lags 1, 2, and 3 are included), the model is ran on the logtransformed variables, and includes an exogenous dummy variable that has a 1 where values of `log(Depression)` are more than 3xstd away from the mean (because `iteration=1`, see the description of the `exogenous_max_iterations` parameter above for the meaning of the iterations) and 0 everywhere else. The included model is added at the start of the list, so it can be retrieved (assuming a valid `lag` was specified) with either `av_state$accepted_models[[1]]` if the model was valid or `av_state$rejected_models[[1]]` if it was invalid. In the above example, some info about the included model is printed (assuming it was invalid).
+
+The `exogenous_variables` argument should be a vector of variable names that already exist in the given data set, that will be supplied to every VAR model as exogenous variables.
 
 #### Results
 

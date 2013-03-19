@@ -3,7 +3,8 @@ evaluate_model <- function(av_state,model,index) {
   #av_state$current_model <- model
   
   scat(av_state$log_level,2,"\n",paste(rep('-',times=20),collapse=''),"\n",sep='')
-  scat(av_state$log_level,2,index,". Model parameters: ",sep='')
+  scat(av_state$log_level,2,index,"/",length(av_state$model_queue),
+       ". Model parameters: ",sep='')
   sprint(av_state$log_level,2,model,av_state)
   
   # should return a list with model_valid, and varest

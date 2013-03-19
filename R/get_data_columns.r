@@ -45,10 +45,18 @@ get_data_columns <- function(av_state,model) {
         }
         exovrs <- c(exovrs,exovr)
       }
+      if (!is.null(av_state$exogenous_variables)) {
+        exovrs <- c(exovrs,av_state$exogenous_variables)
+      }
       exodta <- av_state$data[[av_state$subset]][exovrs]
       exodta <- as.matrix(exodta)
       colnames(exodta) <- exovrs
     }
+  } else if (!is.null(av_state$exogenous_variables)) {
+    exovrs <- av_state$exogenous_variables
+    exodta <- av_state$data[[av_state$subset]][exovrs]
+    exodta <- as.matrix(exodta)
+    colnames(exodta) <- exovrs
   }
   list(av_state = av_state,endogenous = endo, 
        exogenous = exodta, model_valid = model_valid)
