@@ -99,8 +99,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   for (mvar in av_state$exogenous_variables) {
     if (class(av_state$data[[av_state$subset]][[mvar]]) != "numeric") {
       scat(av_state$log_level,2,"column",mvar,"is not numeric, converting...\n")
-      av_state$data[[av_state$subset]][[mvar]] <- 
-        as.numeric(av_state$data[[av_state$subset]][[mvar]])
+      tv <- as.numeric(av_state$data[[av_state$subset]][[mvar]])
+      av_state$data[[av_state$subset]][[mvar]] <- tv-min(tv)
     }
   }
   
