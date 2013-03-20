@@ -25,6 +25,7 @@
 #' }
 #' The above example includes a model with \code{lag=3} (so lags 1, 2, and 3 are included), the model is ran on the log-transformed variables, and includes an exogenous dummy variable that has a 1 where values of \code{log(Depression)} are more than 3.5xstd away from the mean (because \code{iteration=1}, see the description of the \code{exogenous_max_iterations} parameter above for the meaning of the iterations) and 0 everywhere else. The included model is added at the start of the list, so it can be retrieved (assuming a valid \code{lag} was specified) with either \code{av_state$accepted_models[[1]]} if the model was valid or \code{av_state$rejected_models[[1]]} if it was invalid. In the above example, some info about the included model is printed (assuming it was invalid).
 #' @param exogenous_variables should be a vector of variable names that already exist in the given data set, that will be supplied to every VAR model as exogenous variables.
+#' @param use_sktest affects which test is used for Skewness and Kurtosis testing of the residuals. When \code{use_sktest = TRUE}, STATA's \code{sktest} is used. When \code{use_sktest = FALSE} (the default), STATA's \code{varnorm} (i.e., the Jarque-Bera test) is used.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta")
@@ -37,7 +38,8 @@
 #' @export
 var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      exogenous_max_iterations=3,subset=1,log_level=av_state$log_level,
-                     small=FALSE,include_model=NULL,exogenous_variables=NULL) {
+                     small=FALSE,include_model=NULL,exogenous_variables=NULL,
+                     use_sktest=FALSE) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -61,6 +63,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$subset <- subset
   av_state$log_level <- log_level
   av_state$small <- small
+  av_state$use_sktest <- use_sktest
   av_state$exogenous_variables <- exogenous_variables
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
@@ -154,7 +157,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   if (length(av_state$accepted_models) > 0) {
     scat(av_state$log_level,3,"\nThe valid models:\n")
     av_state$accepted_models <- sort_models(av_state$accepted_models)
-    sprint(av_state$log_level,3,av_state$accepted_models,av_state)
+    scat(av_state$log_level,3,format_accepted_models(av_state))
   }
   av_state$log_level <- real_log_level
   av_state
@@ -176,6 +179,7 @@ set_varest_values <- function(av_state,varest) {
   varest$small <- av_state$small
   varest$significance <- av_state$significance
   varest$vars <- av_state$vars
+  varest$use_sktest <- av_state$use_sktest
   varest
 }
 
@@ -202,6 +206,91 @@ av_state_vars <- function(varest) {
     names(varest$varresult)
   }
 }
+
+av_state_use_sktest <- function(varest) {
+  if (!is.null(varest$use_sktest)) {
+    varest$use_sktest
+  } else {
+    FALSE
+  }
+}
+
+
+format_accepted_models <- function(av_state) {
+  chars <- LETTERS
+  idx <- 0
+  res <- ""
+  for (x in av_state$accepted_models) {
+    idx <- idx+1
+    char <- chars[[idx]]
+    res <- paste(res,char,": ",
+                 printed_model_score(x$varest),
+                 " : ",
+                 vargranger_line(x$varest),
+                 "\n",
+                 sep='')
+    # Lag: 2
+    res <- paste(res,"  Lag: ",x$parameters$lag,"\n",sep='')
+    # Log transform: YES
+    res <- paste(res,"  Log transform: ",
+                 ifelse(apply_log_transform(x$parameters),"YES","NO")
+                 ,"\n",sep='')
+    # Exogenous variables:
+    res <- paste(res,"  Exogenous variables: ",sep='')
+    res <- paste(res,
+                 format_exogenous_variables(x$parameters$exogenous_variables,
+                                            av_state,
+                                            x$parameters),
+                 sep='')
+    # Constraints:
+    res <- paste(res,"  Constraints: ",sep='')
+    res <- paste(res,
+                 format_constraints(x$varest))
+    res <- paste(res,"\n",sep='')
+    #if (idx == 3) { break }
+  }
+  res
+}
+format_exogenous_variables <- function(exogvars,av_state,model) {
+  if (is.null(exogvars) && is.null(av_state$exogenous_variables)) {
+    "none\n"
+  } else {
+    res <- "\n"
+    if (!is.null(av_state$exogenous_variables)) {
+      for (i in 1:length(av_state$exogenous_variables)) {
+        exovar <- av_state$exogenous_variables[[i]]
+        res <- paste(res,'    ',exovar,': ',
+                     paste(which(av_state$data[[av_state$subset]][[exovar]] == 1),collapse=', '),
+                     '\n',sep='')
+      }
+    }
+    if (!is.null(exogvars)) {
+      for (i in 1:nr_rows(exogvars)) {
+        exovar <- exogvars[i,]
+        desc <- format_varname(exovar$variable)
+        std_factor <- std_factor_for_iteration(exovar$iteration)
+        res <- paste(res,'    ',desc,' (',std_factor,'x std. of res.): ',
+                     get_outliers_as_string(av_state,exovar$variable,
+                                            exovar$iteration,
+                                            model),
+                     "\n",
+                     sep='')
+      }
+    }
+    res
+  }
+}
+format_varname <- function(varname) {
+  paste(varname,' outliers',sep='')
+}
+format_constraints <- function(varest) {
+  if (is.null(varest$restrictions)) {
+    "none\n"
+  } else {
+    paste(restrictions_tostring(varest),"\n",sep='')
+  }
+}
+
 
 #' Print a list of accepted models after a call to var_main
 #' 

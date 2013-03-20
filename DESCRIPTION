@@ -43,3 +43,4 @@ Collate:
     'visualize.r'
     'wntestq.r'
     'iterative_restrict.r'
+    'sktest.r'

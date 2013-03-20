@@ -85,12 +85,12 @@ evaluate_model <- function(av_state,model,index) {
       }
     }
     
-    # Jarque-Bera, Skewness, Kurtosis tests
-    vns <- varnorm(res$varest,av_state$log_level)
+    # (Jarque-Bera), Skewness, Kurtosis tests
+    vns <- varnorm_aux(res$varest,av_state$log_level)
     if (!is.null(vns)) {
       res$model_valid <- FALSE
       if (!is_restricted_model(model)) {
-        scat(av_state$log_level,2,'\n> JB test failed. Queueing model(s) with more strict outlier removal\n')
+        scat(av_state$log_level,2,'\n> Skewness/Kurtosis test failed. Queueing model(s) with more strict outlier removal\n')
         if (!apply_log_transform(model)) {
           scat(av_state$log_level,2,"\n> Also queueing model with log transform.\n")
           new_model <- create_model(model,apply_log_transform=TRUE,lag=-1)
@@ -184,6 +184,7 @@ var_info <- function(varest,log_level=0) {
   model_is_stable(varest,log_level)
   wntestq(varest,log_level)
   varnorm(varest,log_level)
+  varnorm2(varest,log_level)
   vargranger(varest,log_level)
   scat(log_level,2,"\nestat ic\n")
   sprint(log_level,2,estat_ic(varest))
@@ -192,5 +193,13 @@ var_info <- function(varest,log_level=0) {
 model_is_valid <- function(varest,log_level=3) {
   model_is_stable(varest,log_level) &&
     all(wntestq(varest,log_level)$passes_test) &&
-    is.null(varnorm(varest,log_level))
+    is.null(varnorm_aux(varest,log_level))
+}
+
+varnorm_aux <- function(varest,log_level) {
+  if (av_state_use_sktest(varest)) {
+    varnorm2(varest,log_level)
+  } else {
+    varnorm(varest,log_level)
+  }
 }

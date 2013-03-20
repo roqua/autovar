@@ -6,7 +6,7 @@
     significance = 0.05, exogenous_max_iterations = 3,
     subset = 1, log_level = av_state$log_level,
     small = FALSE, include_model = NULL,
-    exogenous_variables = NULL)
+    exogenous_variables = NULL, use_sktest = FALSE)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -92,6 +92,12 @@
   \item{exogenous_variables}{should be a vector of variable
   names that already exist in the given data set, that will
   be supplied to every VAR model as exogenous variables.}
+
+  \item{use_sktest}{affects which test is used for Skewness
+  and Kurtosis testing of the residuals. When
+  \code{use_sktest = TRUE}, STATA's \code{sktest} is used.
+  When \code{use_sktest = FALSE} (the default), STATA's
+  \code{varnorm} (i.e., the Jarque-Bera test) is used.}
 }
 \value{
   This function returns the modified \code{av_state}

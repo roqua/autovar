@@ -161,9 +161,10 @@ Vector Autoregression
 
 ### var_main
 
-    av_state <- var_main(av_state,vars,lag_max=7,significance=0.05,exogenous_max_iterations=3,
+    av_state <- var_main(av_state,vars,lag_max=2,significance=0.05,exogenous_max_iterations=3,
                          subset=1,log_level=av_state$log_level,
-                         small=FALSE,include_model=NULL,exogenous_variables=NULL)
+                         small=FALSE,include_model=NULL,exogenous_variables=NULL,
+                         use_sktest=FALSE)
 
 The `var_main` function generates and tests possible VAR models for the specified variables. Aside from `av_state`, the only required argument is `vars`, which should be a vector of variables.
 
@@ -201,6 +202,8 @@ The above example includes a model with `lag=3` (so lags 1, 2, and 3 are include
 
 The `exogenous_variables` argument should be a vector of variable names that already exist in the given data set, that will be supplied to every VAR model as exogenous variables.
 
+The `use_sktest` argument affects which test is used for Skewness and Kurtosis testing of the residuals. When `use_sktest = TRUE`, STATA's `sktest` is used. When `use_sktest = FALSE` (the default), STATA's `varnorm` (i.e., the Jarque-Bera test) is used.
+
 #### Results
 
 The `var_main` function sets the following variables in the `av_state` list:
@@ -208,6 +211,8 @@ The `var_main` function sets the following variables in the `av_state` list:
 * `significance` - the `significance` used.
 * `lag_max` - the `lag_max` used.
 * `exogenous_max_iterations` - the `exogenous_max_iterations` used.
+* `exogenous_variables` - the `exogenous_variables` used.
+* `use_sktest` - the `use_sktest` setting used.
 * `vars` - the `vars` used.
 * `subset` - the `subset` used.
 * `log_level` - the `log_level` used. This setting is restored at the end of `var_main` to its original value.
