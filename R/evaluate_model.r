@@ -10,7 +10,7 @@ evaluate_model <- function(av_state,model,index) {
   # should return a list with model_valid, and varest
   res <- list(model_valid=TRUE,varest=NULL)
   dta <- get_data_columns(av_state,model)
-  av_state <- dta$av_state  
+  av_state <- dta$av_state
   endodta <- dta$endogenous
   exodta <- dta$exogenous
   res$model_valid <- dta$model_valid
@@ -166,7 +166,7 @@ evaluate_model2 <- function(av_state,model,index) {
   # should return a list with model_valid, and varest
   res <- list(model_valid=TRUE,varest=NULL)
   dta <- get_data_columns(av_state,model)
-  av_state <- dta$av_stat
+  av_state <- dta$av_state
   endodta <- dta$endogenous
   exodta <- dta$exogenous
   res$model_valid <- dta$model_valid
