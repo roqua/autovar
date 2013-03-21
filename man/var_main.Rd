@@ -6,7 +6,8 @@
     significance = 0.05, exogenous_max_iterations = 3,
     subset = 1, log_level = av_state$log_level,
     small = FALSE, include_model = NULL,
-    exogenous_variables = NULL, use_sktest = FALSE)
+    exogenous_variables = NULL, use_sktest = FALSE,
+    test_all_combinations = FALSE)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -98,6 +99,11 @@
   \code{use_sktest = TRUE}, STATA's \code{sktest} is used.
   When \code{use_sktest = FALSE} (the default), STATA's
   \code{varnorm} (i.e., the Jarque-Bera test) is used.}
+
+  \item{test_all_combinations}{determines whether the
+  remaining search space is searched for possible
+  additional models. This can sometimes give a few extra
+  solutions at a large performance penalty.}
 }
 \value{
   This function returns the modified \code{av_state}

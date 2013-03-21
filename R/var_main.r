@@ -26,6 +26,7 @@
 #' The above example includes a model with \code{lag=3} (so lags 1, 2, and 3 are included), the model is ran on the log-transformed variables, and includes an exogenous dummy variable that has a 1 where values of \code{log(Depression)} are more than 3.5xstd away from the mean (because \code{iteration=1}, see the description of the \code{exogenous_max_iterations} parameter above for the meaning of the iterations) and 0 everywhere else. The included model is added at the start of the list, so it can be retrieved (assuming a valid \code{lag} was specified) with either \code{av_state$accepted_models[[1]]} if the model was valid or \code{av_state$rejected_models[[1]]} if it was invalid. In the above example, some info about the included model is printed (assuming it was invalid).
 #' @param exogenous_variables should be a vector of variable names that already exist in the given data set, that will be supplied to every VAR model as exogenous variables.
 #' @param use_sktest affects which test is used for Skewness and Kurtosis testing of the residuals. When \code{use_sktest = TRUE}, STATA's \code{sktest} is used. When \code{use_sktest = FALSE} (the default), STATA's \code{varnorm} (i.e., the Jarque-Bera test) is used.
+#' @param test_all_combinations determines whether the remaining search space is searched for possible additional models. This can sometimes give a few extra solutions at a large performance penalty.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta")
@@ -39,7 +40,7 @@
 var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      exogenous_max_iterations=3,subset=1,log_level=av_state$log_level,
                      small=FALSE,include_model=NULL,exogenous_variables=NULL,
-                     use_sktest=FALSE) {
+                     use_sktest=FALSE,test_all_combinations=FALSE) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -65,6 +66,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$small <- small
   av_state$use_sktest <- use_sktest
   av_state$exogenous_variables <- exogenous_variables
+  av_state$test_all_combinations <- test_all_combinations
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   scat(av_state$log_level,3,"Starting VAR with variables: ",paste(vars,collapse=', '),
@@ -151,6 +153,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   scat(av_state$log_level,3,"\nDone. Processed",model_cnt,"models, of which",
       length(av_state$accepted_models),
       ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n")
+  search_space_used(av_state)
   print_granger_statistics(av_state)
   class(av_state$accepted_models) <- 'model_list'
   class(av_state$rejected_models) <- 'model_list'
@@ -159,20 +162,55 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     av_state$accepted_models <- sort_models(av_state$accepted_models)
     scat(av_state$log_level,3,format_accepted_models(av_state))
   }
+  if (av_state$test_all_combinations) {
+    scat(av_state$log_level,3,"\nRunning again on full scope")
+    old_model_queue <- av_state$model_queue
+    model_queue <- create_total_model_queue(av_state)
+    model_queue <- model_queue[!(model_queue %in% old_model_queue)]
+    av_state$model_queue <- model_queue
+    av_state$old_accepted_models <- av_state$accepted_models
+    i <- 1
+    model_cnt <- 0
+    while (TRUE) {
+      if (i > length(av_state$model_queue)) { break }
+      # pop a model and process it
+      model <- av_state$model_queue[[i]]
+      ev_modelres <- evaluate_model2(av_state,model,i)
+      av_state <- ev_modelres$av_state
+      model_evaluation <- ev_modelres$res
+      if (!is.null(model_evaluation$varest)) {
+        model_cnt <- model_cnt +1
+      }
+      if (model_evaluation$model_valid) {
+        # model is valid
+        accepted_model <- list(parameters=model,varest=model_evaluation$varest)
+        class(accepted_model) <- 'var_modelres'
+        av_state$accepted_models <- c(av_state$accepted_models,list(accepted_model))
+      } else if (!is.null(model_evaluation$varest)) {
+        # model was rejected
+        rejected_model <- list(parameters=model,varest=model_evaluation$varest)
+        class(rejected_model) <- 'var_modelres'
+        av_state$rejected_models <- c(av_state$rejected_models,list(rejected_model))
+      }
+      i <- i+1
+    }
+    scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
+    scat(av_state$log_level,3,"\nDone. Processed",model_cnt,"additional models, of which",
+         length(av_state$accepted_models)-length(av_state$old_accepted_models),
+         ifelse(length(av_state$accepted_models)-length(av_state$old_accepted_models) == 1,
+                "was","were"),"valid.\n")
+    search_space_used(av_state)
+    print_granger_statistics(av_state)
+    class(av_state$accepted_models) <- 'model_list'
+    class(av_state$rejected_models) <- 'model_list'
+    if (length(av_state$accepted_models) > 0) {
+      scat(av_state$log_level,3,"\nThe valid models:\n")
+      av_state$accepted_models <- sort_models(av_state$accepted_models)
+      scat(av_state$log_level,3,format_accepted_models(av_state))
+    }
+  }
   av_state$log_level <- real_log_level
   av_state
-}
-
-print_granger_statistics <- function(av_state) {
-  lst <- c(av_state$accepted_models,av_state$rejected_models)
-  scat(av_state$log_level,3,"\nGranger causality summary of all",
-       length(lst),"processed models:\n")
-  glist <- vargranger_list(lst)
-  for (i in 1:nr_rows(glist)) {
-    gres <- glist[i,]
-    if (gres$desc == '') { next }
-    scat(av_state$log_level,3,"  ",gres$perc,"\t",gres$desc,"\n",sep='')
-  }
 }
 
 set_varest_values <- function(av_state,varest) {
@@ -215,80 +253,65 @@ av_state_use_sktest <- function(varest) {
   }
 }
 
+# Estimating the total search space
+search_space_used <- function(av_state) {
+  nvars <- length(av_state$vars)
+  nexo <- 1+av_state$exogenous_max_iterations
+  dlags <- distinct_lags(c(av_state$accepted_models,av_state$rejected_models))
+  nlags <- length(dlags)
+  tot_models <- 2* 2* nlags * nexo^nvars
+  searched_models <- length(av_state$accepted_models) + length(av_state$rejected_models)
+  scat(av_state$log_level,3,'Tested ',searched_models,' of ',tot_models,' (',
+      format_as_percentage(searched_models/tot_models),') of the combinatorial search space at the given lags (',paste(dlags,collapse=', '),').\n',sep='')
+  invisible(av_state)
+}
+distinct_lags <- function(lst) {
+  sort(unique(sapply(lst,function(x) x$parameters$lag)))
+}
 
-format_accepted_models <- function(av_state) {
-  chars <- LETTERS
-  idx <- 0
-  res <- ""
-  for (x in av_state$accepted_models) {
-    idx <- idx+1
-    char <- chars[[idx]]
-    res <- paste(res,char,": ",
-                 printed_model_score(x$varest),
-                 " : ",
-                 vargranger_line(x$varest),
-                 "\n",
-                 sep='')
-    # Lag: 2
-    res <- paste(res,"  Lag: ",x$parameters$lag,"\n",sep='')
-    # Log transform: YES
-    res <- paste(res,"  Log transform: ",
-                 ifelse(apply_log_transform(x$parameters),"YES","NO")
-                 ,"\n",sep='')
-    # Exogenous variables:
-    res <- paste(res,"  Exogenous variables: ",sep='')
-    res <- paste(res,
-                 format_exogenous_variables(x$parameters$exogenous_variables,
-                                            av_state,
-                                            x$parameters),
-                 sep='')
-    # Constraints:
-    res <- paste(res,"  Constraints: ",sep='')
-    res <- paste(res,
-                 format_constraints(x$varest))
-    res <- paste(res,"\n",sep='')
-    #if (idx == 3) { break }
-  }
-  res
-}
-format_exogenous_variables <- function(exogvars,av_state,model) {
-  if (is.null(exogvars) && is.null(av_state$exogenous_variables)) {
-    "none\n"
-  } else {
-    res <- "\n"
-    if (!is.null(av_state$exogenous_variables)) {
-      for (i in 1:length(av_state$exogenous_variables)) {
-        exovar <- av_state$exogenous_variables[[i]]
-        res <- paste(res,'    ',exovar,': ',
-                     paste(which(av_state$data[[av_state$subset]][[exovar]] == 1),collapse=', '),
-                     '\n',sep='')
+# Creating the total search space
+create_total_model_queue <- function(av_state) {
+  r <- list()
+  lags <- distinct_lags(c(av_state$accepted_models,av_state$rejected_models))
+  vars <- sort(av_state$vars)
+  nvars <- length(vars)
+  nexo <- 1+av_state$exogenous_max_iteration
+  ncombs <- nexo^nvars
+  for (restrict in c(FALSE,TRUE)) {
+    for (apply_log_transform in c(FALSE,TRUE)) {
+      for (lag in lags) {
+        for (i in 1:ncombs) {
+          combline <- sapply(1:nvars,function(x) determine_var_index(i,x,nexo))
+          exogenous_variables <- exogenous_dataframe_for_combline(combline,vars)
+          model <- list()
+          if (apply_log_transform) { model$apply_log_transform <- TRUE }
+          if (!is.null(exogenous_variables)) { model$exogenous_variables <- exogenous_variables }
+          model$lag <-lag
+          if (restrict) { model$restrict <- TRUE }
+          class(model) <- 'var_model'
+          r <- c(r,list(model))
+        }
       }
     }
-    if (!is.null(exogvars)) {
-      for (i in 1:nr_rows(exogvars)) {
-        exovar <- exogvars[i,]
-        desc <- format_varname(exovar$variable)
-        std_factor <- std_factor_for_iteration(exovar$iteration)
-        res <- paste(res,'    ',desc,' (',std_factor,'x std. of res.): ',
-                     get_outliers_as_string(av_state,exovar$variable,
-                                            exovar$iteration,
-                                            model),
-                     "\n",
-                     sep='')
+  }
+  r
+}
+determine_var_index <- function(i,vari,nexo) {
+  ((i-1)%/%(nexo^(vari-1)))%%nexo
+}
+exogenous_dataframe_for_combline <- function(combline,vars) {
+  dfs <- NULL
+  for (i in 1:length(combline)) {
+    if (combline[[i]] != 0) {
+      df <- data.frame(variable=vars[[i]],iteration=combline[[i]],stringsAsFactors=FALSE)
+      if (is.null(dfs)) {
+        dfs <- df
+      } else {
+        dfs <- rbind(dfs,df)
       }
     }
-    res
   }
-}
-format_varname <- function(varname) {
-  paste(varname,' outliers',sep='')
-}
-format_constraints <- function(varest) {
-  if (is.null(varest$restrictions)) {
-    "none\n"
-  } else {
-    paste(restrictions_tostring(varest),"\n",sep='')
-  }
+  dfs
 }
 
 
@@ -315,3 +338,4 @@ print_accepted_models <- function(av_state) {
 print_rejected_models <- function(av_state) {
   print(av_state$rejected_models,av_state)
 }
+

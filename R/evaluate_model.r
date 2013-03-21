@@ -152,6 +152,77 @@ evaluate_model <- function(av_state,model,index) {
   list(res=res,av_state=av_state)
 }
 
+# this is a shorter version of evaluate_model, without requeueing.
+# This function is used by var_main when test_all_combinations = TRUE
+evaluate_model2 <- function(av_state,model,index) {
+  # for debugging
+  #av_state$current_model <- model
+  
+  scat(av_state$log_level,2,"\n",paste(rep('-',times=20),collapse=''),"\n",sep='')
+  scat(av_state$log_level,2,index,"/",length(av_state$model_queue),
+       ". Model parameters: ",sep='')
+  sprint(av_state$log_level,2,model,av_state)
+  
+  # should return a list with model_valid, and varest
+  res <- list(model_valid=TRUE,varest=NULL)
+  dta <- get_data_columns(av_state,model)
+  av_state <- dta$av_stat
+  endodta <- dta$endogenous
+  exodta <- dta$exogenous
+  res$model_valid <- dta$model_valid
+  
+  # get the var estimate for this model. This is the 'var' command in STATA.
+  res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
+  # remove nonsignificant coefficients from the formula
+  if (is_restricted_model(model)) {
+    #res$varest <- restrict(res$varest,method="ser")
+    res$varest <- iterative_restrict(res$varest)
+  }
+  res$varest <- set_varest_values(av_state,res$varest)
+  
+  # if we couldn't remove any terms, then the restricted model is equal
+  # to the original model, and we set it to invalid because it already exists
+  if (is_restricted_model(model) && is.null(res$varest$restrictions)) {
+    scat(av_state$log_level,2,"\n> Restricted model equivalent to unrestricted model. Setting as invalid.\n")
+    res$model_valid <- FALSE
+  }
+  
+  # run all the tests and queue potential models:
+  
+  # stability test
+  if (!model_is_stable(res$varest,av_state$log_level)) {
+    res$model_valid <- FALSE
+    # determine whether to continue with this model
+  }
+  
+  # portmanteau tests on residuals and squares of residuals
+  ptests <- wntestq(res$varest,av_state$log_level)
+  for (i in 1:(dim(ptests)[1])) {
+    test <- ptests[i,]
+    if (!test$passes_test) {
+      res$model_valid <- FALSE
+    }
+  }
+  
+  # (Jarque-Bera), Skewness, Kurtosis tests
+  vns <- varnorm_aux(res$varest,av_state$log_level)
+  if (!is.null(vns)) {
+    res$model_valid <- FALSE
+  }
+  
+  # if all tests pass, print some info about this model
+  if (res$model_valid) {
+    scat(av_state$log_level,2,'\n> End of tests. Model valid.\n')
+    scat(av_state$log_level,1,'Printing estat ic (low values = better models):\n')
+    sprint(av_state$log_level,1,estat_ic(res$varest))
+  } else {
+    scat(av_state$log_level,2,"\n> End of tests. Model invalid.\n")
+  }
+  scat(av_state$log_level,2,paste(rep('-',times=20),collapse=''),"\n\n",sep='')
+
+  list(res=res,av_state=av_state)
+}
+
 determine_var_order <- function(dta,log_level,...) {
   # default type is const
   c <- VARselect(dta,...)

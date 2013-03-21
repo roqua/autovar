@@ -16,6 +16,19 @@ vargranger <- function(varest,log_level=0) {
   tos
 }
 
+# Print Granger Statistics
+print_granger_statistics <- function(av_state) {
+  lst <- c(av_state$accepted_models,av_state$rejected_models)
+  scat(av_state$log_level,3,"\nGranger causality summary of all",
+       length(lst),"processed models:\n")
+  glist <- vargranger_list(lst)
+  for (i in 1:nr_rows(glist)) {
+    gres <- glist[i,]
+    if (gres$desc == '') { next }
+    scat(av_state$log_level,3,"  ",gres$perc,"\t",gres$desc,"\n",sep='')
+  }
+}
+
 df_in_rows <- function(df) {
   lst <- NULL
   if (!is.null(df)) {

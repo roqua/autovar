@@ -290,7 +290,7 @@ $('#loadexample2').click(function() {
   $('#knitForm').find('textarea[name="x"]').val("d<-group_by(d,'id')\nd<-order_by(d,'Day')\nd<-add_derived_column(d,'Activity_hours','Activity', operation='MINUTES_TO_HOURS')\nd<-var_main(d,c('Activity_hours','Depression'),log_level=3)\nvar_info(d$accepted_models[[1]]$varest)\n");
 });
 $('#loadexample3').click(function() {
-  $('#knitForm').find('textarea[name="x"]').val("d<-group_by(d,'id')\nd<-order_by(d,'tijdstip')\nd<-select_range(d,'2',begin=29)\n\nbewegen_columns <- c('minuten_sport','minuten_woonwerk','minuten_werk_licht',\n                    'minuten_zwaar_werk','minuten_licht_huishouden',\n                    'minuten_zwaarhuishouden','minuten_vrijetijd')\nd<-add_derived_column(d,'SomBewegen',bewegen_columns,operation='SUM')\nd<-add_derived_column(d,'SomBewegUur','SomBewegen',operation='MINUTES_TO_HOURS')\n\nd<-add_derived_column(d,'SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4','PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),operation='SUM')\n\nd<-var_main(d,c('SomPHQ','SomBewegUur'),subset=2)\nvisualize(d,'SomBewegUur')\nvisualize(d,'SomPHQ')\nvar_info(d$accepted_models[[1]]$varest)\n");
+  $('#knitForm').find('textarea[name="x"]').val("d<-var_main(d,c('SomBewegUur','SomPHQ'),log_level=3,\n              exogenous_variables=c('Work','UitbijterPHQ','Sunday','Tuesday','Friday'))\nvisualize(d,c('SomBewegUur','SomPHQ'))\nvar_info(d$accepted_models[[1]]$varest)\n");
 })
 
 $('#knit').click(function() {

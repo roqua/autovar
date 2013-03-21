@@ -83,7 +83,7 @@ varnorm <- function(varest,log_level=0) {
 powerset <- function(lst) {
   res <- NULL
   for (i in 1:length(lst)) {
-    cmbs <- combn(lst,i)
+    cmbs <- utils::combn(lst,i)
     for (j in 1:(dim(cmbs)[[2]])) {
       res <- c(res,list(cmbs[,j]))
     }
