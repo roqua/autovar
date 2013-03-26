@@ -11,7 +11,7 @@
 #' av_state <- load_file("../data/input/RuwedataAngela.sav")
 #' av_state <- select_range(av_state,'1',begin=20,end=40)
 #' @export
-select_range <- function(av_state,subset_id='multiple',column,begin,end) {
+select_range <- function(av_state,subset_id=1,column,begin,end) {
   assert_av_state(av_state)
   if (class(subset_id) == 'numeric' && !any(subset_id == 1:length(av_state$data))) {
     stop(paste(subset_id,"does not identify a data set"))

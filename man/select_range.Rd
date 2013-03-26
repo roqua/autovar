@@ -2,8 +2,7 @@
 \alias{select_range}
 \title{Select a subset of rows of a data set to be retained}
 \usage{
-  select_range(av_state, subset_id = "multiple", column,
-    begin, end)
+  select_range(av_state, subset_id = 1, column, begin, end)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}

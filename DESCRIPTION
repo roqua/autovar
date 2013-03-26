@@ -12,6 +12,7 @@ Depends:
     gridExtra,
     norm,
     reshape2,
+    TimeProjection,
     vars
 Suggests:
     testthat,
@@ -45,3 +46,4 @@ Collate:
     'iterative_restrict.r'
     'sktest.r'
     'formatting.r'
+    'add_day_columns.r'

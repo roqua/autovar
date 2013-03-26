@@ -86,13 +86,15 @@ Example: `av_state <- order_by(av_state,'tijdstip',impute_method='ONE_MISSING')`
 
 ### select_range
 
-    av_state <- select_range(av_state, subset_id='multiple',column,begin,end)
+    av_state <- select_range(av_state, subset_id=1,column,begin,end)
 
 The `select_range` function selects which rows of a data set should be included. If the data set is grouped into multiple data sets, the `subset_id` argument needs to be supplied, telling the function to work per individual data set.
 
 #### Arguments
 
 The first argument to this function has to be an object of class `av_state`. A modified `av_state` object is returned.
+
+The `subset_id` argument specifies which data subset should be modified. This argument is either an integer subset index or the the value for the `id_field` column that was used in the `group_by` function. The `subset_id` argument is only required if the data set is grouped into multiple data sets (i.e., if the `group_by` function was used), in which case the function works on the specified data subset.
 
 The `column` argument specifies which column the begin and end values should be taken over. This argument is optional, and if it is missing, the value of `av_state$order_by` will be substituted.
 
@@ -106,8 +108,25 @@ Example: `av_state <- select_range(av_state,'1',begin=20,end=40)`
 Modifying and adding columns
 ----------------------------
 
+### add_day_columns
 
-### set_first_timestamp
+    av_state <- add_day_columns(av_state,subset_id=1,from,by="day")
+
+The `add_day_columns` function adds dummy columns for weekdays (named `Sunday`, `Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday` and `Saturday`) to the given subset of the loaded data set.
+
+#### Arguments
+
+The first argument to this function has to be an object of class `av_state`. A modified `av_state` object is returned.
+
+The `subset_id` argument specifies which data subset should be modified. This argument is either an integer subset index or the the value for the `id_field` column that was used in the `group_by` function. The `subset_id` argument is only required if the data set is grouped into multiple data sets (i.e., if the `group_by` function was used), in which case the function works on the specified data subset.
+
+The `from` argument specifies the date of the first measurement. This argument should be given in the format: `"yyyy-mm-dd"`, e.g., `"2004-03-28"`.
+
+The `by` argument specifies by how much the consecutive measurements differ. The default is `"day"`.
+
+#### Syntax
+
+Example: `av_state <- add_day_columns(av_state,from="2010-04-14")`
 
 
 ### impute_missing_values
