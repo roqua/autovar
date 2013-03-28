@@ -46,4 +46,4 @@ Collate:
     'iterative_restrict.r'
     'sktest.r'
     'formatting.r'
-    'add_day_columns.r'
+    'set_timestamps.r'

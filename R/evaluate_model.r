@@ -33,18 +33,18 @@ evaluate_model <- function(av_state,model,index) {
   
     # get the var estimate for this model. This is the 'var' command in STATA.
     res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
+    res$varest <- set_varest_values(av_state,res$varest)
     # remove nonsignificant coefficients from the formula
     if (is_restricted_model(model)) {
       #res$varest <- restrict(res$varest,method="ser")
       res$varest <- iterative_restrict(res$varest)
-    }
-    res$varest <- set_varest_values(av_state,res$varest)
-    
-    # if we couldn't remove any terms, then the restricted model is equal
-    # to the original model, and we set it to invalid because it already exists
-    if (is_restricted_model(model) && is.null(res$varest$restrictions)) {
-      scat(av_state$log_level,2,"\n> Restricted model equivalent to unrestricted model. Setting as invalid.\n")
-      res$model_valid <- FALSE
+      
+      # if we couldn't remove any terms, then the restricted model is equal
+      # to the original model, and we set it to invalid because it already exists
+      if (is.null(res$varest$restrictions)) {
+        scat(av_state$log_level,2,"\n> Restricted model equivalent to unrestricted model. Setting as invalid.\n")
+        res$model_valid <- FALSE
+      }
     }
     
     # help the caching of residuals a bit by using stuff we already computed
@@ -173,43 +173,48 @@ evaluate_model2 <- function(av_state,model,index) {
   
   # get the var estimate for this model. This is the 'var' command in STATA.
   res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
+  res$varest <- set_varest_values(av_state,res$varest)
+  
   # remove nonsignificant coefficients from the formula
   if (is_restricted_model(model)) {
     #res$varest <- restrict(res$varest,method="ser")
     res$varest <- iterative_restrict(res$varest)
-  }
-  res$varest <- set_varest_values(av_state,res$varest)
   
-  # if we couldn't remove any terms, then the restricted model is equal
-  # to the original model, and we set it to invalid because it already exists
-  if (is_restricted_model(model) && is.null(res$varest$restrictions)) {
-    scat(av_state$log_level,2,"\n> Restricted model equivalent to unrestricted model. Setting as invalid.\n")
-    res$model_valid <- FALSE
+    # if we couldn't remove any terms, then the restricted model is equal
+    # to the original model, and we set it to invalid because it already exists
+    if (is.null(res$varest$restrictions)) {
+      scat(av_state$log_level,2,"\n> Restricted model equivalent to unrestricted model. Setting as invalid.\n")
+      res$model_valid <- FALSE
+    }
   }
   
   # run all the tests and queue potential models:
   
   # stability test
-  if (!model_is_stable(res$varest,av_state$log_level)) {
+  if (res$model_valid && !model_is_stable(res$varest,av_state$log_level)) {
     res$model_valid <- FALSE
     # determine whether to continue with this model
   }
   
   # portmanteau tests on residuals and squares of residuals
-  ptests <- wntestq(res$varest,av_state$log_level)
-  for (i in 1:(dim(ptests)[1])) {
-    test <- ptests[i,]
-    if (!test$passes_test) {
-      res$model_valid <- FALSE
+  if (res$model_valid) {
+    ptests <- wntestq(res$varest,av_state$log_level)
+    for (i in 1:(dim(ptests)[1])) {
+      test <- ptests[i,]
+      if (!test$passes_test) {
+        res$model_valid <- FALSE
+      }
     }
   }
   
   # (Jarque-Bera), Skewness, Kurtosis tests
-  vns <- varnorm_aux(res$varest,av_state$log_level)
-  if (!is.null(vns)) {
-    res$model_valid <- FALSE
+  if (res$model_valid) {
+    vns <- varnorm_aux(res$varest,av_state$log_level)
+    if (!is.null(vns)) {
+      res$model_valid <- FALSE
+    }
   }
-  
+
   # if all tests pass, print some info about this model
   if (res$model_valid) {
     scat(av_state$log_level,2,'\n> End of tests. Model valid.\n')

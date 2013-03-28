@@ -108,11 +108,11 @@ Example: `av_state <- select_range(av_state,'1',begin=20,end=40)`
 Modifying and adding columns
 ----------------------------
 
-### add_day_columns
+### set_timestamps
 
-    av_state <- add_day_columns(av_state,subset_id=1,from,by="day")
+    av_state <- set_timestamps(av_state,subset_id=1,date_of_first_measurement,measurements_per_day=1)
 
-The `add_day_columns` function adds dummy columns for weekdays (named `Sunday`, `Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday` and `Saturday`) to the given subset of the loaded data set.
+The `set_timestamps` function adds dummy columns for weekdays (named `Sunday`, `Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday` and `Saturday`) and hours of the day to the given subset of the specified data set. These are used by `var_main` to find better models by removing cyclicity from the data set.
 
 #### Arguments
 
@@ -120,13 +120,14 @@ The first argument to this function has to be an object of class `av_state`. A m
 
 The `subset_id` argument specifies which data subset should be modified. This argument is either an integer subset index or the the value for the `id_field` column that was used in the `group_by` function. The `subset_id` argument is only required if the data set is grouped into multiple data sets (i.e., if the `group_by` function was used), in which case the function works on the specified data subset.
 
-The `from` argument specifies the date of the first measurement. This argument should be given in the format: `"yyyy-mm-dd"`, e.g., `"2004-03-28"`.
+The `date_of_first_measurement` argument specifies the date of the first measurement. This argument should be given in the format: `"yyyy-mm-dd"`, e.g., `"2004-03-28"`.
 
-The `by` argument specifies by how much the consecutive measurements differ. The default is `"day"`.
+The `measurements_per_day` argument specifies how many measurements were taken per day. This default is 1. It is assumed that every day has exactly this amount of measurements, and that the first measurement in the dataset was the first measurement on that day.
+
 
 #### Syntax
 
-Example: `av_state <- add_day_columns(av_state,from="2010-04-14")`
+Example: `av_state <- set_timestamps(av_state,date_of_first_measurement="2010-04-14")`
 
 
 ### impute_missing_values
