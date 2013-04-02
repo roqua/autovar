@@ -110,7 +110,8 @@ Modifying and adding columns
 
 ### set_timestamps
 
-    av_state <- set_timestamps(av_state,subset_id=1,date_of_first_measurement,measurements_per_day=1)
+    av_state <- set_timestamps(av_state,subset_id=1,date_of_first_measurement,
+                              measurements_per_day=1,log_level=0)
 
 The `set_timestamps` function adds dummy columns for weekdays (named `Sunday`, `Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday` and `Saturday`) and hours of the day to the given subset of the specified data set. These are used by `var_main` to find better models by removing cyclicity from the data set.
 
@@ -124,6 +125,7 @@ The `date_of_first_measurement` argument specifies the date of the first measure
 
 The `measurements_per_day` argument specifies how many measurements were taken per day. This default is 1. It is assumed that every day has exactly this amount of measurements, and that the first measurement in the dataset was the first measurement on that day.
 
+The `log_level` argument sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about the exogenous columns being added.
 
 #### Syntax
 
@@ -184,7 +186,9 @@ Vector Autoregression
     av_state <- var_main(av_state,vars,lag_max=2,significance=0.05,exogenous_max_iterations=3,
                          subset=1,log_level=av_state$log_level,
                          small=FALSE,include_model=NULL,exogenous_variables=NULL,
-                         use_sktest=FALSE,test_all_combinations=FALSE)
+                         use_sktest=FALSE,test_all_combinations=FALSE,
+                         restrictions.verify_validity_in_every_step=TRUE,
+                         restrictions.extensive_search=TRUE)
 
 The `var_main` function generates and tests possible VAR models for the specified variables. Aside from `av_state`, the only required argument is `vars`, which should be a vector of variables.
 
@@ -225,6 +229,11 @@ The `exogenous_variables` argument should be a vector of variable names that alr
 The `use_sktest` argument affects which test is used for Skewness and Kurtosis testing of the residuals. When `use_sktest = TRUE`, STATA's `sktest` is used. When `use_sktest = FALSE` (the default), STATA's `varnorm` (i.e., the Jarque-Bera test) is used.
 
 The `test_all_combinations` argument determines whether the untested search space is searched for possible additional models. This can sometimes give a few extra models at a large performance penalty.
+
+The `restrictions.verify_validity_in_every_step` argument affects how constraints are found for valid models. When this argument is `TRUE` (the default), all intermediate models in the iterative constraint-finding method have to be valid. This ensures that we always find a valid constrained model for every valid model. If this argument is `FALSE`, then only after setting all constraints do we check if the resulting model is valid. If this is not the case, we fail to find a constrained model.
+
+The `restrictions.extensive_search` argument affects how constraints are found for valid models. When this argument is `TRUE` (the default), when the term with the highest p-value does not provide a model with a lower BIC score, we attempt to constrain the term with the second highest p-value, and so on. When this argument is `FALSE`, we only check the term with the highest p-value. If restricting this term does not give an improvement in BIC score, we stop restricting the model entirely.
+
 
 #### Results
 

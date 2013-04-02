@@ -27,6 +27,8 @@
 #' @param exogenous_variables should be a vector of variable names that already exist in the given data set, that will be supplied to every VAR model as exogenous variables.
 #' @param use_sktest affects which test is used for Skewness and Kurtosis testing of the residuals. When \code{use_sktest = TRUE}, STATA's \code{sktest} is used. When \code{use_sktest = FALSE} (the default), STATA's \code{varnorm} (i.e., the Jarque-Bera test) is used.
 #' @param test_all_combinations determines whether the remaining search space is searched for possible additional models. This can sometimes give a few extra solutions at a large performance penalty.
+#' @param restrictions.verify_validity_in_every_step is an argument that affects how constraints are found for valid models. When this argument is \code{TRUE} (the default), all intermediate models in the iterative constraint-finding method have to be valid. This ensures that we always find a valid constrained model for every valid model. If this argument is \code{FALSE}, then only after setting all constraints do we check if the resulting model is valid. If this is not the case, we fail to find a constrained model.
+#' @param restrictions.extensive_search is an argument that affects how constraints are found for valid models. When this argument is \code{TRUE} (the default), when the term with the highest p-value does not provide a model with a lower BIC score, we attempt to constrain the term with the second highest p-value, and so on. When this argument is \code{FALSE}, we only check the term with the highest p-value. If restricting this term does not give an improvement in BIC score, we stop restricting the model entirely.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta")
@@ -40,7 +42,9 @@
 var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      exogenous_max_iterations=3,subset=1,log_level=av_state$log_level,
                      small=FALSE,include_model=NULL,exogenous_variables=NULL,
-                     use_sktest=FALSE,test_all_combinations=FALSE) {
+                     use_sktest=FALSE,test_all_combinations=FALSE,
+                     restrictions.verify_validity_in_every_step=TRUE,
+                     restrictions.extensive_search=TRUE) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -67,6 +71,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$use_sktest <- use_sktest
   av_state$exogenous_variables <- exogenous_variables
   av_state$test_all_combinations <- test_all_combinations
+  av_state$restrictions.verify_validity_in_every_step <- restrictions.verify_validity_in_every_step
+  av_state$restrictions.extensive_search <- restrictions.extensive_search
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   scat(av_state$log_level,3,"Starting VAR with variables: ",paste(vars,collapse=', '),

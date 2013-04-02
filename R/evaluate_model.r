@@ -36,8 +36,9 @@ evaluate_model <- function(av_state,model,index) {
     res$varest <- set_varest_values(av_state,res$varest)
     # remove nonsignificant coefficients from the formula
     if (is_restricted_model(model)) {
-      #res$varest <- restrict(res$varest,method="ser")
-      res$varest <- iterative_restrict(res$varest)
+      res$varest <- iterative_restrict(res$varest,
+                                       av_state$restrictions.verify_validity_in_every_step,
+                                       av_state$restrictions.extensive_search)
       
       # if we couldn't remove any terms, then the restricted model is equal
       # to the original model, and we set it to invalid because it already exists
@@ -177,8 +178,9 @@ evaluate_model2 <- function(av_state,model,index) {
   
   # remove nonsignificant coefficients from the formula
   if (is_restricted_model(model)) {
-    #res$varest <- restrict(res$varest,method="ser")
-    res$varest <- iterative_restrict(res$varest)
+    res$varest <- iterative_restrict(res$varest,
+                                     av_state$restrictions.verify_validity_in_every_step,
+                                     av_state$restrictions.extensive_search)
   
     # if we couldn't remove any terms, then the restricted model is equal
     # to the original model, and we set it to invalid because it already exists

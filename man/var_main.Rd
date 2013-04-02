@@ -7,7 +7,9 @@
     subset = 1, log_level = av_state$log_level,
     small = FALSE, include_model = NULL,
     exogenous_variables = NULL, use_sktest = FALSE,
-    test_all_combinations = FALSE)
+    test_all_combinations = FALSE,
+    restrictions.verify_validity_in_every_step = TRUE,
+    restrictions.extensive_search = TRUE)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -104,6 +106,28 @@
   remaining search space is searched for possible
   additional models. This can sometimes give a few extra
   solutions at a large performance penalty.}
+
+  \item{restrictions.verify_validity_in_every_step}{is an
+  argument that affects how constraints are found for valid
+  models. When this argument is \code{TRUE} (the default),
+  all intermediate models in the iterative
+  constraint-finding method have to be valid. This ensures
+  that we always find a valid constrained model for every
+  valid model. If this argument is \code{FALSE}, then only
+  after setting all constraints do we check if the
+  resulting model is valid. If this is not the case, we
+  fail to find a constrained model.}
+
+  \item{restrictions.extensive_search}{is an argument that
+  affects how constraints are found for valid models. When
+  this argument is \code{TRUE} (the default), when the term
+  with the highest p-value does not provide a model with a
+  lower BIC score, we attempt to constrain the term with
+  the second highest p-value, and so on. When this argument
+  is \code{FALSE}, we only check the term with the highest
+  p-value. If restricting this term does not give an
+  improvement in BIC score, we stop restricting the model
+  entirely.}
 }
 \value{
   This function returns the modified \code{av_state}

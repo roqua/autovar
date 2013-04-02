@@ -2,15 +2,26 @@
 # as long as that value is not significant,
 # as long as the model_score keeps decreasing,
 # and as long as the model is valid
-iterative_restrict <- function(varest) {
+iterative_restrict <- function(varest,verify_validity_in_every_step=TRUE,extensive_search=TRUE) {
+  # verify_validity_in_every_step ensures that all intermediate models are valid.
+  #                               otherwise, only check at the end
+  # extensive_search means that if the model with the highest p-value isnt valid or
+  #                        doesn't decrease the model_score, that we continue trying to
+  #                        constrain the second highest model. When this option is FALSE,
+  #                        we stop constraining the model as soon as restricting the term
+  #                        with the highest p-value no longer decreases the model_score.
   if (model_is_valid(varest)) {
     old_model <- NULL
-    new_model <- varname_with_best_model(varest)
+    new_model <- varname_with_best_model(varest,
+                                         verify_validity_in_every_step,
+                                         extensive_search)
     while (!is.null(new_model)) {
       old_model <- new_model
-      new_model <- varname_with_best_model(new_model$new_varest)
+      new_model <- varname_with_best_model(new_model$new_varest,
+                                           verify_validity_in_every_step,
+                                           extensive_search)
     }
-    if (!is.null(old_model)) {
+    if (!is.null(old_model) && old_model$model_is_valid) {
       old_model$new_varest
     } else {
       varest
@@ -22,13 +33,21 @@ iterative_restrict <- function(varest) {
 
 model_is_better_than <- function(a,b) {
   # returns TRUE if a is a better model than b
-  a$model_score < b$model_score
+  if (!is.null(a$pvalue) && !is.null(b$pvalue)) {
+    # if the compared models both have a p-value defined then
+    # select the one with the highest p-value, don't look at the model_score
+    # this only occurs when comparing the restricted models of different
+    # equations
+    a$pvalue > b$pvalue
+  } else {
+    a$model_score < b$model_score
+  }
 }
 
-varname_with_best_model <- function(varest) {
+varname_with_best_model <- function(varest,verify_validity,extensive_search) {
   best_model <- list(model_score=model_score(varest))
   for (eqname in restriction_matrix_rownames(varest)) {
-    new_model <- varname_with_best_model_aux(varest,eqname)
+    new_model <- varname_with_best_model_aux(varest,eqname,verify_validity,extensive_search)
     if (!is.null(new_model) && model_is_better_than(new_model,best_model)) {
       best_model <- new_model
     }
@@ -40,7 +59,7 @@ varname_with_best_model <- function(varest) {
   }
 }
 
-varname_with_best_model_aux <- function(varest,eqname) {
+varname_with_best_model_aux <- function(varest,eqname,verify_validity,extensive_search) {
   summ <- summary(varest)
   coefs <- summ$varresult[[eqname]]$coefficients
   if (is.null(coefs) || dim(coefs)[[1]] == 1) {
@@ -55,12 +74,13 @@ varname_with_best_model_aux <- function(varest,eqname) {
       pvalue <- coefs[i,4]
       if (pvalue <= min_pvalue) { break }
       new_model <- model_without_term(varest,eqname,varname)
-      if (new_model$model_is_valid && model_is_better_than(new_model,best_model)) {
+      if ((!verify_validity || new_model$model_is_valid) && model_is_better_than(new_model,best_model)) {
         new_model$varname <- varname
         new_model$pvalue <- pvalue
         best_model <- new_model
         break # if only looking for best pvalued solution
       }
+      if (!extensive_search) { break }
     }
     if (!is.null(best_model$new_varest)) {
       best_model$eqname <- eqname

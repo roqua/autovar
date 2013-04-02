@@ -2,7 +2,8 @@
 model_score <- function(varest) {
   # low values == better models
   es <- estat_ic(varest)
-  es$AIC+es$BIC
+  #es$AIC+es$BIC
+  es$BIC
 }
 
 printed_model_score <- function(varest) {

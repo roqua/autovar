@@ -3,7 +3,8 @@
 \title{Add dummy variables for weekdays and hours of the day}
 \usage{
   set_timestamps(av_state, subset_id = 1,
-    date_of_first_measurement, measurements_per_day = 1)
+    date_of_first_measurement, measurements_per_day = 1,
+    log_level = 0)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -25,6 +26,11 @@
   every day has exactly this amount of measurements, and
   that the first measurement in the dataset was the first
   measurement on that day.}
+
+  \item{log_level}{sets the minimum level of output that
+  should be shown (a number between 0 and 3). A lower level
+  means more verbosity. Specify a log_level of 3 to hide
+  messages about the exogenous columns being added.}
 }
 \value{
   This function returns the modified \code{av_state}
