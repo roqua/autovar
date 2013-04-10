@@ -1,8 +1,8 @@
 # Granger causality
 vargranger <- function(varest,log_level=0) {
   # TODO: make this function work when var has more than two variables
-  if (dim(varest$y)[[2]] > 2) {
-    stop("the current vargranger implementation only works for two variables")
+  if (dim(varest$y)[[2]] > 2 && !is.null(varest$restrictions)) {
+    stop("the current vargranger implementation does not work with more than two variables and restricted VARs")
   }
   scat(log_level,2,"\nGranger causality Wald tests\n")
   res <- vargranger_call(varest)

@@ -7,7 +7,8 @@
 #' @param operation this argument has three possible values: \itemize{
 #' \item \code{'SUM'} - The new column is the sum of the columns specified in the columns argument. So for this option, the columns argument is an array of column names. Values in the summation of columns that are NA are treated as if they're zero. Columns that are not numeric are transformed to numeric. For example, Factor columns are transformed to numbers starting at 0 for the first factor level.
 #' \item \code{'LN'} - The new column is the natural logarithm of the specified column in columns. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column. Note that values are increased if necessary so that the resulting column has no negative values.
-#' \item \code{'MINUTES_TO_HOURS'} - The new column is the values of the specified column divided by 60. Thus, for this option, the columns argument is simply the name of a single column. This operation does nto work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column.
+#' \item \code{'MINUTES_TO_HOURS'} - The new column is the values of the specified column divided by 60. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column.
+#' \item \code{'SQUARED'} - The new column ise the square of the values of the specified column. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column.
 #' }
 #' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about converting columns or increasing values for the 'LN' option.
 #' @return This function returns the modified \code{av_state} object.
@@ -21,13 +22,14 @@
 #' av_state <- add_derived_column(av_state,'SomBewegUur','SomBewegen',
 #'                                operation='MINUTES_TO_HOURS')
 #' @export
-add_derived_column <- function(av_state,name,columns,operation=c('SUM','LN','MINUTES_TO_HOURS'),log_level=0) {
+add_derived_column <- function(av_state,name,columns,operation=c('SUM','LN','MINUTES_TO_HOURS','SQUARED'),log_level=0) {
   assert_av_state(av_state)
   operation <- match.arg(operation)
   operation <- switch(operation,
     SUM = add_derived_column_sum,
     LN = add_derived_column_ln,
-    MINUTES_TO_HOURS = add_derived_column_mtoh
+    MINUTES_TO_HOURS = add_derived_column_mtoh,
+    SQUARED = add_derived_column_squared
   )
   i <- 0
   for (data_frame in av_state$data) {
@@ -95,5 +97,17 @@ add_derived_column_mtoh <- function(column,data_frame,subset,log_level) {
     stop(paste("column",column,"is not numeric for subset",subset))
   }
   data_column <- data_column/60
+  data_column
+}
+
+add_derived_column_squared <- function(column,data_frame,subset,log_level) {
+  data_column <- data_frame[[column]]
+  if (is.null(data_column)) {
+    stop(paste("column",column,"does not exist for subset",subset))
+  }
+  if (class(data_column) != 'numeric') {
+    stop(paste("column",column,"is not numeric for subset",subset))
+  }
+  data_column <- data_column*data_column
   data_column
 }

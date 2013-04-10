@@ -29,7 +29,16 @@ format_accepted_models <- function(av_state) {
     res <- paste(res,"  Constraints: ",sep='')
     res <- paste(res,
                  format_constraints(x$varest,av_state$exogenous_variables))
+    
+    if (!is.null(x$varest$restrictions)) {
+      # Remaining Formulas:
+      res <- paste(res,"  Resulting Formulas: ",sep='')
+      res <- paste(res,format_formulas(x$varest))
+    }
+    
     res <- paste(res,"\n",sep='')
+    
+    # print only best three models
     #if (idx == 3) { break }
   }
   res
@@ -51,9 +60,13 @@ format_exogenous_variables <- function(exogvars,av_state,model,varest) {
     if (!is.null(remaining_exog_vars)) {
       for (i in 1:length(remaining_exog_vars)) {
         exovar <- remaining_exog_vars[[i]]
-        res <- paste(res,'    ',exovar,': ',
-                     paste(which(av_state$data[[av_state$subset]][[exovar]] == 1),collapse=', '),
-                     '\n',sep='')
+        if (length(unique(av_state$data[[av_state$subset]][[exovar]])) <= 3) {
+          res <- paste(res,'    ',exovar,': ',
+                       paste(which(av_state$data[[av_state$subset]][[exovar]] == 1),collapse=', '),
+                       '\n',sep='')
+        } else {
+          res <- paste(res,'    ',exovar,': ...\n',sep='')
+        }
       }
     }
     if (!is.null(exogvars)) {
@@ -96,4 +109,14 @@ format_constraints <- function(varest,exogvars) {
   }
 }
 
-
+format_formulas <- function(varest) {
+  r <- "\n"
+  dim <- length(varest$varresult)
+  names <- colnames(varest$y)
+  for (i in 1:dim) {
+    result <- coef(varest$varresult[[i]])
+    r <- paste(r,"    ", names[i], " = ", paste(names(result), 
+                                                     collapse = " + "),"\n", sep = "")
+  }
+  r
+}

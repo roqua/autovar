@@ -92,12 +92,15 @@ get_orig_resids <- function(model,av_state) {
       #    "lag:",model$lag,"\n")
       endodta <- get_endodta(model,av_state)
       exodta <- NULL
-#       if (!is.null(av_state$exogenous_variables)) {
-#         exovrs <- remaining_exogenous_variables(av_state,model)
-#         exodta <- av_state$data[[av_state$subset]][exovrs]
-#         exodta <- as.matrix(exodta)
-#         colnames(exodta) <- exovrs
-#       }
+      if (!is.null(av_state$exogenous_variables)) {
+        exovrs <- remaining_exogenous_variables(av_state,model)
+        exodta <- av_state$data[[av_state$subset]][exovrs]
+        exodta <- as.matrix(exodta)
+        colnames(exodta) <- exovrs
+        if (!is.null(exodta) && dim(exodta)[[2]] == 0) {
+          exodta <- NULL
+        }
+      }
       varest <- run_var(data = endodta, lag = model$lag, exogen = exodta)
       av_state[[lstname]][[model$lag]] <- resid(varest)
     #}
@@ -206,3 +209,4 @@ get_outliers_as_string <- function(av_state,name,iteration,model) {
     paste(which(column == 1),collapse=', ')
   }
 }
+
