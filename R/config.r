@@ -78,7 +78,9 @@ var_model_to_string <- function(av_state,x,skip_restrict=FALSE) {
     if (str != '\n  ') {
       str <- paste(str,"\n  ",sep='')
     }
-    if (class(x[[i]]) == "data.frame") {
+    if (nn[i] == "excluded_exogenous_variables") {
+      str <- paste(str,nn[i],": ",paste(x[[i]],collapse=", "),sep='')
+    } else if (class(x[[i]]) == "data.frame") {
       str <- paste(str,nn[i],": ",exogvars_to_string(av_state,x[[i]],x),sep='')
     } else {
       str <- paste(str,nn[i],": ",x[[i]],sep='')

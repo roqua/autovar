@@ -56,6 +56,7 @@ set_timestamps_aux <- function(from,length_out,by) {
   u_hours <- unique(houridx)
   hour_columns <- sapply(u_hours,function (x) paste('hour_',x,sep=''))
   if (length(u_hours) > 1) {
+    r <- NULL
     # multiple measurements per day, add hours columns to the dataset
     i <- 0
     for (u_hour in u_hours) {

@@ -8,7 +8,7 @@ evaluate_model <- function(av_state,model,index) {
   sprint(av_state$log_level,2,model,av_state)
   
   # should return a list with model_valid, and varest
-  res <- list(model_valid=TRUE,varest=NULL)
+  res <- list(model_valid=TRUE,varest=NULL,model=model)
   dta <- get_data_columns(av_state,model)
   av_state <- dta$av_state
   endodta <- dta$endogenous
@@ -34,6 +34,21 @@ evaluate_model <- function(av_state,model,index) {
     # get the var estimate for this model. This is the 'var' command in STATA.
     res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
     res$varest <- set_varest_values(av_state,res$varest)
+    
+    if (!is.null(av_state$exogenous_variables) && FALSE) {
+      res$model$excluded_exogenous_variables <- unused_exogenous(av_state$exogenous_variables,res$varest)
+      if (!is.null(res$model$excluded_exogenous_variables)) {
+        scat(av_state$log_level,2,"Excluded exogenous variables: ",paste(res$model$excluded_exogenous_variables,collapse=", "))
+        dta <- get_data_columns(av_state,res$model)
+        av_state <- dta$av_state
+        endodta <- dta$endogenous
+        exodta <- dta$exogenous
+        res$model_valid <- dta$model_valid
+        res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
+        res$varest <- set_varest_values(av_state,res$varest)
+      }
+    }
+    
     # remove nonsignificant coefficients from the formula
     if (is_restricted_model(model)) {
       res$varest <- iterative_restrict(res$varest,
@@ -50,7 +65,7 @@ evaluate_model <- function(av_state,model,index) {
     
     # help the caching of residuals a bit by using stuff we already computed
     if (is.null(model$exogenous_variables) && !is_restricted_model(model)) {
-      av_state <- store_residuals(av_state,model,resid(res$varest))
+      #av_state <- store_residuals(av_state,model,resid(res$varest))
     }
     
     # run all the tests and queue potential models:
@@ -165,7 +180,7 @@ evaluate_model2 <- function(av_state,model,index) {
   sprint(av_state$log_level,2,model,av_state)
   
   # should return a list with model_valid, and varest
-  res <- list(model_valid=TRUE,varest=NULL)
+  res <- list(model_valid=TRUE,varest=NULL,model=model)
   dta <- get_data_columns(av_state,model)
   av_state <- dta$av_state
   endodta <- dta$endogenous
@@ -176,6 +191,20 @@ evaluate_model2 <- function(av_state,model,index) {
   res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
   res$varest <- set_varest_values(av_state,res$varest)
   
+  if (!is.null(av_state$exogenous_variables) && FALSE) {
+    res$model$excluded_exogenous_variables <- unused_exogenous(av_state$exogenous_variables,res$varest)
+    if (!is.null(res$model$excluded_exogenous_variables)) {
+      scat(av_state$log_level,2,"Excluded exogenous variables: ",paste(res$model$excluded_exogenous_variables,collapse=", "))
+      dta <- get_data_columns(av_state,res$model)
+      av_state <- dta$av_state
+      endodta <- dta$endogenous
+      exodta <- dta$exogenous
+      res$model_valid <- dta$model_valid
+      res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
+      res$varest <- set_varest_values(av_state,res$varest)
+    }
+  }
+
   # remove nonsignificant coefficients from the formula
   if (is_restricted_model(model)) {
     res$varest <- iterative_restrict(res$varest,

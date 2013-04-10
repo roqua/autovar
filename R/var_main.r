@@ -69,7 +69,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$log_level <- log_level
   av_state$small <- small
   av_state$use_sktest <- use_sktest
-  av_state$exogenous_variables <- exogenous_variables
+  av_state$exogenous_variables <- unique(c(av_state$exogenous_variables,exogenous_variables))
   av_state$test_all_combinations <- test_all_combinations
   av_state$restrictions.verify_validity_in_every_step <- restrictions.verify_validity_in_every_step
   av_state$restrictions.extensive_search <- restrictions.extensive_search
@@ -139,6 +139,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     ev_modelres <- evaluate_model(av_state,model,i)
     av_state <- ev_modelres$av_state
     model_evaluation <- ev_modelres$res
+    model <- model_evaluation$model
     if (!is.null(model_evaluation$varest)) {
       model_cnt <- model_cnt +1
     }
@@ -184,6 +185,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
       ev_modelres <- evaluate_model2(av_state,model,i)
       av_state <- ev_modelres$av_state
       model_evaluation <- ev_modelres$res
+      model <- model_evaluation$model
       if (!is.null(model_evaluation$varest)) {
         model_cnt <- model_cnt +1
       }

@@ -23,12 +23,12 @@ format_accepted_models <- function(av_state) {
     res <- paste(res,
                  format_exogenous_variables(x$parameters$exogenous_variables,
                                             av_state,
-                                            x$parameters),
+                                            x$parameters,x$varest),
                  sep='')
     # Constraints:
     res <- paste(res,"  Constraints: ",sep='')
     res <- paste(res,
-                 format_constraints(x$varest))
+                 format_constraints(x$varest,av_state$exogenous_variables))
     res <- paste(res,"\n",sep='')
     #if (idx == 3) { break }
   }
@@ -41,14 +41,16 @@ idx_chars <- function(idx) {
   }
   chars
 }
-format_exogenous_variables <- function(exogvars,av_state,model) {
-  if (is.null(exogvars) && is.null(av_state$exogenous_variables)) {
+format_exogenous_variables <- function(exogvars,av_state,model,varest) {
+  remaining_exog_vars <- remaining_exogenous_variables(av_state,model)
+  remaining_exog_vars <- remove_restricted_variables(remaining_exog_vars,varest)
+  if (is.null(exogvars) && is.null(remaining_exog_vars)) {
     "none\n"
   } else {
     res <- "\n"
-    if (!is.null(av_state$exogenous_variables)) {
-      for (i in 1:length(av_state$exogenous_variables)) {
-        exovar <- av_state$exogenous_variables[[i]]
+    if (!is.null(remaining_exog_vars)) {
+      for (i in 1:length(remaining_exog_vars)) {
+        exovar <- remaining_exog_vars[[i]]
         res <- paste(res,'    ',exovar,': ',
                      paste(which(av_state$data[[av_state$subset]][[exovar]] == 1),collapse=', '),
                      '\n',sep='')
@@ -70,14 +72,27 @@ format_exogenous_variables <- function(exogvars,av_state,model) {
     res
   }
 }
+remove_restricted_variables <- function(exog_vars,varest) {
+  if (!is.null(varest$restrictions)) {
+    new_exog_vars <- NULL
+    for (varname in exog_vars) {
+      if (!all(varest$restrictions[,which(dimnames(varest$restrictions)[[2]] == varname)] == 0)) {
+        new_exog_vars <- c(new_exog_vars,varname)
+      }
+    }
+    new_exog_vars
+  } else {
+    exog_vars
+  }
+}
 format_varname <- function(varname) {
   paste(varname,' outliers',sep='')
 }
-format_constraints <- function(varest) {
+format_constraints <- function(varest,exogvars) {
   if (is.null(varest$restrictions)) {
     "none\n"
   } else {
-    paste(restrictions_tostring(varest),"\n",sep='')
+    paste(restrictions_tostring(varest,exogvars),"\n",sep='')
   }
 }
 

@@ -45,21 +45,33 @@ get_data_columns <- function(av_state,model) {
         }
         exovrs <- c(exovrs,exovr)
       }
-      if (!is.null(av_state$exogenous_variables)) {
-        exovrs <- c(exovrs,av_state$exogenous_variables)
+      remaining_exogenous_variables <- remaining_exogenous_variables(av_state,model)
+      if (!is.null(remaining_exogenous_variables)) {
+        exovrs <- c(exovrs,remaining_exogenous_variables)
       }
       exodta <- av_state$data[[av_state$subset]][exovrs]
       exodta <- as.matrix(exodta)
       colnames(exodta) <- exovrs
     }
   } else if (!is.null(av_state$exogenous_variables)) {
-    exovrs <- av_state$exogenous_variables
+    exovrs <- remaining_exogenous_variables(av_state,model)
     exodta <- av_state$data[[av_state$subset]][exovrs]
     exodta <- as.matrix(exodta)
     colnames(exodta) <- exovrs
+    if (!is.null(exodta) && dim(exodta)[[2]] == 0) {
+      exodta <- NULL
+    }
   }
   list(av_state = av_state,endogenous = endo, 
        exogenous = exodta, model_valid = model_valid)
+}
+
+remaining_exogenous_variables <- function(av_state,model) {
+  if (!is.null(model$excluded_exogenous_variables)) {
+    av_state$exogenous_variables[!(av_state$exogenous_variables %in% model$excluded_exogenous_variables)]
+  } else {
+    av_state$exogenous_variables
+  }
 }
 
 get_endodta <- function(model,av_state) {
@@ -74,14 +86,21 @@ get_orig_resids <- function(model,av_state) {
   resids <- NULL
   if (!is.null(model$lag) && model$lag != -1) {
     lstname <- ifelse(apply_log_transform(model),'log_resids','resids')
-    if (model$lag > length(av_state[[lstname]]) || is.null(av_state[[lstname]][[model$lag]])) {
+    #if (model$lag > length(av_state[[lstname]]) || is.null(av_state[[lstname]][[model$lag]])) {
       # if residuals are not cached yet, cache them
       #cat("get_orig_resids: caching for: log_transform:",apply_log_transform(model),
       #    "lag:",model$lag,"\n")
       endodta <- get_endodta(model,av_state)
-      varest <- run_var(data = endodta, lag = model$lag, exogen = NULL)
+      exodta <- NULL
+#       if (!is.null(av_state$exogenous_variables)) {
+#         exovrs <- remaining_exogenous_variables(av_state,model)
+#         exodta <- av_state$data[[av_state$subset]][exovrs]
+#         exodta <- as.matrix(exodta)
+#         colnames(exodta) <- exovrs
+#       }
+      varest <- run_var(data = endodta, lag = model$lag, exogen = exodta)
       av_state[[lstname]][[model$lag]] <- resid(varest)
-    }
+    #}
     resids <- av_state[[lstname]][[model$lag]]
   }
   list(av_state = av_state,resids = resids)
