@@ -3,7 +3,11 @@ model_score <- function(varest) {
   # low values == better models
   es <- estat_ic(varest)
   #es$AIC+es$BIC
-  es$BIC
+  if (av_state_criterion(varest) == 'BIC') {
+    es$BIC
+  } else {
+    es$AIC
+  }
 }
 
 printed_model_score <- function(varest) {

@@ -9,7 +9,8 @@
     exogenous_variables = NULL, use_sktest = FALSE,
     test_all_combinations = FALSE,
     restrictions.verify_validity_in_every_step = TRUE,
-    restrictions.extensive_search = TRUE)
+    restrictions.extensive_search = TRUE,
+    criterion = c("AIC", "BIC"))
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -128,6 +129,10 @@
   p-value. If restricting this term does not give an
   improvement in BIC score, we stop restricting the model
   entirely.}
+
+  \item{criterion}{is the information criterion used to
+  sort the models. Valid options are \code{'AIC'} (the
+  default) or \code{'BIC'}.}
 }
 \value{
   This function returns the modified \code{av_state}

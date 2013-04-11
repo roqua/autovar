@@ -29,6 +29,7 @@
 #' @param test_all_combinations determines whether the remaining search space is searched for possible additional models. This can sometimes give a few extra solutions at a large performance penalty.
 #' @param restrictions.verify_validity_in_every_step is an argument that affects how constraints are found for valid models. When this argument is \code{TRUE} (the default), all intermediate models in the iterative constraint-finding method have to be valid. This ensures that we always find a valid constrained model for every valid model. If this argument is \code{FALSE}, then only after setting all constraints do we check if the resulting model is valid. If this is not the case, we fail to find a constrained model.
 #' @param restrictions.extensive_search is an argument that affects how constraints are found for valid models. When this argument is \code{TRUE} (the default), when the term with the highest p-value does not provide a model with a lower BIC score, we attempt to constrain the term with the second highest p-value, and so on. When this argument is \code{FALSE}, we only check the term with the highest p-value. If restricting this term does not give an improvement in BIC score, we stop restricting the model entirely.
+#' @param criterion is the information criterion used to sort the models. Valid options are  \code{'AIC'} (the default) or \code{'BIC'}.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta")
@@ -44,7 +45,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      small=FALSE,include_model=NULL,exogenous_variables=NULL,
                      use_sktest=FALSE,test_all_combinations=FALSE,
                      restrictions.verify_validity_in_every_step=TRUE,
-                     restrictions.extensive_search=TRUE) {
+                     restrictions.extensive_search=TRUE,
+                     criterion=c('AIC','BIC')) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -73,6 +75,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$test_all_combinations <- test_all_combinations
   av_state$restrictions.verify_validity_in_every_step <- restrictions.verify_validity_in_every_step
   av_state$restrictions.extensive_search <- restrictions.extensive_search
+  av_state$criterion <- match.arg(criterion)
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   scat(av_state$log_level,3,"Starting VAR with variables: ",paste(vars,collapse=', '),
@@ -226,6 +229,7 @@ set_varest_values <- function(av_state,varest) {
   varest$significance <- av_state$significance
   varest$vars <- av_state$vars
   varest$use_sktest <- av_state$use_sktest
+  varest$criterion <- av_state$criterion
   varest
 }
 
@@ -260,6 +264,15 @@ av_state_use_sktest <- function(varest) {
     FALSE
   }
 }
+
+av_state_criterion <- function(varest) {
+  if (!is.null(varest$criterion)) {
+    varest$criterion
+  } else {
+    'AIC'
+  }
+}
+
 
 # Estimating the total search space
 search_space_used <- function(av_state) {
