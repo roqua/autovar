@@ -35,20 +35,6 @@ evaluate_model <- function(av_state,model,index) {
     res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
     res$varest <- set_varest_values(av_state,res$varest)
     
-    if (!is.null(av_state$exogenous_variables) && FALSE) {
-      res$model$excluded_exogenous_variables <- unused_exogenous(av_state$exogenous_variables,res$varest)
-      if (!is.null(res$model$excluded_exogenous_variables)) {
-        scat(av_state$log_level,2,"Excluded exogenous variables: ",paste(res$model$excluded_exogenous_variables,collapse=", "))
-        dta <- get_data_columns(av_state,res$model)
-        av_state <- dta$av_state
-        endodta <- dta$endogenous
-        exodta <- dta$exogenous
-        res$model_valid <- dta$model_valid
-        res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
-        res$varest <- set_varest_values(av_state,res$varest)
-      }
-    }
-    
     # remove nonsignificant coefficients from the formula
     if (is_restricted_model(model)) {
       res$varest <- iterative_restrict(res$varest,
@@ -191,20 +177,6 @@ evaluate_model2 <- function(av_state,model,index) {
   res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
   res$varest <- set_varest_values(av_state,res$varest)
   
-  if (!is.null(av_state$exogenous_variables) && FALSE) {
-    res$model$excluded_exogenous_variables <- unused_exogenous(av_state$exogenous_variables,res$varest)
-    if (!is.null(res$model$excluded_exogenous_variables)) {
-      scat(av_state$log_level,2,"Excluded exogenous variables: ",paste(res$model$excluded_exogenous_variables,collapse=", "))
-      dta <- get_data_columns(av_state,res$model)
-      av_state <- dta$av_state
-      endodta <- dta$endogenous
-      exodta <- dta$exogenous
-      res$model_valid <- dta$model_valid
-      res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
-      res$varest <- set_varest_values(av_state,res$varest)
-    }
-  }
-
   # remove nonsignificant coefficients from the formula
   if (is_restricted_model(model)) {
     res$varest <- iterative_restrict(res$varest,
