@@ -40,6 +40,8 @@ model_is_better_than <- function(a,b) {
     # equations
     a$pvalue > b$pvalue
   } else {
+    # this should actually be <= according to Lutkepohl, but
+    # using that here in this context has side effects.
     a$model_score < b$model_score
   }
 }

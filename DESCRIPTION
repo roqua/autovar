@@ -47,4 +47,3 @@ Collate:
     'sktest.r'
     'formatting.r'
     'set_timestamps.r'
-    'unused_exogenous.r'
