@@ -168,7 +168,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   class(av_state$accepted_models) <- 'model_list'
   class(av_state$rejected_models) <- 'model_list'
   if (length(av_state$accepted_models) > 0) {
-    scat(av_state$log_level,3,"\nThe valid models:\n")
+    scat(av_state$log_level,3,"\nThe valid models (sorted by",av_state$criterion,"score):\n")
     av_state$accepted_models <- sort_models(av_state$accepted_models)
     scat(av_state$log_level,3,format_accepted_models(av_state))
   }
@@ -215,7 +215,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     class(av_state$accepted_models) <- 'model_list'
     class(av_state$rejected_models) <- 'model_list'
     if (length(av_state$accepted_models) > 0) {
-      scat(av_state$log_level,3,"\nThe valid models:\n")
+      scat(av_state$log_level,3,"\nThe valid models (sorted by",av_state$criterion,"score):\n")
       av_state$accepted_models <- sort_models(av_state$accepted_models)
       scat(av_state$log_level,3,format_accepted_models(av_state))
     }
