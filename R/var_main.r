@@ -25,7 +25,7 @@
 #' }
 #' The above example includes a model with \code{lag=3} (so lags 1, 2, and 3 are included), the model is ran on the log-transformed variables, and includes an exogenous dummy variable that has a 1 where values of \code{log(Depression)} are more than 3.5xstd away from the mean (because \code{iteration=1}, see the description of the \code{exogenous_max_iterations} parameter above for the meaning of the iterations) and 0 everywhere else. The included model is added at the start of the list, so it can be retrieved (assuming a valid \code{lag} was specified) with either \code{av_state$accepted_models[[1]]} if the model was valid or \code{av_state$rejected_models[[1]]} if it was invalid. In the above example, some info about the included model is printed (assuming it was invalid).
 #' @param exogenous_variables should be a vector of variable names that already exist in the given data set, that will be supplied to every VAR model as exogenous variables.
-#' @param use_sktest affects which test is used for Skewness and Kurtosis testing of the residuals. When \code{use_sktest = TRUE}, STATA's \code{sktest} is used. When \code{use_sktest = FALSE} (the default), STATA's \code{varnorm} (i.e., the Jarque-Bera test) is used.
+#' @param use_sktest affects which test is used for Skewness and Kurtosis testing of the residuals. When \code{use_sktest = TRUE} (the default), STATA's \code{sktest} is used. When \code{use_sktest = FALSE}, STATA's \code{varnorm} (i.e., the Jarque-Bera test) is used.
 #' @param test_all_combinations determines whether the remaining search space is searched for possible additional models. This can sometimes give a few extra solutions at a large performance penalty.
 #' @param restrictions.verify_validity_in_every_step is an argument that affects how constraints are found for valid models. When this argument is \code{TRUE} (the default), all intermediate models in the iterative constraint-finding method have to be valid. This ensures that we always find a valid constrained model for every valid model. If this argument is \code{FALSE}, then only after setting all constraints do we check if the resulting model is valid. If this is not the case, we fail to find a constrained model.
 #' @param restrictions.extensive_search is an argument that affects how constraints are found for valid models. When this argument is \code{TRUE} (the default), when the term with the highest p-value does not provide a model with a lower BIC score, we attempt to constrain the term with the second highest p-value, and so on. When this argument is \code{FALSE}, we only check the term with the highest p-value. If restricting this term does not give an improvement in BIC score, we stop restricting the model entirely.
@@ -43,7 +43,7 @@
 var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      exogenous_max_iterations=3,subset=1,log_level=av_state$log_level,
                      small=FALSE,include_model=NULL,exogenous_variables=NULL,
-                     use_sktest=FALSE,test_all_combinations=FALSE,
+                     use_sktest=TRUE,test_all_combinations=FALSE,
                      restrictions.verify_validity_in_every_step=TRUE,
                      restrictions.extensive_search=TRUE,
                      criterion=c('AIC','BIC')) {
@@ -261,7 +261,7 @@ av_state_use_sktest <- function(varest) {
   if (!is.null(varest$use_sktest)) {
     varest$use_sktest
   } else {
-    FALSE
+    TRUE
   }
 }
 

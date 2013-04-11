@@ -187,7 +187,7 @@ Vector Autoregression
     av_state <- var_main(av_state,vars,lag_max=2,significance=0.05,exogenous_max_iterations=3,
                          subset=1,log_level=av_state$log_level,
                          small=FALSE,include_model=NULL,exogenous_variables=NULL,
-                         use_sktest=FALSE,test_all_combinations=FALSE,
+                         use_sktest=TRUE,test_all_combinations=FALSE,
                          restrictions.verify_validity_in_every_step=TRUE,
                          restrictions.extensive_search=TRUE,
                          criterion=c('AIC','BIC'))
@@ -228,7 +228,7 @@ The above example includes a model with `lag=3` (so lags 1, 2, and 3 are include
 
 The `exogenous_variables` argument should be a vector of variable names that already exist in the given data set, that will be supplied to every VAR model as exogenous variables.
 
-The `use_sktest` argument affects which test is used for Skewness and Kurtosis testing of the residuals. When `use_sktest = TRUE`, STATA's `sktest` is used. When `use_sktest = FALSE` (the default), STATA's `varnorm` (i.e., the Jarque-Bera test) is used.
+The `use_sktest` argument affects which test is used for Skewness and Kurtosis testing of the residuals. When `use_sktest = TRUE` (the default), STATA's `sktest` is used. When `use_sktest = FALSE`, STATA's `varnorm` (i.e., the Jarque-Bera test) is used.
 
 The `test_all_combinations` argument determines whether the untested search space is searched for possible additional models. This can sometimes give a few extra models at a large performance penalty.
 

@@ -6,7 +6,7 @@
     significance = 0.05, exogenous_max_iterations = 3,
     subset = 1, log_level = av_state$log_level,
     small = FALSE, include_model = NULL,
-    exogenous_variables = NULL, use_sktest = FALSE,
+    exogenous_variables = NULL, use_sktest = TRUE,
     test_all_combinations = FALSE,
     restrictions.verify_validity_in_every_step = TRUE,
     restrictions.extensive_search = TRUE,
@@ -99,9 +99,10 @@
 
   \item{use_sktest}{affects which test is used for Skewness
   and Kurtosis testing of the residuals. When
-  \code{use_sktest = TRUE}, STATA's \code{sktest} is used.
-  When \code{use_sktest = FALSE} (the default), STATA's
-  \code{varnorm} (i.e., the Jarque-Bera test) is used.}
+  \code{use_sktest = TRUE} (the default), STATA's
+  \code{sktest} is used. When \code{use_sktest = FALSE},
+  STATA's \code{varnorm} (i.e., the Jarque-Bera test) is
+  used.}
 
   \item{test_all_combinations}{determines whether the
   remaining search space is searched for possible
