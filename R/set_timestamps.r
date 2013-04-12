@@ -25,9 +25,11 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,measur
   }
   by <- paste(24%/%measurements_per_day,"hours")
   from <- timeDate(as.Date(timeDate(date_of_first_measurement)))
-  added_columns <- set_timestamps_aux(from,length(data_frame[[1]]),by)
-  signif_columns <- significant_columns(added_columns)
-  av_state$exogenous_variables <- unique(c(av_state$exogenous_variables,signif_columns))
+  column_info <- set_timestamps_aux(from,length(data_frame[[1]]),by)
+  added_columns <- column_info$columns
+  exovrs <- column_info$exovrs
+  signif_columns <- significant_columns(added_columns,exovrs)
+  av_state <- add_exogenous_variables(av_state,signif_columns)
   av_state$data[[subset_id]] <- cbind(av_state$data[[subset_id]],added_columns)
   scat(log_level,2,"set_timestamps: using additional exogenous variables in models:\n   ",
        paste(signif_columns,collapse=", "),"\n")
@@ -40,6 +42,7 @@ set_timestamps_aux <- function(from,length_out,by) {
   weekday_labels_en <- c('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
   r <- NULL
   i <- 0
+  exovrs <- remove_last(weekday_labels_en)
   for (weekday in weekday_labels) {
     i <- i+1
     weekday_en <- weekday_labels_en[[i]]
@@ -56,6 +59,7 @@ set_timestamps_aux <- function(from,length_out,by) {
   u_hours <- unique(houridx)
   hour_columns <- sapply(u_hours,function (x) paste('hour_',x,sep=''))
   if (length(u_hours) > 1) {
+    exovrs <- c(exovrs,remove_last(hour_columns))
     r <- NULL
     # multiple measurements per day, add hours columns to the dataset
     i <- 0
@@ -71,18 +75,20 @@ set_timestamps_aux <- function(from,length_out,by) {
       names(r)[[length(names(r))]] <- hour_column
     }
   }
-  r
+  list(columns=r,exovrs=exovrs)
 }
 
-significant_columns <- function(dataframe) {
-  inames <- names(dataframe)
+significant_columns <- function(dataframe,names) {
   rnames <- NULL
-  i <- 0
-  for (column in dataframe) {
-    i <- i+1
+  for (name in names) {
+    column <- dataframe[[name]]
     if (length(unique(column)) != 1) {
-      rnames <- c(rnames,inames[[i]])
+      rnames <- c(rnames,name)
     }
   }
   rnames
+}
+
+remove_last <- function(lst) {
+  lst[which(lst != lst[[length(lst)]])]
 }

@@ -71,7 +71,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$log_level <- log_level
   av_state$small <- small
   av_state$use_sktest <- use_sktest
-  av_state$exogenous_variables <- unique(c(av_state$exogenous_variables,exogenous_variables))
+  av_state <- add_exogenous_variables(av_state,exogenous_variables)
   av_state$test_all_combinations <- test_all_combinations
   av_state$restrictions.verify_validity_in_every_step <- restrictions.verify_validity_in_every_step
   av_state$restrictions.extensive_search <- restrictions.extensive_search
@@ -271,6 +271,11 @@ av_state_criterion <- function(varest) {
   } else {
     'AIC'
   }
+}
+
+add_exogenous_variables <- function(av_state,column_names) {
+  av_state$exogenous_variables <- unique(c(av_state$exogenous_variables,column_names))
+  av_state
 }
 
 

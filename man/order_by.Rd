@@ -3,7 +3,8 @@
 \title{Order the rows in a data set}
 \usage{
   order_by(av_state, id_field,
-    impute_method = c("BEST_FIT", "ONE_MISSING", "ADD_MISSING", "NONE"))
+    impute_method = c("BEST_FIT", "ONE_MISSING", "ADD_MISSING", "NONE"),
+    use_as_exogenous = FALSE)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -29,6 +30,10 @@
   \code{NA} except for the \code{id_field} and the field
   used for grouping the data (if there was one). \item
   \code{'NONE'} - No imputation is performed. }}
+
+  \item{use_as_exogenous}{determines whether the
+  \code{order_by} column and its squared values should be
+  used as exogenous variables in VAR models.}
 }
 \value{
   This function returns the modified \code{av_state}
@@ -44,7 +49,9 @@
   date/time column, i.e., the supplied \code{id_field}
   parameter is often a measurement index (e.g.,
   \code{'tijdstip'}). The \code{id_field} column has to be
-  numeric.
+  numeric. This function will also add a squared column to
+  the data frame and include the order_by colum and its
+  squared values as exogenous_variables.
 }
 \examples{
 av_state <- load_file("../data/input/RuwedataAngela.sav")
