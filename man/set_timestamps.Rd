@@ -4,7 +4,8 @@
 \usage{
   set_timestamps(av_state, subset_id = 1,
     date_of_first_measurement, measurements_per_day = 1,
-    log_level = 0)
+    log_level = 0, add_days_as_exogenous = FALSE,
+    add_dayparts_as_exogenous = TRUE)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -31,6 +32,12 @@
   should be shown (a number between 0 and 3). A lower level
   means more verbosity. Specify a log_level of 3 to hide
   messages about the exogenous columns being added.}
+
+  \item{add_days_as_exogenous}{adds days as exogenous dummy
+  variables to VAR models.}
+
+  \item{add_dayparts_as_exogenous}{adds day parts as
+  exogenous dummy variables to VAR models.}
 }
 \value{
   This function returns the modified \code{av_state}

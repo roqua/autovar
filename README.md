@@ -114,7 +114,8 @@ Modifying and adding columns
 ### set_timestamps
 
     av_state <- set_timestamps(av_state,subset_id=1,date_of_first_measurement,
-                              measurements_per_day=1,log_level=0)
+                              measurements_per_day=1,log_level=0,
+                              add_days_as_exogenous=FALSE,add_dayparts_as_exogenous=TRUE)
 
 The `set_timestamps` function adds dummy columns for weekdays (named `Sunday`, `Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday` and `Saturday`) and hours of the day to the given subset of the specified data set. These are used by `var_main` to find better models by removing cyclicity from the data set.
 
@@ -129,6 +130,10 @@ The `date_of_first_measurement` argument specifies the date of the first measure
 The `measurements_per_day` argument specifies how many measurements were taken per day. This default is 1. It is assumed that every day has exactly this amount of measurements, and that the first measurement in the dataset was the first measurement on that day.
 
 The `log_level` argument sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about the exogenous columns being added.
+
+The `add_days_as_exogenous` argument adds days as exogenous dummy variables to VAR models.
+
+The `add_dayparts_as_exogenous` argument adds day parts as exogenous dummy variables to VAR models.
 
 #### Syntax
 
