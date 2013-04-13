@@ -4,28 +4,29 @@
 # and as long as the model is valid
 iterative_restrict <- function(varest,verify_validity_in_every_step=TRUE,extensive_search=TRUE) {
   # verify_validity_in_every_step ensures that all intermediate models are valid.
-  #                               otherwise, only check at the end
+  #                               otherwise, only check at the end and do backtracking
+  #                               until we find the last model that was valid
   # extensive_search means that if the model with the highest p-value isnt valid or
   #                        doesn't decrease the model_score, that we continue trying to
   #                        constrain the second highest model. When this option is FALSE,
   #                        we stop constraining the model as soon as restricting the term
   #                        with the highest p-value no longer decreases the model_score.
   if (model_is_valid(varest)) {
+    last_valid_model <- varest
     old_model <- NULL
     new_model <- varname_with_best_model(varest,
                                          verify_validity_in_every_step,
                                          extensive_search)
     while (!is.null(new_model)) {
+      if (new_model$model_is_valid) {
+        last_valid_model <- new_model$new_varest
+      }
       old_model <- new_model
       new_model <- varname_with_best_model(new_model$new_varest,
                                            verify_validity_in_every_step,
                                            extensive_search)
     }
-    if (!is.null(old_model) && old_model$model_is_valid) {
-      old_model$new_varest
-    } else {
-      varest
-    }
+    last_valid_model
   } else {
     varest
   }
