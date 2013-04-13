@@ -81,6 +81,21 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$use_varsoc <- use_varsoc
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
+  
+  # print non-default arguments
+  rcall <- 'av_state'
+  forms <- formals()
+  for (name in names(forms)) {
+    if (name == 'av_state') { next }
+    curarg <- eval(parse(text=name))
+    if (deparse(forms[[name]]) != deparse(curarg)) {
+      rcall <- c(rcall,paste(name,' = ',deparse(curarg),sep=''))
+    }
+  }
+  rcall <- paste(rcall,collapse=', ')
+  rcall <- paste('var_main(',rcall,')\n\n',sep='')
+  scat(av_state$log_level,3,rcall)
+
   scat(av_state$log_level,3,"Starting VAR with variables: ",paste(vars,collapse=', '),
        ", for subset: ",subset,"\n",sep='')
   
