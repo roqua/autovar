@@ -74,11 +74,8 @@ evaluate_model <- function(av_state,model,index) {
         if (test$is_squared && !sqflag) {
           sqflag <- TRUE
           # squares of residuals significant: heteroskedasticity: apply log transform
-          if (av_state$use_varsoc && !apply_log_transform(model) && !is_restricted_model(model)) {
-            scat(av_state$log_level,2,"\n> Squares of residuals significant: heteroskedasticity: queueing model with log transform.\n")
-            new_model <- create_model(model,apply_log_transform=TRUE,lag=-1)
-            av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
-          }
+          av_state <- queue_model_with_log_transform(av_state,model,
+                                                     "\n> Squares of residuals significant: heteroskedasticity: queueing model with log transform.\n")
         } else if (!test$is_squared && !siflag) {
           siflag <- TRUE
           # autocorrelation in residuals, refine model by adding more lags
@@ -87,52 +84,24 @@ evaluate_model <- function(av_state,model,index) {
       }
     }
     
+    # also queue things with more outliers if we have a test fail
+    failing_vars <- ptests[ptests$passes_test == FALSE,]$variable
+    if (length(failing_vars) > 0) {
+      scat(av_state$log_level,2,'\n> Also queueing model(s) with more strict outlier removal.\n')
+      vns <- sapply(unique(failing_vars),unprefix_ln,USE.NAMES=FALSE)
+      av_state <- queue_models_with_more_outliers(av_state,model,vns)
+    }
+    
     # (Jarque-Bera), Skewness, Kurtosis tests
     vns <- varnorm_aux(res$varest,av_state$log_level)
     if (!is.null(vns)) {
       res$model_valid <- FALSE
       if (!is_restricted_model(model)) {
-        scat(av_state$log_level,2,'\n> Skewness/Kurtosis test failed. Queueing model(s) with more strict outlier removal\n')
-        if (av_state$use_varsoc && !apply_log_transform(model)) {
-          scat(av_state$log_level,2,"\n> Also queueing model with log transform.\n")
-          new_model <- create_model(model,apply_log_transform=TRUE,lag=-1)
-          av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
-        }
+        scat(av_state$log_level,2,'\n> Skewness/Kurtosis test failed. Queueing model(s) with more strict outlier removal.\n')
         # vns is a powerset of vn, minus the empty set
-        for (vn in vns) {
-          new_exogvars <- NULL
-          old_exogvars <- NULL
-          if (!is.null(model$exogenous_variables)) {
-            old_exogvars <- model$exogenous_variables
-            new_exogvars <- old_exogvars
-            for (i in 1:nr_rows(old_exogvars)) {
-              exovar <- old_exogvars[i,]
-              if (exovar$variable %in% vn) {
-                new_exogvars[i,]$iteration <- min(exovar$iteration +1,
-                                                  av_state$exogenous_max_iterations)
-              }
-            }
-            for (name in vn) {
-              if (!(name %in% old_exogvars$variable)) {
-                new_exogvars <- rbind(new_exogvars,rep(NA,times=dim(new_exogvars)[[2]]))
-                new_exogvars[dim(new_exogvars)[[1]],][['variable']] <- name
-                new_exogvars[dim(new_exogvars)[[1]],][['iteration']] <- 1
-              }
-            }
-            new_exogvars[,] <- new_exogvars[order(new_exogvars$variable),]
-          } else {
-            new_exogvars <- data.frame(variable=sort(vn),
-                                       iteration=rep(1,times=length(vn)),
-                                       stringsAsFactors=FALSE)
-          }
-          if (is.null(old_exogvars) ||
-                any(dim(new_exogvars) != dim(old_exogvars)) ||
-                any(new_exogvars != old_exogvars)) {
-            new_model <- create_model(model,exogenous_variables=new_exogvars,
-                                          lag=model_lag(av_state,model))
-            av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
-          }
-        }
+        av_state <- queue_models_with_more_outliers(av_state,model,vns)
+        av_state <- queue_model_with_log_transform(av_state,model,
+                                                   "\n> Also queueing model with log transform.\n")
       }
     }
     
@@ -152,6 +121,55 @@ evaluate_model <- function(av_state,model,index) {
     scat(av_state$log_level,2,paste(rep('-',times=20),collapse=''),"\n\n",sep='')
   }
   list(res=res,av_state=av_state)
+}
+
+queue_model_with_log_transform <- function(av_state,model,message) {
+  if (av_state$use_varsoc && !apply_log_transform(model) && !is_restricted_model(model)) {
+    scat(av_state$log_level,2,message)
+    new_model <- create_model(model,apply_log_transform=TRUE,lag=-1)
+    av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+  }
+  av_state
+}
+
+queue_models_with_more_outliers <- function(av_state,model,vns) {
+  if (!is_restricted_model(model)) {
+    for (vn in vns) {
+      new_exogvars <- NULL
+      old_exogvars <- NULL
+      if (!is.null(model$exogenous_variables)) {
+        old_exogvars <- model$exogenous_variables
+        new_exogvars <- old_exogvars
+        for (i in 1:nr_rows(old_exogvars)) {
+          exovar <- old_exogvars[i,]
+          if (exovar$variable %in% vn) {
+            new_exogvars[i,]$iteration <- min(exovar$iteration +1,
+                                              av_state$exogenous_max_iterations)
+          }
+        }
+        for (name in vn) {
+          if (!(name %in% old_exogvars$variable)) {
+            new_exogvars <- rbind(new_exogvars,rep(NA,times=dim(new_exogvars)[[2]]))
+            new_exogvars[dim(new_exogvars)[[1]],][['variable']] <- name
+            new_exogvars[dim(new_exogvars)[[1]],][['iteration']] <- 1
+          }
+        }
+        new_exogvars[,] <- new_exogvars[order(new_exogvars$variable),]
+      } else {
+        new_exogvars <- data.frame(variable=sort(vn),
+                                   iteration=rep(1,times=length(vn)),
+                                   stringsAsFactors=FALSE)
+      }
+      if (is.null(old_exogvars) ||
+            any(dim(new_exogvars) != dim(old_exogvars)) ||
+            any(new_exogvars != old_exogvars)) {
+        new_model <- create_model(model,exogenous_variables=new_exogvars,
+                                  lag=model_lag(av_state,model))
+        av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+      }
+    }
+  }
+  av_state
 }
 
 # this is a shorter version of evaluate_model, without requeueing.
