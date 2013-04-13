@@ -34,63 +34,59 @@ iterative_restrict <- function(varest,verify_validity_in_every_step=TRUE,extensi
 
 model_is_better_than <- function(a,b) {
   # returns TRUE if a is a better model than b
-  if (!is.null(a$pvalue) && !is.null(b$pvalue)) {
-    # if the compared models both have a p-value defined then
-    # select the one with the highest p-value, don't look at the model_score
-    # this only occurs when comparing the restricted models of different
-    # equations
-    a$pvalue > b$pvalue
-  } else {
-    # this should actually be <= according to Lutkepohl, but
-    # using that here in this context has side effects.
-    a$model_score < b$model_score
-  }
+  # this should actually be <= according to Lutkepohl, but
+  # using that here in this context has side effects.
+  a$model_score <= b$model_score
 }
 
 varname_with_best_model <- function(varest,verify_validity,extensive_search) {
-  best_model <- list(model_score=model_score(varest))
-  for (eqname in restriction_matrix_rownames(varest)) {
-    new_model <- varname_with_best_model_aux(varest,eqname,verify_validity,extensive_search)
-    if (!is.null(new_model) && model_is_better_than(new_model,best_model)) {
-      best_model <- new_model
-    }
-  }
-  if (!is.null(best_model$new_varest)) {
-    best_model
-  } else {
-    NULL
-  }
-}
-
-varname_with_best_model_aux <- function(varest,eqname,verify_validity,extensive_search) {
-  summ <- summary(varest)
-  coefs <- summ$varresult[[eqname]]$coefficients
-  if (is.null(coefs) || dim(coefs)[[1]] == 1) {
+  coefs <- coefs_and_pvalues(varest)
+  if (is.null(coefs)) {
     NULL
   } else {
-    coefs <- coefs[sort.list(coefs[,4],decreasing=TRUE),]
     best_model <- list(model_score=model_score(varest))
-    min_pvalue <- av_state_significance(varest)
-    for (i in 1:(dim(coefs)[[1]])) {
-      varname <- rownames(coefs)[[i]]
-      if (varname == "const") { next } # removing this term isn't allowed?
-      pvalue <- coefs[i,4]
-      if (pvalue <= min_pvalue) { break }
-      new_model <- model_without_term(varest,eqname,varname)
+    for (i in 1:nr_rows(coefs)) {
+      coef <- coefs[i,]
+      new_model <- model_without_term(varest,coef$eqname,coef$varname)
       if ((!verify_validity || new_model$model_is_valid) && model_is_better_than(new_model,best_model)) {
-        new_model$varname <- varname
-        new_model$pvalue <- pvalue
+        new_model$varname <- coef$varname
+        new_model$pvalue <- coef$pvalue
+        new_model$eqname <- coef$eqname
         best_model <- new_model
         break # if only looking for best pvalued solution
       }
       if (!extensive_search) { break }
     }
     if (!is.null(best_model$new_varest)) {
-      best_model$eqname <- eqname
       best_model
     } else {
       NULL
     }
+  }
+}
+
+coefs_and_pvalues <- function(varest) {
+  summ <- summary(varest)
+  pvalues_v <- NULL
+  eqnames_v <- NULL
+  varnames_v <- NULL
+  for (eqname in restriction_matrix_rownames(varest)) {
+    coefs <- summ$varresult[[eqname]]$coefficients
+    if (!is.null(coefs) && dim(coefs)[[1]] != 1) {
+      pvalues_v <- c(pvalues_v,coefs[,4])
+      eqnames_v <- c(eqnames_v,rep(eqname,length(coefs[,4])))
+      varnames_v <- c(varnames_v,rownames(coefs))
+    }
+  }
+  df <- data.frame(eqname = eqnames_v, varname = varnames_v,
+                   pvalue = pvalues_v,stringsAsFactors=FALSE)
+  df <- df[with(df,order(df$pvalue,decreasing=TRUE)),]
+  df <- df[df$pvalue > av_state_significance(varest) & df$varname != 'const',]
+  if (dim(df)[[1]] == 0) {
+    NULL
+  } else {
+    rownames(df) <- NULL
+    df
   }
 }
 
