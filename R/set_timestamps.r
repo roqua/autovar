@@ -34,10 +34,24 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
                                     add_days_as_exogenous,
                                     add_dayparts_as_exogenous)
   added_columns <- column_info$columns
-  exovrs <- column_info$exovrs
-  signif_columns <- significant_columns(added_columns,exovrs)
-  av_state <- add_exogenous_variables(av_state,signif_columns)
+  exovrs_d <- column_info$exovrs_d
+  exovrs_h <- column_info$exovrs_h
+  signif_columns_d <- NULL
+  if (!is.null(exovrs_d)) {
+    signif_columns_d <- significant_columns(added_columns,exovrs_d)
+    if (!is.null(signif_columns_d)) {
+      av_state <- add_exogenous_variables(av_state,signif_columns_d)      
+    }
+  }
+  signif_columns_h <- NULL
+  if (!is.null(exovrs_h)) {
+    signif_columns_h <- significant_columns(added_columns,exovrs_h)
+    if (!is.null(signif_columns_h)) {
+      av_state <- add_exogenous_variables(av_state,signif_columns_h)
+    }
+  }
   av_state$data[[subset_id]] <- cbind(av_state$data[[subset_id]],added_columns)
+  signif_columns <- c(signif_columns_d,signif_columns_h)
   if (!is.null(signif_columns)) {
     scat(log_level,2,"set_timestamps: using additional exogenous variables in models:\n   ",
          paste(signif_columns,collapse=", "),"\n")
@@ -51,9 +65,9 @@ set_timestamps_aux <- function(from,length_out,by,add_days_as_exogenous,add_dayp
   weekday_labels_en <- c('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
   r <- NULL
   i <- 0
-  exovrs <- NULL
-  if (add_days_as_exogenous) { 
-    exovrs <- remove_last(weekday_labels_en)
+  exovrs_d <- NULL
+  if (add_days_as_exogenous) {
+    exovrs_d <- weekday_labels_en
   }
   for (weekday in weekday_labels) {
     i <- i+1
@@ -70,11 +84,11 @@ set_timestamps_aux <- function(from,length_out,by,add_days_as_exogenous,add_dayp
   houridx <- format(timeSequence(from=from,length.out=length_out,by=by),"%H")
   u_hours <- unique(houridx)
   hour_columns <- sapply(u_hours,function (x) paste('hour_',x,sep=''))
+  exovrs_h <- NULL
   if (length(u_hours) > 1) {
     if (add_dayparts_as_exogenous) {
-      exovrs <- c(exovrs,remove_last(hour_columns))
+      exovrs_h <- hour_columns
     }
-    r <- NULL
     # multiple measurements per day, add hours columns to the dataset
     i <- 0
     for (u_hour in u_hours) {
@@ -89,18 +103,25 @@ set_timestamps_aux <- function(from,length_out,by,add_days_as_exogenous,add_dayp
       names(r)[[length(names(r))]] <- hour_column
     }
   }
-  list(columns=r,exovrs=exovrs)
+  list(columns=r,exovrs_d=exovrs_d,exovrs_h=exovrs_h)
 }
 
 significant_columns <- function(dataframe,names) {
   rnames <- NULL
   for (name in names) {
     column <- dataframe[[name]]
-    if (length(unique(column)) != 1) {
+    # can be 0 if column doesnt exist in dataframe
+    if (length(unique(column)) > 1) {
       rnames <- c(rnames,name)
     }
   }
-  rnames
+  # if the data set includes all day parts or all days,
+  # then one of them is not necessary, so remove it.
+  if (length(names) == length(rnames)) {
+    remove_last(rnames)
+  } else {
+    rnames
+  }
 }
 
 remove_last <- function(lst) {

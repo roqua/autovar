@@ -10,7 +10,7 @@
     test_all_combinations = FALSE,
     restrictions.verify_validity_in_every_step = TRUE,
     restrictions.extensive_search = TRUE,
-    criterion = c("AIC", "BIC"))
+    criterion = c("AIC", "BIC"), use_varsoc = FALSE)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -134,6 +134,12 @@
   \item{criterion}{is the information criterion used to
   sort the models. Valid options are \code{'AIC'} (the
   default) or \code{'BIC'}.}
+
+  \item{use_varsoc}{determines whether VAR lag order
+  selection criteria should be employed to restrict the
+  search space for VAR models. When \code{use_varsoc} is
+  \code{FALSE}, all lags from 1 to \code{lag_max} are
+  searched.}
 }
 \value{
   This function returns the modified \code{av_state}

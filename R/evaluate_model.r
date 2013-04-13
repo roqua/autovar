@@ -74,7 +74,7 @@ evaluate_model <- function(av_state,model,index) {
         if (test$is_squared && !sqflag) {
           sqflag <- TRUE
           # squares of residuals significant: heteroskedasticity: apply log transform
-          if (!apply_log_transform(model) && !is_restricted_model(model)) {
+          if (av_state$use_varsoc && !apply_log_transform(model) && !is_restricted_model(model)) {
             scat(av_state$log_level,2,"\n> Squares of residuals significant: heteroskedasticity: queueing model with log transform.\n")
             new_model <- create_model(model,apply_log_transform=TRUE,lag=-1)
             av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
@@ -93,7 +93,7 @@ evaluate_model <- function(av_state,model,index) {
       res$model_valid <- FALSE
       if (!is_restricted_model(model)) {
         scat(av_state$log_level,2,'\n> Skewness/Kurtosis test failed. Queueing model(s) with more strict outlier removal\n')
-        if (!apply_log_transform(model)) {
+        if (av_state$use_varsoc && !apply_log_transform(model)) {
           scat(av_state$log_level,2,"\n> Also queueing model with log transform.\n")
           new_model <- create_model(model,apply_log_transform=TRUE,lag=-1)
           av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
@@ -129,7 +129,7 @@ evaluate_model <- function(av_state,model,index) {
                 any(dim(new_exogvars) != dim(old_exogvars)) ||
                 any(new_exogvars != old_exogvars)) {
             new_model <- create_model(model,exogenous_variables=new_exogvars,
-                                          lag=-1)
+                                          lag=model_lag(av_state,model))
             av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
           }
         }
@@ -229,6 +229,14 @@ evaluate_model2 <- function(av_state,model,index) {
   scat(av_state$log_level,2,paste(rep('-',times=20),collapse=''),"\n\n",sep='')
 
   list(res=res,av_state=av_state)
+}
+
+model_lag <- function(av_state,model) {
+  if (av_state$use_varsoc) {
+    -1
+  } else {
+    model$lag
+  }
 }
 
 determine_var_order <- function(dta,log_level,...) {

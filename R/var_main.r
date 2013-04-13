@@ -30,6 +30,7 @@
 #' @param restrictions.verify_validity_in_every_step is an argument that affects how constraints are found for valid models. When this argument is \code{TRUE} (the default), all intermediate models in the iterative constraint-finding method have to be valid. This ensures that we always find a valid constrained model for every valid model. If this argument is \code{FALSE}, then only after setting all constraints do we check if the resulting model is valid. If this is not the case, we fail to find a constrained model.
 #' @param restrictions.extensive_search is an argument that affects how constraints are found for valid models. When this argument is \code{TRUE} (the default), when the term with the highest p-value does not provide a model with a lower BIC score, we attempt to constrain the term with the second highest p-value, and so on. When this argument is \code{FALSE}, we only check the term with the highest p-value. If restricting this term does not give an improvement in BIC score, we stop restricting the model entirely.
 #' @param criterion is the information criterion used to sort the models. Valid options are  \code{'AIC'} (the default) or \code{'BIC'}.
+#' @param use_varsoc determines whether VAR lag order selection criteria should be employed to restrict the search space for VAR models. When \code{use_varsoc} is \code{FALSE}, all lags from 1 to \code{lag_max} are searched.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta")
@@ -46,7 +47,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      use_sktest=TRUE,test_all_combinations=FALSE,
                      restrictions.verify_validity_in_every_step=TRUE,
                      restrictions.extensive_search=TRUE,
-                     criterion=c('AIC','BIC')) {
+                     criterion=c('AIC','BIC'),
+                     use_varsoc=FALSE) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -76,6 +78,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$restrictions.verify_validity_in_every_step <- restrictions.verify_validity_in_every_step
   av_state$restrictions.extensive_search <- restrictions.extensive_search
   av_state$criterion <- match.arg(criterion)
+  av_state$use_varsoc <- use_varsoc
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   scat(av_state$log_level,3,"Starting VAR with variables: ",paste(vars,collapse=', '),
@@ -120,7 +123,18 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   
   default_model <- list()
   class(default_model) <- 'var_model'
-  av_state$model_queue <- list(default_model)
+  
+  if (av_state$use_varsoc) {
+    av_state$model_queue <- list(default_model)
+  } else {
+    av_state$model_queue <- NULL
+    for (lag in 1:(av_state$lag_max)) {
+      new_model <- create_model(default_model,lag=lag)
+      av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+      new_model <- create_model(default_model,apply_log_transform=TRUE,lag=lag)
+      av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+    }
+  }
   if (!is.null(include_model)) {
     if (class(include_model) != 'list') {
       stop(paste("the include_model object has to be of class list"))

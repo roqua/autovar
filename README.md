@@ -198,7 +198,8 @@ Vector Autoregression
                          use_sktest=TRUE,test_all_combinations=FALSE,
                          restrictions.verify_validity_in_every_step=TRUE,
                          restrictions.extensive_search=TRUE,
-                         criterion=c('AIC','BIC'))
+                         criterion=c('AIC','BIC'),
+                         use_varsoc=FALSE)
 
 The `var_main` function generates and tests possible VAR models for the specified variables. Aside from `av_state`, the only required argument is `vars`, which should be a vector of variables.
 
@@ -245,6 +246,8 @@ The `restrictions.verify_validity_in_every_step` argument affects how constraint
 The `restrictions.extensive_search` argument affects how constraints are found for valid models. When this argument is `TRUE` (the default), when the term with the highest p-value does not provide a model with a lower BIC score, we attempt to constrain the term with the second highest p-value, and so on. When this argument is `FALSE`, we only check the term with the highest p-value. If restricting this term does not give an improvement in BIC score, we stop restricting the model entirely.
 
 The `criterion` argument is the information criterion used to sort the models. Valid options are  `'AIC'` (the default) or `'BIC'`.
+
+The `use_varsoc` argument determines whether VAR lag order selection criteria should be employed to restrict the search space for VAR models. When `use_varsoc` is `FALSE`, all lags from 1 to `lag_max` are searched.
 
 #### Results
 
