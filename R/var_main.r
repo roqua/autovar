@@ -394,3 +394,62 @@ print_rejected_models <- function(av_state) {
   print(av_state$rejected_models,av_state)
 }
 
+
+find_model <- function(av_state,...) {
+  model <- list(...)
+  if (!is.null(av_state$accepted_models)) {
+    accepted_matches <- find_models(av_state$accepted_models,model)
+    if (!is.null(accepted_matches)) {
+      cat(length(accepted_matches)," matches in accepted models:\n",sep='')
+      for (i in accepted_matches) {
+        cat('[[',i,']]\n',sep='')
+        print(av_state$accepted_models[[i]],av_state)
+        cat('\n')
+      }
+    }
+  }
+  if (!is.null(av_state$rejected_models)) {
+    rejected_matches <- find_models(av_state$rejected_models,model)
+    if (!is.null(rejected_matches)) {
+      cat('\n',length(rejected_matches)," matches in rejected models:\n",sep='')
+      for (i in rejected_matches) {
+        cat('[[',i,']]\n',sep='')
+        print(av_state$rejected_models[[i]],av_state)
+        cat('\n')
+      }
+    }
+  }
+  invisible(av_state)
+}
+
+find_models <- function(model_list,given_model) {
+  i <- 0
+  r <- NULL
+  for (model in model_list) {
+    i <- i+1
+    if (model_matches(given_model,model$parameters)) {
+      r <- c(r,i)
+    }
+  }
+  r
+}
+
+model_matches <- function(given_model,model) {
+  names <- names(given_model)
+  default_model <- list(lag = -1,apply_log_transform = FALSE, restrict = FALSE, exogenous_variables = NULL)
+  model <- merge_lists(default_model,model)
+  i <- 0
+  matching <- TRUE
+  for (value in given_model) {
+    i <- i+1
+    name <- names[[i]]
+    if(((is.null(model[[name]]) && !is.null(value)) || (is.null(value) && !is.null(model[[name]]))) ||
+         (!is.null(dim(model[[name]])) && !is.null(dim(value)) && dim(model[[name]]) != dim(value)) ||
+         any(model[[name]] != value)) {
+      matching <- FALSE
+      break
+    }
+  }
+  matching
+}
+

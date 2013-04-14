@@ -4,7 +4,7 @@
 \usage{
   order_by(av_state, id_field,
     impute_method = c("BEST_FIT", "ONE_MISSING", "ADD_MISSING", "NONE"),
-    use_as_exogenous = FALSE)
+    add_as_exogenous = FALSE)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -31,7 +31,7 @@
   used for grouping the data (if there was one). \item
   \code{'NONE'} - No imputation is performed. }}
 
-  \item{use_as_exogenous}{determines whether the
+  \item{add_as_exogenous}{determines whether the
   \code{order_by} column and its squared values should be
   used as exogenous variables in VAR models.}
 }

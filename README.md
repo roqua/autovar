@@ -56,7 +56,7 @@ Other than adjusting `av_state$data`, the `group_by` function creates the follow
 ### order_by
 
     av_state <- order_by(av_state,id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISSING','NONE'),
-                         use_as_exogenous=FALSE)
+                         add_as_exogenous=FALSE)
 
 The `order_by` function determines the order of the data rows in the data set. For vector autoregression, you may want to use this to make sure that the data set is sorted by the date/time column. The supplied `id_field` parameter is often a measurement index (e.g., `'tijdstip'`). The `id_field` column has to be numeric. This function will also add a squared column to the data frame and include the `order_by` colum and its squared values as exogenous_variables.
 
@@ -71,7 +71,7 @@ The `impute_method` argument has three possible values:
 * `ADD_MISSING` - Does not work when one or more rows have an `NA` value for `id_field`. Only works for integer ranges of `id_field` with single increments. Works by adding rows for all missing values in the range between the minimum and maximum value of `id_field`. All values in the added rows are `NA` except for the `id_field` and the field used for grouping the data (if there was one).
 * `NONE` - No imputation is performed.
 
-The `use_as_exogenous` argument determines whether the `order_by` column and its squared values should be used as exogenous variables in var models.
+The `add_as_exogenous` argument determines whether the `order_by` column and its squared values should be used as exogenous variables in var models.
 
 #### Results
 

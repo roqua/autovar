@@ -219,6 +219,34 @@ visualize_lines <- function(av_state,columns,labels,title,...) {
   do.call(grid.arrange,plots)
 }
 
+visualize_residuals <- function(varest) {
+  ress <- resid(varest)
+  df <- as.data.frame(ress)
+  sq_ress <- ress*ress
+  df2 <- as.data.frame(sq_ress)
+  plots <- list()
+  plots[[1]] <- visualize_data_frame(df,'Residuals')
+  plots[[2]] <- visualize_data_frame(df2,'Squared Residuals')
+  plots[['ncol']] <- 1
+  do.call(grid.arrange,plots)
+}
+
+visualize_data_frame <- function(df,title) {
+  idvar <- 'index'
+  while (any(idvar == names(df))) { 
+    id_var <- paste(idvar,'_',sep='')
+  }
+  dnames <- names(df)
+  cdata <- cbind(df,1:(dim(df)[[1]]))
+  names(cdata) <- c(dnames,idvar)
+  mdata <- melt(cdata,id.vars = idvar)
+  print(mdata)
+  invisible(ggplot(mdata, aes_string(x = idvar, y = 'value', colour = 'variable')) + 
+    geom_line() + 
+    geom_point() +
+    ggtitle(paste(title,sep='')))
+}
+
 visualize_sub_title <- function(group_by_field,data_subset) {
   if (is.null(group_by_field)) {
     ""
