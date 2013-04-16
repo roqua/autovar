@@ -15,8 +15,8 @@
   This function prints a summary and the output of the
   tests for a VAR model. The tests it shows are the
   Eigenvalue stability condition, the Portmanteau tests,
-  the Jarque-Bera tests, the Granger causality Wald tests,
-  and Stata's \code{estat ic}.
+  the Jarque-Bera tests, the sk tests, the Granger
+  causality Wald tests, and Stata's \code{estat ic}.
 }
 \examples{
 # av_state is the result of an earlier call to var_main

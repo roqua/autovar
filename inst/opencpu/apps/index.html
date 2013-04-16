@@ -290,7 +290,7 @@ $('#loadexample2').click(function() {
   $('#knitForm').find('textarea[name="x"]').val("d<-group_by(d,'id')\nd<-order_by(d,'Day')\nd<-add_derived_column(d,'Activity_hours','Activity', operation='MINUTES_TO_HOURS')\nd<-var_main(d,c('Activity_hours','Depression'),log_level=3)\nvar_info(d$accepted_models[[1]]$varest)\n");
 });
 $('#loadexample3').click(function() {
-  $('#knitForm').find('textarea[name="x"]').val("d<-set_timestamps(d,date_of_first_measurement='2010-04-14')\nd<-var_main(d,c('SomBewegUur','SomPHQ'),log_level=3,exogenous_variables='Work')\nvisualize(d,c('SomBewegUur','SomPHQ'))\nvar_info(d$accepted_models[[1]]$varest)\n");
+  $('#knitForm').find('textarea[name="x"]').val("d<-set_timestamps(d,date_of_first_measurement='2010-04-14')\nd<-var_main(d,c('SomBewegUur','SomPHQ'),log_level=3,exogenous_variables='Work')\nvisualize(d,c('SomBewegUur','SomPHQ'))\nvisualize_residuals(d$accepted_models[[1]]$varest)\nvar_info(d$accepted_models[[1]]$varest)\n");
 })
 
 $('#knit').click(function() {

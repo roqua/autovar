@@ -276,7 +276,7 @@ run_var <- function(data,lag,...) {
 
 #' Print summary information and tests for a VAR model estimation
 #' 
-#' This function prints a summary and the output of the tests for a VAR model. The tests it shows are the Eigenvalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the Granger causality Wald tests, and Stata's \code{estat ic}.
+#' This function prints a summary and the output of the tests for a VAR model. The tests it shows are the Eigenvalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the sk tests, the Granger causality Wald tests, and Stata's \code{estat ic}.
 #' @param varest an object of class \code{varest}
 #' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity.
 #' @examples

@@ -274,7 +274,7 @@ Example: `av_state <- var_main(av_state,c('Activity_hours','Depression'),log_lev
 
     var_info(varest,log_level=0)
 
-The `var_info` function prints a summary and the output of the tests for a var model. Note that its output can be altered by the value of `av_state$log_level`. The tests it shows are the Eigenvalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the Granger causality Wald tests, and estat ic.
+The `var_info` function prints a summary and the output of the tests for a var model. Note that its output can be altered by the value of `av_state$log_level`. The tests it shows are the Eigenvalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the sk tests, the Granger causality Wald tests, and estat ic.
 
 The `log_level` argument sets the verbosity of the output shown. It should be a number between 0 and 3. A lower level means more verbosity.
 
@@ -311,6 +311,16 @@ Examples for using visualize with multiple columns:
     visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'), labels=c('licht werk','zwaar werk','vrije tijd','sport'),type='BAR',horiz=TRUE)
     visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar','minuten_vrijetijd','minuten_sport'),type='DOT',xlab='minuten')
     visualize(av_state,c('Klachten','ESM_1'))
+
+### visualize_residuals
+
+    visualize_residuals(varest)
+
+This function takes a varest object and plots the residuals and the squared residuals.
+
+#### Examples
+
+Example: `visualize_residuals(av_state$accepted_models[[1]]$varest)` or `visualize_residuals(av_state$rejected_models[[1]]$varest)`
 
 
 ### store_file

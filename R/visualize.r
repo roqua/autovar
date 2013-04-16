@@ -219,6 +219,17 @@ visualize_lines <- function(av_state,columns,labels,title,...) {
   do.call(grid.arrange,plots)
 }
 
+#' Visualize the residuals of a VAR model
+#' 
+#' This function takes a varest object and plots the residuals and the squared residuals.
+#' 
+#' @param varest the varest object.
+#' @examples
+#' d<-load_file("../data/input/pp4 nieuw compleet met 140min.sav",log_level=3)
+#' d<-set_timestamps(d,date_of_first_measurement='2010-04-14')
+#' d<-var_main(d,c('SomBewegUur','SomPHQ'),log_level=3,exogenous_variables='Work')
+#' visualize_residuals(d$accepted_models[[1]]$varest)
+#' @export
 visualize_residuals <- function(varest) {
   ress <- resid(varest)
   df <- as.data.frame(ress)
@@ -240,7 +251,6 @@ visualize_data_frame <- function(df,title) {
   cdata <- cbind(df,1:(dim(df)[[1]]))
   names(cdata) <- c(dnames,idvar)
   mdata <- melt(cdata,id.vars = idvar)
-  print(mdata)
   invisible(ggplot(mdata, aes_string(x = idvar, y = 'value', colour = 'variable')) + 
     geom_line() + 
     geom_point() +
