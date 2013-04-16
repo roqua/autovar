@@ -53,7 +53,7 @@ get_data_columns <- function(av_state,model) {
       exodta <- as.matrix(exodta)
       colnames(exodta) <- exovrs
     }
-  } else if (!is.null(av_state$exogenous_variables)) {
+  } else if (!is.null(remaining_exogenous_variables(av_state,model))) {
     exovrs <- remaining_exogenous_variables(av_state,model)
     exodta <- av_state$data[[av_state$subset]][exovrs]
     exodta <- as.matrix(exodta)
@@ -67,8 +67,8 @@ get_data_columns <- function(av_state,model) {
 }
 
 remaining_exogenous_variables <- function(av_state,model) {
-  if (!is.null(model$excluded_exogenous_variables)) {
-    av_state$exogenous_variables[!(av_state$exogenous_variables %in% model$excluded_exogenous_variables)]
+  if (!is.null(model$include_day_dummies) && model$include_day_dummies) {
+    unique(c(av_state$exogenous_variables,av_state$day_dummies))
   } else {
     av_state$exogenous_variables
   }
@@ -92,7 +92,7 @@ get_orig_resids <- function(model,av_state) {
       #    "lag:",model$lag,"\n")
       endodta <- get_endodta(model,av_state)
       exodta <- NULL
-      if (!is.null(av_state$exogenous_variables)) {
+      if (!is.null(remaining_exogenous_variables(av_state,model))) {
         exovrs <- remaining_exogenous_variables(av_state,model)
         exodta <- av_state$data[[av_state$subset]][exovrs]
         exodta <- as.matrix(exodta)

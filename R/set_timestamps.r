@@ -15,7 +15,7 @@
 #' @export
 set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
                            measurements_per_day=1,log_level=0,
-                           add_days_as_exogenous=FALSE,
+                           add_days_as_exogenous=TRUE,
                            add_dayparts_as_exogenous=TRUE) {
   assert_av_state(av_state)
   if (class(subset_id) == 'numeric' && !any(subset_id == 1:length(av_state$data))) {
@@ -40,7 +40,7 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
   if (!is.null(exovrs_d)) {
     signif_columns_d <- significant_columns(added_columns,exovrs_d)
     if (!is.null(signif_columns_d)) {
-      av_state <- add_exogenous_variables(av_state,signif_columns_d)      
+      av_state$day_dummies <- signif_columns_d
     }
   }
   signif_columns_h <- NULL

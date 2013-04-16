@@ -112,7 +112,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   }
   
   # check if exogenous columns exist
-  for (varname in av_state$exogenous_variables) {
+  for (varname in unique(c(av_state$exogenous_variables,av_state$day_dummies))) {
     if (!(varname %in% names(av_state$data[[av_state$subset]]))) {
       stop(paste("non-existant exogenous column specified:",varname))
     }
@@ -128,7 +128,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   }
   
   # make sure that the exogenous columns are of the numeric type
-  for (mvar in av_state$exogenous_variables) {
+  for (mvar in unique(c(av_state$exogenous_variables,av_state$day_dummies))) {
     if (class(av_state$data[[av_state$subset]][[mvar]]) != "numeric") {
       scat(av_state$log_level,2,"column",mvar,"is not numeric, converting...\n")
       tv <- as.numeric(av_state$data[[av_state$subset]][[mvar]])
@@ -147,6 +147,13 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
       new_model <- create_model(default_model,lag=lag)
       av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
       new_model <- create_model(default_model,apply_log_transform=TRUE,lag=lag)
+      av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+    }
+  }
+  if (!is.null(av_state$day_dummies)) {
+    model_queue <- av_state$model_queue
+    for (model in model_queue) {
+      new_model <- create_model(model,include_day_dummies=TRUE)
       av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
     }
   }
@@ -436,7 +443,7 @@ find_models <- function(model_list,given_model) {
 
 model_matches <- function(given_model,model) {
   names <- names(given_model)
-  default_model <- list(lag = -1,apply_log_transform = FALSE, restrict = FALSE, exogenous_variables = NULL)
+  default_model <- list(lag = -1,apply_log_transform = FALSE, include_day_dummies = FALSE, restrict = FALSE, exogenous_variables = NULL)
   model <- merge_lists(default_model,model)
   i <- 0
   matching <- TRUE

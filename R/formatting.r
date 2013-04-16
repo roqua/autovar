@@ -28,7 +28,9 @@ format_accepted_models <- function(av_state) {
     # Constraints:
     res <- paste(res,"  Constraints: ",sep='')
     res <- paste(res,
-                 format_constraints(x$varest,av_state$exogenous_variables))
+                 format_constraints(x$varest,
+                                    unique(c(av_state$exogenous_variables,
+                                             av_state$day_dummies))))
     
     if (!is.null(x$varest$restrictions)) {
       # Remaining Formulas:

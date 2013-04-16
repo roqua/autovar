@@ -115,7 +115,7 @@ Modifying and adding columns
 
     av_state <- set_timestamps(av_state,subset_id=1,date_of_first_measurement,
                               measurements_per_day=1,log_level=0,
-                              add_days_as_exogenous=FALSE,add_dayparts_as_exogenous=TRUE)
+                              add_days_as_exogenous=TRUE,add_dayparts_as_exogenous=TRUE)
 
 The `set_timestamps` function adds dummy columns for weekdays (named `Sunday`, `Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday` and `Saturday`) and hours of the day to the given subset of the specified data set. These are used by `var_main` to find better models by removing cyclicity from the data set.
 

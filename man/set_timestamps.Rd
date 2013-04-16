@@ -4,7 +4,7 @@
 \usage{
   set_timestamps(av_state, subset_id = 1,
     date_of_first_measurement, measurements_per_day = 1,
-    log_level = 0, add_days_as_exogenous = FALSE,
+    log_level = 0, add_days_as_exogenous = TRUE,
     add_dayparts_as_exogenous = TRUE)
 }
 \arguments{
