@@ -283,6 +283,22 @@ The `log_level` argument sets the verbosity of the output shown. It should be a 
 Example: `var_info(av_state$accepted_models[[1]]$varest)` or `var_info(av_state$rejected_models[[1]]$varest)`
 
 
+### var_summary
+
+    var_summary(av_state,msg=NULL)
+
+This function repeats the output that is shown after a call of var_main.
+
+#### Arguments
+
+The `av_state` argument is an object of class `av_state` that was the result of a call to `var_main`
+The `msg` argument is an optional message to display at the start. If this argument is `NULL`, a default message is shown instead.
+
+#### Syntax
+
+Example: `var_summary(av_state)`
+
+
 Outputting data
 ---------------
 

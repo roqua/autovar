@@ -196,19 +196,15 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     i <- i+1
   }
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
-  scat(av_state$log_level,3,"\nDone. Processed",model_cnt,"models, of which",
-      length(av_state$accepted_models),
-      ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n")
-  search_space_used(av_state)
-  print_granger_statistics(av_state)
-  print_model_statistics(av_state)
   class(av_state$accepted_models) <- 'model_list'
   class(av_state$rejected_models) <- 'model_list'
   if (length(av_state$accepted_models) > 0) {
-    scat(av_state$log_level,3,"\nThe valid models (sorted by",av_state$criterion,"score):\n")
     av_state$accepted_models <- sort_models(av_state$accepted_models)
-    scat(av_state$log_level,3,format_accepted_models(av_state))
   }
+  var_summary(av_state,
+              paste("\nDone. Processed",model_cnt,"models, of which",
+                    length(av_state$accepted_models),
+                    ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n"))
   if (av_state$test_all_combinations) {
     scat(av_state$log_level,3,"\nRunning again on full scope")
     old_model_queue <- av_state$model_queue
@@ -243,23 +239,45 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
       i <- i+1
     }
     scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
-    scat(av_state$log_level,3,"\nDone. Processed",model_cnt,"additional models, of which",
-         length(av_state$accepted_models)-length(av_state$old_accepted_models),
-         ifelse(length(av_state$accepted_models)-length(av_state$old_accepted_models) == 1,
-                "was","were"),"valid.\n")
-    search_space_used(av_state)
-    print_granger_statistics(av_state)
-    print_model_statistics(av_state)
     class(av_state$accepted_models) <- 'model_list'
     class(av_state$rejected_models) <- 'model_list'
     if (length(av_state$accepted_models) > 0) {
-      scat(av_state$log_level,3,"\nThe valid models (sorted by",av_state$criterion,"score):\n")
       av_state$accepted_models <- sort_models(av_state$accepted_models)
-      scat(av_state$log_level,3,format_accepted_models(av_state))
     }
+    var_summary(av_state,
+                paste("\nDone. Processed",model_cnt,"additional models, of which",
+                      length(av_state$accepted_models) - length(av_state$old_accepted_models),
+                      ifelse(length(av_state$accepted_models) - length(av_state$old_accepted_models) == 1,
+                             "was","were"),"valid.\n"))
   }
   av_state$log_level <- real_log_level
   av_state
+}
+
+#' Print the output of var_main
+#' 
+#' This function repeats the output that is shown after a call of var_main.
+#' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
+#' @param msg an optional message to display at the start. If this argument is \code{NULL}, a default message is shown instead.
+#' @examples
+#' # av_state is the result of a call to var_main
+#' var_summary(av_state)
+#' @export
+var_summary <- function(av_state,msg=NULL) {
+  if (is.null(msg)) {
+    model_cnt <- length(av_state$accepted_models)+length(av_state$rejected_models)
+    msg <- paste("\nProcessed",model_cnt,"models, of which",
+                 length(av_state$accepted_models),
+                 ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n")
+  }
+  scat(av_state$log_level,3,msg)
+  search_space_used(av_state)
+  print_granger_statistics(av_state)
+  print_model_statistics(av_state)
+  if (length(av_state$accepted_models) > 0) {
+    scat(av_state$log_level,3,"\nThe valid models (sorted by",av_state$criterion,"score):\n")
+    scat(av_state$log_level,3,format_accepted_models(av_state))
+  }
 }
 
 set_varest_values <- function(av_state,varest) {
@@ -317,7 +335,7 @@ add_exogenous_variables <- function(av_state,column_names) {
 }
 
 print_model_statistics <- function(av_state) {
-  scat(av_state$log_level, 3, "\nSummary of the valid models:\n")
+  scat(av_state$log_level, 3, "\nSummary of all valid models:\n")
   print_model_statistics_aux(av_state,av_state$accepted_models,'lag')
   scat(av_state$log_level,3,"\n")
   print_model_statistics_aux(av_state,av_state$accepted_models,'apply_log_transform')

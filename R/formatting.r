@@ -64,7 +64,7 @@ format_exogenous_variables <- function(exogvars,av_state,model,varest) {
         exovar <- remaining_exog_vars[[i]]
         if (length(unique(av_state$data[[av_state$subset]][[exovar]])) <= 3) {
           res <- paste(res,'    ',exovar,': ',
-                       paste(which(av_state$data[[av_state$subset]][[exovar]] == 1),collapse=', '),
+                       paste(which(av_state$data[[av_state$subset]][[exovar]] == 1),collapse=','),
                        '\n',sep='')
         } else {
           res <- paste(res,'    ',exovar,': ...\n',sep='')
