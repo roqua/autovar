@@ -1,9 +1,5 @@
 # Granger causality
 vargranger <- function(varest,log_level=0) {
-  # TODO: make this function work when var has more than two variables
-  if (dim(varest$y)[[2]] > 2 && !is.null(varest$restrictions)) {
-    stop("the current vargranger implementation does not work with more than two variables and restricted VARs")
-  }
   scat(log_level,2,"\nGranger causality Wald tests\n")
   res <- vargranger_call(varest)
   sprint(log_level,1,res)
@@ -99,19 +95,16 @@ vargranger_aux_small <- function(varest) {
 }
 
 granger_causality <- function(varest,cause,equation) {
-  varest <- process_restricted_varest(varest,cause)
+  varest <- process_restricted_varest(varest,cause,equation)
   gres <- NULL
   suppressWarnings(tryCatch(gres <- causality2(varest,cause=cause,equation=equation)$Granger,error=function(e) { }))
   gres
 }
 
-process_restricted_varest <- function(varest, cause) {
+process_restricted_varest <- function(varest, cause, equation) {
   if (!is.null(varest$restrictions)) {
-    #restricts <- varest$restrictions[cause,]
-    # TODO: does not work with >2 vars
-    orestricts <- varest$restrictions[other_varname(varest,cause),]
+    orestricts <- varest$restrictions[equation,]
     varest$p <- sum(orestricts[names(orestricts) %in% get_lag_varnames(varest,cause)])
-    #excluded_names <- names(restricts)[which(restricts == 0)]
     excluded_names <- names(orestricts)[which(orestricts == 0)]
     # 0 means exclude
     varest$datamat <- varest$datamat[, !(colnames(varest$datamat) %in% excluded_names)]
