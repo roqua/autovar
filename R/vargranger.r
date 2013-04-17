@@ -15,13 +15,30 @@ vargranger <- function(varest,log_level=0) {
 # Print Granger Statistics
 print_granger_statistics <- function(av_state) {
   lst <- c(av_state$accepted_models,av_state$rejected_models)
-  scat(av_state$log_level,3,"\nGranger causality summary of all",
-       length(lst),"processed models:\n")
-  glist <- vargranger_list(lst)
-  for (i in 1:nr_rows(glist)) {
-    gres <- glist[i,]
-    if (gres$desc == '') { next }
-    scat(av_state$log_level,3,"  ",gres$perc,"\t",gres$desc,"\n",sep='')
+  #print_vargranger_list(av_state,lst,"processed models")
+  lst2 <- lst[find_models(lst,list(restrict=FALSE))]
+  print_vargranger_list(av_state,lst2,"unrestricted models")
+  print_vargranger_list(av_state,av_state$accepted_models,"valid models")
+  lst2 <- av_state$accepted_models[find_models(av_state$accepted_models,list(restrict=FALSE))]
+  print_vargranger_list(av_state,lst2,"valid unrestricted models")
+}
+
+print_vargranger_list <- function(av_state,lst,title) {
+  if (length(lst) != 0) {
+    scat(av_state$log_level,3,
+         paste("\nGranger causality summary of all ",
+               length(lst)," ",title,":\n",sep=''))
+    glist <- vargranger_list(lst)
+    flag <- TRUE
+    for (i in 1:nr_rows(glist)) {
+      gres <- glist[i,]
+      if (gres$desc == '') { gres$desc <- '<None>' }
+      scat(av_state$log_level,3,"  ",gres$perc,"\t",gres$desc,"\n",sep='')
+      flag <- FALSE
+    }
+    if (flag) {
+      scat(av_state$log_level,3,"  None of the models indicate Granger causality.\n",sep='')
+    }
   }
 }
 
@@ -185,7 +202,9 @@ vargranger_list <- function(lst) {
     freqs <- c(freqs,freq)
     percs <- c(percs,perc)
   }
-  data.frame(desc=descs,freq=freqs,perc=percs,stringsAsFactors=FALSE)
+  df <- data.frame(desc=descs,freq=freqs,perc=percs,stringsAsFactors=FALSE)
+  df <- df[with(df,order(df$freq,decreasing=TRUE)),]
+  df
 }
 
 format_as_percentage <- function(frac) {
