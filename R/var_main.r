@@ -201,6 +201,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
       ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n")
   search_space_used(av_state)
   print_granger_statistics(av_state)
+  print_model_statistics(av_state)
   class(av_state$accepted_models) <- 'model_list'
   class(av_state$rejected_models) <- 'model_list'
   if (length(av_state$accepted_models) > 0) {
@@ -248,6 +249,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                 "was","were"),"valid.\n")
     search_space_used(av_state)
     print_granger_statistics(av_state)
+    print_model_statistics(av_state)
     class(av_state$accepted_models) <- 'model_list'
     class(av_state$rejected_models) <- 'model_list'
     if (length(av_state$accepted_models) > 0) {
@@ -312,6 +314,50 @@ av_state_criterion <- function(varest) {
 add_exogenous_variables <- function(av_state,column_names) {
   av_state$exogenous_variables <- unique(c(av_state$exogenous_variables,column_names))
   av_state
+}
+
+print_model_statistics <- function(av_state) {
+  scat(av_state$log_level, 3, "\nSummary of the valid models:\n")
+  print_model_statistics_aux(av_state,av_state$accepted_models,'lag')
+  scat(av_state$log_level,3,"\n")
+  print_model_statistics_aux(av_state,av_state$accepted_models,'apply_log_transform')
+  if (!is.null(av_state$day_dummies)) {
+    scat(av_state$log_level,3,"\n")
+    print_model_statistics_aux(av_state,av_state$accepted_models,'include_day_dummies')
+  }
+}
+
+print_model_statistics_aux <- function(av_state,lst,param) {
+  scat(av_state$log_level, 3, paste("  ",param,":\n",sep=''))
+  glist <- model_statistics(lst,param)
+  for (i in 1:nr_rows(glist)) {
+    gres <- glist[i,]
+    scat(av_state$log_level,3,"    ", gres$perc,"\t",gres$desc,"\n",sep='')
+  }
+}
+
+model_statistics <- function(lst,param) {
+  tbl <- table(sapply(lst, 
+                      function(x) ifelse(is.null(x$parameters[[param]]),
+                                         FALSE,
+                                         x$parameters[[param]])))
+  tdescs <- names(tbl)
+  tfreq <- sum(tbl)
+  descs <- NULL
+  freqs <- NULL
+  percs <- NULL
+  for (i in 1:length(tbl)) {
+    desc <- tdescs[[i]]
+    freq <- tbl[[i]]
+    perc <- format_as_percentage(freq/tfreq)
+    descs <- c(descs, desc)
+    freqs <- c(freqs, freq)
+    percs <- c(percs, perc)
+  }
+  df <- data.frame(desc = descs, freq = freqs, perc = percs, 
+                   stringsAsFactors = FALSE)
+  df <- df[with(df, order(df$freq, decreasing = TRUE)),]
+  df
 }
 
 

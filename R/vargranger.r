@@ -208,7 +208,7 @@ vargranger_list <- function(lst) {
 }
 
 format_as_percentage <- function(frac) {
-  paste(round(100*frac,digits=2),"%",sep='')
+  paste(format(round(100*frac,digits=2),nsmall=2,width=6),"%",sep='')
 }
 
 
