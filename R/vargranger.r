@@ -42,6 +42,89 @@ print_vargranger_list <- function(av_state,lst,title) {
   }
 }
 
+vargranger_graph <- function(av_state) {
+  vargranger_graph_aux(av_state,av_state$accepted_models)
+}
+
+vargranger_graph_aux <- function(av_state,lst) {
+  str <- NULL
+  rls <- list()
+  nonecount <- 0
+  for (model in lst) {
+    res <- vargranger_call(model$varest)
+    foundflag <- FALSE
+    for (row in df_in_rows(res)) {
+      if (row$P <= av_state_significance(model$varest)) {
+        weight <- 2
+        foundflag <- TRUE
+      } else if (row$P <= 2*av_state_significance(model$varest)) {
+        weight <- 1
+        foundflag <- TRUE
+      } else { 
+        next
+      }
+      edgename <- paste(unprefix_ln(row$Excluded),unprefix_ln(row$Equation))
+      if (is.null(rls[[edgename]])) {
+        rls[[edgename]] <- 0
+      }
+      rls[[edgename]] <- rls[[edgename]]+weight
+    }
+    if (!foundflag) {
+      nonecount <- nonecount+1
+    }
+  }
+  i <- 0
+  enms <- names(rls)
+  for (edgeweight in rls) {
+    i <- i+1
+    edgename <- enms[[i]]
+    str <- paste(str,edgename,' ',edgeweight,'\n',sep='')
+  }
+  if (!is.null(str)) {
+    list(str=str,nonecount=nonecount,allcount=length(lst))
+  } else {
+    NULL
+  }
+}
+
+vargranger_plot <- function(av_state) {
+  graphi <- vargranger_graph(av_state)
+  if (!is.null(graphi)) {
+    graphstring <- graphi$str
+    # TODO: check if temp files are cleaned up
+    file <- tempfile()
+    #cat("tempfile:",file,"\n")
+    cat(graphstring, file = file)
+    a <- read.graph(file,format="ncol",directed=TRUE,weights="yes")
+    cols <- c('springgreen4','steelblue','chocolate1')
+    E(a)$width <- E(a)$weight
+    plot(a,
+         edge.arrow.size=2,
+         edge.arrow.width=2,
+         edge.color='gray15',
+         edge.curved=TRUE,
+         vertex.size=65,
+         vertex.label.family='sans',
+         vertex.label.cex=1,
+         vertex.color=cols[1:(length(V(a)))],
+         vertex.label.color='black',
+         vertex.label.font=2,
+         main="Granger causality",
+         sub=paste('found in',graphi$allcount - graphi$nonecount,'out of',graphi$allcount,'valid models'))
+    gname <- gsub("\\.[^ ]{3,4}$","",basename(av_state$real_file_name))
+    fname <- gname
+    i <- 0
+    while (file.exists(paste(fname,'.pdf',sep=''))) {
+      i <- i + 1
+      fname <- paste(gname,'_',i,sep='')
+    }
+    fname <- paste(fname,'.pdf',sep='')
+    dev.copy2pdf(file=fname)
+    scat(av_state$log_level,3,"\nGranger causality plot saved to \"",fname,"\"\n",sep='')
+    invisible(a)
+  }
+}
+
 df_in_rows <- function(df) {
   lst <- NULL
   if (!is.null(df)) {

@@ -273,6 +273,7 @@ var_summary <- function(av_state,msg=NULL) {
   scat(av_state$log_level,3,msg)
   search_space_used(av_state)
   print_granger_statistics(av_state)
+  vargranger_plot(av_state)
   print_model_statistics(av_state)
   if (length(av_state$accepted_models) > 0) {
     scat(av_state$log_level,3,"\nThe valid models (sorted by",av_state$criterion,"score):\n")
