@@ -10,6 +10,7 @@ Depends:
     foreign,
     ggplot2,
     gridExtra,
+    igraph,
     norm,
     reshape2,
     TimeProjection,
