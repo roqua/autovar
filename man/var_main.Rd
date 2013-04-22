@@ -10,7 +10,8 @@
     test_all_combinations = FALSE,
     restrictions.verify_validity_in_every_step = TRUE,
     restrictions.extensive_search = TRUE,
-    criterion = c("AIC", "BIC"), use_varsoc = FALSE)
+    criterion = c("AIC", "BIC"), use_varsoc = FALSE,
+    use_pperron = TRUE)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -140,6 +141,13 @@
   search space for VAR models. When \code{use_varsoc} is
   \code{FALSE}, all lags from 1 to \code{lag_max} are
   searched.}
+
+  \item{use_pperron}{determines whether the Phillips-Perron
+  test should be used to determine whether trend variables
+  should be included in the models. When \code{use_pperron}
+  is \code{FALSE}, all models will be evaluated both with
+  and without trend variables. Trend variables are
+  specified using the \code{\link{order_by}} function.}
 }
 \value{
   This function returns the modified \code{av_state}

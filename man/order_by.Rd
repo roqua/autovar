@@ -3,8 +3,7 @@
 \title{Order the rows in a data set}
 \usage{
   order_by(av_state, id_field,
-    impute_method = c("BEST_FIT", "ONE_MISSING", "ADD_MISSING", "NONE"),
-    add_as_exogenous = FALSE)
+    impute_method = c("BEST_FIT", "ONE_MISSING", "ADD_MISSING", "NONE"))
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -30,10 +29,6 @@
   \code{NA} except for the \code{id_field} and the field
   used for grouping the data (if there was one). \item
   \code{'NONE'} - No imputation is performed. }}
-
-  \item{add_as_exogenous}{determines whether the
-  \code{order_by} column and its squared values should be
-  used as exogenous variables in VAR models.}
 }
 \value{
   This function returns the modified \code{av_state}

@@ -14,6 +14,7 @@ Depends:
     norm,
     reshape2,
     TimeProjection,
+    urca,
     vars
 Suggests:
     testthat,
@@ -48,3 +49,4 @@ Collate:
     'sktest.r'
     'formatting.r'
     'set_timestamps.r'
+    'pperron.r'

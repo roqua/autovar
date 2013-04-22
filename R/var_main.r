@@ -31,6 +31,7 @@
 #' @param restrictions.extensive_search is an argument that affects how constraints are found for valid models. When this argument is \code{TRUE} (the default), when the term with the highest p-value does not provide a model with a lower BIC score, we attempt to constrain the term with the second highest p-value, and so on. When this argument is \code{FALSE}, we only check the term with the highest p-value. If restricting this term does not give an improvement in BIC score, we stop restricting the model entirely.
 #' @param criterion is the information criterion used to sort the models. Valid options are  \code{'AIC'} (the default) or \code{'BIC'}.
 #' @param use_varsoc determines whether VAR lag order selection criteria should be employed to restrict the search space for VAR models. When \code{use_varsoc} is \code{FALSE}, all lags from 1 to \code{lag_max} are searched.
+#' @param use_pperron determines whether the Phillips-Perron test should be used to determine whether trend variables should be included in the models. When \code{use_pperron} is \code{FALSE}, all models will be evaluated both with and without trend variables. Trend variables are specified using the \code{\link{order_by}} function.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta")
@@ -48,7 +49,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      restrictions.verify_validity_in_every_step=TRUE,
                      restrictions.extensive_search=TRUE,
                      criterion=c('AIC','BIC'),
-                     use_varsoc=FALSE) {
+                     use_varsoc=FALSE,use_pperron=TRUE) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -79,6 +80,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$restrictions.extensive_search <- restrictions.extensive_search
   av_state$criterion <- match.arg(criterion)
   av_state$use_varsoc <- use_varsoc
+  av_state$use_pperron <- use_pperron
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   
@@ -112,7 +114,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   }
   
   # check if exogenous columns exist
-  for (varname in unique(c(av_state$exogenous_variables,av_state$day_dummies))) {
+  for (varname in unique(c(av_state$exogenous_variables,av_state$day_dummies,av_state$trend_vars))) {
     if (!(varname %in% names(av_state$data[[av_state$subset]]))) {
       stop(paste("non-existant exogenous column specified:",varname))
     }
@@ -128,7 +130,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   }
   
   # make sure that the exogenous columns are of the numeric type
-  for (mvar in unique(c(av_state$exogenous_variables,av_state$day_dummies))) {
+  for (mvar in unique(c(av_state$exogenous_variables,av_state$day_dummies,av_state$trend_vars))) {
     if (class(av_state$data[[av_state$subset]][[mvar]]) != "numeric") {
       scat(av_state$log_level,2,"column",mvar,"is not numeric, converting...\n")
       tv <- as.numeric(av_state$data[[av_state$subset]][[mvar]])
@@ -143,11 +145,30 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     av_state$model_queue <- list(default_model)
   } else {
     av_state$model_queue <- NULL
+    av_state <- add_log_transform_columns(av_state)
     for (lag in 1:(av_state$lag_max)) {
       new_model <- create_model(default_model,lag=lag)
       av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
       new_model <- create_model(default_model,apply_log_transform=TRUE,lag=lag)
       av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+    }
+  }
+  if (!is.null(av_state$trend_vars)) {
+    model_queue <- av_state$model_queue
+    if (av_state$use_pperron) {
+      av_state$model_queue <- NULL
+      for (model in model_queue) {
+        if (pperron_needs_trend_vars(av_state,model)) {
+          model <- create_model(model,include_trend_vars=TRUE)
+        }
+        av_state$model_queue <- add_to_queue(av_state$model_queue,model,av_state$log_level)
+      }
+    } else {
+      # add both
+      for (model in model_queue) {
+        new_model <- create_model(model,include_trend_vars=TRUE)
+        av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+      }
     }
   }
   if (!is.null(av_state$day_dummies)) {
@@ -330,6 +351,20 @@ av_state_criterion <- function(varest) {
   }
 }
 
+add_log_transform_columns <- function(av_state) {
+  for (name in av_state$vars) {
+    ln_name <- prefix_ln(name)
+    if (!column_exists(av_state,ln_name)) {
+      av_state <- add_derived_column(av_state,
+                                     ln_name,
+                                     name,
+                                     operation='LN',
+                                     log_level=av_state$log_level)
+    }
+  }
+  av_state
+}
+
 add_exogenous_variables <- function(av_state,column_names) {
   av_state$exogenous_variables <- unique(c(av_state$exogenous_variables,column_names))
   av_state
@@ -344,6 +379,10 @@ print_model_statistics <- function(av_state) {
     if (!is.null(av_state$day_dummies)) {
       scat(av_state$log_level,3,"\n")
       print_model_statistics_aux(av_state,av_state$accepted_models,'include_day_dummies')
+    }
+    if (!is.null(av_state$trend_vars)) {
+      scat(av_state$log_level,3,"\n")
+      print_model_statistics_aux(av_state,av_state$accepted_models,'include_trend_vars')
     }
   }
 }
@@ -510,7 +549,12 @@ find_models <- function(model_list,given_model) {
 
 model_matches <- function(given_model,model) {
   names <- names(given_model)
-  default_model <- list(lag = -1,apply_log_transform = FALSE, include_day_dummies = FALSE, restrict = FALSE, exogenous_variables = NULL)
+  default_model <- list(lag = -1,
+                        apply_log_transform = FALSE,
+                        include_day_dummies = FALSE,
+                        include_trend_vars = FALSE,
+                        restrict = FALSE,
+                        exogenous_variables = NULL)
   model <- merge_lists(default_model,model)
   i <- 0
   matching <- TRUE

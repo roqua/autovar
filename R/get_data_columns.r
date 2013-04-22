@@ -67,11 +67,14 @@ get_data_columns <- function(av_state,model) {
 }
 
 remaining_exogenous_variables <- function(av_state,model) {
+  exovrs <- av_state$exogenous_variables
   if (!is.null(model$include_day_dummies) && model$include_day_dummies) {
-    unique(c(av_state$exogenous_variables,av_state$day_dummies))
-  } else {
-    av_state$exogenous_variables
+    exovrs <- unique(c(exovrs,av_state$day_dummies))
   }
+  if (!is.null(model$include_trend_vars) && model$include_trend_vars) {
+    exovrs <- unique(c(exovrs,av_state$trend_vars))
+  }
+  exovrs
 }
 
 get_endodta <- function(model,av_state) {

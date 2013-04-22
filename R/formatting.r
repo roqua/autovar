@@ -30,7 +30,8 @@ format_accepted_models <- function(av_state) {
     res <- paste(res,
                  format_constraints(x$varest,
                                     unique(c(av_state$exogenous_variables,
-                                             av_state$day_dummies))))
+                                             av_state$day_dummies,
+                                             av_state$trend_vars))))
     
     if (!is.null(x$varest$restrictions)) {
       # Remaining Formulas:

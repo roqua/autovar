@@ -55,8 +55,7 @@ Other than adjusting `av_state$data`, the `group_by` function creates the follow
 
 ### order_by
 
-    av_state <- order_by(av_state,id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISSING','NONE'),
-                         add_as_exogenous=FALSE)
+    av_state <- order_by(av_state,id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISSING','NONE'))
 
 The `order_by` function determines the order of the data rows in the data set. For vector autoregression, you may want to use this to make sure that the data set is sorted by the date/time column. The supplied `id_field` parameter is often a measurement index (e.g., `'tijdstip'`). The `id_field` column has to be numeric. This function will also add a squared column to the data frame and include the `order_by` colum and its squared values as exogenous_variables.
 
@@ -70,8 +69,6 @@ The `impute_method` argument has three possible values:
 * `ONE_MISSING` - Only works when the `id_field` in each data subset is an integer range with exactly one value missing and exactly one `NA` value. The `NA` value is then substituted by the missing index.
 * `ADD_MISSING` - Does not work when one or more rows have an `NA` value for `id_field`. Only works for integer ranges of `id_field` with single increments. Works by adding rows for all missing values in the range between the minimum and maximum value of `id_field`. All values in the added rows are `NA` except for the `id_field` and the field used for grouping the data (if there was one).
 * `NONE` - No imputation is performed.
-
-The `add_as_exogenous` argument determines whether the `order_by` column and its squared values should be used as exogenous variables in var models.
 
 #### Results
 
@@ -199,7 +196,7 @@ Vector Autoregression
                          restrictions.verify_validity_in_every_step=TRUE,
                          restrictions.extensive_search=TRUE,
                          criterion=c('AIC','BIC'),
-                         use_varsoc=FALSE)
+                         use_varsoc=FALSE,use_pperron=TRUE)
 
 The `var_main` function generates and tests possible VAR models for the specified variables. Aside from `av_state`, the only required argument is `vars`, which should be a vector of variables.
 
@@ -248,6 +245,8 @@ The `restrictions.extensive_search` argument affects how constraints are found f
 The `criterion` argument is the information criterion used to sort the models. Valid options are  `'AIC'` (the default) or `'BIC'`.
 
 The `use_varsoc` argument determines whether VAR lag order selection criteria should be employed to restrict the search space for VAR models. When `use_varsoc` is `FALSE`, all lags from 1 to `lag_max` are searched.
+
+The `use_pperron` argument determines whether the Phillips-Perron test should be used to determine whether trend variables should be included in the models. When `use_pperron` is `FALSE`, all models will be evaluated both with and without trend variables. Trend variables are specified using the `order_by` function.
 
 #### Results
 
