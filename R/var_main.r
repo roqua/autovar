@@ -336,13 +336,15 @@ add_exogenous_variables <- function(av_state,column_names) {
 }
 
 print_model_statistics <- function(av_state) {
-  scat(av_state$log_level, 3, "\nSummary of all valid models:\n")
-  print_model_statistics_aux(av_state,av_state$accepted_models,'lag')
-  scat(av_state$log_level,3,"\n")
-  print_model_statistics_aux(av_state,av_state$accepted_models,'apply_log_transform')
-  if (!is.null(av_state$day_dummies)) {
+  if (length(av_state$accepted_models) > 0) {
+    scat(av_state$log_level, 3, "\nSummary of all valid models:\n")
+    print_model_statistics_aux(av_state,av_state$accepted_models,'lag')
     scat(av_state$log_level,3,"\n")
-    print_model_statistics_aux(av_state,av_state$accepted_models,'include_day_dummies')
+    print_model_statistics_aux(av_state,av_state$accepted_models,'apply_log_transform')
+    if (!is.null(av_state$day_dummies)) {
+      scat(av_state$log_level,3,"\n")
+      print_model_statistics_aux(av_state,av_state$accepted_models,'include_day_dummies')
+    }
   }
 }
 
