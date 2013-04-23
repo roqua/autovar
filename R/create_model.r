@@ -23,3 +23,25 @@ merge_lists <- function(old, new) {
   }
   res
 }
+
+lists_are_equal <- function(lsta,lstb) {
+  if (!all(sort(names(lsta)) == sort(names(lstb)))) {
+    FALSE
+  } else {
+    nn <- names(lsta)
+    i <- 0
+    matching <- TRUE
+    for (value in lsta) {
+      i <- i+1
+      name <- nn[[i]]
+      if (((is.null(lstb[[name]]) && !is.null(value)) || (is.null(value) &&
+          !is.null(lstb[[name]]))) || (!is.null(dim(lstb[[name]])) && 
+          !is.null(dim(value)) && dim(lstb[[name]]) != dim(value)) ||
+          any(lstb[[name]] != value)) {
+        matching <- FALSE
+        break
+      }
+    }
+    matching
+  }
+}

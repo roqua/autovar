@@ -220,3 +220,15 @@ get_outliers_as_string <- function(av_state,name,iteration,model) {
   }
 }
 
+get_outliers_as_vector <- function(av_state,name,iteration,model) {
+  orig_resids <- get_orig_resids(model,av_state)$resids
+  if (is.null(orig_resids)) {
+    NULL
+  } else {
+    cname <- prefix_ln_cond(name,model)
+    cresids <- orig_resids[,cname]
+    column <- get_outliers_column(cresids,iteration,
+                                  dim(av_state$data[[av_state$subset]])[[1]])
+    which(column == 1)
+  }
+}

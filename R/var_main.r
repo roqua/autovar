@@ -190,32 +190,28 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$rejected_models <- list()
   av_state$resids <- list()
   av_state$log_resids <- list()
+  av_state$model_cnt <- 0
   i <- 1
-  model_cnt <- 0
   while (TRUE) {
     if (i > length(av_state$model_queue)) { break }
-    # pop a model and process it
-    model <- av_state$model_queue[[i]]
-    ev_modelres <- evaluate_model(av_state,model,i)
-    av_state <- ev_modelres$av_state
-    model_evaluation <- ev_modelres$res
-    model <- model_evaluation$model
-    if (!is.null(model_evaluation$varest)) {
-      model_cnt <- model_cnt +1
-    }
-    if (model_evaluation$model_valid) {
-      # model is valid
-      accepted_model <- list(parameters=model,varest=model_evaluation$varest)
-      class(accepted_model) <- 'var_modelres'
-      av_state$accepted_models <- c(av_state$accepted_models,list(accepted_model))
-    } else if (!is.null(model_evaluation$varest)) {
-      # model was rejected
-      rejected_model <- list(parameters=model,varest=model_evaluation$varest)
-      class(rejected_model) <- 'var_modelres'
-      av_state$rejected_models <- c(av_state$rejected_models,list(rejected_model))
-    }
+    av_state <- process_model(av_state,av_state$model_queue[[i]],i)
     i <- i+1
   }
+  # first, clean up the valid models
+  av_state$accepted_models <- remove_duplicates(av_state,av_state$accepted_models)
+  # now queue the valid models again with constraints
+  scat(av_state$log_level,2,'\n> Done. Queueing the valid models again with constraints...\n')
+  for (model in av_state$accepted_models) {
+    new_model <- create_model(model$parameters,restrict=TRUE)
+    av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+  }
+  # process the valid models with constraints
+  while (TRUE) {
+    if (i > length(av_state$model_queue)) { break }
+    av_state <- process_model(av_state,av_state$model_queue[[i]],i)  
+    i <- i+1
+  }
+  
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   class(av_state$accepted_models) <- 'model_list'
   class(av_state$rejected_models) <- 'model_list'
@@ -223,7 +219,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     av_state$accepted_models <- sort_models(av_state$accepted_models)
   }
   var_summary(av_state,
-              paste("\nDone. Processed",model_cnt,"models, of which",
+              paste("\nDone. Processed",av_state$model_cnt,"models, of which",
                     length(av_state$accepted_models),
                     ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n"))
   if (av_state$test_all_combinations) {
@@ -233,30 +229,11 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     model_queue <- model_queue[!(model_queue %in% old_model_queue)]
     av_state$model_queue <- model_queue
     av_state$old_accepted_models <- av_state$accepted_models
+    av_state$model_cnt <- 0
     i <- 1
-    model_cnt <- 0
     while (TRUE) {
       if (i > length(av_state$model_queue)) { break }
-      # pop a model and process it
-      model <- av_state$model_queue[[i]]
-      ev_modelres <- evaluate_model2(av_state,model,i)
-      av_state <- ev_modelres$av_state
-      model_evaluation <- ev_modelres$res
-      model <- model_evaluation$model
-      if (!is.null(model_evaluation$varest)) {
-        model_cnt <- model_cnt +1
-      }
-      if (model_evaluation$model_valid) {
-        # model is valid
-        accepted_model <- list(parameters=model,varest=model_evaluation$varest)
-        class(accepted_model) <- 'var_modelres'
-        av_state$accepted_models <- c(av_state$accepted_models,list(accepted_model))
-      } else if (!is.null(model_evaluation$varest)) {
-        # model was rejected
-        rejected_model <- list(parameters=model,varest=model_evaluation$varest)
-        class(rejected_model) <- 'var_modelres'
-        av_state$rejected_models <- c(av_state$rejected_models,list(rejected_model))
-      }
+      av_state <- process_model(av_state,av_state$model_queue[[i]],i)
       i <- i+1
     }
     scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
@@ -266,13 +243,131 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
       av_state$accepted_models <- sort_models(av_state$accepted_models)
     }
     var_summary(av_state,
-                paste("\nDone. Processed",model_cnt,"additional models, of which",
+                paste("\nDone. Processed",av_state$model_cnt,"additional models, of which",
                       length(av_state$accepted_models) - length(av_state$old_accepted_models),
                       ifelse(length(av_state$accepted_models) - length(av_state$old_accepted_models) == 1,
                              "was","were"),"valid.\n"))
   }
   av_state$log_level <- real_log_level
   av_state
+}
+
+process_model <- function(av_state,model,i) {
+  ev_modelres <- evaluate_model(av_state,model,i)
+  av_state <- ev_modelres$av_state
+  model_evaluation <- ev_modelres$res
+  model <- model_evaluation$model
+  if (!is.null(model_evaluation$varest)) {
+    av_state$model_cnt <- av_state$model_cnt +1
+  }
+  if (model_evaluation$model_valid) {
+    # model is valid
+    accepted_model <- list(parameters=model,varest=model_evaluation$varest)
+    class(accepted_model) <- 'var_modelres'
+    av_state$accepted_models <- c(av_state$accepted_models,list(accepted_model))
+  } else if (!is.null(model_evaluation$varest)) {
+    # model was rejected
+    rejected_model <- list(parameters=model,varest=model_evaluation$varest)
+    class(rejected_model) <- 'var_modelres'
+    av_state$rejected_models <- c(av_state$rejected_models,list(rejected_model))
+  }
+  av_state
+}
+
+remove_duplicates <- function(av_state,lst) {
+  lst <- add_expanded_models(lst,av_state)
+  rlst <- lst
+  for (model in lst) {
+    if (list(model) %in% rlst) {
+      rlst <- remove_included_models(rlst,model$expanded_model)
+      rlst <- c(rlst,list(model))
+    }
+  }
+  rlst <- remove_expanded_models(rlst)
+  rlst
+}
+
+add_expanded_models <- function(lst,av_state) {
+  r <- list()
+  for (model in lst) {
+    model$expanded_model <- expand_model(model$parameters,av_state)
+    r <- c(r,list(model))
+  }
+  r
+}
+
+remove_expanded_models <- function(lst) {
+  r <- list()
+  for (model in lst) {
+    model$expanded_model <- NULL
+    r <- c(r,list(model))
+  }
+  r
+}
+
+remove_included_models <- function(lst,exp_model) {
+  rlst <- list()
+  for (tmodel in lst) {
+    texp_model <- tmodel$expanded_model
+    if (!model_is_the_same_or_needs_fewer_outliers_than(exp_model,texp_model)) {
+      rlst <- c(rlst,list(tmodel))
+    }
+  }
+  rlst
+}
+
+model_is_the_same_or_needs_fewer_outliers_than <- function(exp_model_a,exp_model_b) {
+  if (!models_have_equal_params(exp_model_a[[1]],exp_model_b[[1]])) {
+    FALSE
+  } else {
+    flag <- TRUE
+    for (amodel in exp_model_a) {
+      found_in_b <- FALSE
+      for (bmodel in exp_model_b) {
+        if (all(amodel$exogenous_variables %in% bmodel$exogenous_variables)) {
+          found_in_b <- TRUE
+          break
+        }
+      }
+      if (!found_in_b) {
+        flag <- FALSE
+        break
+      }
+    }
+    flag
+  }
+}
+  
+models_have_equal_params <- function(amodel,bmodel) {
+  # amodel and bmodel are instances of expanded models
+  amodel$exogenous_variables <- NULL
+  bmodel$exogenous_variables <- NULL
+  lists_are_equal(amodel,bmodel)
+}
+
+expand_model <- function(model_params,av_state) {
+  model_params <- merge_lists(default_model_props(),model_params)
+  r <- list()
+  if (is.null(model_params$exogenous_variables)) {
+    r <- c(r,list(model_params))
+  } else {
+    for (i in 1:(dim(model_params$exogenous_variables)[1])) {
+      exorow <- model_params$exogenous_variables[i,]
+      exovec <- get_outliers_as_vector(av_state,exorow$variable,exorow$iteration,model_params)
+      new_model <- merge_lists(model_params,list(exogenous_variables=exovec))
+      r <- c(r,list(new_model))
+    }
+  }
+  r 
+}
+
+default_model_props <- function() {
+  list(lag = -1,
+       apply_log_transform = FALSE,
+       include_day_dummies = FALSE,
+       include_trend_vars = FALSE,
+       restrict = FALSE,
+       exogenous_variables = NULL)
 }
 
 #' Print the output of var_main
@@ -563,13 +658,7 @@ find_models <- function(model_list,given_model) {
 
 model_matches <- function(given_model,model) {
   names <- names(given_model)
-  default_model <- list(lag = -1,
-                        apply_log_transform = FALSE,
-                        include_day_dummies = FALSE,
-                        include_trend_vars = FALSE,
-                        restrict = FALSE,
-                        exogenous_variables = NULL)
-  model <- merge_lists(default_model,model)
+  model <- merge_lists(default_model_props(),model)
   i <- 0
   matching <- TRUE
   for (value in given_model) {

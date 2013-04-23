@@ -108,11 +108,6 @@ evaluate_model <- function(av_state,model,index) {
     # if all tests pass, print some info about this model
     if (res$model_valid) {
       scat(av_state$log_level,2,'\n> End of tests. Model valid.\n')
-      if (!is_restricted_model(model)) {
-        scat(av_state$log_level,2,'\n> Queueing model with constraints.\n')
-        new_model <- create_model(model,restrict=TRUE)
-        av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
-      }
       scat(av_state$log_level,1,'Printing estat ic (low values = better models):\n')
       sprint(av_state$log_level,1,estat_ic(res$varest))
     } else {
