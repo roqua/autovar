@@ -31,7 +31,8 @@
 #' @param restrictions.extensive_search is an argument that affects how constraints are found for valid models. When this argument is \code{TRUE} (the default), when the term with the highest p-value does not provide a model with a lower BIC score, we attempt to constrain the term with the second highest p-value, and so on. When this argument is \code{FALSE}, we only check the term with the highest p-value. If restricting this term does not give an improvement in BIC score, we stop restricting the model entirely.
 #' @param criterion is the information criterion used to sort the models. Valid options are  \code{'AIC'} (the default) or \code{'BIC'}.
 #' @param use_varsoc determines whether VAR lag order selection criteria should be employed to restrict the search space for VAR models. When \code{use_varsoc} is \code{FALSE}, all lags from 1 to \code{lag_max} are searched.
-#' @param use_pperron determines whether the Phillips-Perron test should be used to determine whether trend variables should be included in the models. When \code{use_pperron} is \code{FALSE}, all models will be evaluated both with and without trend variables. Trend variables are specified using the \code{\link{order_by}} function.
+#' @param use_pperron determines whether the Phillips-Perron test should be used to determine whether trend variables should be included in the models. When \code{use_pperron} is \code{FALSE}, all models will be evaluated both with and without the trend variable. The trend variable is specified using the \code{\link{order_by}} function.
+#' @param include_squared_trend determines whether the square of the trend is included if the trend is included for a model. The trend variable is specified using the \code{\link{order_by}} function.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta")
@@ -49,7 +50,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      restrictions.verify_validity_in_every_step=TRUE,
                      restrictions.extensive_search=TRUE,
                      criterion=c('AIC','BIC'),
-                     use_varsoc=FALSE,use_pperron=TRUE) {
+                     use_varsoc=FALSE,use_pperron=TRUE,
+                     include_squared_trend=FALSE) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -81,6 +83,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$criterion <- match.arg(criterion)
   av_state$use_varsoc <- use_varsoc
   av_state$use_pperron <- use_pperron
+  av_state$include_squared_trend <- include_squared_trend
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   
@@ -100,6 +103,12 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
 
   scat(av_state$log_level,3,"Starting VAR with variables: ",paste(vars,collapse=', '),
        ", for subset: ",subset,"\n",sep='')
+  
+  if (!is.null(av_state$trend_vars) && av_state$include_squared_trend) {
+    trend_var <- av_state$trend_vars[[1]]
+    sq_name <- paste(trend_var,'2',sep='')
+    av_state$trend_vars <- c(trend_var,sq_name)
+  }
   
   # check if subset exists
   if (is.null(av_state$data[[av_state$subset]])) {
@@ -491,6 +500,9 @@ print_model_statistics <- function(av_state) {
       if (is.null(av_state$day_dummies) && length(find_models(av_state$rejected_models,list(include_trend_vars=TRUE))) > 0) {
         scat(av_state$log_level,3,"\nTo find valid models, try using the set_timestamps() function so the VAR models can include days and day parts as dummy variables.\n")
       }
+    }
+    if (av_state$exogenous_max_iterations < 3) {
+      scat(av_state$log_level,3,"\nTo find valid models, try running var_main again with 'exogenous_max_iterations=3'.\n")
     }
     scat(av_state$log_level,3,"\n")
   }

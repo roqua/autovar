@@ -58,7 +58,7 @@ order_by <- function(av_state,id_field,impute_method=c('BEST_FIT','ONE_MISSING',
   sq_name <- paste(av_state$order_by,'2',sep='')
   av_state <- add_derived_column(av_state,sq_name,
                                  av_state$order_by,operation='SQUARED')
-  av_state$trend_vars <- c(av_state$order_by,sq_name)
+  av_state$trend_vars <- av_state$order_by
   av_state
 }
 

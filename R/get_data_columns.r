@@ -159,13 +159,13 @@ get_outliers_column <- function(dta,iteration,nr_obs) {
   mu <- mean(dta)
   std_factor <- std_factor_for_iteration(iteration)
   res <- unname(((dta < mu-std_factor*std) | (dta > mu+std_factor*std))+0)
-  dta <- dta*dta
-  std <- sd(dta)
-  mu <- mean(dta)
-  res2 <- unname(((dta < mu-std_factor*std) | (dta > mu+std_factor*std))+0)
-  #if (iteration == 3) {
+  if (iteration == 3) {
+    dta <- dta*dta
+    std <- sd(dta)
+    mu <- mean(dta)
+    res2 <- unname(((dta < mu-std_factor*std) | (dta > mu+std_factor*std))+0)
     res <- pmax(res,res2)
-  #}
+  }
   if (length(res) < nr_obs) {
     res <- c(rep.int(0,nr_obs-length(res)),res)
   }

@@ -196,7 +196,8 @@ Vector Autoregression
                          restrictions.verify_validity_in_every_step=TRUE,
                          restrictions.extensive_search=TRUE,
                          criterion=c('AIC','BIC'),
-                         use_varsoc=FALSE,use_pperron=TRUE)
+                         use_varsoc=FALSE,use_pperron=TRUE,
+                         include_squared_trend=FALSE)
 
 The `var_main` function generates and tests possible VAR models for the specified variables. Aside from `av_state`, the only required argument is `vars`, which should be a vector of variables.
 
@@ -246,7 +247,9 @@ The `criterion` argument is the information criterion used to sort the models. V
 
 The `use_varsoc` argument determines whether VAR lag order selection criteria should be employed to restrict the search space for VAR models. When `use_varsoc` is `FALSE`, all lags from 1 to `lag_max` are searched.
 
-The `use_pperron` argument determines whether the Phillips-Perron test should be used to determine whether trend variables should be included in the models. When `use_pperron` is `FALSE`, all models will be evaluated both with and without trend variables. Trend variables are specified using the `order_by` function.
+The `use_pperron` argument determines whether the Phillips-Perron test should be used to determine whether trend variables should be included in the models. When `use_pperron` is `FALSE`, all models will be evaluated both with and without the trend variable. The trend variable is specified using the `order_by` function.
+
+The `include_squared_trend` argument determines whether the square of the trend is included if the trend is included for a model. The trend variable is specified using the `order_by` function.
 
 #### Results
 

@@ -11,7 +11,7 @@
     restrictions.verify_validity_in_every_step = TRUE,
     restrictions.extensive_search = TRUE,
     criterion = c("AIC", "BIC"), use_varsoc = FALSE,
-    use_pperron = TRUE)
+    use_pperron = TRUE, include_squared_trend = FALSE)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -146,8 +146,13 @@
   test should be used to determine whether trend variables
   should be included in the models. When \code{use_pperron}
   is \code{FALSE}, all models will be evaluated both with
-  and without trend variables. Trend variables are
+  and without the trend variable. The trend variable is
   specified using the \code{\link{order_by}} function.}
+
+  \item{include_squared_trend}{determines whether the
+  square of the trend is included if the trend is included
+  for a model. The trend variable is specified using the
+  \code{\link{order_by}} function.}
 }
 \value{
   This function returns the modified \code{av_state}
