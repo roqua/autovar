@@ -83,7 +83,10 @@ set_timestamps_aux <- function(from,length_out,by,add_days_as_exogenous,add_dayp
   
   houridx <- format(timeSequence(from=from,length.out=length_out,by=by),"%H")
   u_hours <- unique(houridx)
-  hour_columns <- sapply(u_hours,function (x) paste('hour_',x,sep=''))
+  hour_columns <- daypart_string(length(u_hours))
+  if (length(u_hours) == 3) {
+    hour_columns <- c('Morning','Afternoon','Evening')
+  }
   exovrs_h <- NULL
   if (length(u_hours) > 1) {
     if (add_dayparts_as_exogenous) {
@@ -104,6 +107,14 @@ set_timestamps_aux <- function(from,length_out,by,add_days_as_exogenous,add_dayp
     }
   }
   list(columns=r,exovrs_d=exovrs_d,exovrs_h=exovrs_h)
+}
+
+daypart_string <- function(len) {
+  r <- NULL
+  for (i in 1:len) {
+    r <- c(r,paste('daypart_',i,'_',len,sep=''))
+  }
+  r
 }
 
 significant_columns <- function(dataframe,names) {
