@@ -43,7 +43,7 @@
 #' var_info(av_state$accepted_models[[1]]$varest)
 #' @export
 var_main <- function(av_state,vars,lag_max=2,significance=0.05,
-                     exogenous_max_iterations=3,subset=1,log_level=av_state$log_level,
+                     exogenous_max_iterations=2,subset=1,log_level=av_state$log_level,
                      small=FALSE,include_model=NULL,exogenous_variables=NULL,
                      use_sktest=TRUE,test_all_combinations=FALSE,
                      restrictions.verify_validity_in_every_step=TRUE,
@@ -384,6 +384,20 @@ print_model_statistics <- function(av_state) {
       scat(av_state$log_level,3,"\n")
       print_model_statistics_aux(av_state,av_state$accepted_models,'include_trend_vars')
     }
+  } else if (length(av_state$rejected_models) > 0 && (!is.null(av_state$day_dummies) || !is.null(av_state$trend_vars))) {
+    scat(av_state$log_level, 3, "\nSummary of all rejected models:")
+    if (!is.null(av_state$day_dummies)) {
+      scat(av_state$log_level,3,"\n")
+      print_model_statistics_aux(av_state,av_state$rejected_models,'include_day_dummies')
+    }
+    if (!is.null(av_state$trend_vars)) {
+      scat(av_state$log_level,3,"\n")
+      print_model_statistics_aux(av_state,av_state$rejected_models,'include_trend_vars')
+      if (is.null(av_state$day_dummies) && length(find_models(av_state$rejected_models,list(include_trend_vars=TRUE))) > 0) {
+        scat(av_state$log_level,3,"\nTo find valid models, try using the set_timestamps() function so the VAR models can include days and day parts as dummy variables.\n")
+      }
+    }
+    scat(av_state$log_level,3,"\n")
   }
 }
 

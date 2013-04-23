@@ -3,7 +3,7 @@
 \title{Determine possibly optimal models for Vector Autoregression}
 \usage{
   var_main(av_state, vars, lag_max = 2,
-    significance = 0.05, exogenous_max_iterations = 3,
+    significance = 0.05, exogenous_max_iterations = 2,
     subset = 1, log_level = av_state$log_level,
     small = FALSE, include_model = NULL,
     exogenous_variables = NULL, use_sktest = TRUE,
