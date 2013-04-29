@@ -266,14 +266,48 @@ vargranger_to_string <- function(varest,res,include_significance=TRUE) {
   str
 }
 
+vargranger_to_string_vector <- function(varest,res,include_significance=TRUE) {
+  # res is a vargranger_aux result
+  str <- NULL
+  for (row in df_in_rows(res)) {
+    if (row$P <= av_state_significance(varest)) {
+      str <- c(str,paste(unprefix_ln(row$Excluded),
+                         ' Granger causes ',
+                         unprefix_ln(row$Equation),
+                         ifelse(include_significance,
+                                paste(' (',signif(row$P,digits=3),')',sep=''),
+                                ''),sep=''))
+    } else if (row$P <= 2*av_state_significance(varest)) {
+      str <- c(str,paste(unprefix_ln(row$Excluded),
+                         ' almost Granger causes ',
+                         unprefix_ln(row$Equation),
+                         ifelse(include_significance,
+                                paste(' (',signif(row$P,digits=3),')',sep=''),
+                                ''),sep=''))
+    }
+  }
+  if (is.null(str)) {
+    str <- ''
+  }
+  str
+}
+
 vargranger_line <- function(varest,...) {
   vargranger_to_string(varest,vargranger_call(varest),...)
 }
 
+vargranger_line_vector <- function(varest,...) {
+  vargranger_to_string_vector(varest,vargranger_call(varest),...)
+}
+
 vargranger_list <- function(lst) {
-  tbl <- table(sapply(lst,function(x) vargranger_line(x$varest,include_significance=FALSE)))
+  llst <- NULL
+  for (item in lst) {
+    llst <- c(llst,vargranger_line_vector(item$varest,include_significance=FALSE))
+  }
+  tbl <- table(llst)
   tdescs <- names(tbl)
-  tfreq <- sum(tbl)
+  tfreq <- length(lst)
   descs <- NULL
   freqs <- NULL
   percs <- NULL
