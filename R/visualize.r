@@ -202,7 +202,7 @@ visualize_lines <- function(av_state,columns,labels,title,...) {
     } else {
       idvar <- 'index'
       while (any(idvar == names(data_frame))) { 
-        id_var <- paste(idvar,'_',sep='')
+        idvar <- paste(idvar,'_',sep='')
       }
       dnames <- names(data_frame[columns])
       cdata <- cbind(data_frame[columns],1:(dim(data_frame[columns])[[1]]))
@@ -245,7 +245,7 @@ visualize_residuals <- function(varest) {
 visualize_data_frame <- function(df,title) {
   idvar <- 'index'
   while (any(idvar == names(df))) { 
-    id_var <- paste(idvar,'_',sep='')
+    idvar <- paste(idvar,'_',sep='')
   }
   dnames <- names(df)
   cdata <- cbind(df,1:(dim(df)[[1]]))
