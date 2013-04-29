@@ -434,6 +434,7 @@ function set_timestamps(str) {
   return str;
 }
 function var_main(str) {
+  str = str+ 'visualize(d,c('+$('#varnames_line').val()+')\n'
   str = str+ 'd<-var_main(d'
   str = str+ ',vars=c('+$('#varnames_line').val()+')'
   str = str+ ',lag_max='+$('#maxlag').val()
