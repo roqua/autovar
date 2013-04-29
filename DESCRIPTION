@@ -50,3 +50,4 @@ Collate:
     'formatting.r'
     'set_timestamps.r'
     'pperron.r'
+    'add_trend.r'

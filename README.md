@@ -84,6 +84,25 @@ Other than adjusting `av_state$data`, the `order_by` function creates the follow
 Example: `av_state <- order_by(av_state,'tijdstip',impute_method='ONE_MISSING')`
 
 
+### add_trend
+
+    av_state <- add_trend(av_state, subset_id = 1, varname = 'index')
+
+Adds a trend variable to a data set. This function adds a column to a dataset, running from 1 to the length of the data set. If the data set is segmented using the group_by function, a column is added for every subset.
+
+#### Arguments
+
+The first argument to this function has to be an object of class `av_state`. A modified `av_state` object is returned.
+
+The `subset_id` argument specifies which data subset should be modified. This argument is either an integer subset index or the the value for the `id_field` column that was used in the `group_by` function. The `subset_id` argument is only required if the data set is grouped into multiple data sets (i.e., if the `group_by` function was used), in which case the function works on the specified data subset.
+
+The `varname` param is the name of the trend column to be created. Will be postfixed with underscores if the column already exists.
+
+#### Syntax
+
+Example:  `av_state <- add_trend(av_state)`
+
+
 ### select_range
 
     av_state <- select_range(av_state, subset_id=1,column,begin,end)
