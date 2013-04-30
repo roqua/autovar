@@ -591,9 +591,7 @@ $('#knitForm').submit(function(event) {
       if (data.indexOf("<pre>") != -1) {
         data = data.replace(/(<code)(>## Warning: )/g,'$1 class=\\"warning\\"$2');
         data = data.replace(/(<code)(>## Error: )/g,'$1 class=\\"error\\"$2');
-        console.log(data);
         data = data.replace(/(<code>|\\n)## /gm,'$1');
-        console.log(data);
         $("#outputframe").contents().find("body").html(eval(data));
       } else {
         $("#outputframe").contents().find("body").html(data);
