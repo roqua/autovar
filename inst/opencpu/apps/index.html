@@ -276,7 +276,7 @@ hljs.initHighlightingOnLoad();
 <div class='controls'>
   <input type='text' disabled='disabled' id='varnames_line'>
   <select multiple='multiple' id='varnames'></select>
-  <span class='help-block'>Select the variables to run VAR on (hold down CTRL and click).</span>
+  <span class='help-block'>Select the variables to run VAR on (hold down CTRL and click). Select the original variables only, not the log-transformed variables.</span>
 </div>
 </div>
 <div class='control-group hide-initially'>
@@ -296,7 +296,7 @@ hljs.initHighlightingOnLoad();
   <label class='checkbox'>
     <input type='checkbox' id='identify_trend' checked='checked'>Include trend variables
   </label>
-  <span class='help-block'>Check to include a trend variable (named 'index') for models according to Phillips-Perron test criteria.</span>
+  <span class='help-block'>Check to create and include a trend variable (named 'index') for models according to Phillips-Perron test criteria.</span>
 </div>
 </div>
 <div class='control-group'>
@@ -305,7 +305,8 @@ hljs.initHighlightingOnLoad();
   <label class='checkbox'>
     <input type='checkbox' id='set_timestamps'>Set timestamps
   </label>
-  <label for='timestamp'>Date of first measurement</label>
+  <span class='help-block'>Check to create and include dummy variables for weekdays. If the date of the first measurement is known, then check this box and fill out the date below. This causes Autovar to evaluate every model twice: once with and once without dummy variables for weekdays. Additionally, if the number of measurements per day is &gt;1, then dummy variables for day parts are added to all models.</span>
+  <label for='timestamp' style='margin-top:5px;'>Date of first measurement</label>
   <input type='text' id='timestamp' placeholder='yyyy-mm-dd'>
   <label for='measurements_per_day'>Measurements per day</label>
   <input type='text' id='measurements_per_day' value='1'>
@@ -316,7 +317,7 @@ hljs.initHighlightingOnLoad();
 <div class='controls'>
   <input type='text' disabled='disabled' id='exovrs_line'>
   <select multiple='multiple' id='exovrs'></select>
-  <span class='help-block'>Select the column names to include as exogenous variables (hold down CTRL and click).</span>
+  <span class='help-block'>Select the column names to include as exogenous variables (hold down CTRL and click). Do not select trend variables, weekday dummies, or day part dummies here: use the options above instead. Furthermore, in most cases it's not needed to select outlier columns here either since Autovar generates and uses its own. Thus, only select columns here that provide additional contextual information that cannot be derived from the VAR columns. For example, days during which a patient was working.</span>
 </div>
 </div>
 </fieldset>
@@ -458,7 +459,7 @@ function var_main(str) {
     str = str+ ',exogenous_variables=c('+$('#exovrs_line').val()+')'
   }
   str = str+ ')\n'
-  str = str+ 'if (length(d$accepted_models) > 0) { var_info(d$accepted_models[[1]]$varest) }\n'
+  str = str+ 'print_best_models(d)\n'
   return str;
 }
 function clickRunVar(e) {
@@ -489,7 +490,7 @@ function filenameChange() {
   $('#knit,#knitdl,#runvar').addClass('disabled');
   $('#loadingtext').html('Loading...');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
-  $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename);names(d$data[[1]])\n")
+  $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename,log_level=3);names(d$data[[1]])\n")
   $('#knitForm').attr("action","http://88.198.205.22/R/pub/base/identity/json");
   $('#knitForm').submit();
   $('#knitForm').find('textarea[name="x"]').val(oldtextarea);
@@ -527,7 +528,7 @@ $('#set_timestamps').change(change_timestamps);
 $('#knit').click(function() {
   $('#knit,#knitdl,#runvar').addClass('disabled');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
-  $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename)\n"+oldtextarea)
+  $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename,log_level=3)\n"+oldtextarea)
   $('#knitForm').attr("action","http://88.198.205.22/R/pub/base/identity/ascii");
   $('#knitForm').submit();
   $('#knitForm').find('textarea[name="x"]').val(oldtextarea);
@@ -535,7 +536,7 @@ $('#knit').click(function() {
 $('#knitdl').click(function() {
   $('#knit,#knitdl,#runvar').addClass('disabled');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
-  $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename)\n"+oldtextarea+"\nstore_file(d)\n");
+  $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename,log_level=3)\n"+oldtextarea+"\nstore_file(d)\n");
   $('#knitForm').attr("action","http://88.198.205.22/R/pub/base/identity/save");
   $('#knitForm').submit();
   $('#knitForm').find('textarea[name="x"]').val(oldtextarea);

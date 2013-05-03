@@ -406,6 +406,25 @@ var_summary <- function(av_state,msg=NULL) {
   }
 }
 
+print_best_models <- function(av_state) {
+  logm <- find_models(av_state$accepted_models,list(apply_log_transform = TRUE))
+  if (!is.null(logm)) {
+    best_log <- av_state$accepted_models[[logm[[1]]]]
+    scat(av_state$log_level,3,"\n",paste(rep('-',times=27),collapse=''),"\n",sep='')
+    scat(av_state$log_level,3,"Best log-transformed model:\n")
+    scat(av_state$log_level,3,paste(rep('-',times=27),collapse=''),"\n",sep='')
+    var_info(best_log$varest)
+  }
+  non_logm <- find_models(av_state$accepted_models,list(apply_log_transform = FALSE))
+  if (!is.null(non_logm)) {
+    best_non_log <- av_state$accepted_models[[non_logm[[1]]]]
+    scat(av_state$log_level,3,"\n\n",paste(rep('-',times=33),collapse=''),"\n",sep='')
+    scat(av_state$log_level,3,"Best model without log-transform:\n")
+    scat(av_state$log_level,3,paste(rep('-',times=33),collapse=''),"\n",sep='')
+    var_info(best_non_log$varest)
+  }
+}
+
 set_varest_values <- function(av_state,varest) {
   varest$small <- av_state$small
   varest$significance <- av_state$significance
