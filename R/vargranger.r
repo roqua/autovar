@@ -49,6 +49,8 @@ vargranger_graph <- function(av_state) {
 vargranger_graph_aux <- function(av_state,lst) {
   str <- NULL
   rls <- list()
+  rlsa <- list()
+  rlsr <- list()
   nonecount <- 0
   for (model in lst) {
     res <- vargranger_call(model$varest)
@@ -68,6 +70,17 @@ vargranger_graph_aux <- function(av_state,lst) {
         rls[[edgename]] <- 0
       }
       rls[[edgename]] <- rls[[edgename]]+weight
+      if (weight == 2) {
+        if (is.null(rlsr[[edgename]])) {
+          rlsr[[edgename]] <- 0
+        }
+        rlsr[[edgename]] <- rlsr[[edgename]]+1
+      } else {
+        if (is.null(rlsa[[edgename]])) {
+          rlsa[[edgename]] <- 0
+        }
+        rlsa[[edgename]] <- rlsa[[edgename]]+1
+      }
     }
     if (!foundflag) {
       nonecount <- nonecount+1
@@ -75,13 +88,31 @@ vargranger_graph_aux <- function(av_state,lst) {
   }
   i <- 0
   enms <- names(rls)
+  edgelabels <- NULL
   for (edgeweight in rls) {
     i <- i+1
     edgename <- enms[[i]]
+    edgelabel <- ''
+    if (!is.null(rlsr[[edgename]])) { 
+      edgelabel <- paste(edgelabel,
+                         rlsr[[edgename]],
+                         ' model',
+                         ifelse(rlsr[[edgename]] == 1,'','s'),
+                         sep='')
+    }
+    if (!is.null(rlsa[[edgename]])) {
+      edgelabel <- paste(edgelabel,
+                         ifelse(edgelabel == '','(','\n(+'),
+                         rlsa[[edgename]],
+                         ' almost)',
+                         sep='')
+    }
+    edgelabels <- c(edgelabels,edgelabel)
     str <- paste(str,edgename,' ',edgeweight,'\n',sep='')
   }
   if (!is.null(str)) {
-    list(str=str,nonecount=nonecount,allcount=length(lst))
+    list(str=str,nonecount=nonecount,
+         allcount=length(lst),edgelabels=edgelabels)
   } else {
     NULL
   }
@@ -98,11 +129,15 @@ vargranger_plot <- function(av_state) {
     a <- read.graph(file,format="ncol",directed=TRUE,weights="yes")
     cols <- c('springgreen4','steelblue','chocolate1')
     E(a)$width <- E(a)$weight
+    E(a)$label <- graphi$edgelabels
     plot(a,
          edge.arrow.size=2,
          edge.arrow.width=2,
          edge.color='gray15',
          edge.curved=TRUE,
+         edge.label.family='sans',
+         edge.label.color=colors()[[190]],
+         edge.label.cex=0.75,
          vertex.size=65,
          vertex.label.family='sans',
          vertex.label.cex=1,
@@ -123,6 +158,25 @@ vargranger_plot <- function(av_state) {
     scat(av_state$log_level,3,"\nGranger causality plot saved to \"",fname,"\"\n",sep='')
     invisible(a)
   }
+}
+
+iplot_test <- function(a,...) {
+  plot(a,
+       edge.arrow.size=2,
+       edge.arrow.width=2,
+       edge.color='gray15',
+       edge.curved=TRUE,
+       edge.label.family='sans',
+       edge.label.color=colors()[[190]],
+       edge.label.cex=0.75,
+       vertex.size=65,
+       vertex.label.family='sans',
+       vertex.label.cex=1,
+       vertex.color=cols[1:(length(V(a)))],
+       vertex.label.color='black',
+       vertex.label.font=2,
+       main="Granger causality",
+       sub=paste('found in X out of Y valid models'),...)
 }
 
 df_in_rows <- function(df) {
