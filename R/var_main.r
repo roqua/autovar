@@ -197,29 +197,46 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   }
   av_state$accepted_models <- list()
   av_state$rejected_models <- list()
+  accepted_models <- list()
+  rejected_models <- list()
   av_state$resids <- list()
   av_state$log_resids <- list()
   av_state$model_cnt <- 0
   i <- 1
+  pm <- NULL
   while (TRUE) {
     if (i > length(av_state$model_queue)) { break }
-    av_state <- process_model(av_state,av_state$model_queue[[i]],i)
+    pm <- process_model(av_state,av_state$model_queue[[i]],i)
+    av_state <- pm$av_state
+    if (!is.null(pm$accepted_model)) {
+      accepted_models <- c(accepted_models,list(pm$accepted_model))
+    } else if (!is.null(pm$rejected_model)) {
+      rejected_models <- c(rejected_models,list(pm$rejected_model))
+    }
     i <- i+1
   }
   # first, clean up the valid models
-  av_state$accepted_models <- remove_duplicates(av_state,av_state$accepted_models)
+  accepted_models <- remove_duplicates(av_state,accepted_models)
   # now queue the valid models again with constraints
   scat(av_state$log_level,2,'\n> Done. Queueing the valid models again with constraints...\n')
-  for (model in av_state$accepted_models) {
+  for (model in accepted_models) {
     new_model <- create_model(model$parameters,restrict=TRUE)
     av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
   }
   # process the valid models with constraints
   while (TRUE) {
     if (i > length(av_state$model_queue)) { break }
-    av_state <- process_model(av_state,av_state$model_queue[[i]],i)  
+    pm <- process_model(av_state,av_state$model_queue[[i]],i)
+    av_state <- pm$av_state
+    if (!is.null(pm$accepted_model)) {
+      accepted_models <- c(accepted_models,list(pm$accepted_model))
+    } else if (!is.null(pm$rejected_model)) {
+      rejected_models <- c(rejected_models,list(pm$rejected_model))
+    }
     i <- i+1
   }
+  av_state$accepted_models <- accepted_models
+  av_state$rejected_models <- rejected_models
   
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   class(av_state$accepted_models) <- 'model_list'
@@ -233,6 +250,10 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                     ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n"))
   if (av_state$test_all_combinations) {
     scat(av_state$log_level,3,"\nRunning again on full scope")
+    accepted_models <- av_state$accepted_models
+    rejected_models <- av_state$rejected_models
+    av_state$accepted_models <- list()
+    av_state$rejected_models <- list()
     old_model_queue <- av_state$model_queue
     model_queue <- create_total_model_queue(av_state)
     model_queue <- model_queue[!(model_queue %in% old_model_queue)]
@@ -242,9 +263,18 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     i <- 1
     while (TRUE) {
       if (i > length(av_state$model_queue)) { break }
-      av_state <- process_model(av_state,av_state$model_queue[[i]],i)
+      pm <- process_model(av_state,av_state$model_queue[[i]],i)
+      av_state <- pm$av_state
+      if (!is.null(pm$accepted_model)) {
+        accepted_models <- c(accepted_models,list(pm$accepted_model))
+      } else if (!is.null(pm$rejected_model)) {
+        rejected_models <- c(rejected_models,list(pm$rejected_model))
+      }
       i <- i+1
     }
+    av_state$accepted_models <- accepted_models
+    av_state$rejected_models <- rejected_models
+    
     scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
     class(av_state$accepted_models) <- 'model_list'
     class(av_state$rejected_models) <- 'model_list'
@@ -269,18 +299,18 @@ process_model <- function(av_state,model,i) {
   if (!is.null(model_evaluation$varest)) {
     av_state$model_cnt <- av_state$model_cnt +1
   }
+  accepted_model <- NULL
+  rejected_model <- NULL
   if (model_evaluation$model_valid) {
     # model is valid
     accepted_model <- list(parameters=model,varest=model_evaluation$varest)
     class(accepted_model) <- 'var_modelres'
-    av_state$accepted_models <- c(av_state$accepted_models,list(accepted_model))
   } else if (!is.null(model_evaluation$varest)) {
     # model was rejected
     rejected_model <- list(parameters=model,varest=model_evaluation$varest)
     class(rejected_model) <- 'var_modelres'
-    #av_state$rejected_models <- c(av_state$rejected_models,list(rejected_model))
   }
-  av_state
+  list(av_state=av_state,accepted_model=accepted_model,rejected_model=rejected_model)
 }
 
 remove_duplicates <- function(av_state,lst) {
