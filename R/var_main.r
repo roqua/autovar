@@ -577,7 +577,8 @@ search_space_used <- function(av_state) {
   dlags <- distinct_lags(c(av_state$accepted_models,av_state$rejected_models))
   nlags <- length(dlags)
   tot_models <- 2* 2* nlags * nexo^nvars
-  searched_models <- length(av_state$model_queue) - length(find_models(c(tvnf$accepted_models,tvnf$rejected_models),list(lag=-1)))
+  searched_models <- length(av_state$model_queue) - 
+    length(find_models(c(av_state$accepted_models,av_state$rejected_models),list(lag=-1)))
   scat(av_state$log_level,3,'Tested ',searched_models,' of ',tot_models,' (',
       format_as_percentage(searched_models/tot_models),') of the combinatorial search space at the given lags (',paste(dlags,collapse=', '),').\n',sep='')
   invisible(av_state)
