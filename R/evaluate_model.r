@@ -14,6 +14,8 @@ evaluate_model <- function(av_state,model,index,totmodelcnt) {
   endodta <- dta$endogenous
   exodta <- dta$exogenous
   res$model_valid <- dta$model_valid
+  # don't save model if it was invalid because of duplication
+  dont_return_model <- !(dta$model_valid)
   
   # if model does not specify a lag, then this model is invalid,
   # the possibly optimal var orders should be determined (varsoc in STATA),
@@ -114,6 +116,9 @@ evaluate_model <- function(av_state,model,index,totmodelcnt) {
       scat(av_state$log_level,2,"\n> End of tests. Model invalid.\n")
     }
     scat(av_state$log_level,2,paste(rep('-',times=20),collapse=''),"\n\n",sep='')
+  }
+  if (dont_return_model) {
+    res$varest <- NULL
   }
   list(res=res,av_state=av_state)
 }

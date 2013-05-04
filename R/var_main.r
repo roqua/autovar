@@ -260,7 +260,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     av_state$accepted_models <- sort_models(av_state$accepted_models)
   }
   var_summary(av_state,
-              paste("\nDone. Processed",av_state$model_cnt,"models, of which",
+              paste("\nDone. Processed",av_state$model_cnt,"distinct models, of which",
                     length(av_state$accepted_models),
                     ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n"))
 
@@ -398,7 +398,7 @@ default_model_props <- function() {
 var_summary <- function(av_state,msg=NULL) {
   if (is.null(msg)) {
     model_cnt <- length(av_state$accepted_models)+length(av_state$rejected_models)
-    msg <- paste("\nProcessed",model_cnt,"models, of which",
+    msg <- paste("\nProcessed",model_cnt,"distinct models, of which",
                  length(av_state$accepted_models),
                  ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n")
   }
@@ -577,7 +577,7 @@ search_space_used <- function(av_state) {
   dlags <- distinct_lags(c(av_state$accepted_models,av_state$rejected_models))
   nlags <- length(dlags)
   tot_models <- 2* 2* nlags * nexo^nvars
-  searched_models <- length(av_state$accepted_models) + length(av_state$rejected_models)
+  searched_models <- length(av_state$model_queue) - length(find_models(c(tvnf$accepted_models,tvnf$rejected_models),list(lag=-1)))
   scat(av_state$log_level,3,'Tested ',searched_models,' of ',tot_models,' (',
       format_as_percentage(searched_models/tot_models),') of the combinatorial search space at the given lags (',paste(dlags,collapse=', '),').\n',sep='')
   invisible(av_state)
