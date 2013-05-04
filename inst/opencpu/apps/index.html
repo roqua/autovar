@@ -440,7 +440,7 @@ function set_timestamps(str) {
 }
 function var_main(str) {
   str = str+ 'visualize(d,c('+$('#varnames_line').val()+'))\n'
-  str = str+ 'd<-var_main(d'
+  str = str+ 'print(system.time({\nd<-var_main(d'
   str = str+ ',vars=c('+$('#varnames_line').val()+')'
   str = str+ ',lag_max='+$('#maxlag').val()
   if ($('#more_outliers').is(':checked')) {
@@ -462,7 +462,7 @@ function var_main(str) {
   if ($('#exovrs_line').val() != '') {
     str = str+ ',exogenous_variables=c('+$('#exovrs_line').val()+')'
   }
-  str = str+ ')\n'
+  str = str+ ')\n}))\n'
   str = str+ 'print_best_models(d)\n'
   return str;
 }
