@@ -278,7 +278,7 @@ process_model <- function(av_state,model,i) {
     # model was rejected
     rejected_model <- list(parameters=model,varest=model_evaluation$varest)
     class(rejected_model) <- 'var_modelres'
-    av_state$rejected_models <- c(av_state$rejected_models,list(rejected_model))
+    #av_state$rejected_models <- c(av_state$rejected_models,list(rejected_model))
   }
   av_state
 }
