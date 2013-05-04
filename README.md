@@ -211,7 +211,7 @@ Vector Autoregression
     av_state <- var_main(av_state,vars,lag_max=2,significance=0.05,exogenous_max_iterations=2,
                          subset=1,log_level=av_state$log_level,
                          small=FALSE,include_model=NULL,exogenous_variables=NULL,
-                         use_sktest=TRUE,test_all_combinations=FALSE,
+                         use_sktest=TRUE,
                          restrictions.verify_validity_in_every_step=TRUE,
                          restrictions.extensive_search=TRUE,
                          criterion=c('AIC','BIC'),
@@ -255,8 +255,6 @@ The above example includes a model with `lag=3` (so lags 1, 2, and 3 are include
 The `exogenous_variables` argument should be a vector of variable names that already exist in the given data set, that will be supplied to every VAR model as exogenous variables.
 
 The `use_sktest` argument affects which test is used for Skewness and Kurtosis testing of the residuals. When `use_sktest = TRUE` (the default), STATA's `sktest` is used. When `use_sktest = FALSE`, STATA's `varnorm` (i.e., the Jarque-Bera test) is used.
-
-The `test_all_combinations` argument determines whether the untested search space is searched for possible additional models. This can sometimes give a few extra models at a large performance penalty.
 
 The `restrictions.verify_validity_in_every_step` argument affects how constraints are found for valid models. When this argument is `TRUE` (the default), all intermediate models in the iterative constraint-finding method have to be valid. This ensures that we always find a valid constrained model for every valid model. If this argument is `FALSE`, then only after setting all constraints do we check if the resulting model is valid. If this is not the case, we fail to find a constrained model.
 

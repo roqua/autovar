@@ -26,7 +26,6 @@
 #' The above example includes a model with \code{lag=3} (so lags 1, 2, and 3 are included), the model is ran on the log-transformed variables, and includes an exogenous dummy variable that has a 1 where values of \code{log(Depression)} are more than 3.5xstd away from the mean (because \code{iteration=1}, see the description of the \code{exogenous_max_iterations} parameter above for the meaning of the iterations) and 0 everywhere else. The included model is added at the start of the list, so it can be retrieved (assuming a valid \code{lag} was specified) with either \code{av_state$accepted_models[[1]]} if the model was valid or \code{av_state$rejected_models[[1]]} if it was invalid. In the above example, some info about the included model is printed (assuming it was invalid).
 #' @param exogenous_variables should be a vector of variable names that already exist in the given data set, that will be supplied to every VAR model as exogenous variables.
 #' @param use_sktest affects which test is used for Skewness and Kurtosis testing of the residuals. When \code{use_sktest = TRUE} (the default), STATA's \code{sktest} is used. When \code{use_sktest = FALSE}, STATA's \code{varnorm} (i.e., the Jarque-Bera test) is used.
-#' @param test_all_combinations determines whether the remaining search space is searched for possible additional models. This can sometimes give a few extra solutions at a large performance penalty.
 #' @param restrictions.verify_validity_in_every_step is an argument that affects how constraints are found for valid models. When this argument is \code{TRUE} (the default), all intermediate models in the iterative constraint-finding method have to be valid. This ensures that we always find a valid constrained model for every valid model. If this argument is \code{FALSE}, then only after setting all constraints do we check if the resulting model is valid. If this is not the case, we fail to find a constrained model.
 #' @param restrictions.extensive_search is an argument that affects how constraints are found for valid models. When this argument is \code{TRUE} (the default), when the term with the highest p-value does not provide a model with a lower BIC score, we attempt to constrain the term with the second highest p-value, and so on. When this argument is \code{FALSE}, we only check the term with the highest p-value. If restricting this term does not give an improvement in BIC score, we stop restricting the model entirely.
 #' @param criterion is the information criterion used to sort the models. Valid options are  \code{'AIC'} (the default) or \code{'BIC'}.
@@ -46,7 +45,7 @@
 var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      exogenous_max_iterations=2,subset=1,log_level=av_state$log_level,
                      small=FALSE,include_model=NULL,exogenous_variables=NULL,
-                     use_sktest=TRUE,test_all_combinations=FALSE,
+                     use_sktest=TRUE,
                      restrictions.verify_validity_in_every_step=TRUE,
                      restrictions.extensive_search=TRUE,
                      criterion=c('AIC','BIC'),
@@ -77,7 +76,6 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$small <- small
   av_state$use_sktest <- use_sktest
   av_state <- add_exogenous_variables(av_state,exogenous_variables)
-  av_state$test_all_combinations <- test_all_combinations
   av_state$restrictions.verify_validity_in_every_step <- restrictions.verify_validity_in_every_step
   av_state$restrictions.extensive_search <- restrictions.extensive_search
   av_state$criterion <- match.arg(criterion)
@@ -150,41 +148,44 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   default_model <- list()
   class(default_model) <- 'var_model'
   
+  model_queue <- NULL
+  av_state$model_queue <- NULL
+  
   if (av_state$use_varsoc) {
-    av_state$model_queue <- list(default_model)
+    model_queue <- list(default_model)
   } else {
-    av_state$model_queue <- NULL
+    model_queue <- NULL
     av_state <- add_log_transform_columns(av_state)
     for (lag in 1:(av_state$lag_max)) {
       new_model <- create_model(default_model,lag=lag)
-      av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+      model_queue <- add_to_queue(model_queue,new_model,av_state$log_level)
       new_model <- create_model(default_model,apply_log_transform=TRUE,lag=lag)
-      av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+      model_queue <- add_to_queue(model_queue,new_model,av_state$log_level)
     }
   }
   if (!is.null(av_state$trend_vars)) {
-    model_queue <- av_state$model_queue
+    tmodel_queue <- model_queue
     if (av_state$use_pperron) {
-      av_state$model_queue <- NULL
-      for (model in model_queue) {
+      model_queue <- NULL
+      for (model in tmodel_queue) {
         if (pperron_needs_trend_vars(av_state,model)) {
           model <- create_model(model,include_trend_vars=TRUE)
         }
-        av_state$model_queue <- add_to_queue(av_state$model_queue,model,av_state$log_level)
+        model_queue <- add_to_queue(model_queue,model,av_state$log_level)
       }
     } else {
       # add both
-      for (model in model_queue) {
+      for (model in tmodel_queue) {
         new_model <- create_model(model,include_trend_vars=TRUE)
-        av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+        model_queue <- add_to_queue(model_queue,new_model,av_state$log_level)
       }
     }
   }
   if (!is.null(av_state$day_dummies)) {
-    model_queue <- av_state$model_queue
-    for (model in model_queue) {
+    tmodel_queue <- model_queue
+    for (model in tmodel_queue) {
       new_model <- create_model(model,include_day_dummies=TRUE)
-      av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+      model_queue <- add_to_queue(model_queue,new_model,av_state$log_level)
     }
   }
   if (!is.null(include_model)) {
@@ -193,8 +194,9 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     }
     new_model <- merge_lists(default_model,include_model)
     class(new_model) <- "var_model"
-    av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+    model_queue <- add_to_queue(model_queue,new_model,av_state$log_level)
   }
+  tmodel_queue <- NULL
   av_state$accepted_models <- list()
   av_state$rejected_models <- list()
   accepted_models <- list()
@@ -205,13 +207,19 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   i <- 1
   pm <- NULL
   while (TRUE) {
-    if (i > length(av_state$model_queue)) { break }
-    pm <- process_model(av_state,av_state$model_queue[[i]],i)
+    if (i > length(model_queue)) { break }
+    pm <- process_model(av_state,model_queue[[i]],i,length(model_queue))
     av_state <- pm$av_state
     if (!is.null(pm$accepted_model)) {
       accepted_models <- c(accepted_models,list(pm$accepted_model))
     } else if (!is.null(pm$rejected_model)) {
       rejected_models <- c(rejected_models,list(pm$rejected_model))
+    }
+    if (!is.null(av_state$model_queue)) {
+      for (model in av_state$model_queue) {
+        model_queue <- add_to_queue(model_queue,model,av_state$log_level)
+      }
+      av_state$model_queue <- NULL
     }
     i <- i+1
   }
@@ -221,22 +229,29 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   scat(av_state$log_level,2,'\n> Done. Queueing the valid models again with constraints...\n')
   for (model in accepted_models) {
     new_model <- create_model(model$parameters,restrict=TRUE)
-    av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+    model_queue <- add_to_queue(model_queue,new_model,av_state$log_level)
   }
   # process the valid models with constraints
   while (TRUE) {
-    if (i > length(av_state$model_queue)) { break }
-    pm <- process_model(av_state,av_state$model_queue[[i]],i)
+    if (i > length(model_queue)) { break }
+    pm <- process_model(av_state,model_queue[[i]],i,length(model_queue))
     av_state <- pm$av_state
     if (!is.null(pm$accepted_model)) {
       accepted_models <- c(accepted_models,list(pm$accepted_model))
     } else if (!is.null(pm$rejected_model)) {
       rejected_models <- c(rejected_models,list(pm$rejected_model))
     }
+    if (!is.null(av_state$model_queue)) {
+      for (model in av_state$model_queue) {
+        model_queue <- add_to_queue(model_queue,model,av_state$log_level)
+      }
+      av_state$model_queue <- NULL
+    }
     i <- i+1
   }
   av_state$accepted_models <- accepted_models
   av_state$rejected_models <- rejected_models
+  av_state$model_queue <- model_queue
   
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   class(av_state$accepted_models) <- 'model_list'
@@ -248,51 +263,13 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
               paste("\nDone. Processed",av_state$model_cnt,"models, of which",
                     length(av_state$accepted_models),
                     ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n"))
-  if (av_state$test_all_combinations) {
-    scat(av_state$log_level,3,"\nRunning again on full scope")
-    accepted_models <- av_state$accepted_models
-    rejected_models <- av_state$rejected_models
-    av_state$accepted_models <- list()
-    av_state$rejected_models <- list()
-    old_model_queue <- av_state$model_queue
-    model_queue <- create_total_model_queue(av_state)
-    model_queue <- model_queue[!(model_queue %in% old_model_queue)]
-    av_state$model_queue <- model_queue
-    av_state$old_accepted_models <- av_state$accepted_models
-    av_state$model_cnt <- 0
-    i <- 1
-    while (TRUE) {
-      if (i > length(av_state$model_queue)) { break }
-      pm <- process_model(av_state,av_state$model_queue[[i]],i)
-      av_state <- pm$av_state
-      if (!is.null(pm$accepted_model)) {
-        accepted_models <- c(accepted_models,list(pm$accepted_model))
-      } else if (!is.null(pm$rejected_model)) {
-        rejected_models <- c(rejected_models,list(pm$rejected_model))
-      }
-      i <- i+1
-    }
-    av_state$accepted_models <- accepted_models
-    av_state$rejected_models <- rejected_models
-    
-    scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
-    class(av_state$accepted_models) <- 'model_list'
-    class(av_state$rejected_models) <- 'model_list'
-    if (length(av_state$accepted_models) > 0) {
-      av_state$accepted_models <- sort_models(av_state$accepted_models)
-    }
-    var_summary(av_state,
-                paste("\nDone. Processed",av_state$model_cnt,"additional models, of which",
-                      length(av_state$accepted_models) - length(av_state$old_accepted_models),
-                      ifelse(length(av_state$accepted_models) - length(av_state$old_accepted_models) == 1,
-                             "was","were"),"valid.\n"))
-  }
+
   av_state$log_level <- real_log_level
   av_state
 }
 
-process_model <- function(av_state,model,i) {
-  ev_modelres <- evaluate_model(av_state,model,i)
+process_model <- function(av_state,model,i,totmodelcnt) {
+  ev_modelres <- evaluate_model(av_state,model,i,totmodelcnt)
   av_state <- ev_modelres$av_state
   model_evaluation <- ev_modelres$res
   model <- model_evaluation$model
