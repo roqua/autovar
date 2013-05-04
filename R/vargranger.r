@@ -23,25 +23,6 @@ print_granger_statistics <- function(av_state) {
   print_vargranger_list(av_state,lst2,"valid unrestricted models")
 }
 
-print_vargranger_list <- function(av_state,lst,title) {
-  if (length(lst) != 0) {
-    scat(av_state$log_level,3,
-         paste("\nGranger causality summary of all ",
-               length(lst)," ",title,":\n",sep=''))
-    glist <- vargranger_list(lst)
-    flag <- TRUE
-    for (i in 1:nr_rows(glist)) {
-      gres <- glist[i,]
-      if (gres$desc == '') { gres$desc <- '<None>' }
-      scat(av_state$log_level,3,"  ",gres$perc,"\t",gres$desc,"\n",sep='')
-      flag <- FALSE
-    }
-    if (flag) {
-      scat(av_state$log_level,3,"  None of the models indicate Granger causality.\n",sep='')
-    }
-  }
-}
-
 vargranger_graph <- function(av_state) {
   vargranger_graph_aux(av_state,av_state$accepted_models)
 }
@@ -320,66 +301,111 @@ vargranger_to_string <- function(varest,res,include_significance=TRUE) {
   str
 }
 
-vargranger_to_string_vector <- function(varest,res,include_significance=TRUE) {
-  # res is a vargranger_aux result
-  str <- NULL
-  for (row in df_in_rows(res)) {
-    if (row$P <= av_state_significance(varest)) {
-      str <- c(str,paste(unprefix_ln(row$Excluded),
-                         ' Granger causes ',
-                         unprefix_ln(row$Equation),
-                         ifelse(include_significance,
-                                paste(' (',signif(row$P,digits=3),')',sep=''),
-                                ''),sep=''))
-    } else if (row$P <= 2*av_state_significance(varest)) {
-      str <- c(str,paste(unprefix_ln(row$Excluded),
-                         ' almost Granger causes ',
-                         unprefix_ln(row$Equation),
-                         ifelse(include_significance,
-                                paste(' (',signif(row$P,digits=3),')',sep=''),
-                                ''),sep=''))
+print_vargranger_list <- function(av_state,lst,title) {
+  if (length(lst) != 0) {
+    scat(av_state$log_level,3,
+         paste("\nGranger causality summary of all ",
+               length(lst)," ",title,":\n",sep=''))
+    glist <- vargranger_list(lst)
+    for (i in 1:nr_rows(glist)) {
+      gres <- glist[i,]
+      scat(av_state$log_level,3,"  ",gres$desc,"\n",sep='')
     }
   }
-  if (is.null(str)) {
-    str <- ''
+}
+
+vargranger_list <- function(lst) {
+  llst <- list()
+  for (item in lst) {
+    varest <- item$varest
+    res <- vargranger_call(varest)
+    noneflag <- TRUE
+    for (row in df_in_rows(res)) {
+      if (row$P <= 2*av_state_significance(varest)) {
+        noneflag <- FALSE
+        causevr <- unprefix_ln(row$Excluded)
+        othervr <- unprefix_ln(row$Equation)
+        cmbvr <- paste(causevr,'.',othervr,sep='')
+        if (is.null(llst[[cmbvr]])) {
+          llst[[cmbvr]] <- list(causevr=causevr,
+                                othervr=othervr,
+                                cnt=0,
+                                cnta=0)
+        }
+        if (row$P <= av_state_significance(varest)) {
+          llst[[cmbvr]]$cnt <- llst[[cmbvr]]$cnt +1
+        } else {
+          llst[[cmbvr]]$cnta <- llst[[cmbvr]]$cnta +1
+        }
+      }
+    }
+    if (noneflag) {
+      if (is.null(llst[["none"]])) {
+        llst[["none"]] <- list(causevr='',
+                               othervr='',
+                               cnt=0,
+                               cnta=0)
+      }
+      llst$none$cnt <- llst$none$cnt +1
+    }
+  }
+  causevr <- NULL
+  othervr <- NULL
+  cnt <- NULL
+  cnta <- NULL
+  for (item in llst) {
+    causevr <- c(causevr,item$causevr)
+    othervr <- c(othervr,item$othervr)
+    cnt <- c(cnt,item$cnt)
+    cnta <- c(cnta,item$cnta)
+  }
+  df <- data.frame(causevr=causevr,othervr=othervr,
+                   cnt=cnt,cnta=cnta,stringsAsFactors=FALSE)
+  df <- cbind(df,list(tcnt=cnt+cnta))
+  df <- cbind(df,list(perc=(cnt+cnta)/length(lst)))
+  df <- df[with(df,order(df$tcnt,df$cnt,df$causevr,decreasing=TRUE)),]
+  varwidth <- max(sapply(unique(c(df$causevr,df$othervr)),nchar))
+  df <- cbind(df,
+              list(desc=sapply(df_in_rows(df),
+                               function(x) compact_varline(x,varwidth))),
+              stringsAsFactors=FALSE)
+  df
+}
+
+compact_varline <- function(x,varwidth) {
+  str <- NULL
+  percstr <- format_as_percentage(x$perc)
+  causevr <- format(x$causevr,width=varwidth,justify="left")
+  othervr <- format(x$othervr,width=varwidth,justify="left")
+  if (x$causevr == '') {
+    str <- paste(percstr,'   ',
+                 format('<None>',width=varwidth,justify="left"),
+                 paste(rep(' ',16+varwidth),collapse=''),
+                 '   (',
+                 x$cnt,' model',
+                 ifelse(x$cnt == 1,'','s'),
+                 ')',sep='')
+  } else {
+    str <- paste(percstr,'   ',causevr,' Granger causes ',
+                 othervr,'   (',sep='')
+    if (x$cnt > 0) {
+      str <- paste(str,x$cnt,' model',
+                   ifelse(x$cnt == 1,'','s'),sep='')
+      if (x$cnta > 0) {
+        str <- paste(str,' +',sep='')
+      } else {
+        str <- paste(str,')',sep='')
+      }
+    }
+    if (x$cnta > 0) {
+      str <- paste(str,x$cnta,' almost)',sep='')
+    }
   }
   str
 }
 
 vargranger_line <- function(varest,...) {
   vargranger_to_string(varest,vargranger_call(varest),...)
-}
-
-vargranger_line_vector <- function(varest,...) {
-  vargranger_to_string_vector(varest,vargranger_call(varest),...)
-}
-
-vargranger_list <- function(lst) {
-  llst <- NULL
-  for (item in lst) {
-    llst <- c(llst,vargranger_line_vector(item$varest,include_significance=FALSE))
-  }
-  tbl <- table(llst)
-  tdescs <- names(tbl)
-  tfreq <- length(lst)
-  descs <- NULL
-  freqs <- NULL
-  percs <- NULL
-  for (i in 1:length(tbl)) {
-    desc <- tdescs[[i]]
-    freq <- tbl[[i]]
-    perc <- format_as_percentage(freq/tfreq)
-    descs <- c(descs,desc)
-    freqs <- c(freqs,freq)
-    percs <- c(percs,perc)
-  }
-  df <- data.frame(desc=descs,freq=freqs,perc=percs,stringsAsFactors=FALSE)
-  df <- df[with(df,order(df$freq,decreasing=TRUE)),]
-  df
-}
-
-compact_vargranger_list <- function(df) {
-  
 }
 
 format_as_percentage <- function(frac) {

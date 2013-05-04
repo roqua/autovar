@@ -541,7 +541,7 @@ print_model_statistics_aux <- function(av_state,lst,param) {
   glist <- model_statistics(lst,param)
   for (i in 1:nr_rows(glist)) {
     gres <- glist[i,]
-    scat(av_state$log_level,3,"    ", gres$perc,"\t",gres$desc,"\n",sep='')
+    scat(av_state$log_level,3,"    ", gres$perc,"   ",gres$desc,"\n",sep='')
   }
 }
 
