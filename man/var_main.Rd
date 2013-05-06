@@ -10,7 +10,8 @@
     restrictions.verify_validity_in_every_step = TRUE,
     restrictions.extensive_search = TRUE,
     criterion = c("AIC", "BIC"), use_varsoc = FALSE,
-    use_pperron = TRUE, include_squared_trend = FALSE)
+    use_pperron = TRUE, include_squared_trend = FALSE,
+    normalize_data = FALSE)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -147,6 +148,9 @@
   square of the trend is included if the trend is included
   for a model. The trend variable is specified using the
   \code{\link{order_by}} function.}
+
+  \item{normalize_data}{determines whether the endogenous
+  variables should be normalized.}
 }
 \value{
   This function returns the modified \code{av_state}

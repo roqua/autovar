@@ -216,7 +216,8 @@ Vector Autoregression
                          restrictions.extensive_search=TRUE,
                          criterion=c('AIC','BIC'),
                          use_varsoc=FALSE,use_pperron=TRUE,
-                         include_squared_trend=FALSE)
+                         include_squared_trend=FALSE,
+                         normalize_data=FALSE)
 
 The `var_main` function generates and tests possible VAR models for the specified variables. Aside from `av_state`, the only required argument is `vars`, which should be a vector of variables.
 
@@ -267,6 +268,8 @@ The `use_varsoc` argument determines whether VAR lag order selection criteria sh
 The `use_pperron` argument determines whether the Phillips-Perron test should be used to determine whether trend variables should be included in the models. When `use_pperron` is `FALSE`, all models will be evaluated both with and without the trend variable. The trend variable is specified using the `order_by` function.
 
 The `include_squared_trend` argument determines whether the square of the trend is included if the trend is included for a model. The trend variable is specified using the `order_by` function.
+
+The `normalize_data` argument determines whether the endogenous variables should be normalized.
 
 #### Results
 

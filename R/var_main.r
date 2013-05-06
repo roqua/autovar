@@ -32,6 +32,7 @@
 #' @param use_varsoc determines whether VAR lag order selection criteria should be employed to restrict the search space for VAR models. When \code{use_varsoc} is \code{FALSE}, all lags from 1 to \code{lag_max} are searched.
 #' @param use_pperron determines whether the Phillips-Perron test should be used to determine whether trend variables should be included in the models. When \code{use_pperron} is \code{FALSE}, all models will be evaluated both with and without the trend variable. The trend variable is specified using the \code{\link{order_by}} function.
 #' @param include_squared_trend determines whether the square of the trend is included if the trend is included for a model. The trend variable is specified using the \code{\link{order_by}} function.
+#' @param normalize_data determines whether the endogenous variables should be normalized.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta")
@@ -50,7 +51,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      restrictions.extensive_search=TRUE,
                      criterion=c('AIC','BIC'),
                      use_varsoc=FALSE,use_pperron=TRUE,
-                     include_squared_trend=FALSE) {
+                     include_squared_trend=FALSE,
+                     normalize_data=FALSE) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -82,6 +84,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$use_varsoc <- use_varsoc
   av_state$use_pperron <- use_pperron
   av_state$include_squared_trend <- include_squared_trend
+  av_state$normalize_data <- normalize_data
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   
@@ -147,6 +150,10 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   
   default_model <- list()
   class(default_model) <- 'var_model'
+  
+  if (av_state$normalize_data) {
+    default_model <- create_model(default_model,normalized=TRUE)
+  }
   
   model_queue <- NULL
   av_state$model_queue <- NULL
