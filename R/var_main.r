@@ -382,6 +382,7 @@ default_model_props <- function() {
        apply_log_transform = FALSE,
        include_day_dummies = FALSE,
        include_trend_vars = FALSE,
+       normalized = FALSE,
        restrict = FALSE,
        exogenous_variables = NULL)
 }

@@ -10,6 +10,12 @@ model_score <- function(varest) {
   }
 }
 
+normalized_model_score <- function(av_state,model) {
+  normalized_model <- create_model(model,normalized=TRUE)
+  varest <- calc_varest(av_state,normalized_model)
+  model_score(varest)
+}
+
 printed_model_score <- function(varest) {
   # low values == better models
   es <- estat_ic(varest)

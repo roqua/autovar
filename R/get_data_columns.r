@@ -20,6 +20,10 @@ get_data_columns <- function(av_state,model) {
     vrs <- sapply(vrs,prefix_ln,USE.NAMES=FALSE)
   }
   endo <- av_state$data[[av_state$subset]][vrs]
+  # normalization
+  if (!is.null(model$normalized) && model$normalized) {
+    endo <- sapply(endo,function(x) (x-mean(x))/sd(x))
+  }
   
   # check if exogenous_variables need to be created
   if (!is.null(model$exogenous_variables)) {
@@ -42,6 +46,10 @@ get_data_columns <- function(av_state,model) {
                                       nr_obs,
                                       av_state$log_level)) {
           model_valid <- FALSE
+          if (all(av_state$data[[av_state$subset]][[exovr]] == 0) &&
+                !is.null(model$normalized) && model$normalized) {
+            next
+          }
         }
         exovrs <- c(exovrs,exovr)
       }
@@ -82,7 +90,11 @@ get_endodta <- function(model,av_state) {
   if (apply_log_transform(model)) {
     vrs <- sapply(vrs,prefix_ln,USE.NAMES=FALSE)
   }
-  av_state$data[[av_state$subset]][vrs]
+  endo <- av_state$data[[av_state$subset]][vrs]
+  if (!is.null(model$normalized) && model$normalized) {
+    endo <- sapply(endo,function(x) (x-mean(x))/sd(x))
+  }
+  endo
 }
 
 get_orig_resids <- function(model,av_state) {

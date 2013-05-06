@@ -197,6 +197,19 @@ run_var <- function(data,lag,...) {
   m
 }
 
+calc_varest <- function(av_state,model) {
+  dta <- get_data_columns(av_state,model)
+  av_state <- dta$av_state
+  varest <- run_var(data = dta$endogenous, lag = model$lag, exogen=dta$exogenous)
+  varest <- set_varest_values(av_state,varest)
+  if (is_restricted_model(model)) {
+    varest <- iterative_restrict(varest,
+                                 av_state$restrictions.verify_validity_in_every_step,
+                                 av_state$restrictions.extensive_search)
+  }
+  varest
+}
+
 #' Print summary information and tests for a VAR model estimation
 #' 
 #' This function prints a summary and the output of the tests for a VAR model. The tests it shows are the Eigenvalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the sk tests, the Granger causality Wald tests, and Stata's \code{estat ic}.
