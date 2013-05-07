@@ -40,8 +40,9 @@
   2}, the program will also try with removing 3x std.
   outliers if JB tests still fail. \item \code{3} - When
   \code{exogenous_max_iterations = 3}, the program will
-  also try with removing 2.5x std. outliers if JB tests
-  still fail. }}
+  also try with removing 2.5x std. outliers (not only from
+  the residuals but also from the squares of the residuals)
+  if JB tests still fail. }}
 
   \item{subset}{specifies which data subset the VAR
   analysis should run on. The VAR analysis only runs on one

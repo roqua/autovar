@@ -233,7 +233,7 @@ The `exogenous_max_iterations` argument determines how many times we should try 
 
 * `1` - When Jarque-Bera tests fail, having `exogenous_max_iterations = 1` will only try with removing 3.5x std. outliers for the residuals of variables using exogenous variables.
 * `2` - When `exogenous_max_iterations = 2`, the program will also try removing 3x std. outliers if JB tests still fail.
-* `3` - When `exogenous_max_iterations = 3`, the program will also try removing 2.5x std. outliers if JB tests still fail.
+* `3` - When `exogenous_max_iterations = 3`, the program will also try removing 2.5x std. outliers (not only from the residuals but also from the squares of the residuals) if JB tests still fail.
 
 The `subset` argument specifies which data subset the VAR analysis should run on. The VAR analysis only runs on one data subset at a time. If not specified, the first subset is used (corresponding to `av_state$data[[1]]`).
 
