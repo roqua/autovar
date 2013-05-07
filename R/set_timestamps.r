@@ -25,12 +25,9 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
   if (is.null(data_frame)) {
     stop(paste(subset_id,"does not identify a data set"))
   }
-  if (24%%measurements_per_day != 0) {
-    stop("measurements_per_day needs to be a divisor of 24")
-  }
-  by <- paste(24%/%measurements_per_day,"hours")
   from <- timeDate(as.Date(timeDate(date_of_first_measurement)))
-  column_info <- set_timestamps_aux(from,length(data_frame[[1]]),by,
+  column_info <- set_timestamps_aux(from,length(data_frame[[1]]),
+                                    measurements_per_day,
                                     add_days_as_exogenous,
                                     add_dayparts_as_exogenous)
   added_columns <- column_info$columns
@@ -59,9 +56,14 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
   av_state
 }
 
-set_timestamps_aux <- function(from,length_out,by,add_days_as_exogenous,add_dayparts_as_exogenous) {
-  weekdayidx <- weekdays(timeSequence(from=from,length.out=length_out,by=by))
-  weekday_labels <- weekdays(as.Date(timeSequence(from = "2012-01-01", to = "2012-01-07", by = "day")))
+set_timestamps_aux <- function(from,length_out,measurements_per_day,add_days_as_exogenous,add_dayparts_as_exogenous) {
+  weekdayidx <- rep(weekdays(timeSequence(from=from,
+                                      length.out=ceiling(length_out/measurements_per_day),
+                                      by="day")),
+                    each=measurements_per_day)[1:length_out]
+  weekday_labels <- weekdays(as.Date(timeSequence(from = "2012-01-01",
+                                                  to = "2012-01-07",
+                                                  by = "day")))
   weekday_labels_en <- c('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
   r <- NULL
   i <- 0
@@ -81,23 +83,17 @@ set_timestamps_aux <- function(from,length_out,by,add_days_as_exogenous,add_dayp
     names(r)[[length(names(r))]] <- weekday_en
   }
   
-  houridx <- format(timeSequence(from=from,length.out=length_out,by=by),"%H")
-  u_hours <- unique(houridx)
-  hour_columns <- daypart_string(length(u_hours))
-  if (length(u_hours) == 3) {
-    hour_columns <- c('Morning','Afternoon','Evening')
-  }
+  houridx <- rep(daypart_string(measurements_per_day),
+                 times=ceiling(length_out/measurements_per_day))[1:length_out]
+  hour_columns <- daypart_string(measurements_per_day)
   exovrs_h <- NULL
-  if (length(u_hours) > 1) {
+  if (length(unique(houridx)) > 1) {
     if (add_dayparts_as_exogenous) {
       exovrs_h <- hour_columns
     }
-    # multiple measurements per day, add hours columns to the dataset
-    i <- 0
-    for (u_hour in u_hours) {
-      i <- i+1
-      hour_column <- hour_columns[[i]]
-      rl <- as.numeric(houridx == u_hour)
+    # multiple measurements per day, add daypart columns to the dataset
+    for (hour_column in hour_columns) {
+      rl <- as.numeric(houridx == hour_column)
       if (is.null(r)) {
         r <- data.frame(rl)
       } else {
@@ -111,8 +107,12 @@ set_timestamps_aux <- function(from,length_out,by,add_days_as_exogenous,add_dayp
 
 daypart_string <- function(len) {
   r <- NULL
-  for (i in 1:len) {
-    r <- c(r,paste('daypart_',i,'_',len,sep=''))
+  if (len == 3) {
+    r <- c('Morning','Afternoon','Evening')
+  } else {
+    for (i in 1:len) {
+      r <- c(r,paste('dailymeas_',i,'_of_',len,sep=''))
+    }
   }
   r
 }
