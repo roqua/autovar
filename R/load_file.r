@@ -10,6 +10,7 @@
 #' print(av_state)
 #' @export
 load_file <- function(filename,file_type = c('SPSS','STATA'),log_level=0) {
+  print("this is a test")
   av_state <- new_av_state()
   real_file_name <- filename
   if (!is.null(attr(filename,"filename"))) {
