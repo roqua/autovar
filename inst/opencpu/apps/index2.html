@@ -296,7 +296,7 @@ $('#loadexample3').click(function() {
 $('#knit').click(function() {
   $('#knit,#knitdl').addClass('disabled');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
-  $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename)\n"+oldtextarea)
+  $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename,log_level=3)\n"+oldtextarea)
   $('#knitForm').attr("action","/R/pub/base/identity/ascii");
   $('#knitForm').submit();
   $('#knitForm').find('textarea[name="x"]').val(oldtextarea);
@@ -304,7 +304,7 @@ $('#knit').click(function() {
 $('#knitdl').click(function() {
   $('#knit,#knitdl').addClass('disabled');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
-  $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename)\n"+oldtextarea+"\nstore_file(d)\n");
+  $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename,log_level=3)\n"+oldtextarea+"\nstore_file(d)\n");
   $('#knitForm').attr("action","/R/pub/base/identity/save");
   $('#knitForm').submit();
   $('#knitForm').find('textarea[name="x"]').val(oldtextarea);
