@@ -85,7 +85,6 @@ evaluate_model <- function(av_state,model,index,totmodelcnt) {
         }
       }
     }
-    
     # also queue things with more outliers if we have a test fail
     failing_vars <- ptests[ptests$passes_test == FALSE,]$variable
     if (length(failing_vars) > 0) {
