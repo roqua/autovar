@@ -50,6 +50,17 @@
     .hidealways  {
       display: none
     }
+    .autovar-title {
+      display: block;
+      width: 100%;
+      padding: 0;
+      margin-bottom: 20px;
+      font-size: 21px;
+      line-height: 40px;
+      color: #333;
+      border: 0;
+      border-bottom: 1px solid #e5e5e5;
+    }
     form {
       margin: 0;
     }
@@ -243,7 +254,7 @@ hljs.initHighlightingOnLoad();
 |
 <a href="http://www.cs.rug.nl/~ando/">Contact</a>
 </div>
-<legend>Autovar</legend>
+<div class='autovar-title'>Autovar</div>
 <div class='tabbable'>
 <ul class='nav nav-tabs hide-initially'>
   <li class='active'><a href='#tab1' data-toggle='tab'>Input</a></li>
@@ -289,7 +300,7 @@ hljs.initHighlightingOnLoad();
 <label class='control-label' for='maxlag'>Max. lag</label>
 <div class='controls'>
   <input type='text' id='maxlag' value='2'>
-  <span class='help-block'>The maximum lag order to consider (typically a multiple of the number of measurements per day).
+  <span class='help-block'>The maximum lag order to consider (typically a multiple of the number of measurements per day).</span>
 </div>
 </div>
 </fieldset>
