@@ -540,13 +540,6 @@ $(document).ready(function() {
 $('#filename').change(filenameChange);
 $('#varnames').change(varnamechange);
 $('#exovrs').change(exovrschange);
-
-$(document).on('mousedown', 'option', function(e) {
-    e.preventDefault();
-    $(this).prop('selected', !$(this).prop('selected'));
-    return false;
-});
-
 $('textarea[name="x"]').attr('value', 'print(d)\n');
 $('#set_timestamps').change(change_timestamps);
 $('#knit').click(function() {
