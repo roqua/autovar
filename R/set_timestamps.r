@@ -49,6 +49,14 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
   }
   av_state$data[[subset_id]] <- cbind(av_state$data[[subset_id]],added_columns)
   signif_columns <- c(signif_columns_d,signif_columns_h)
+  tsspan <- timeSequence(from=from,
+               length.out=ceiling(length(data_frame[[1]])/measurements_per_day),
+               by="day")
+  scat(log_level,2,"set_timestamps: dates range from ",
+       as.character(tsspan[1]),
+       ' to ',
+       as.character(tsspan[length(tsspan)]),
+       '\n',sep='')
   if (!is.null(signif_columns)) {
     scat(log_level,2,"set_timestamps: using additional exogenous variables in models:\n   ",
          paste(signif_columns,collapse=", "),"\n")
