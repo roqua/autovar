@@ -131,6 +131,7 @@ Modifying and adding columns
 
     av_state <- set_timestamps(av_state,subset_id=1,date_of_first_measurement,
                               measurements_per_day=1,log_level=0,
+                              first_measurement_index=1,
                               add_days_as_exogenous=TRUE,add_dayparts_as_exogenous=TRUE)
 
 The `set_timestamps` function adds dummy columns for weekdays (named `Sunday`, `Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday` and `Saturday`) and hours of the day to the given subset of the specified data set. These are used by `var_main` to find better models by removing cyclicity from the data set.
@@ -146,6 +147,8 @@ The `date_of_first_measurement` argument specifies the date of the first measure
 The `measurements_per_day` argument specifies how many measurements were taken per day. This default is 1. It is assumed that every day has exactly this amount of measurements, and that the first measurement in the dataset was the first measurement on that day.
 
 The `log_level` argument sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about the exogenous columns being added.
+
+The `first_measurement_index` argument is used to specify that the first day of measurements has fewer than `measurements_per_day` measurements. Here, we assume that the measurements in the data set still form a connected sequence. In other words, the assumption is that the missing measurements of the first day precede the first measurement in the data set. For example, by specifying `measurements_per_day = 3, first_measurement_index = 2`, the first measurement in the data set will be treated as the second measurement of that day. So the first two measurements in the data set will be tagged with `Afternoon` and `Evening`, and the third measurement in the data set will be tagged with `Morning` of the next day.
 
 The `add_days_as_exogenous` argument adds days as exogenous dummy variables to VAR models.
 

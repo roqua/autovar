@@ -6,6 +6,7 @@
 #' @param date_of_first_measurement the date of the first measurement. This argument should be given in the format: \code{"yyyy-mm-dd"}, e.g., \code{"2004-03-28"}.
 #' @param measurements_per_day how many measurements were taken per day. This default is 1. It is assumed that every day has exactly this amount of measurements, and that the first measurement in the dataset was the first measurement on that day.
 #' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about the exogenous columns being added.
+#' @param first_measurement_index is used to specify that the first day of measurements has fewer than \code{measurements_per_day} measurements. Here, we assume that the measurements in the data set still form a connected sequence. In other words, the assumption is that the missing measurements of the first day precede the first measurement in the data set. For example, by specifying \code{measurements_per_day = 3, first_measurement_index = 2}, the first measurement in the data set will be treated as the second measurement of that day. So the first two measurements in the data set will be tagged with \code{Afternoon} and \code{Evening}, and the third measurement in the data set will be tagged with \code{Morning} of the next day.
 #' @param add_days_as_exogenous adds days as exogenous dummy variables to VAR models.
 #' @param add_dayparts_as_exogenous adds day parts as exogenous dummy variables to VAR models.
 #' @return This function returns the modified \code{av_state} object.
@@ -15,6 +16,7 @@
 #' @export
 set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
                            measurements_per_day=1,log_level=0,
+                           first_measurement_index=1,
                            add_days_as_exogenous=TRUE,
                            add_dayparts_as_exogenous=TRUE) {
   assert_av_state(av_state)
@@ -25,9 +27,16 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
   if (is.null(data_frame)) {
     stop(paste(subset_id,"does not identify a data set"))
   }
+  first_measurement_index <- trunc(first_measurement_index)
+  if (first_measurement_index != 1) {
+    if (first_measurement_index < 1 || first_measurement_index > measurements_per_day) {
+      stop(paste("first_measurement_index",first_measurement_index,"is invalid"))
+    }
+  }
   from <- timeDate(as.Date(timeDate(date_of_first_measurement)))
   column_info <- set_timestamps_aux(from,length(data_frame[[1]]),
                                     measurements_per_day,
+                                    first_measurement_index,
                                     add_days_as_exogenous,
                                     add_dayparts_as_exogenous)
   added_columns <- column_info$columns
@@ -49,11 +58,11 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
   }
   av_state$data[[subset_id]] <- cbind(av_state$data[[subset_id]],added_columns)
   signif_columns <- c(signif_columns_d,signif_columns_h)
-  tsspan <- timeSequence(from=from,
-               length.out=ceiling(length(data_frame[[1]])/measurements_per_day),
+  tsspan <- timeSequence(from=next_day(from),
+               length.out=ceiling((length(data_frame[[1]])-(measurements_per_day-first_measurement_index+1))/measurements_per_day),
                by="day")
   scat(log_level,2,"set_timestamps: dates range from ",
-       as.character(tsspan[1]),
+       as.character(as.character(from)),
        ' to ',
        as.character(tsspan[length(tsspan)]),
        '\n',sep='')
@@ -64,15 +73,25 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
   av_state
 }
 
-set_timestamps_aux <- function(from,length_out,measurements_per_day,add_days_as_exogenous,add_dayparts_as_exogenous) {
-  weekdayidx <- rep(weekdays(timeSequence(from=from,
-                                      length.out=ceiling(length_out/measurements_per_day),
-                                      by="day")),
-                    each=measurements_per_day)[1:length_out]
+next_day <- function(daystr) {
+  as.character(timeSequence(from=timeDate(as.Date(timeDate(daystr))),
+                            length.out=2,by="day")[2])
+}
+
+set_timestamps_aux <- function(from,length_out,measurements_per_day,
+                               first_measurement_index,add_days_as_exogenous,
+                               add_dayparts_as_exogenous) {
+  firstday <- rep(weekdays(timeSequence(from=from,length.out=1,by="day")),
+                  each=measurements_per_day-first_measurement_index+1)
+  restofdays <- rep(weekdays(timeSequence(from=next_day(from),
+                                          length.out=ceiling(length_out/measurements_per_day),
+                                          by="day")),each=measurements_per_day)
+  weekdayidx <- c(firstday,restofdays)[1:length_out]
   weekday_labels <- weekdays(as.Date(timeSequence(from = "2012-01-01",
                                                   to = "2012-01-07",
                                                   by = "day")))
-  weekday_labels_en <- c('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
+  weekday_labels_en <- c('Sunday','Monday','Tuesday','Wednesday',
+                         'Thursday','Friday','Saturday')
   r <- NULL
   i <- 0
   exovrs_d <- NULL
@@ -91,8 +110,10 @@ set_timestamps_aux <- function(from,length_out,measurements_per_day,add_days_as_
     names(r)[[length(names(r))]] <- weekday_en
   }
   
-  houridx <- rep(daypart_string(measurements_per_day),
-                 times=ceiling(length_out/measurements_per_day))[1:length_out]
+  hfirstday <- daypart_string(measurements_per_day)[first_measurement_index:measurements_per_day]
+  hrestofdays <- rep(daypart_string(measurements_per_day),
+                     times=ceiling(length_out/measurements_per_day))
+  houridx <- c(hfirstday,hrestofdays)[1:length_out]
   hour_columns <- daypart_string(measurements_per_day)
   exovrs_h <- NULL
   if (length(unique(houridx)) > 1) {

@@ -4,7 +4,8 @@
 \usage{
   set_timestamps(av_state, subset_id = 1,
     date_of_first_measurement, measurements_per_day = 1,
-    log_level = 0, add_days_as_exogenous = TRUE,
+    log_level = 0, first_measurement_index = 1,
+    add_days_as_exogenous = TRUE,
     add_dayparts_as_exogenous = TRUE)
 }
 \arguments{
@@ -32,6 +33,21 @@
   should be shown (a number between 0 and 3). A lower level
   means more verbosity. Specify a log_level of 3 to hide
   messages about the exogenous columns being added.}
+
+  \item{first_measurement_index}{is used to specify that
+  the first day of measurements has fewer than
+  \code{measurements_per_day} measurements. Here, we assume
+  that the measurements in the data set still form a
+  connected sequence. In other words, the assumption is
+  that the missing measurements of the first day precede
+  the first measurement in the data set. For example, by
+  specifying \code{measurements_per_day = 3,
+  first_measurement_index = 2}, the first measurement in
+  the data set will be treated as the second measurement of
+  that day. So the first two measurements in the data set
+  will be tagged with \code{Afternoon} and \code{Evening},
+  and the third measurement in the data set will be tagged
+  with \code{Morning} of the next day.}
 
   \item{add_days_as_exogenous}{adds days as exogenous dummy
   variables to VAR models.}
