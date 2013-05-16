@@ -498,16 +498,13 @@ function clickRunVar(e) {
   $('#knit').click();
 }
 function disableFields() {
-  $('#timestamp').attr('disabled',true);
-  $('#measurements_per_day').attr('disabled',true);
+  $('#timestamp,#measurements_per_day,#first_measurement_index').attr('disabled',true);
 }
 function change_timestamps() {
   if ($('#set_timestamps').is(':checked')) {
-    $('#timestamp').removeAttr('disabled');
-    $('#measurements_per_day').removeAttr('disabled');
+    $('#timestamp,#measurements_per_day,#first_measurement_index').removeAttr('disabled');
   } else {
-    $('#timestamp').attr('disabled',true);
-    $('#measurements_per_day').attr('disabled',true);
+    $('#timestamp,#measurements_per_day,#first_measurement_index').attr('disabled',true);
   }
 }
 function filenameChange() {
