@@ -61,7 +61,8 @@ evaluate_model <- function(av_state,model,index,totmodelcnt) {
     # stability test
     if (!model_is_stable(res$varest,av_state$log_level)) {
       res$model_valid <- FALSE
-      # determine whether to continue with this model
+      # try to toggle the inclusion of trend variables
+      av_state <- queue_model_with_or_without_trend(av_state,model)
     }
     
     # portmanteau tests on residuals and squares of residuals
@@ -120,6 +121,25 @@ evaluate_model <- function(av_state,model,index,totmodelcnt) {
     res$varest <- NULL
   }
   list(res=res,av_state=av_state)
+}
+
+queue_model_with_or_without_trend <- function(av_state,model) {
+  if (!is.null(av_state$trend_vars) && av_state$use_pperron && !is_restricted_model(model)) {
+    new_model <- NULL
+    mmsg <- NULL
+    if (!is.null(model$include_trend_vars) && model$include_trend_vars) {
+      # toggle to false
+      mmsg <- "\n> VAR model is not stable: queueing model without trend variable(s)\n"
+      new_model <- create_model(model,include_trend_vars=FALSE,exogenous_variables=NULL)
+    } else {
+      # toggle to true
+      mmsg <- "\n> VAR model is not stable: queueing model with trend variable(s)\n"
+      new_model <- create_model(model,include_trend_vars=TRUE,exogenous_variables=NULL)
+    }
+    scat(av_state$log_level,2,mmsg)
+    av_state$model_queue <- add_to_queue(av_state$model_queue,new_model,av_state$log_level)
+  }
+  av_state
 }
 
 queue_model_with_log_transform <- function(av_state,model,message) {
