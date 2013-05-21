@@ -303,6 +303,15 @@ hljs.initHighlightingOnLoad();
   <span class='help-block'>The maximum lag order to consider (typically a multiple of the number of measurements per day).</span>
 </div>
 </div>
+<div class='control-group hide-initially'>
+<label class='control-label'>Lag-0 models</label>
+<div class='controls'>
+  <label class='checkbox'>
+    <input type='checkbox' id='include_lag_zero'>Include models at lag 0
+  </label>
+  <span class='help-block'>Check to include models at lag 0. These are models at lag 1 with all lag-1 parameters constrained.</span>
+</div>
+</div>
 </fieldset>
 </div>
 <div class='tab-pane' id='tab2'>
@@ -477,6 +486,9 @@ function var_main(str) {
   }
   if ($('#squared_trend').is(':checked')) {
     str = str+ ',include_squared_trend=TRUE'
+  }
+  if ($('#include_lag_zero').is(':checked')) {
+    str = str+ ',include_lag_zero=TRUE'
   }
   str = str+ ',log_level=' + $('[name=logLevelRadios]:checked').val()
   if ($('#exovrs_line').val() != '') {

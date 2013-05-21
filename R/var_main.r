@@ -33,6 +33,7 @@
 #' @param use_pperron determines whether the Phillips-Perron test should be used to determine whether trend variables should be included in the models. When \code{use_pperron} is \code{FALSE}, all models will be evaluated both with and without the trend variable. The trend variable is specified using the \code{\link{order_by}} function.
 #' @param include_squared_trend determines whether the square of the trend is included if the trend is included for a model. The trend variable is specified using the \code{\link{order_by}} function.
 #' @param normalize_data determines whether the endogenous variables should be normalized.
+#' @param include_lag_zero determines whether models at lag order 0 are should be considered. These are models at lag 1 with constrained lag-1 parameters in all equations.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta")
@@ -52,7 +53,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      criterion=c('AIC','BIC'),
                      use_varsoc=FALSE,use_pperron=TRUE,
                      include_squared_trend=FALSE,
-                     normalize_data=FALSE) {
+                     normalize_data=FALSE,
+                     include_lag_zero=FALSE) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -85,6 +87,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$use_pperron <- use_pperron
   av_state$include_squared_trend <- include_squared_trend
   av_state$normalize_data <- normalize_data
+  av_state$include_lag_zero <- include_lag_zero
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   
@@ -163,7 +166,11 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   } else {
     model_queue <- NULL
     av_state <- add_log_transform_columns(av_state)
-    for (lag in 1:(av_state$lag_max)) {
+    firsti <- 1
+    if (av_state$include_lag_zero) {
+      firsti <- 0
+    }
+    for (lag in firsti:(av_state$lag_max)) {
       new_model <- create_model(default_model,lag=lag)
       model_queue <- add_to_queue(model_queue,new_model,av_state$log_level)
       new_model <- create_model(default_model,apply_log_transform=TRUE,lag=lag)

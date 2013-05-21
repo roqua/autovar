@@ -117,9 +117,10 @@ get_orig_resids <- function(model,av_state) {
         }
       }
       varest <- run_var(data = endodta, lag = model$lag, exogen = exodta)
-      av_state[[lstname]][[model$lag]] <- resid(varest)
+      #av_state[[lstname]][[model$lag]] <- resid(varest)
     #}
-    resids <- av_state[[lstname]][[model$lag]]
+    #resids <- av_state[[lstname]][[model$lag]]
+    resids <- resid(varest)
   }
   list(av_state = av_state,resids = resids)
 }

@@ -220,7 +220,8 @@ Vector Autoregression
                          criterion=c('AIC','BIC'),
                          use_varsoc=FALSE,use_pperron=TRUE,
                          include_squared_trend=FALSE,
-                         normalize_data=FALSE)
+                         normalize_data=FALSE,
+                         include_lag_zero=FALSE)
 
 The `var_main` function generates and tests possible VAR models for the specified variables. Aside from `av_state`, the only required argument is `vars`, which should be a vector of variables.
 
@@ -273,6 +274,8 @@ The `use_pperron` argument determines whether the Phillips-Perron test should be
 The `include_squared_trend` argument determines whether the square of the trend is included if the trend is included for a model. The trend variable is specified using the `order_by` function.
 
 The `normalize_data` argument determines whether the endogenous variables should be normalized.
+
+The `include_lag_zero` argument determines whether models at lag order 0 are should be considered. These are models at lag 1 with all lag-1 parameters in all equations constrained.
 
 #### Results
 

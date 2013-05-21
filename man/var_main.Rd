@@ -11,7 +11,7 @@
     restrictions.extensive_search = TRUE,
     criterion = c("AIC", "BIC"), use_varsoc = FALSE,
     use_pperron = TRUE, include_squared_trend = FALSE,
-    normalize_data = FALSE)
+    normalize_data = FALSE, include_lag_zero = FALSE)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -152,6 +152,10 @@
 
   \item{normalize_data}{determines whether the endogenous
   variables should be normalized.}
+
+  \item{include_lag_zero}{determines whether models at lag
+  order 0 are should be considered. These are models at lag
+  1 with constrained lag-1 parameters in all equations.}
 }
 \value{
   This function returns the modified \code{av_state}

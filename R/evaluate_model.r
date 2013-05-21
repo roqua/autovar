@@ -212,7 +212,18 @@ determine_var_order <- function(dta,log_level,...) {
 run_var <- function(data,lag,...) {
   # default type is const
   # (specifies what the rest term in the formula should be)
-  m <- VAR(data,p = lag,...)
+  m <- NULL
+  if (lag == 0) {
+    m <- VAR(data,p = 1,...)
+    resmat <- rep.int(1,length(restriction_matrix_colnames(m)))
+    resmat[1:(length(colnames(m$y)))] <- 0
+    resmat <- rep(resmat,length(colnames(m$y)))
+    m <- restrict(m,
+             method="manual",
+             resmat=format_restriction_matrix(m,resmat))
+  } else {
+    m <- VAR(data,p = lag,...)
+  }
   m
 }
 

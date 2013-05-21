@@ -16,11 +16,21 @@ vargranger <- function(varest,log_level=0) {
 print_granger_statistics <- function(av_state) {
   lst <- c(av_state$accepted_models,av_state$rejected_models)
   #print_vargranger_list(av_state,lst,"processed models")
-  lst2 <- lst[find_models(lst,list(restrict=FALSE))]
+  lst2 <- filter_lag_zero_models(lst[find_models(lst,list(restrict=FALSE))])
   print_vargranger_list(av_state,lst2,"unrestricted models")
   print_vargranger_list(av_state,av_state$accepted_models,"valid models")
-  lst2 <- av_state$accepted_models[find_models(av_state$accepted_models,list(restrict=FALSE))]
+  lst2 <- filter_lag_zero_models(av_state$accepted_models[find_models(av_state$accepted_models,list(restrict=FALSE))])
   print_vargranger_list(av_state,lst2,"valid unrestricted models")
+}
+
+filter_lag_zero_models <- function(lst) {
+  lst2 <- NULL
+  for (model in lst) {
+    if (is.null(model$varest$restrictions)) {
+      lst2 <- c(lst2,list(model))
+    }
+  }
+  lst2
 }
 
 vargranger_graph <- function(av_state) {
