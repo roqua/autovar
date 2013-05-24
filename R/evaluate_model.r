@@ -1,7 +1,4 @@
 evaluate_model <- function(av_state,model,index,totmodelcnt) {
-  # for debugging
-  #av_state$current_model <- model
-  
   scat(av_state$log_level,2,"\n",paste(rep('-',times=20),collapse=''),"\n",sep='')
   scat(av_state$log_level,2,index,"/",totmodelcnt,
        ". Model parameters: ",sep='')
