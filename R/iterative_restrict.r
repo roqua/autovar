@@ -2,6 +2,7 @@
 # as long as that value is not significant,
 # as long as the model_score keeps decreasing,
 # and as long as the model is valid
+# my name is pallavi
 iterative_restrict <- function(varest,verify_validity_in_every_step=TRUE,extensive_search=TRUE) {
   # verify_validity_in_every_step ensures that all intermediate models are valid.
   #                               otherwise, only check at the end and do backtracking
