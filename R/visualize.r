@@ -192,6 +192,11 @@ visualize_lines <- function(av_state,columns,labels,title,...) {
     cdata <- NULL
     idvar <- NULL
     for (column in columns) {
+      if (all(column != names(data_frame))) {
+        stop(paste("visualize: column name doesnt exist:",column))
+      }
+    }
+    for (column in columns) {
       if (class(data_frame[[column]]) != 'numeric') {
         data_frame[[column]] <- as.numeric(data_frame[[column]])
       }
