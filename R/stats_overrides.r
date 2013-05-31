@@ -80,7 +80,7 @@ myprintCoefmat <- function (x, digits = max(3L, getOption("digits") - 2L), signi
         Signif <- symnum(pv, corr = FALSE, na = FALSE, 
                          cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), 
                          symbols = c("***", "**", "*", ".", " "))
-        attr(Signif,"legend") <- "‘***’ <=0.001, ‘**’ <=0.01, ‘*’ <=0.05, ‘.’ <=0.10"
+        attr(Signif,"legend") <- "'***' <=0.001, '**' <=0.01, '*' <=0.05, '.' <=0.10"
         Cf <- cbind(Cf, format(Signif))
       }
     }
