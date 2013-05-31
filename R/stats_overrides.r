@@ -1,4 +1,4 @@
-# overriding some stats display functions
+# overriding a stats display function
 
 myprintCoefmat <- function (x, digits = max(3L, getOption("digits") - 2L), signif.stars = getOption("show.signif.stars"), 
           signif.legend = signif.stars, dig.tst = max(1L, min(5L, 
@@ -7,6 +7,7 @@ myprintCoefmat <- function (x, digits = max(3L, getOption("digits") - 2L), signi
                                                           1, 3) == "Pr(", eps.Pvalue = .Machine$double.eps, na.print = "NA", 
           ...) 
 {
+  x <- order_coefficients(x)
   if (is.null(d <- dim(x)) || length(d) != 2L) 
     stop("'x' must be coefficient matrix/data frame")
   nc <- d[2L]
@@ -92,6 +93,17 @@ myprintCoefmat <- function (x, digits = max(3L, getOption("digits") - 2L), signi
     cat("---\nSignif. codes:  ", attr(Signif, "legend"), 
         "\n", sep = "")
   invisible(x)
+}
+
+order_coefficients <- function(mtx) {
+  dnames <- dimnames(mtx)[[1]]
+  vars<-!is.na(str_locate(dnames,"\\.l[0-9]+$")[,1])
+  matching_indices <- which(vars)
+  nonmatching_indices <- which(!vars)
+  reorder_m<-order(dnames[matching_indices])
+  matching_indices<-matching_indices[reorder_m]
+  sorted_all <- c(matching_indices,nonmatching_indices)
+  mtx[sorted_all,]
 }
 
 

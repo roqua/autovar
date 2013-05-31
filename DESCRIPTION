@@ -13,6 +13,7 @@ Depends:
     igraph,
     norm,
     reshape2,
+    stringr,
     TimeProjection,
     urca,
     vars
