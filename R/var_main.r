@@ -428,6 +428,14 @@ var_summary <- function(av_state,msg=NULL) {
   }
 }
 
+#' Prints the best model from the list of accepted models
+#' 
+#' This functions uses log transformation (logm).If logm is true it gives the best log-transformed model. And if the logm is false it gives the best model without log-transform.
+#' The best model is the measured with the lowest AIC+BIC value. 
+#' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
+#' @examples
+#' print_best_model(av_state)
+#' @export
 print_best_models <- function(av_state) {
   logm <- find_models(av_state$accepted_models,list(apply_log_transform = TRUE))
   if (!is.null(logm)) {
