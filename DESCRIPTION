@@ -51,3 +51,4 @@ Collate:
     'set_timestamps.r'
     'pperron.r'
     'add_trend.r'
+    'stats_overrides.r'
