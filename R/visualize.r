@@ -179,7 +179,7 @@ visualize_columns <- function(av_state,columns,labels=columns,type=c('LINE','PIE
   }
 }
 
-visualize_lines <- function(av_state,columns,labels,title,...) {
+visualize_lines2 <- function(av_state,columns,labels,title,...) {
   if (length(columns) != length(labels)) {
     stop("Length of columns is not the same as length of labels")
   }
@@ -224,6 +224,23 @@ visualize_lines <- function(av_state,columns,labels,title,...) {
   do.call(grid.arrange,plots)
 }
 
+
+visualize_lines  <- function(av_state,columns,labels,title,...){
+  
+  plots <- list()
+  i<-0
+  data_frame <- av_state$data[[1]]
+  for(column in columns)
+  {
+    i<-i+1
+    if (class(data_frame[[column]]) != 'numeric') {
+      data_frame[[column]] <- as.numeric(data_frame[[column]])
+    }
+    plots[[i]] <- visualize_data_frame(data_frame[column],title)
+  }
+  plots[['ncol']] <- 1
+  do.call(grid.arrange,plots)
+}
 #' Visualize the residuals of a VAR model
 #' 
 #' This function takes a varest object and plots the residuals and the squared residuals.
