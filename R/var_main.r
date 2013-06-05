@@ -457,12 +457,13 @@ print_best_models <- function(av_state) {
   }
 }
 
-set_varest_values <- function(av_state,varest) {
+set_varest_values <- function(av_state,varest,model) {
   varest$small <- av_state$small
   varest$significance <- av_state$significance
   varest$vars <- av_state$vars
   varest$use_sktest <- av_state$use_sktest
   varest$criterion <- av_state$criterion
+  varest$apply_log_transform <- model$apply_log_transform
   varest
 }
 

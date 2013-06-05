@@ -32,7 +32,7 @@ evaluate_model <- function(av_state,model,index,totmodelcnt) {
   
     # get the var estimate for this model. This is the 'var' command in STATA.
     res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
-    res$varest <- set_varest_values(av_state,res$varest)
+    res$varest <- set_varest_values(av_state,res$varest,model)
     
     # remove nonsignificant coefficients from the formula
     if (is_restricted_model(model)) {
@@ -228,7 +228,7 @@ calc_varest <- function(av_state,model) {
   dta <- get_data_columns(av_state,model)
   av_state <- dta$av_state
   varest <- run_var(data = dta$endogenous, lag = model$lag, exogen=dta$exogenous)
-  varest <- set_varest_values(av_state,varest)
+  varest <- set_varest_values(av_state,varest,model)
   if (is_restricted_model(model)) {
     varest <- iterative_restrict(varest,
                                  av_state$restrictions.verify_validity_in_every_step,
