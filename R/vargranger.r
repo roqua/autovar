@@ -194,6 +194,7 @@ vargranger_aux <- function(varest) {
     for (exname in dimnames(varest$y)[[2]]) {
       if (exname == eqname) { next }
       gres <- granger_causality(varest,exname,eqname)
+      gsign <- granger_causality_sign(varest,exname,eqname)
       if (is.null(gres)) { next }
       df <- get_named(gres$parameter,'df1')
       chi2 <- gres$statistic[1,1]*df
@@ -201,11 +202,12 @@ vargranger_aux <- function(varest) {
       if (is.null(res)) {
         res <- data.frame(Equation=eqname,
                           Excluded=exname,
+                          sign=gsign,
                           chi2=chi2,df=df,
                           P=P,
                           stringsAsFactors=FALSE)
       } else {
-        res <- rbind(res,list(eqname,exname,chi2,df,P))
+        res <- rbind(res,list(eqname,exname,gsign,chi2,df,P))
       }
     }
   }
@@ -218,6 +220,7 @@ vargranger_aux_small <- function(varest) {
     for (exname in dimnames(varest$y)[[2]]) {
       if (exname == eqname) { next }
       gres <- granger_causality(varest,exname,eqname)
+      gsign <- granger_causality_sign(varest,exname,eqname)
       if (is.null(gres)) { next }
       F <- gres$statistic[1,1]
       df <- get_named(gres$parameter,'df1')
@@ -228,11 +231,12 @@ vargranger_aux_small <- function(varest) {
       if (is.null(res)) {
         res <- data.frame(Equation=eqname,
                           Excluded=exname,
+                          sign=gsign,
                           F=F,df=df,df_r=df_r,
                           P=P,
                           stringsAsFactors=FALSE)
       } else {
-        res <- rbind(res,list(eqname,exname,F,df,df_r,P))
+        res <- rbind(res,list(eqname,exname,gsign,F,df,df_r,P))
       }
     }
   }
@@ -281,6 +285,14 @@ get_named <- function(arr,name) {
   } else {
     NULL
   }
+}
+
+granger_causality_sign <- function(varest,exname,eqname) {
+  coefs <- varest$varresult[[eqname]]$coefficients
+  dnames <- names(coefs)
+  vars <- !is.na(str_locate(dnames,paste(exname,"\\.l[0-9]+$",sep=''))[,1])
+  matching_indices <- which(vars)
+  sum(coefs[matching_indices])
 }
 
 vargranger_to_string <- function(varest,res,include_significance=TRUE) {
@@ -333,14 +345,22 @@ vargranger_list <- function(lst) {
     for (row in df_in_rows(res)) {
       if (row$P <= 2*av_state_significance(varest)) {
         noneflag <- FALSE
+        gsign <- granger_causality_sign(varest,row$Excluded,row$Equation)
         causevr <- unprefix_ln(row$Excluded)
         othervr <- unprefix_ln(row$Equation)
         cmbvr <- paste(causevr,'.',othervr,sep='')
         if (is.null(llst[[cmbvr]])) {
           llst[[cmbvr]] <- list(causevr=causevr,
                                 othervr=othervr,
+                                signplus=0,
+                                signminus=0,
                                 cnt=0,
                                 cnta=0)
+        }
+        if (gsign > 0) {
+          llst[[cmbvr]]$signplus <- llst[[cmbvr]]$signplus + 1
+        } else if (gsign < 0) {
+          llst[[cmbvr]]$signminus <- llst[[cmbvr]]$signminus + 1
         }
         if (row$P <= av_state_significance(varest)) {
           llst[[cmbvr]]$cnt <- llst[[cmbvr]]$cnt +1
@@ -353,6 +373,8 @@ vargranger_list <- function(lst) {
       if (is.null(llst[["none"]])) {
         llst[["none"]] <- list(causevr='',
                                othervr='',
+                               signplus=0,
+                               signminus=0,
                                cnt=0,
                                cnta=0)
       }
@@ -361,16 +383,21 @@ vargranger_list <- function(lst) {
   }
   causevr <- NULL
   othervr <- NULL
+  signplus <- NULL
+  signminus <- NULL
   cnt <- NULL
   cnta <- NULL
   for (item in llst) {
     causevr <- c(causevr,item$causevr)
     othervr <- c(othervr,item$othervr)
+    signplus <- c(signplus,item$signplus)
+    signminus <- c(signminus,item$signminus)
     cnt <- c(cnt,item$cnt)
     cnta <- c(cnta,item$cnta)
   }
-  df <- data.frame(causevr=causevr,othervr=othervr,
-                   cnt=cnt,cnta=cnta,stringsAsFactors=FALSE)
+  df <- data.frame(causevr=causevr,othervr=othervr,signplus=signplus,
+                   signminus=signminus,cnt=cnt,cnta=cnta,stringsAsFactors=FALSE)
+  df <- cbind(df,list(sign=signplus-signminus))
   df <- cbind(df,list(tcnt=cnt+cnta))
   df <- cbind(df,list(perc=(cnt+cnta)/length(lst)))
   df <- df[with(df,order(df$tcnt,df$cnt,df$causevr,decreasing=TRUE)),]
@@ -390,13 +417,14 @@ compact_varline <- function(x,varwidth) {
   if (x$causevr == '') {
     str <- paste(percstr,'   ',
                  format('<None>',width=varwidth,justify="left"),
-                 paste(rep(' ',16+varwidth),collapse=''),
+                 paste(rep(' ',18+varwidth),collapse=''),
                  '   (',
                  x$cnt,' model',
                  ifelse(x$cnt == 1,'','s'),
                  ')',sep='')
   } else {
-    str <- paste(percstr,'   ',causevr,' Granger causes ',
+    sign <- ifelse(x$sign > 0,'+',ifelse(x$sign < 0,'-',' '))
+    str <- paste(percstr,'   ',causevr,' ',sign,'Granger causes',sign,' ',
                  othervr,'   (',sep='')
     if (x$cnt > 0) {
       str <- paste(str,x$cnt,' model',
@@ -409,6 +437,19 @@ compact_varline <- function(x,varwidth) {
     }
     if (x$cnta > 0) {
       str <- paste(str,x$cnta,' almost)',sep='')
+    }
+    if (x$signplus != 0 || x$signminus != 0) {
+      str <- paste(str,' (sign: ',sep='')
+      if (x$signplus != 0) {
+        str <- paste(str,x$signplus,' +',sep='')
+        if (x$signminus != 0) {
+          str <- paste(str,', ',sep='')
+        }
+      }
+      if (x$signminus != 0) {
+        str <- paste(str,x$signminus,' -',sep='')
+      }
+      str <- paste(str,')',sep='')
     }
   }
   str
