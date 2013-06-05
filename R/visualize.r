@@ -179,68 +179,38 @@ visualize_columns <- function(av_state,columns,labels=columns,type=c('LINE','PIE
   }
 }
 
-visualize_lines2 <- function(av_state,columns,labels,title,...) {
+visualize_lines  <- function(av_state,columns,labels,title,...) {
   if (length(columns) != length(labels)) {
     stop("Length of columns is not the same as length of labels")
   }
-  idx <- 0
-  n<-length(av_state$data)
-  x<-floor(sqrt(n))
   plots <- list()
-  for (data_frame in av_state$data) {
-    idx <- idx+1
-    cdata <- NULL
-    idvar <- NULL
-    for (column in columns) {
+  i<-0
+  for(column in columns) {
+    i<-i+1
+    j <- 0
+    df <- NULL
+    for (data_frame in av_state$data) {
+      j <- j+1
       if (all(column != names(data_frame))) {
-        stop(paste("visualize: column name doesnt exist:",column))
+        stop(paste("visualize: column name doesnt exist:",column,"for data subset:",j))
       }
-    }
-    for (column in columns) {
       if (class(data_frame[[column]]) != 'numeric') {
         data_frame[[column]] <- as.numeric(data_frame[[column]])
       }
-    }
-    if (!is.null(av_state$order_by)) {
-      cdata <- data_frame[c(columns,av_state$order_by)]
-      idvar <- av_state$order_by
-    } else {
-      idvar <- 'index'
-      while (any(idvar == names(data_frame))) { 
-        idvar <- paste(idvar,'_',sep='')
+      if (is.null(df)) {
+        df <- data_frame[column]
+      } else {
+        df <- cbind(df,data_frame[column])
       }
-      dnames <- names(data_frame[columns])
-      cdata <- cbind(data_frame[columns],1:(dim(data_frame[columns])[[1]]))
-      names(cdata) <- c(dnames,idvar)
+      names(df)[[length(names(df))]] <- idx_title(av_state[['group_by']],data_frame,j)
     }
-    mdata <- melt(cdata,id.vars = idvar)
-    plots[[idx]] <- ggplot(mdata, aes_string(x = idvar, y = 'value', colour = 'variable')) + 
-            geom_line() + 
-            geom_point() +
-            ggtitle(paste(title,visualize_sub_title(av_state[['group_by']], 
-                                                    av_state$data[[idx]]),sep=''))
-  }
-  plots[['ncol']] <- 1 # x
-  do.call(grid.arrange,plots)
-}
-
-
-visualize_lines  <- function(av_state,columns,labels,title,...){
-  
-  plots <- list()
-  i<-0
-  data_frame <- av_state$data[[1]]
-  for(column in columns)
-  {
-    i<-i+1
-    if (class(data_frame[[column]]) != 'numeric') {
-      data_frame[[column]] <- as.numeric(data_frame[[column]])
-    }
-    plots[[i]] <- visualize_data_frame(data_frame[column],title)
+    ntitle <- paste(title,' ',column,sep='')
+    plots[[i]] <- visualize_data_frame(df,ntitle)
   }
   plots[['ncol']] <- 1
   do.call(grid.arrange,plots)
 }
+
 #' Visualize the residuals of a VAR model
 #' 
 #' This function takes a varest object and plots the residuals and the squared residuals.
@@ -285,6 +255,15 @@ visualize_sub_title <- function(group_by_field,data_subset) {
   } else {
     id_field <- group_by_field
     paste(' ',id_field,' = ',data_subset[[id_field]][1],sep='')
+  }
+}
+
+idx_title <- function(group_by_field,data_subset,idx) {
+  if (is.null(group_by_field)) {
+    paste("subset",idx)
+  } else {
+    id_field <- group_by_field
+    paste(id_field,' = ',data_subset[[id_field]][1],sep='')
   }
 }
 
