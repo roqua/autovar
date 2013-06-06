@@ -292,7 +292,16 @@ granger_causality_sign <- function(varest,exname,eqname) {
   dnames <- names(coefs)
   vars <- !is.na(str_locate(dnames,paste(exname,"\\.l[0-9]+$",sep=''))[,1])
   matching_indices <- which(vars)
-  sum(coefs[matching_indices])
+  mcoefs <- coefs[matching_indices]
+  if (is.null(mcoefs) || length(mcoefs) == 0) {
+    " "
+  } else if (all(mcoefs > 0)) {
+    "+"
+  } else if (all(mcoefs < 0)) {
+    "-"
+  } else {
+    "~"
+  }
 }
 
 vargranger_to_string <- function(varest,res,include_significance=TRUE) {
@@ -353,15 +362,18 @@ vargranger_list <- function(lst) {
           llst[[cmbvr]] <- list(causevr=causevr,
                                 othervr=othervr,
                                 signplus=0,
+                                signboth=0,
                                 signminus=0,
                                 cnt=0,
                                 cnta=0)
         }
-        if (gsign > 0) {
+        if (gsign == "+") {
           llst[[cmbvr]]$signplus <- llst[[cmbvr]]$signplus + 1
-        } else if (gsign < 0) {
+        } else if (gsign == "~") {
+          llst[[cmbvr]]$signboth <- llst[[cmbvr]]$signboth + 1
+        } else if (gsign == "-") {
           llst[[cmbvr]]$signminus <- llst[[cmbvr]]$signminus + 1
-        }
+        } 
         if (row$P <= av_state_significance(varest)) {
           llst[[cmbvr]]$cnt <- llst[[cmbvr]]$cnt +1
         } else {
@@ -374,6 +386,7 @@ vargranger_list <- function(lst) {
         llst[["none"]] <- list(causevr='',
                                othervr='',
                                signplus=0,
+                               signboth=0,
                                signminus=0,
                                cnt=0,
                                cnta=0)
@@ -384,6 +397,7 @@ vargranger_list <- function(lst) {
   causevr <- NULL
   othervr <- NULL
   signplus <- NULL
+  signboth <- NULL
   signminus <- NULL
   cnt <- NULL
   cnta <- NULL
@@ -391,13 +405,15 @@ vargranger_list <- function(lst) {
     causevr <- c(causevr,item$causevr)
     othervr <- c(othervr,item$othervr)
     signplus <- c(signplus,item$signplus)
+    signboth <- c(signboth,item$signboth)
     signminus <- c(signminus,item$signminus)
     cnt <- c(cnt,item$cnt)
     cnta <- c(cnta,item$cnta)
   }
-  df <- data.frame(causevr=causevr,othervr=othervr,signplus=signplus,
+  df <- data.frame(causevr=causevr,othervr=othervr,signplus=signplus,signboth=signboth,
                    signminus=signminus,cnt=cnt,cnta=cnta,stringsAsFactors=FALSE)
-  df <- cbind(df,list(sign=signplus-signminus))
+  ssign <- get_majority_sign(signplus,signboth,signminus)
+  df <- cbind(df,list(sign=ssign))
   df <- cbind(df,list(tcnt=cnt+cnta))
   df <- cbind(df,list(perc=(cnt+cnta)/length(lst)))
   df <- df[with(df,order(df$tcnt,df$cnt,df$causevr,decreasing=TRUE)),]
@@ -407,6 +423,26 @@ vargranger_list <- function(lst) {
                                function(x) compact_varline(x,varwidth))),
               stringsAsFactors=FALSE)
   df
+}
+
+get_majority_sign <- function(signplus,signboth,signminus) {
+  signs <- c('+','~','-')
+  sr <- NULL
+  for (i in 1:(length(signplus))) {
+    sri <- NULL
+    signplusi <- signplus[[i]]
+    signbothi <- signboth[[i]]
+    signminusi <- signminus[[i]]
+    signv <- c(signplusi,signbothi,signminusi)
+    r <- sort(signv,decreasing=TRUE,index.return=TRUE)$ix[[1]]
+    if (max(signv[-r]) == signv[r]) {
+      sri <- ' '
+    } else {
+      sri <- signs[[r]]
+    }
+    sr <- c(sr,sri)
+  }
+  sr
 }
 
 compact_varline <- function(x,varwidth) {
@@ -423,8 +459,7 @@ compact_varline <- function(x,varwidth) {
                  ifelse(x$cnt == 1,'','s'),
                  ')',sep='')
   } else {
-    sign <- ifelse(x$sign > 0,'+',ifelse(x$sign < 0,'-',' '))
-    str <- paste(percstr,'   ',causevr,' ',sign,'Granger causes',sign,' ',
+    str <- paste(percstr,'   ',causevr,' ',x$sign,'Granger causes',x$sign,' ',
                  othervr,'   (',sep='')
     if (x$cnt > 0) {
       str <- paste(str,x$cnt,' model',
@@ -438,17 +473,19 @@ compact_varline <- function(x,varwidth) {
     if (x$cnta > 0) {
       str <- paste(str,x$cnta,' almost)',sep='')
     }
-    if (x$signplus != 0 || x$signminus != 0) {
+    if (x$signplus != 0 || x$signboth != 0 || x$signminus != 0) {
       str <- paste(str,' (sign: ',sep='')
+      sstr <- NULL
       if (x$signplus != 0) {
-        str <- paste(str,x$signplus,' +',sep='')
-        if (x$signminus != 0) {
-          str <- paste(str,', ',sep='')
-        }
+        sstr <- c(sstr,paste(x$signplus,' +',sep=''))
+      }
+      if (x$signboth != 0) {
+        sstr <- c(sstr,paste(x$signboth,' ~',sep=''))
       }
       if (x$signminus != 0) {
-        str <- paste(str,x$signminus,' -',sep='')
+        sstr <- c(sstr,paste(x$signminus,' -',sep=''))
       }
+      str <- paste(str,paste(sstr,collapse=', '),sep='')
       str <- paste(str,')',sep='')
     }
   }

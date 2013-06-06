@@ -19,8 +19,8 @@ printed_model_score <- function(varest) {
   # low values == better models
   es <- estat_ic(varest)
   if (apply_log_transform(varest)) {
-    paste("(AIC: ",round(es$AIC,digits=3)," (",round(es$real_AIC,digits=3),")",
-          ", BIC: ",round(es$BIC,digits=3)," (",round(es$real_BIC,digits=3),")",")",sep='')
+    paste("(AIC: ",round(es$AIC,digits=3)," (orig: ",round(es$orig_AIC,digits=3),")",
+          ", BIC: ",round(es$BIC,digits=3)," (orig: ",round(es$orig_BIC,digits=3),")",")",sep='')
   } else {
     paste("(AIC: ",round(es$AIC,digits=3),
           ", BIC: ",round(es$BIC,digits=3),")",sep='')
@@ -48,8 +48,8 @@ estat_ic <- function(varest) {
                     df=k,
                     AIC=aic,
                     BIC=bic,
-                    real_AIC=realaic,
-                    real_BIC=realbic)
+                    orig_AIC=realaic,
+                    orig_BIC=realbic)
   res
 }
 
