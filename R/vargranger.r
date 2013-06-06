@@ -309,15 +309,17 @@ vargranger_to_string <- function(varest,res,include_significance=TRUE) {
   str <- NULL
   for (row in df_in_rows(res)) {
     if (row$P <= av_state_significance(varest)) {
+      ssign <- granger_causality_sign(varest,row$Excluded,row$Equation)
       str <- c(str,paste(unprefix_ln(row$Excluded),
-                         ' Granger causes ',
+                         ' ',ssign,'Granger causes',ssign,' ',
                          unprefix_ln(row$Equation),
                          ifelse(include_significance,
                                 paste(' (',signif(row$P,digits=3),')',sep=''),
                                 ''),sep=''))
     } else if (row$P <= 2*av_state_significance(varest)) {
+      ssign <- granger_causality_sign(varest,row$Excluded,row$Equation)
       str <- c(str,paste(unprefix_ln(row$Excluded),
-                         ' almost Granger causes ',
+                         ' almost ',ssign,'Granger causes',ssign,' ',
                          unprefix_ln(row$Equation),
                          ifelse(include_significance,
                                 paste(' (',signif(row$P,digits=3),')',sep=''),
