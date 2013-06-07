@@ -288,19 +288,36 @@ get_named <- function(arr,name) {
 }
 
 granger_causality_sign <- function(varest,exname,eqname) {
-  coefs <- varest$varresult[[eqname]]$coefficients
-  dnames <- names(coefs)
-  vars <- !is.na(str_locate(dnames,paste(exname,"\\.l[0-9]+$",sep=''))[,1])
-  matching_indices <- which(vars)
-  mcoefs <- coefs[matching_indices]
-  if (is.null(mcoefs) || length(mcoefs) == 0) {
-    " "
-  } else if (all(mcoefs > 0)) {
-    "+"
-  } else if (all(mcoefs < 0)) {
-    "-"
+  coefs <- summary(varest)$varresult[[eqname]]$coefficients
+  d1names <- dimnames(coefs)[[1]]
+  d2names <- dimnames(coefs)[[2]]
+  # 2* because of almost Granger causalities
+  selnames <- which(coefs[,4] <= 2*av_state_significance(varest))
+  coefs <- coefs[selnames,]
+  if (length(coefs) > 0) {
+    if (class(coefs) != "matrix") {
+      coefs <- t(as.matrix(coefs))
+      dimnames(coefs) <- list(d1names[selnames],d2names)
+    }
+    dnames <- dimnames(coefs)[[1]]
+    vars <- !is.na(str_locate(dnames,paste(exname,"\\.l[0-9]+$",sep=''))[,1])
+    if (length(vars) != 0) {
+      matching_indices <- which(vars)
+      mcoefs <- coefs[matching_indices,1]
+      if (is.null(mcoefs) || length(mcoefs) == 0) {
+        " "
+      } else if (all(mcoefs > 0)) {
+        "+"
+      } else if (all(mcoefs < 0)) {
+        "-"
+      } else {
+        "~"
+      }
+    } else {
+      " "
+    }
   } else {
-    "~"
+    " "
   }
 }
 
@@ -366,6 +383,7 @@ vargranger_list <- function(lst) {
                                 signplus=0,
                                 signboth=0,
                                 signminus=0,
+                                signnone=0,
                                 cnt=0,
                                 cnta=0)
         }
@@ -375,7 +393,9 @@ vargranger_list <- function(lst) {
           llst[[cmbvr]]$signboth <- llst[[cmbvr]]$signboth + 1
         } else if (gsign == "-") {
           llst[[cmbvr]]$signminus <- llst[[cmbvr]]$signminus + 1
-        } 
+        } else if (gsign == " ") {
+          llst[[cmbvr]]$signnone <- llst[[cmbvr]]$signnone + 1
+        }
         if (row$P <= av_state_significance(varest)) {
           llst[[cmbvr]]$cnt <- llst[[cmbvr]]$cnt +1
         } else {
@@ -390,6 +410,7 @@ vargranger_list <- function(lst) {
                                signplus=0,
                                signboth=0,
                                signminus=0,
+                               signnone=0,
                                cnt=0,
                                cnta=0)
       }
@@ -401,6 +422,7 @@ vargranger_list <- function(lst) {
   signplus <- NULL
   signboth <- NULL
   signminus <- NULL
+  signnone <- NULL
   cnt <- NULL
   cnta <- NULL
   for (item in llst) {
@@ -409,12 +431,13 @@ vargranger_list <- function(lst) {
     signplus <- c(signplus,item$signplus)
     signboth <- c(signboth,item$signboth)
     signminus <- c(signminus,item$signminus)
+    signnone <- c(signnone,item$signnone)
     cnt <- c(cnt,item$cnt)
     cnta <- c(cnta,item$cnta)
   }
   df <- data.frame(causevr=causevr,othervr=othervr,signplus=signplus,signboth=signboth,
-                   signminus=signminus,cnt=cnt,cnta=cnta,stringsAsFactors=FALSE)
-  ssign <- get_majority_sign(signplus,signboth,signminus)
+                   signminus=signminus,signnone=signnone,cnt=cnt,cnta=cnta,stringsAsFactors=FALSE)
+  ssign <- get_majority_sign(signplus,signboth,signminus,signnone)
   df <- cbind(df,list(sign=ssign))
   df <- cbind(df,list(tcnt=cnt+cnta))
   df <- cbind(df,list(perc=(cnt+cnta)/length(lst)))
@@ -427,15 +450,16 @@ vargranger_list <- function(lst) {
   df
 }
 
-get_majority_sign <- function(signplus,signboth,signminus) {
-  signs <- c('+','~','-')
+get_majority_sign <- function(signplus,signboth,signminus,signnone) {
+  signs <- c('+','~','-',' ')
   sr <- NULL
   for (i in 1:(length(signplus))) {
     sri <- NULL
     signplusi <- signplus[[i]]
     signbothi <- signboth[[i]]
     signminusi <- signminus[[i]]
-    signv <- c(signplusi,signbothi,signminusi)
+    signnonei <- signnone[[i]]
+    signv <- c(signplusi,signbothi,signminusi,signnonei)
     r <- sort(signv,decreasing=TRUE,index.return=TRUE)$ix[[1]]
     if (max(signv[-r]) == signv[r]) {
       sri <- ' '
@@ -475,7 +499,7 @@ compact_varline <- function(x,varwidth) {
     if (x$cnta > 0) {
       str <- paste(str,x$cnta,' almost)',sep='')
     }
-    if (x$signplus != 0 || x$signboth != 0 || x$signminus != 0) {
+    if (x$signplus != 0 || x$signboth != 0 || x$signminus != 0 || x$signnone != 0) {
       str <- paste(str,' (sign: ',sep='')
       sstr <- NULL
       if (x$signplus != 0) {
@@ -486,6 +510,9 @@ compact_varline <- function(x,varwidth) {
       }
       if (x$signminus != 0) {
         sstr <- c(sstr,paste(x$signminus,' -',sep=''))
+      }
+      if (x$signnone != 0) {
+        sstr <- c(sstr,paste(x$signnone,'  ',sep=''))
       }
       str <- paste(str,paste(sstr,collapse=', '),sep='')
       str <- paste(str,')',sep='')
