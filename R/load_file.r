@@ -53,7 +53,8 @@ column_names_output <- function(av_state) {
 decorate_class <- function(classname) {
   switch(classname,
     factor = "nom",
-    numeric = "scl"
+    numeric = "scl",
+    integer = "scl"
   )
 }
 

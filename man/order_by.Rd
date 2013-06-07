@@ -49,7 +49,8 @@
   squared values as exogenous_variables.
 }
 \examples{
-av_state <- load_file("../data/input/RuwedataAngela.sav")
+av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
+av_state <- group_by(av_state,'id')
 av_state <- order_by(av_state,'tijdstip',impute_method='ONE_MISSING')
 }
 

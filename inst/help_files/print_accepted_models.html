@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>print_accepted_models. autovar 0.1-0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">autovar 0.1-0</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Print a list of accepted models after a call to var_main</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre>print_accepted_models(av_state)</pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>av_state</dt>
+      <dd>an object of class <code>av_state</code> that
+  was the result of a call to <code><a href='var_main.html'>var_main</a></code></dd>
+    </dl>
+    
+    <div class="Description">
+      <h2>Description</h2>
+      
+      <p>This function prints the list of accepted models when
+  <code>av_state</code> is the result of a call to
+  <code><a href='var_main.html'>var_main</a></code>. The printed list of models is
+  sorted by AIC+BIC score.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
+av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_level=3)
+</div>
+<div class='output'>
+====================
+var_main(av_state, vars = c("SomBewegUur", "SomPHQ"), log_level = 3, criterion = "BIC")
+
+Starting VAR with variables: SomBewegUur, SomPHQ, for subset: 1
+
+====================
+
+Done. Processed 9 distinct models, of which 2 were valid.
+Tested 18 of 72 ( 25.00%) of the combinatorial search space at the given lags (1, 2).
+
+Granger causality summary of all 8 unrestricted models:
+  100.00%   SomPHQ       Granger causes  SomBewegUur   (3 models +5 almost) (sign: 4 ~, 4 -)
+
+Granger causality summary of all 2 valid models:
+  100.00%   SomPHQ      -Granger causes- SomBewegUur   (1 model +1 almost) (sign: 2 -)
+
+Granger causality summary of all 1 valid unrestricted models:
+  100.00%   SomPHQ      -Granger causes- SomBewegUur   (1 almost) (sign: 1 -)
+</div>
+<p><img src='print_accepted_models-3.png' alt='' width='400' height='400' /></p>
+<div class='output'>
+Granger causality plot saved to "pp5 nieuw compleet_45.pdf"
+
+Summary of all valid models:
+  lag:
+    100.00%   1   (2 models)
+
+  apply_log_transform:
+    100.00%   TRUE   (2 models)
+
+The valid models (sorted by BIC score):
+A: (AIC: 386.23 (orig: 45.718), BIC: 398.593 (orig: 58.081)) : SomPHQ -Granger causes- SomBewegUur (0.0417)
+  Lag: 1
+  Log transform: YES
+  Exogenous variables: 
+    SomPHQ outliers (3.5x std. of res.): 27
+  Constraints:  
+    [lnSomBewegUur]lnSomBewegUur.l1 = 0
+    [lnSomPHQ]lnSomBewegUur.l1 = 0
+  Resulting Formulas:  
+    lnSomBewegUur = lnSomPHQ.l1 + const + SomPHQ_outliers
+    lnSomPHQ = lnSomPHQ.l1 + const + SomPHQ_outliers
+
+B: (AIC: 388.391 (orig: 47.879), BIC: 404.875 (orig: 64.363)) : SomPHQ almost -Granger causes- SomBewegUur (0.0726)
+  Lag: 1
+  Log transform: YES
+  Exogenous variables: 
+    SomPHQ outliers (3.5x std. of res.): 27
+  Constraints:  none
+
+</div>
+<div class='input'># av_state is the result of a call to var_main
+print_accepted_models(av_state)
+</div>
+<div class='output'>[[1]]
+(AIC: 386.23 (orig: 45.718), BIC: 398.593 (orig: 58.081)) : SomPHQ -Granger causes- SomBewegUur (0.0417)
+  apply_log_transform: TRUE
+  exogenous_variables: 
+    3.5x std of res. lnSomPHQ (obs.: 27)
+  lag: 1
+  constraints: 
+    [lnSomBewegUur]lnSomBewegUur.l1 = 0
+    [lnSomPHQ]lnSomBewegUur.l1 = 0 
+[[2]]
+(AIC: 388.391 (orig: 47.879), BIC: 404.875 (orig: 64.363)) : SomPHQ almost -Granger causes- SomBewegUur (0.0726)
+  apply_log_transform: TRUE
+  exogenous_variables: 
+    3.5x std of res. lnSomPHQ (obs.: 27)
+  lag: 1 
+
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>print_accepted_models</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

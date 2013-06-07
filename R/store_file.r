@@ -6,11 +6,10 @@
 #' @param inline_data boolean argument to determine whether data should be stored inline in the .sas script. This argument is optional, and defaults to \code{TRUE} if the data set has less than 80 columns, and to \code{FALSE} otherwise.
 #' @param file_type sets the type of file export that should be used. Currently, only \code{'SPSS'} is supported.
 #' @examples
-#' av_state <- load_file("../data/input/pp5.dta")
-#' av_state <- group_by(av_state,'id')
-#' av_state <- order_by(av_state,'Day')
-#' av_state <- add_derived_column(av_state,'Activity_hours','Activity',
-#'                                operation='MINUTES_TO_HOURS')
+#' av_state <- load_file("../data/input/ID68 basisbestand.sav",log_level=3)
+#' av_state <- add_trend(av_state)
+#' av_state <- set_timestamps(av_state,date_of_first_measurement="2012-07-12",
+#'                            measurements_per_day=3,log_level=3)
 #' store_file(av_state)
 #' @export
 store_file <- function(av_state,filename,inline_data,file_type = c('SPSS','STATA')) {
@@ -33,7 +32,7 @@ store_file <- function(av_state,filename,inline_data,file_type = c('SPSS','STATA
   } else {
     store_func <- store_file_separate
   }
-  tarfiles <- store_func(working_dir,filename,file_type)
+  tarfiles <- store_func(working_dir,filename,file_type,av_state)
   
   tarcmd <- paste("tar -cvvf \"",filename,".tar\" ",tarfiles,sep="")
   system(tarcmd,intern=TRUE)
@@ -41,7 +40,7 @@ store_file <- function(av_state,filename,inline_data,file_type = c('SPSS','STATA
   scat(av_state$log_level,2,"store_file: created",paste(working_dir,filename,".tar",sep=""),"\n")
 }
 
-store_file_separate <- function(working_dir,filename,file_type) {
+store_file_separate <- function(working_dir,filename,file_type,av_state) {
   tarfiles <- ""
   for (name in names(av_state$data)) {
     data_frame <- av_state$data[[name]]
@@ -56,7 +55,7 @@ store_file_separate <- function(working_dir,filename,file_type) {
   tarfiles
 }
 
-store_file_inline <- function(working_dir,filename,file_type) {
+store_file_inline <- function(working_dir,filename,file_type,av_state) {
   tarfiles <- ""
   for (name in names(av_state$data)) {
     data_frame <- av_state$data[[name]]
@@ -83,6 +82,7 @@ is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) { is.na(x) | abs(x 
 determineLevel <- function(data_column) {
   determine_function <- switch(class(data_column),
     numeric=determineLevelNumeric,
+    integer=determineLevelNumeric,
     factor=determineLevelFactor
   )
   determine_function(data_column)
@@ -90,6 +90,7 @@ determineLevel <- function(data_column) {
 determineFormat <- function(data_column) {
   determine_function <- switch(class(data_column),
     numeric=determineFormatNumeric,
+    integer=determineFormatNumeric,
     factor=determineFormatFactor
   )
   determine_function(data_column)

@@ -11,7 +11,7 @@
 #'                 title="",...)}.
 #' The arguments of this function work much like the ones described above for individual \code{factor} columns. The added optional \code{labels} argument should be a vector of the same length as the \code{columns} argument, specifying custom names for the columns. This argument is ignored when \code{type='LINE'}.
 #' @examples
-#' av_state <- load_file("../data/input/RuwedataAngela.sav")
+#' av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
 #' av_state <- add_derived_column(av_state,'sum_minuten_licht',
 #'               c('minuten_woonwerk','minuten_werk_licht',
 #'                 'minuten_licht_huishouden'))

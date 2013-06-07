@@ -11,7 +11,8 @@
 #' }
 #' @return This function returns the modified \code{av_state} object. After the substitutions, the data sets in \code{av_state$data} are sorted by their \code{id_field} value. This sorting step moves any rows with value \code{NA} for the \code{id_field} to the end.
 #' @examples
-#' av_state <- load_file("../data/input/RuwedataAngela.sav")
+#' av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
+#' av_state <- group_by(av_state,'id')
 #' av_state <- order_by(av_state,'tijdstip',impute_method='ONE_MISSING')
 #' @export
 order_by <- function(av_state,id_field,impute_method=c('BEST_FIT','ONE_MISSING','ADD_MISSING','NONE')) {

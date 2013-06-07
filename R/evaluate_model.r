@@ -243,7 +243,9 @@ calc_varest <- function(av_state,model) {
 #' @param varest an object of class \code{varest}
 #' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity.
 #' @examples
-#' # av_state is the result of an earlier call to var_main
+#' av_state <- load_file("../data/input/pp1 nieuw compleet.sav",log_level=3)
+#' av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion='BIC',log_level=3)
+#' # av_state is the result of a call to var_main
 #' var_info(av_state$accepted_models[[1]]$varest)
 #' var_info(av_state$rejected_models[[1]]$varest)
 #' @export

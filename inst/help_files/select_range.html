@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>select_range. autovar 0.1-0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">autovar 0.1-0</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Select a subset of rows of a data set to be retained</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre>select_range(av_state, subset_id = 1, column, begin, end)</pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>av_state</dt>
+      <dd>an object of class <code>av_state</code></dd>
+      <dt>subset_id</dt>
+      <dd>either an integer subset index or the
+  the value for the <code>id_field</code> column that was used in
+  the <code><a href='group_by.html'>group_by</a></code> function. The <code>subset_id</code>
+  argument is required if the data set is grouped into
+  multiple data sets (i.e., if the <code><a href='group_by.html'>group_by</a></code>
+  function was used), in which case the function works on
+  the specified data subset.</dd>
+      <dt>column</dt>
+      <dd>specifies which column the <code>begin</code> and
+  <code>end</code> values should be taken over. This argument is
+  optional, and if it is missing, <code>id_field</code> used in
+  <code><a href='order_by.html'>order_by</a></code> will be used.</dd>
+      <dt>begin</dt>
+      <dd>indicates which values should be included.
+  Values that are <code>>= begin</code> are included. This
+  argument is optional if <code>end</code> is specified.</dd>
+      <dt>end</dt>
+      <dd>indicates which values should be included.
+  Values that are <code><= end</code> are included. This argument
+  is optional if <code>begin</code> is specified.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+      
+      <p>This function returns the modified <code>av_state</code>
+  object.</p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+      
+      <p>This function selects which rows of a data set should be
+  included. Either the <code>begin</code> or the <code>end</code>
+  argument need to be specified. The column does not need
+  to be sorted for this function to work. Values are
+  included if they are <code>>= begin</code> and <code><= end</code>,
+  if specified, for the specified column. Values that are
+  <code>NA</code> are never removed by this function.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/pp2 nieuw compleet_64dagen.sav",log_level=3)
+av_state <- order_by(av_state,'tijdstip')
+print(av_state)
+</div>
+<div class='output'>
+file_name: C:/Users/KyD/Desktop/work/work/r/code/preprocessing/../data/input/pp2 nieuw compleet_64dagen.sav 
+real_file_name: ../data/input/pp2 nieuw compleet_64dagen.sav 
+file_type: SPSS 
+raw_data: 64 samples with 44 features [missing: 16.73% (471)]
+data: 
+  multiple: 64 samples with 45 features [missing: 16.35% (471)]
+order_by: tijdstip 
+trend_vars: tijdstip 
+
+</div>
+<div class='input'>av_state$data[[1]]['tijdstip']
+</div>
+<div class='output'>   tijdstip
+1         1
+2         2
+3         3
+4         4
+5         5
+6         6
+7         7
+8         8
+9         9
+10       10
+11       11
+12       12
+13       13
+14       14
+15       15
+16       16
+17       17
+18       18
+19       19
+20       20
+21       21
+22       22
+23       23
+24       24
+25       25
+26       26
+27       27
+28       28
+29       29
+30       30
+31       31
+32       32
+33       33
+34       34
+35       35
+36       36
+37       37
+38       38
+39       39
+40       40
+41       41
+42       42
+43       43
+44       44
+45       45
+46       46
+47       47
+48       48
+49       49
+50       50
+51       51
+52       52
+53       53
+54       54
+55       55
+56       56
+57       57
+58       58
+59       59
+60       60
+61       61
+62       62
+63       63
+64       64
+</div>
+<div class='input'># default column is the order_by column in this case:
+av_state <- select_range(av_state,begin=20,end=40)
+</div>
+<div class='output'>select_range: for subset 1, number of rows cut: 43, number of rows remaining: 21
+select_range: for subset 1, missing values went from 16.35% (471) to 13.97% (132)
+</div>
+<div class='input'>print(av_state)
+</div>
+<div class='output'>
+file_name: C:/Users/KyD/Desktop/work/work/r/code/preprocessing/../data/input/pp2 nieuw compleet_64dagen.sav 
+real_file_name: ../data/input/pp2 nieuw compleet_64dagen.sav 
+file_type: SPSS 
+raw_data: 64 samples with 44 features [missing: 16.73% (471)]
+data: 
+  multiple: 21 samples with 45 features [missing: 13.97% (132)]
+order_by: tijdstip 
+trend_vars: tijdstip 
+
+</div>
+<div class='input'>av_state$data[[1]]['tijdstip']
+</div>
+<div class='output'>   tijdstip
+20       20
+21       21
+22       22
+23       23
+24       24
+25       25
+26       26
+27       27
+28       28
+29       29
+30       30
+31       31
+32       32
+33       33
+34       34
+35       35
+36       36
+37       37
+38       38
+39       39
+40       40
+</div>
+<div class='input'>
+av_state <- load_file("../data/input/pp2 nieuw compleet_64dagen.sav",log_level=3)
+print(av_state)
+</div>
+<div class='output'>
+file_name: C:/Users/KyD/Desktop/work/work/r/code/preprocessing/../data/input/pp2 nieuw compleet_64dagen.sav 
+real_file_name: ../data/input/pp2 nieuw compleet_64dagen.sav 
+file_type: SPSS 
+raw_data: 64 samples with 44 features [missing: 16.73% (471)]
+data: 
+  multiple: 64 samples with 44 features [missing: 16.73% (471)]
+
+</div>
+<div class='input'>av_state$data[[1]]['lnSomPHQ']
+</div>
+<div class='output'>   lnSomPHQ
+1  2.197225
+2  1.609438
+3  1.945910
+4  1.945910
+5  1.609438
+6  1.791759
+7  1.791759
+8  1.386294
+9  1.098612
+10 1.098612
+11 1.098612
+12 1.802455
+13 1.609438
+14 1.386294
+15 1.386294
+16 1.386294
+17 1.386294
+18 1.386294
+19 1.791759
+20 2.302585
+21 2.079442
+22 1.791759
+23 1.791759
+24 1.791759
+25 1.945910
+26 1.791759
+27 1.791759
+28 2.197225
+29 2.197225
+30 2.484907
+31 2.484907
+32 2.079442
+33 2.079442
+34 1.791759
+35 1.791759
+36 1.945910
+37 2.197225
+38 1.945910
+39 1.945910
+40 1.945910
+41 1.945910
+42 1.945910
+43 1.945910
+44 1.945910
+45 1.945910
+46 1.609438
+47 1.609438
+48 1.609438
+49 1.609438
+50 1.609438
+51 1.609438
+52 1.609438
+53 1.609438
+54 1.609438
+55 1.609438
+56 1.609438
+57 1.609438
+58 1.609438
+59 1.609438
+60 1.609438
+61 1.609438
+62 1.802455
+63 1.609438
+64 1.609438
+</div>
+<div class='input'># now only retain rows with 0 <= lnSomPHQ <= 2
+av_state <- select_range(av_state,column='lnSomPHQ',begin=0,end=2)
+</div>
+<div class='output'>select_range: for subset 1, number of rows cut: 10, number of rows remaining: 54
+select_range: for subset 1, missing values went from 16.73% (471) to 17.13% (407)
+</div>
+<div class='input'>print(av_state)
+</div>
+<div class='output'>
+file_name: C:/Users/KyD/Desktop/work/work/r/code/preprocessing/../data/input/pp2 nieuw compleet_64dagen.sav 
+real_file_name: ../data/input/pp2 nieuw compleet_64dagen.sav 
+file_type: SPSS 
+raw_data: 64 samples with 44 features [missing: 16.73% (471)]
+data: 
+  multiple: 54 samples with 44 features [missing: 17.13% (407)]
+
+</div>
+<div class='input'>av_state$data[[1]]['lnSomPHQ']
+</div>
+<div class='output'>   lnSomPHQ
+2  1.609438
+3  1.945910
+4  1.945910
+5  1.609438
+6  1.791759
+7  1.791759
+8  1.386294
+9  1.098612
+10 1.098612
+11 1.098612
+12 1.802455
+13 1.609438
+14 1.386294
+15 1.386294
+16 1.386294
+17 1.386294
+18 1.386294
+19 1.791759
+22 1.791759
+23 1.791759
+24 1.791759
+25 1.945910
+26 1.791759
+27 1.791759
+34 1.791759
+35 1.791759
+36 1.945910
+38 1.945910
+39 1.945910
+40 1.945910
+41 1.945910
+42 1.945910
+43 1.945910
+44 1.945910
+45 1.945910
+46 1.609438
+47 1.609438
+48 1.609438
+49 1.609438
+50 1.609438
+51 1.609438
+52 1.609438
+53 1.609438
+54 1.609438
+55 1.609438
+56 1.609438
+57 1.609438
+58 1.609438
+59 1.609438
+60 1.609438
+61 1.609438
+62 1.802455
+63 1.609438
+64 1.609438
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>select_range</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>var_main. autovar 0.1-0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">autovar 0.1-0</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Determine possibly optimal models for Vector Autoregression</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre>var_main(av_state, vars, lag_max = 2, significance = 0.05, exogenous_max_iterations = 2, 
+  subset = 1, log_level = av_state$log_level, small = FALSE, include_model = NULL, 
+      exogenous_variables = NULL, use_sktest = TRUE, restrictions.verify_validity_in_every_step = TRUE, 
+      restrictions.extensive_search = TRUE, criterion = c("AIC", "BIC"), use_varsoc = FALSE, 
+      use_pperron = TRUE, include_squared_trend = FALSE, normalize_data = FALSE, include_lag_zero = FALSE)</pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>av_state</dt>
+      <dd>an object of class <code>av_state</code></dd>
+      <dt>vars</dt>
+      <dd>the vector of variables on which to perform
+  vector autoregression. These should be the names of
+  existing columns in the data sets of <code>av_state</code>.</dd>
+      <dt>lag_max</dt>
+      <dd>limits the highest possible number of lags
+  that will be used in a model. This number sets the
+  maximum limit in the search for optimal lags.</dd>
+      <dt>significance</dt>
+      <dd>the maximum P-value for which results
+  are seen as significant. This argument is used in Granger
+  causality tests, Portmanteau tests, and Jarque-Bera
+  tests.</dd>
+      <dt>exogenous_max_iterations</dt>
+      <dd>determines how many times
+  we should try to exclude additional outliers for a
+  variable. This argument should be a number between 1 and
+  3: <ul>
+<li> <code>1</code> - When Jarque-Bera tests
+  fail, having <code>exogenous_max_iterations = 1</code> will
+  only try with removing 3.5x std. outliers for the
+  residuals of variables using exogenous dummy variables.
+  </li>
+<li> <code>2</code> - When <code>exogenous_max_iterations =
+  2</code>, the program will also try with removing 3x std.
+  outliers if JB tests still fail. </li>
+<li> <code>3</code> - When
+  <code>exogenous_max_iterations = 3</code>, the program will
+  also try with removing 2.5x std. outliers (not only from
+  the residuals but also from the squares of the residuals)
+  if JB tests still fail. </li>
+</ul>
+</dd>
+      <dt>subset</dt>
+      <dd>specifies which data subset the VAR
+  analysis should run on. The VAR analysis only runs on one
+  data subset at a time. If not specified, the first subset
+  is used (corresponding to <code>av_state$data[[1]]</code>).</dd>
+      <dt>log_level</dt>
+      <dd>sets the minimum level of output that
+  should be shown. It should be a number between 0 and 3. A
+  lower level means more verbosity. <code>0</code> = debug,
+  <code>1</code> = test detail, <code>2</code> = test outcomes,
+  <code>3</code> = normal. The default is set to the value of
+  <code>av_state$log_level</code> or if that doesn't exist, to
+  <code>0</code>. If this argument was specified, the original
+  value of <code>av_state$log_level</code> is be restored at the
+  end of <code>var_main</code>.</dd>
+      <dt>small</dt>
+      <dd>corresponds to the <code>small</code> argument of
+  Stata's <code>var</code> function, and defaults to
+  <code>FALSE</code>. This argument affects the outcome of the
+  Granger causality test. When <code>small = TRUE</code>, the
+  Granger causality test uses the F-distribution to gauge
+  the statistic. When <code>small = FALSE</code>, the Granger
+  causality test uses the Chi-squared distribution to gauge
+  the statistic.</dd>
+      <dt>include_model</dt>
+      <dd>can be used to forcibly include a
+  model in the evaluation. Included models have to be
+  lists, and can specify the parameters <code>lag</code>,
+  <code>exogenous_variables</code>, and
+  <code>apply_log_transform</code>. For example: <code> av_state
+  <- var_main(av_state,c('Activity_hours','Depression'),
+  log_level=3, small=TRUE, include_model=list(lag=3,
+  exogenous_variables=data.frame(variable="Depression",
+  iteration=1,stringsAsFactors=FALSE),
+  apply_log_transform=TRUE))
+  var_info(av_state$rejected_models[[1]]$varest) </code> The
+  above example includes a model with <code>lag=3</code> (so lags
+  1, 2, and 3 are included), the model is ran on the
+  log-transformed variables, and includes an exogenous
+  dummy variable that has a 1 where values of
+  <code>log(Depression)</code> are more than 3.5xstd away from
+  the mean (because <code>iteration=1</code>, see the description
+  of the <code>exogenous_max_iterations</code> parameter above
+  for the meaning of the iterations) and 0 everywhere else.
+  The included model is added at the start of the list, so
+  it can be retrieved (assuming a valid <code>lag</code> was
+  specified) with either
+  <code>av_state$accepted_models[[1]]</code> if the model was
+  valid or <code>av_state$rejected_models[[1]]</code> if it was
+  invalid. In the above example, some info about the
+  included model is printed (assuming it was invalid).</dd>
+      <dt>exogenous_variables</dt>
+      <dd>should be a vector of variable
+  names that already exist in the given data set, that will
+  be supplied to every VAR model as exogenous variables.</dd>
+      <dt>use_sktest</dt>
+      <dd>affects which test is used for Skewness
+  and Kurtosis testing of the residuals. When
+  <code>use_sktest = TRUE</code> (the default), STATA's
+  <code>sktest</code> is used. When <code>use_sktest = FALSE</code>,
+  STATA's <code>varnorm</code> (i.e., the Jarque-Bera test) is
+  used.</dd>
+      <dt>restrictions.verify_validity_in_every_step</dt>
+      <dd>is an
+  argument that affects how constraints are found for valid
+  models. When this argument is <code>TRUE</code> (the default),
+  all intermediate models in the iterative
+  constraint-finding method have to be valid. This ensures
+  that we always find a valid constrained model for every
+  valid model. If this argument is <code>FALSE</code>, then only
+  after setting all constraints do we check if the
+  resulting model is valid. If this is not the case, we
+  fail to find a constrained model.</dd>
+      <dt>restrictions.extensive_search</dt>
+      <dd>is an argument that
+  affects how constraints are found for valid models. When
+  this argument is <code>TRUE</code> (the default), when the term
+  with the highest p-value does not provide a model with a
+  lower BIC score, we attempt to constrain the term with
+  the second highest p-value, and so on. When this argument
+  is <code>FALSE</code>, we only check the term with the highest
+  p-value. If restricting this term does not give an
+  improvement in BIC score, we stop restricting the model
+  entirely.</dd>
+      <dt>criterion</dt>
+      <dd>is the information criterion used to
+  sort the models. Valid options are <code>'AIC'</code> (the
+  default) or <code>'BIC'</code>.</dd>
+      <dt>use_varsoc</dt>
+      <dd>determines whether VAR lag order
+  selection criteria should be employed to restrict the
+  search space for VAR models. When <code>use_varsoc</code> is
+  <code>FALSE</code>, all lags from 1 to <code>lag_max</code> are
+  searched.</dd>
+      <dt>use_pperron</dt>
+      <dd>determines whether the Phillips-Perron
+  test should be used to determine whether trend variables
+  should be included in the models. When <code>use_pperron</code>
+  is <code>FALSE</code>, all models will be evaluated both with
+  and without the trend variable. The trend variable is
+  specified using the <code><a href='order_by.html'>order_by</a></code> function.</dd>
+      <dt>include_squared_trend</dt>
+      <dd>determines whether the
+  square of the trend is included if the trend is included
+  for a model. The trend variable is specified using the
+  <code><a href='order_by.html'>order_by</a></code> function.</dd>
+      <dt>normalize_data</dt>
+      <dd>determines whether the endogenous
+  variables should be normalized.</dd>
+      <dt>include_lag_zero</dt>
+      <dd>determines whether models at lag
+  order 0 are should be considered. These are models at lag
+  1 with constrained lag-1 parameters in all equations.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+      
+      <p>This function returns the modified <code>av_state</code>
+  object. The lists of accepted and rejected models can be
+  retrieved through <code>av_state$accepted_models</code> and
+  <code>av_state$rejected_models</code>. To print these, use
+  <code>print_accepted_models(av_state)</code> and
+  <code>print_rejected_models(av_state)</code>.</p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+      
+      <p>This function generates and tests possible VAR models for
+  the specified variables. The only required arguments are
+  <code>av_state</code> and <code>vars</code>.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta",log_level=3)
+av_state <- group_by(av_state,'id')
+</div>
+<div class='output'>group_by: identified 1 groups based on distinct values for attribute 'id'
+</div>
+<div class='input'>av_state <- order_by(av_state,'Day')
+av_state <- add_derived_column(av_state,'Activity_hours','Activity',
+                               operation='MINUTES_TO_HOURS')
+av_state <- var_main(av_state,c('Activity_hours','Depression'),log_level=3)
+</div>
+<div class='output'>
+====================
+var_main(av_state, vars = c("Activity_hours", "Depression"), log_level = 3)
+
+Starting VAR with variables: Activity_hours, Depression, for subset: 1
+
+====================
+
+Done. Processed 9 distinct models, of which 2 were valid.
+Tested 18 of 72 ( 25.00%) of the combinatorial search space at the given lags (1, 2).
+
+Granger causality summary of all 8 unrestricted models:
+  100.00%   Depression      Granger causes  Activity_hours   (3 models +5 almost) (sign: 4 ~, 4 -)
+
+Granger causality summary of all 2 valid models:
+  100.00%   Depression     -Granger causes- Activity_hours   (1 model +1 almost) (sign: 2 -)
+
+Granger causality summary of all 1 valid unrestricted models:
+  100.00%   Depression     -Granger causes- Activity_hours   (1 almost) (sign: 1 -)
+</div>
+<p><img src='var_main-5.png' alt='' width='400' height='400' /></p>
+<div class='output'>
+Granger causality plot saved to "Activity and depression pp5 Angela_7.pdf"
+
+Summary of all valid models:
+  lag:
+    100.00%   1   (2 models)
+
+  apply_log_transform:
+    100.00%   TRUE   (2 models)
+
+  include_trend_vars:
+    100.00%   FALSE   (2 models)
+
+The valid models (sorted by AIC score):
+A: (AIC: 386.23 (orig: 45.718), BIC: 398.593 (orig: 58.081)) : Depression -Granger causes- Activity_hours (0.0417)
+  Lag: 1
+  Log transform: YES
+  Exogenous variables: 
+    Depression outliers (3.5x std. of res.): 27
+  Constraints:  
+    [lnActivity_hours]lnActivity_hours.l1 = 0
+    [lnDepression]lnActivity_hours.l1 = 0
+  Resulting Formulas:  
+    lnActivity_hours = lnDepression.l1 + const + Depression_outliers
+    lnDepression = lnDepression.l1 + const + Depression_outliers
+
+B: (AIC: 388.391 (orig: 47.879), BIC: 404.875 (orig: 64.363)) : Depression almost -Granger causes- Activity_hours (0.0726)
+  Lag: 1
+  Log transform: YES
+  Exogenous variables: 
+    Depression outliers (3.5x std. of res.): 27
+  Constraints:  none
+
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>var_main</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

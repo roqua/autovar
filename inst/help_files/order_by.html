@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>order_by. autovar 0.1-0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">autovar 0.1-0</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Order the rows in a data set</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre>order_by(av_state, id_field, impute_method = c("BEST_FIT", "ONE_MISSING", "ADD_MISSING", 
+  "NONE"))</pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>av_state</dt>
+      <dd>an object of class <code>av_state</code></dd>
+      <dt>id_field</dt>
+      <dd>the name of a column in the data set</dd>
+      <dt>impute_method</dt>
+      <dd>this argument has four possible
+  values: <ul>
+<li> <code>'BEST_FIT'</code> - This is not
+  an impute method itself, but tells the function to
+  determine the optimal impute method and use that. This is
+  the default choice for <code>impute_method</code> when it is
+  not specified. </li>
+<li> <code>'ONE_MISSING'</code> - Only works
+  when the <code>id_field</code> in each data subset is an
+  integer range with exactly one value missing and exactly
+  one <code>NA</code> value. The <code>NA</code> value is then
+  substituted by the missing index. </li>
+<li>
+  <code>'ADD_MISSING'</code> - Does not work when one or more
+  rows have an <code>NA</code> value for <code>id_field</code>. Only
+  works for integer ranges of <code>id_field</code> with single
+  increments. Works by adding rows for all missing values
+  in the range between the minimum and maximum value of
+  <code>id_field</code>. All values in the added rows are
+  <code>NA</code> except for the <code>id_field</code> and the field
+  used for grouping the data (if there was one). </li>
+<li>
+  <code>'NONE'</code> - No imputation is performed. </li>
+</ul>
+</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+      
+      <p>This function returns the modified <code>av_state</code>
+  object. After the substitutions, the data sets in
+  <code>av_state$data</code> are sorted by their <code>id_field</code>
+  value. This sorting step moves any rows with value
+  <code>NA</code> for the <code>id_field</code> to the end.</p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+      
+      <p>This function determines the order of the data rows in
+  the data set. For vector autoregression, you may want to
+  use this to make sure that the data set is sorted by the
+  date/time column, i.e., the supplied <code>id_field</code>
+  parameter is often a measurement index (e.g.,
+  <code>'tijdstip'</code>). The <code>id_field</code> column has to be
+  numeric. This function will also add a squared column to
+  the data frame and include the order_by colum and its
+  squared values as exogenous_variables.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
+av_state <- group_by(av_state,'id')
+</div>
+<div class='output'>group_by: identified 5 groups based on distinct values for attribute 'id'
+</div>
+<div class='input'>av_state <- order_by(av_state,'tijdstip',impute_method='ONE_MISSING')
+</div>
+<div class='output'>order_by_impute_one_missing imputed 35 for one row of id = 1 
+order_by: missing values went from 18.05% (537) to 18.02% (536) for subset 1 (ONE_MISSING)
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>order_by</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -15,6 +15,8 @@
   sorted by AIC+BIC score.
 }
 \examples{
+av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
+av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_level=3)
 # av_state is the result of a call to var_main
 print_accepted_models(av_state)
 }

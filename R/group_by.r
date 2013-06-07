@@ -5,8 +5,10 @@
 #' @param id_field the name of a column in the data set
 #' @return This function returns the modified \code{av_state} object.
 #' @examples
-#' av_state <- load_file("../data/input/RuwedataAngela.sav")
+#' av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
+#' print(av_state)
 #' av_state <- group_by(av_state,'id')
+#' print(av_state)
 #' @export
 group_by <- function(av_state,id_field) {
   assert_av_state(av_state)
