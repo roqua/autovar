@@ -38,75 +38,45 @@ vargranger_graph <- function(av_state) {
 }
 
 vargranger_graph_aux <- function(av_state,lst) {
-  str <- NULL
-  rls <- list()
-  rlsa <- list()
-  rlsr <- list()
-  nonecount <- 0
-  for (model in lst) {
-    res <- vargranger_call(model$varest)
-    foundflag <- FALSE
-    for (row in df_in_rows(res)) {
-      if (row$P <= av_state_significance(model$varest)) {
-        weight <- 2
-        foundflag <- TRUE
-      } else if (row$P <= 2*av_state_significance(model$varest)) {
-        weight <- 1
-        foundflag <- TRUE
-      } else { 
-        next
-      }
-      edgename <- paste(unprefix_ln(row$Excluded),unprefix_ln(row$Equation))
-      if (is.null(rls[[edgename]])) {
-        rls[[edgename]] <- 0
-      }
-      rls[[edgename]] <- rls[[edgename]]+weight
-      if (weight == 2) {
-        if (is.null(rlsr[[edgename]])) {
-          rlsr[[edgename]] <- 0
-        }
-        rlsr[[edgename]] <- rlsr[[edgename]]+1
-      } else {
-        if (is.null(rlsa[[edgename]])) {
-          rlsa[[edgename]] <- 0
-        }
-        rlsa[[edgename]] <- rlsa[[edgename]]+1
-      }
-    }
-    if (!foundflag) {
-      nonecount <- nonecount+1
-    }
-  }
-  i <- 0
-  enms <- names(rls)
-  edgelabels <- NULL
-  for (edgeweight in rls) {
-    i <- i+1
-    edgename <- enms[[i]]
-    edgelabel <- ''
-    if (!is.null(rlsr[[edgename]])) { 
-      edgelabel <- paste(edgelabel,
-                         rlsr[[edgename]],
-                         ' model',
-                         ifelse(rlsr[[edgename]] == 1,'','s'),
-                         sep='')
-    }
-    if (!is.null(rlsa[[edgename]])) {
-      edgelabel <- paste(edgelabel,
-                         ifelse(edgelabel == '','(','\n(+'),
-                         rlsa[[edgename]],
-                         ' almost)',
-                         sep='')
-    }
-    edgelabels <- c(edgelabels,edgelabel)
-    str <- paste(str,edgename,' ',edgeweight,'\n',sep='')
-  }
-  if (!is.null(str)) {
-    list(str=str,nonecount=nonecount,
-         allcount=length(lst),edgelabels=edgelabels)
-  } else {
+  vlist <- vargranger_list(lst)
+  if (length(which(vlist$causevr != '')) == 0) {
     NULL
+  } else {
+    r <- list()
+    r$str <- paste(sapply(df_in_rows(vlist[which(vlist$causevr != ''),]),
+                          function(x) paste(x$causevr,' ',x$othervr,' ',2*x$cnt + x$cnta,'\n',sep='')),
+                   collapse='')
+    r$nonecount <- ifelse(any(vlist$causevr == ''),vlist[vlist$causevr == '',]$cnt,0)
+    r$allcount <- length(lst)
+    r$edgelabels <- sapply(df_in_rows(vlist[which(vlist$causevr != ''),]),
+                           function(x) {
+                             str <- ''
+                             if (x$cnt > 0) {
+                               str <- paste(x$cnt,' model',
+                                            ifelse(x$cnt == 1,'','s'),sep='')
+                               if (x$cnta > 0) {
+                                 str <- paste(str,'\n(+',sep='')
+                               }
+                             }
+                             if (x$cnta > 0) {
+                               if (str == '') {
+                                 str <- '('
+                               }
+                               str <- paste(str,x$cnta,' almost)',sep='')
+                             }
+                             str
+                           })
+    r$edgecolors <- sapply(df_in_rows(vlist[which(vlist$causevr != ''),]),
+                           function(x) color_for_sign(x$sign))
+    r
   }
+}
+
+color_for_sign <- function(sgn) {
+  sgns <- c('+','~','-',' ')
+  clrs <- c(517,123,33,168)
+  clri <- clrs[which(sgn == sgns)]
+  colors()[clri]
 }
 
 vargranger_plot <- function(av_state) {
@@ -121,10 +91,10 @@ vargranger_plot <- function(av_state) {
     cols <- c('springgreen4','steelblue','chocolate1')
     E(a)$width <- E(a)$weight
     E(a)$label <- graphi$edgelabels
+    E(a)$color <- graphi$edgecolors
     plot(a,
          edge.arrow.size=2,
          edge.arrow.width=2,
-         edge.color='gray15',
          edge.curved=TRUE,
          edge.label.family='sans',
          edge.label.color=colors()[[190]],
@@ -144,18 +114,40 @@ vargranger_plot <- function(av_state) {
       i <- i + 1
       fname <- paste(gname,'_',i,sep='')
     }
-    fname <- paste(fname,'.pdf',sep='')
-    dev.copy2pdf(file=fname)
-    scat(av_state$log_level,3,"\nGranger causality plot saved to \"",fname,"\"\n",sep='')
+    fname1 <- paste(fname,'.pdf',sep='')
+    i <- i + 1
+    fname <- paste(gname,'_',i,sep='')
+    while (file.exists(paste(fname,'.pdf',sep=''))) {
+      i <- i + 1
+      fname <- paste(gname,'_',i,sep='')
+    }
+    fname2 <- paste(fname,'.pdf',sep='')
+    dev.copy2pdf(file=fname1)
+    fsize1 <- file.info(fname1)$size
+    dev.copy2pdf(file=fname2)
+    fsize2 <- file.info(fname2)$size
+    if (fsize1 != fsize2) {
+      warning("file sizes not equal")
+    }
+    if (fsize2 > fsize1) {
+      file.remove(fname1)
+      fname <- fname2
+    } else {
+      file.remove(fname2)
+      fname <- fname1
+    }
+    scat(av_state$log_level,3,
+         "\nGranger causality plot saved to \"",
+         fname,"\" (",file.info(fname)$size,")\n",sep='')
     invisible(a)
   }
 }
 
 iplot_test <- function(a,...) {
+  cols <- c('springgreen4','steelblue','chocolate1')
   plot(a,
        edge.arrow.size=2,
        edge.arrow.width=2,
-       edge.color='gray15',
        edge.curved=TRUE,
        edge.label.family='sans',
        edge.label.color=colors()[[190]],
