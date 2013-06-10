@@ -46,10 +46,6 @@ get_data_columns <- function(av_state,model) {
                                       nr_obs,
                                       av_state$log_level)) {
           model_valid <- FALSE
-          if (all(av_state$data[[av_state$subset]][[exovr]] == 0) &&
-                !is.null(model$normalized) && model$normalized) {
-            next
-          }
         }
         exovrs <- c(exovrs,exovr)
       }
