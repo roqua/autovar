@@ -74,7 +74,7 @@ Done. Processed 9 distinct models, of which 2 were valid.
 Tested 18 of 72 ( 25.00%) of the combinatorial search space at the given lags (1, 2).
 
 Granger causality summary of all 8 unrestricted models:
-  100.00%   SomPHQ       Granger causes  SomBewegUur   (3 models +5 almost) (sign: 4 ~, 4 -)
+  100.00%   SomPHQ      -Granger causes- SomBewegUur   (3 models +5 almost) (sign: 1 ~, 7 -)
 
 Granger causality summary of all 2 valid models:
   100.00%   SomPHQ      -Granger causes- SomBewegUur   (1 model +1 almost) (sign: 2 -)
@@ -84,7 +84,7 @@ Granger causality summary of all 1 valid unrestricted models:
 </div>
 <p><img src='print_rejected_models-3.png' alt='' width='400' height='400' /></p>
 <div class='output'>
-Granger causality plot saved to "pp5 nieuw compleet_47.pdf"
+Granger causality plot saved to "pp5 nieuw compleet_9.pdf" (5410)
 
 Summary of all valid models:
   lag:
@@ -125,10 +125,10 @@ print_rejected_models(av_state)
   apply_log_transform: TRUE
   lag: 1 
 [[3]]
-(AIC: 418.12, BIC: 438.55) : SomPHQ almost ~Granger causes~ SomBewegUur (0.0549)
+(AIC: 418.12, BIC: 438.55) : SomPHQ almost -Granger causes- SomBewegUur (0.0549)
   lag: 2 
 [[4]]
-(AIC: 407.16 (orig: 66.648), BIC: 427.59 (orig: 87.078)) : SomPHQ almost ~Granger causes~ SomBewegUur (0.0563)
+(AIC: 407.16 (orig: 66.648), BIC: 427.59 (orig: 87.078)) : SomPHQ almost -Granger causes- SomBewegUur (0.0563)
   apply_log_transform: TRUE
   lag: 2 
 [[5]]
@@ -137,7 +137,7 @@ print_rejected_models(av_state)
     3.5x std of res. SomPHQ (obs.: 27)
   lag: 1 
 [[6]]
-(AIC: 388.449, BIC: 412.966) : SomPHQ almost ~Granger causes~ SomBewegUur (0.0509)
+(AIC: 388.449, BIC: 412.966) : SomPHQ almost -Granger causes- SomBewegUur (0.0509)
   exogenous_variables: 
     3.5x std of res. SomPHQ (obs.: 27)
   lag: 2 

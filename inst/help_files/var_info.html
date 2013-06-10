@@ -79,18 +79,18 @@ Done. Processed 17 distinct models, of which 2 were valid.
 Tested 25 of 72 ( 34.72%) of the combinatorial search space at the given lags (1, 2).
 
 Granger causality summary of all 16 unrestricted models:
-   62.50%   SomBewegUur -Granger causes- SomPHQ        (7 models +3 almost) (sign: 4 ~, 6 -)
+   62.50%   SomBewegUur -Granger causes- SomPHQ        (7 models +3 almost) (sign: 10 -)
    37.50%   <None>                                     (6 models)
 
 Granger causality summary of all 2 valid models:
-  100.00%   SomBewegUur ~Granger causes~ SomPHQ        (2 models) (sign: 2 ~)
+  100.00%   SomBewegUur -Granger causes- SomPHQ        (2 models) (sign: 2 -)
 
 Granger causality summary of all 1 valid unrestricted models:
-  100.00%   SomBewegUur ~Granger causes~ SomPHQ        (1 model) (sign: 1 ~)
+  100.00%   SomBewegUur -Granger causes- SomPHQ        (1 model) (sign: 1 -)
 </div>
 <p><img src='var_info-3.png' alt='' width='400' height='400' /></p>
 <div class='output'>
-Granger causality plot saved to "pp1 nieuw compleet_70.pdf"
+Granger causality plot saved to "pp1 nieuw compleet_6.pdf" (5376)
 
 Summary of all valid models:
   lag:
@@ -100,7 +100,7 @@ Summary of all valid models:
     100.00%   FALSE   (2 models)
 
 The valid models (sorted by BIC score):
-A: (AIC: 631.222, BIC: 655.411) : SomBewegUur ~Granger causes~ SomPHQ (0.0325)
+A: (AIC: 631.222, BIC: 655.411) : SomBewegUur -Granger causes- SomPHQ (0.0325)
   Lag: 2
   Log transform: NO
   Exogenous variables: 
@@ -115,7 +115,7 @@ A: (AIC: 631.222, BIC: 655.411) : SomBewegUur ~Granger causes~ SomPHQ (0.0325)
     SomBewegUur = SomBewegUur.l1 + SomBewegUur.l2 + const + SomBewegUur_outliers
     SomPHQ = SomBewegUur.l1 + SomPHQ.l1 + SomBewegUur.l2 + const + SomBewegUur_outliers + SomPHQ_outliers
 
-B: (AIC: 633.66, BIC: 667.524) : SomBewegUur ~Granger causes~ SomPHQ (0.0463)
+B: (AIC: 633.66, BIC: 667.524) : SomBewegUur -Granger causes- SomPHQ (0.0463)
   Lag: 2
   Log transform: NO
   Exogenous variables: 
@@ -240,8 +240,8 @@ PASS: Unable to reject null hypothesis that residuals are normally distributed.
 
 Granger causality Wald tests
   Equation    Excluded sign     chi2 df          P
-1   SomPHQ SomBewegUur    ~ 6.855956  2 0.03245249
-Vargranger causes: SomBewegUur ~Granger causes~ SomPHQ (0.0325)
+1   SomPHQ SomBewegUur    - 6.855956  2 0.03245249
+Vargranger causes: SomBewegUur -Granger causes- SomPHQ (0.0325)
 
 estat ic
   Obs        ll df      AIC      BIC orig_AIC orig_BIC
@@ -360,8 +360,8 @@ FAIL: Residuals are significantly not normally distributed.
 
 Granger causality Wald tests
      Equation    Excluded sign      chi2 df         P
-1 SomBewegUur      SomPHQ    - 0.5803549  1 0.4461733
-2      SomPHQ SomBewegUur    - 1.8695427  1 0.1715275
+1 SomBewegUur      SomPHQ      0.5803549  1 0.4461733
+2      SomPHQ SomBewegUur      1.8695427  1 0.1715275
 No significant Granger causes detected.
 
 estat ic
