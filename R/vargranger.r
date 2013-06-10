@@ -96,6 +96,15 @@ vargranger_plot <- function(av_state) {
     a <- read.graph(file,format="ncol",directed=TRUE,weights="yes")
     cols <- c('springgreen4','steelblue','chocolate1')
     E(a)$width <- E(a)$weight
+    
+    V(a)$label <- sapply(V(a)$name,function(x) {
+      if (!is.null(get_var_label(av_state,x)) && get_var_label(av_state,x) != "") {
+        paste(strwrap(paste(get_var_label(av_state,x)," [",x,"]",sep=''),width=15),
+                                                                  collapse="\n")
+      } else {
+        x
+      }
+      })
     E(a)$label <- graphi$edgelabels
     E(a)$color <- graphi$edgecolors
     plot(a,
@@ -110,7 +119,7 @@ vargranger_plot <- function(av_state) {
          vertex.label.cex=1,
          vertex.color=cols[1:(length(V(a)))],
          vertex.label.color='black',
-         vertex.label.font=2,
+         vertex.label.font=1,
          main="Granger causality",
          sub=paste('found in',graphi$allcount - graphi$nonecount,'out of',graphi$allcount,'valid models'))
     igraph_legend()
@@ -150,6 +159,14 @@ vargranger_plot <- function(av_state) {
   }
 }
 
+get_var_label <- function(av_state,varname) {
+  if (!is.null(attr(av_state$raw_data,"variable.labels"))) {
+    attr(av_state$raw_data,"variable.labels")[[varname]]
+  } else {
+    NULL
+  }
+}
+
 iplot_test <- function(a,...) {
   cols <- c('springgreen4','steelblue','chocolate1')
   plot(a,
@@ -164,7 +181,7 @@ iplot_test <- function(a,...) {
        vertex.label.cex=1,
        vertex.color=cols[1:(length(V(a)))],
        vertex.label.color='black',
-       vertex.label.font=2,
+       vertex.label.font=1,
        main="Granger causality",
        sub=paste('found in X out of Y valid models'),...)
 }
