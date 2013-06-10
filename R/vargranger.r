@@ -79,6 +79,12 @@ color_for_sign <- function(sgn) {
   colors()[clri]
 }
 
+igraph_legend <- function() {
+  cols <- colors()[c(517,123,33,168)]
+  str <- c('positive associations','mixed pos/neg associations','negative associations','undirected associations')
+  mtext(str,side=1,line=-1:2,col=cols,font=2,adj=0,cex=0.8)
+}
+
 vargranger_plot <- function(av_state) {
   graphi <- vargranger_graph(av_state)
   if (!is.null(graphi)) {
@@ -107,6 +113,7 @@ vargranger_plot <- function(av_state) {
          vertex.label.font=2,
          main="Granger causality",
          sub=paste('found in',graphi$allcount - graphi$nonecount,'out of',graphi$allcount,'valid models'))
+    igraph_legend()
     gname <- gsub("\\.[^ ]{3,4}$","",basename(av_state$real_file_name))
     fname <- gname
     i <- 0
