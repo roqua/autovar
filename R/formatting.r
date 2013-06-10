@@ -6,7 +6,8 @@ format_accepted_models <- function(av_state) {
   for (x in av_state$accepted_models) {
     idx <- idx+1
     char <- idx_chars(idx)
-    res <- paste(res,char,": ",
+    asterm <- ifelse(x$parameters$apply_log_transform,mark_if_exists(x$parameters,av_state$accepted_models),"")
+    res <- paste(res,char,asterm,": ",
                  printed_model_score(x$varest),
                  " : ",
                  vargranger_line(x$varest),
@@ -45,6 +46,16 @@ format_accepted_models <- function(av_state) {
     #if (idx == 3) { break }
   }
   res
+}
+mark_if_exists <- function(model,lst) {
+  if (!is.null(find_models(lst,list(include_day_dummies=model$include_day_dummies,
+                                    include_trend_vars=model$include_trend_vars,
+                                    apply_log_transform=FALSE,
+                                    lag=model$lag)))) {
+    "*"
+  } else {
+    ""
+  }
 }
 idx_chars <- function(idx) {
   chars <- LETTERS[[((idx-1)%%26)+1]]
