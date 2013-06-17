@@ -1,0 +1,25 @@
+\name{plot_barchart}
+\alias{plot_barchart}
+\title{Plots a barchart of manual_score and the av_scores}
+\usage{
+  plot_barchart(av_state, x, y, ...)
+}
+\arguments{
+  \item{av_state}{an object of class \code{av_state} that
+  was the result of a call to \code{\link{var_main}}}
+
+  \item{manual_scores:}{The manual entries that are to be
+  compared with the av_scores}
+}
+\description{
+  This function plots the bar chart for the AIC and BIC
+  scores of the accepted models and compares the Manual AIC
+  and BIC scores graphically.
+}
+\examples{
+av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
+av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_level=3)
+# av_state is the result of a call to var_main
+plot_barchart(av_state,20.02,61.48)
+}
+

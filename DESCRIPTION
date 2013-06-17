@@ -53,3 +53,4 @@ Collate:
     'pperron.r'
     'add_trend.r'
     'stats_overrides.r'
+    'plot_barchart.r'

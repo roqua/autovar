@@ -44,7 +44,8 @@
   subset = 1, log_level = av_state$log_level, small = FALSE, include_model = NULL, 
       exogenous_variables = NULL, use_sktest = TRUE, restrictions.verify_validity_in_every_step = TRUE, 
       restrictions.extensive_search = TRUE, criterion = c("AIC", "BIC"), use_varsoc = FALSE, 
-      use_pperron = TRUE, include_squared_trend = FALSE, normalize_data = FALSE, include_lag_zero = FALSE)</pre>
+      use_pperron = TRUE, include_squared_trend = FALSE, normalize_data = FALSE, include_lag_zero = FALSE, 
+      split_up_outliers = FALSE)</pre>
     
     <h2>Arguments</h2>
     <dl>
@@ -196,6 +197,11 @@
       <dd>determines whether models at lag
   order 0 are should be considered. These are models at lag
   1 with constrained lag-1 parameters in all equations.</dd>
+      <dt>split_up_outliers</dt>
+      <dd>determines whether each outlier
+  should have its own exogenous variable. This will make a
+  difference for restricted models only, and only when
+  there is a variable with multiple outliers.</dd>
     </dl>
     
     <div class="Value">
@@ -252,7 +258,7 @@ Granger causality summary of all 1 valid unrestricted models:
 </div>
 <p><img src='var_main-5.png' alt='' width='400' height='400' /></p>
 <div class='output'>
-Granger causality plot saved to "Activity and depression pp5 Angela_1.pdf" (5403)
+Granger causality plot saved to "Activity and depression pp5 Angela_6.pdf" (5400)
 
 Summary of all valid models:
   lag:

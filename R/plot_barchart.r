@@ -5,13 +5,12 @@
 #' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
 #' @param manual_scores:   The manual entries that are to be compared with the av_scores
 #' @examples
-#' plot_bar_chart(av_state,20.02,61.48)
+#' av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
+#' av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_level=3)
+#' # av_state is the result of a call to var_main
+#' plot_barchart(av_state,20.02,61.48)
 #' @export
-
-
-library(ggplot2)   
-plot_barchart <- function(av_state, x,y,...)
-{
+plot_barchart <- function(av_state, x,y,...) {
   #generate data
   a <-NULL
   b <-NULL
@@ -33,5 +32,3 @@ plot_barchart <- function(av_state, x,y,...)
   ggplot(dfm,aes(x = Input,y = value,fill=variable)) +
   geom_bar(position= "dodge",width=0.5,colour="white")  
 }
-
-          
