@@ -20,15 +20,19 @@ plot_barchart <- function(av_state, x,y,...) {
   {
     a <- c(a,estat_ic(av_state$accepted_model[[i]]$varest)$AIC)
     b <- c(b,estat_ic(av_state$accepted_model[[i]]$varest)$BIC)
-    name <- c(name,paste(i,'model',sep=''))
+    name <- c(name,paste('model ',idx_chars(i),sep=''))
   }
-  df <- data.frame (Input=c('AIC','BIC'))
+  df <- data.frame (criterion=c('AIC','BIC'))
   for(i in 1:l)
   {
   df[[name[[i]]]] <- c(a[[i]],b[[i]])
   }
-  df[['Manual_model']] <- c(x,y)
+  df[['Manual model']] <- c(x,y)
   dfm <- melt(df,id.vars = 1)
-  ggplot(dfm,aes(x = Input,y = value,fill=variable)) +
-  geom_bar(position= "dodge",stat="identity", width=0.5,colour="white")
+  ggplot(dfm,aes(x = criterion,y = value,fill = variable)) +
+  geom_bar(position= "dodge",stat="identity", width=0.5,colour="white") +
+  scale_fill_manual(values = c(colorspace:::rainbow_hcl(l),"gray24"))
 }
+
+
+
