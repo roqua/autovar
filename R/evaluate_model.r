@@ -32,7 +32,7 @@ evaluate_model <- function(av_state,model,index,totmodelcnt) {
   
     # get the var estimate for this model. This is the 'var' command in STATA.
     res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
-    res$varest <- set_varest_values(av_state,res$varest)
+    res$varest <- set_varest_values(av_state,res$varest,model)
     
     # remove nonsignificant coefficients from the formula
     if (is_restricted_model(model)) {
@@ -228,7 +228,7 @@ calc_varest <- function(av_state,model) {
   dta <- get_data_columns(av_state,model)
   av_state <- dta$av_state
   varest <- run_var(data = dta$endogenous, lag = model$lag, exogen=dta$exogenous)
-  varest <- set_varest_values(av_state,varest)
+  varest <- set_varest_values(av_state,varest,model)
   if (is_restricted_model(model)) {
     varest <- iterative_restrict(varest,
                                  av_state$restrictions.verify_validity_in_every_step,
@@ -243,7 +243,9 @@ calc_varest <- function(av_state,model) {
 #' @param varest an object of class \code{varest}
 #' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity.
 #' @examples
-#' # av_state is the result of an earlier call to var_main
+#' av_state <- load_file("../data/input/pp1 nieuw compleet.sav",log_level=3)
+#' av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion='BIC',log_level=3)
+#' # av_state is the result of a call to var_main
 #' var_info(av_state$accepted_models[[1]]$varest)
 #' var_info(av_state$rejected_models[[1]]$varest)
 #' @export

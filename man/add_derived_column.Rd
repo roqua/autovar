@@ -62,9 +62,12 @@ av_state <- load_file("../data/input/RuwedataAngela.sav")
 av_state <- add_derived_column(av_state,'SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4',
                                'PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),
                                operation='SUM')
-av_state <- add_derived_column(av_state,'lnSomBewegUur','SomBewegUur',
-                               operation='LN')
+column_names_output(av_state)
+av_state <- load_file("../data/input/pp1 nieuw compleet.sav",log_level=3)
 av_state <- add_derived_column(av_state,'SomBewegUur','SomBewegen',
                                operation='MINUTES_TO_HOURS')
+av_state <- add_derived_column(av_state,'lnSomBewegUur','SomBewegUur',
+                               operation='LN')
+av_state$data[[1]][c('SomBewegen','SomBewegUur','lnSomBewegUur')]
 }
 

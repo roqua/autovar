@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>add_derived_column. autovar 0.1-0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">autovar 0.1-0</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Add a new column using data from other columns</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre>add_derived_column(av_state, name, columns, operation = c("SUM", "LN", "MINUTES_TO_HOURS", 
+  "SQUARED"), log_level = 0)</pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>av_state</dt>
+      <dd>an object of class <code>av_state</code></dd>
+      <dt>name</dt>
+      <dd>the name of the new column</dd>
+      <dt>columns</dt>
+      <dd>the existing columns that the new column
+  will be based on</dd>
+      <dt>operation</dt>
+      <dd>this argument has three possible values:
+  <ul>
+<li> <code>'SUM'</code> - The new column is the sum
+  of the columns specified in the columns argument. So for
+  this option, the columns argument is an array of column
+  names. Values in the summation of columns that are NA are
+  treated as if they're zero. Columns that are not numeric
+  are transformed to numeric. For example, Factor columns
+  are transformed to numbers starting at 0 for the first
+  factor level. </li>
+<li> <code>'LN'</code> - The new column is the
+  natural logarithm of the specified column in columns.
+  Thus, for this option, the columns argument is simply the
+  name of a single column. This operation does not work on
+  columns that are not numeric. Values in the original
+  column that are NA are left as NA in the new column. Note
+  that values are increased if necessary so that the
+  resulting column has no negative values. </li>
+<li>
+  <code>'MINUTES_TO_HOURS'</code> - The new column is the values
+  of the specified column divided by 60. Thus, for this
+  option, the columns argument is simply the name of a
+  single column. This operation does not work on columns
+  that are not numeric. Values in the original column that
+  are NA are left as NA in the new column. </li>
+<li>
+  <code>'SQUARED'</code> - The new column ise the square of the
+  values of the specified column. Thus, for this option,
+  the columns argument is simply the name of a single
+  column. This operation does not work on columns that are
+  not numeric. Values in the original column that are NA
+  are left as NA in the new column. </li>
+</ul>
+</dd>
+      <dt>log_level</dt>
+      <dd>sets the minimum level of output that
+  should be shown (a number between 0 and 3). A lower level
+  means more verbosity. Specify a log_level of 3 to hide
+  messages about converting columns or increasing values
+  for the 'LN' option.</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+      
+      <p>This function returns the modified <code>av_state</code>
+  object.</p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+      
+      <p>This function adds a new column, based on existing
+  columns, to all identified groups in the given data set.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/RuwedataAngela.sav")
+</div>
+<div class='output'>load_file loaded SPSS file with 35 columns:
+ [1] "id (scl)"                       "geslacht (nom)"                 "leeftijd (scl)"                
+ [4] "datum_MI (scl)"                 "roken (nom)"                    "BMI (scl)"                     
+ [7] "depressie_verleden (scl)"       "hartfalen (nom)"                "tijdstip (scl)"                
+[10] "norm_bewegen (nom)"             "woon_werk (nom)"                "minuten_woonwerk (scl)"        
+[13] "licht_matigwerk (nom)"          "minuten_werk_licht (scl)"       "zwaar_werk (nom)"              
+[16] "minuten_zwaar_werk (scl)"       "licht_huishouden (nom)"         "minuten_licht_huishouden (scl)"
+[19] "zwaar_huishouden (nom)"         "minuten_zwaarhuishouden (scl)"  "vrije_tijd (nom)"              
+[22] "minuten_vrijetijd (scl)"        "sport (nom)"                    "minuten_sport (scl)"           
+[25] "PHQ1 (nom)"                     "PHQ2 (nom)"                     "PHQ3 (nom)"                    
+[28] "PHQ4 (nom)"                     "PHQ5 (nom)"                     "PHQ6 (nom)"                    
+[31] "PHQ7 (nom)"                     "PHQ8 (nom)"                     "PHQ9 (nom)"                    
+[34] "beperking (nom)"                "angst (nom)"                   
+</div>
+<div class='input'>av_state <- add_derived_column(av_state,'SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4',
+                               'PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),
+                               operation='SUM')
+</div>
+<div class='output'>column PHQ1 is not numeric: converting... (for subset 1)
+</div>
+<div class='input'>column_names_output(av_state)
+</div>
+<div class='output'> [1] "id (scl)"                       "geslacht (nom)"                 "leeftijd (scl)"                
+ [4] "datum_MI (scl)"                 "roken (nom)"                    "BMI (scl)"                     
+ [7] "depressie_verleden (scl)"       "hartfalen (nom)"                "tijdstip (scl)"                
+[10] "norm_bewegen (nom)"             "woon_werk (nom)"                "minuten_woonwerk (scl)"        
+[13] "licht_matigwerk (nom)"          "minuten_werk_licht (scl)"       "zwaar_werk (nom)"              
+[16] "minuten_zwaar_werk (scl)"       "licht_huishouden (nom)"         "minuten_licht_huishouden (scl)"
+[19] "zwaar_huishouden (nom)"         "minuten_zwaarhuishouden (scl)"  "vrije_tijd (nom)"              
+[22] "minuten_vrijetijd (scl)"        "sport (nom)"                    "minuten_sport (scl)"           
+[25] "PHQ1 (nom)"                     "PHQ2 (nom)"                     "PHQ3 (nom)"                    
+[28] "PHQ4 (nom)"                     "PHQ5 (nom)"                     "PHQ6 (nom)"                    
+[31] "PHQ7 (nom)"                     "PHQ8 (nom)"                     "PHQ9 (nom)"                    
+[34] "beperking (nom)"                "angst (nom)"                    "SomPHQ (scl)"                  
+</div>
+<div class='input'>av_state <- load_file("../data/input/pp1 nieuw compleet.sav",log_level=3)
+av_state <- add_derived_column(av_state,'SomBewegUur','SomBewegen',
+                               operation='MINUTES_TO_HOURS')
+av_state <- add_derived_column(av_state,'lnSomBewegUur','SomBewegUur',
+                               operation='LN')
+</div>
+<div class='output'>add_derived_column_ln: increasing all values of column SomBewegUur by 1 for subset 1 
+</div>
+<div class='input'>av_state$data[[1]][c('SomBewegen','SomBewegUur','lnSomBewegUur')]
+</div>
+<div class='output'>   SomBewegen SomBewegUur lnSomBewegUur
+1    378.0895    6.301492      1.988079
+2    180.0000    3.000000      1.386294
+3    240.0000    4.000000      1.609438
+4    143.6881    2.394801      1.222245
+5    180.0000    3.000000      1.386294
+6    390.0000    6.500000      2.014903
+7    420.0000    7.000000      2.079442
+8    390.0000    6.500000      2.014903
+9    420.0000    7.000000      2.079442
+10   420.0000    7.000000      2.079442
+11   420.0000    7.000000      2.079442
+12   420.0000    7.000000      2.079442
+13     0.0000    0.000000      0.000000
+14   343.6143    5.726906      1.906115
+15   420.0000    7.000000      2.079442
+16   420.0000    7.000000      2.079442
+17   420.0000    7.000000      2.079442
+18   360.0000    6.000000      1.945910
+19   420.0000    7.000000      2.079442
+20   360.0000    6.000000      1.945910
+21   390.0000    6.500000      2.014903
+22   390.0000    6.500000      2.014903
+23   240.0000    4.000000      1.609438
+24   330.0000    5.500000      1.871802
+25   330.0000    5.500000      1.871802
+26   300.0000    5.000000      1.791759
+27   420.0000    7.000000      2.079442
+28   330.0000    5.500000      1.871802
+29   390.0000    6.500000      2.014903
+30   420.0000    7.000000      2.079442
+31   440.0000    7.333333      2.120264
+32   580.0000    9.666667      2.367124
+33   720.0000   12.000000      2.564949
+34   651.4983   10.858305      2.473028
+35   600.0000   10.000000      2.397895
+36   540.0000    9.000000      2.302585
+37   580.0000    9.666667      2.367124
+38   580.0000    9.666667      2.367124
+39   720.0000   12.000000      2.564949
+40   530.0000    8.833333      2.285778
+41   600.0000   10.000000      2.397895
+42   780.0000   13.000000      2.639057
+43   480.0000    8.000000      2.197225
+44   620.0000   10.333333      2.427748
+45   620.0000   10.333333      2.427748
+46   540.0000    9.000000      2.302585
+47   510.0000    8.500000      2.251292
+48   660.0000   11.000000      2.484907
+49   690.0000   11.500000      2.525729
+50   540.0000    9.000000      2.302585
+51   570.0000    9.500000      2.351375
+52   410.0000    6.833333      2.058388
+53   450.0000    7.500000      2.140066
+54   420.0000    7.000000      2.079442
+55   420.0000    7.000000      2.079442
+56   300.0000    5.000000      1.791759
+57   330.0000    5.500000      1.871802
+58   455.7621    7.596035      2.151301
+59   480.0000    8.000000      2.197225
+60   480.0000    8.000000      2.197225
+61   500.0000    8.333333      2.233592
+62   740.0000   12.333333      2.590267
+63   370.0000    6.166667      1.969441
+64   460.0000    7.666667      2.159484
+65   431.4594    7.190991      2.103035
+66   480.0000    8.000000      2.197225
+67   440.0000    7.333333      2.120264
+68   450.0000    7.500000      2.140066
+69   480.0000    8.000000      2.197225
+70   420.0000    7.000000      2.079442
+71   480.0000    8.000000      2.197225
+72   360.0000    6.000000      1.945910
+73   270.0000    4.500000      1.704748
+74   360.0000    6.000000      1.945910
+75   300.0000    5.000000      1.791759
+76   300.0000    5.000000      1.791759
+77   360.0000    6.000000      1.945910
+78   403.6609    6.727682      2.044809
+79   400.0000    6.666667      2.036882
+80   270.0000    4.500000      1.704748
+81   350.0000    5.833333      1.921813
+82   335.0000    5.583333      1.884541
+83   330.0000    5.500000      1.871802
+84   300.0000    5.000000      1.791759
+85   485.0631    8.084385      2.206557
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>add_derived_column</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

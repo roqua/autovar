@@ -171,12 +171,11 @@
   \code{av_state} and \code{vars}.
 }
 \examples{
-av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta")
+av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta",log_level=3)
 av_state <- group_by(av_state,'id')
 av_state <- order_by(av_state,'Day')
 av_state <- add_derived_column(av_state,'Activity_hours','Activity',
                                operation='MINUTES_TO_HOURS')
 av_state <- var_main(av_state,c('Activity_hours','Depression'),log_level=3)
-var_info(av_state$accepted_models[[1]]$varest)
 }
 

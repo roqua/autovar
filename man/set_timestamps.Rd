@@ -13,7 +13,7 @@
 
   \item{subset_id}{either an integer subset index or the
   the value for the \code{id_field} column that was used in
-  the \code{group_by} function. The \code{subset_id}
+  the \code{\link{group_by}} function. The \code{subset_id}
   argument is required if the data set is grouped into
   multiple data sets (i.e., if the \code{\link{group_by}}
   function was used), in which case the function works on
@@ -69,7 +69,17 @@
   cyclicity from the data set.
 }
 \examples{
-av_state <- load_file("../data/input/RuwedataAngela.sav")
+av_state <- load_file("../data/input/pp4 nieuw compleet met 140min.sav",log_level=3)
 av_state <- set_timestamps(av_state,date_of_first_measurement="2010-04-14")
+
+# an example with multiple measurements per day:
+av_state <- load_file("../data/input/ID68 basisbestand.sav",log_level=3)
+av_state <- set_timestamps(av_state,date_of_first_measurement="2012-07-12",
+                           measurements_per_day=3)
+
+# same data set, but one extra day because the first day only has one measurement
+av_state <- load_file("../data/input/ID68 basisbestand.sav",log_level=3)
+av_state <- set_timestamps(av_state,date_of_first_measurement="2012-07-12",
+                           measurements_per_day=3,first_measurement_index=3)
 }
 

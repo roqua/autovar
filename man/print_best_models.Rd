@@ -16,6 +16,9 @@
   lowest AIC+BIC value.
 }
 \examples{
-print_best_model(av_state)
+av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
+av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_level=3)
+# av_state is the result of a call to var_main
+print_best_models(av_state)
 }
 

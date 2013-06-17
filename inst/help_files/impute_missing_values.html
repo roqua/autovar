@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>impute_missing_values. autovar 0.1-0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">autovar 0.1-0</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Impute missing values</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre>impute_missing_values(av_state, columns, subset_ids = "ALL", type = c("SIMPLE", "EM"))</pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>av_state</dt>
+      <dd>an object of class <code>av_state</code></dd>
+      <dt>columns</dt>
+      <dd>the columns of which missing values should
+  be imputed. This argument can be a single column or a
+  vector of column names.</dd>
+      <dt>subset_ids</dt>
+      <dd>identifies which data subsets to impute
+  data for. This argument can be a single subset, a range
+  of subsets (both of which are identified by their
+  indices), or it can be the word <code>'ALL'</code> (default).
+  In the latter case, the selected columns of all data
+  subsets are processed.</dd>
+      <dt>type</dt>
+      <dd>this argument has two possible values:
+  <ul>
+<li> <code>'SIMPLE'</code> - The value of the
+  missing data is determined by up to five values
+  surrounding the value (2 before, 3 after, unless at the
+  start or end of the range). For numeric (scl) columns,
+  the mean of these values is chosen as value. For factor
+  (nom) columns, the mode of these values is chosen as
+  value. </li>
+<li> <code>'EM'</code> - Em imputation. Currently not
+  implemented. </li>
+</ul>
+</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+      
+      <p>This function returns the modified <code>av_state</code>
+  object.</p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+      
+      <p>This function can impute data for values that are missing
+  (i.e., for values that are <code>NA</code>). It outputs for
+  every subset how many values were imputed (for all
+  columns total) along with a percentage (following
+  <code><=</code>). This percentage is the percentage of the
+  column with the highest percentage of imputed values,
+  i.e., if multiple columns were specified, it is the
+  percentage of values that were imputed of the column that
+  had relatively most <code>NA</code> values.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
+av_state <- group_by(av_state,'id')
+</div>
+<div class='output'>group_by: identified 5 groups based on distinct values for attribute 'id'
+</div>
+<div class='input'>print(av_state)
+</div>
+<div class='output'>
+file_name: C:/Users/KyD/Desktop/work/work/r/code/preprocessing/../data/input/RuwedataAngela.sav 
+real_file_name: ../data/input/RuwedataAngela.sav 
+file_type: SPSS 
+raw_data: 318 samples with 35 features [missing: 22.47% (2501)]
+data: 
+  1: 85 samples with 35 features [missing: 18.05% (537)]
+  2: 95 samples with 35 features [missing: 31.76% (1056)]
+  3: 14 samples with 35 features [missing: 18.57% (91)]
+  4: 65 samples with 35 features [missing: 20.18% (459)]
+  5: 59 samples with 35 features [missing: 17.34% (358)]
+group_by: id 
+
+</div>
+<div class='input'>av_statea <- impute_missing_values(av_state,'norm_bewegen')
+</div>
+<div class='output'>impute_missing_values: imputing values for columns: norm_bewegen...
+impute_missing_values: imputed 1 (<=1.18%) missing values for subset 1
+impute_missing_values: imputed 17 (<=17.89%) missing values for subset 2
+impute_missing_values: imputed a total of 18 values.
+</div>
+<div class='input'>print(av_statea)
+</div>
+<div class='output'>
+file_name: C:/Users/KyD/Desktop/work/work/r/code/preprocessing/../data/input/RuwedataAngela.sav 
+real_file_name: ../data/input/RuwedataAngela.sav 
+file_type: SPSS 
+raw_data: 318 samples with 35 features [missing: 22.47% (2501)]
+data: 
+  1: 85 samples with 35 features [missing: 18.02% (536)]
+  2: 95 samples with 35 features [missing: 31.25% (1039)]
+  3: 14 samples with 35 features [missing: 18.57% (91)]
+  4: 65 samples with 35 features [missing: 20.18% (459)]
+  5: 59 samples with 35 features [missing: 17.34% (358)]
+group_by: id 
+
+</div>
+<div class='input'>av_stateb <- impute_missing_values(av_state,c('norm_bewegen',
+                                   'minuten_woonwerk'),subset_ids=1)
+</div>
+<div class='output'>impute_missing_values: imputing values for columns: norm_bewegen, minuten_woonwerk...
+impute_missing_values: imputed 1 (<=1.18%) missing values for subset 1
+impute_missing_values: imputed a total of 1 values.
+</div>
+<div class='input'>print(av_stateb)
+</div>
+<div class='output'>
+file_name: C:/Users/KyD/Desktop/work/work/r/code/preprocessing/../data/input/RuwedataAngela.sav 
+real_file_name: ../data/input/RuwedataAngela.sav 
+file_type: SPSS 
+raw_data: 318 samples with 35 features [missing: 22.47% (2501)]
+data: 
+  1: 85 samples with 35 features [missing: 18.02% (536)]
+  2: 95 samples with 35 features [missing: 31.76% (1056)]
+  3: 14 samples with 35 features [missing: 18.57% (91)]
+  4: 65 samples with 35 features [missing: 20.18% (459)]
+  5: 59 samples with 35 features [missing: 17.34% (358)]
+group_by: id 
+
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>impute_missing_values</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

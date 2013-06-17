@@ -30,11 +30,10 @@
   script, otherwise, the data is stored in separate files.
 }
 \examples{
-av_state <- load_file("../data/input/pp5.dta")
-av_state <- group_by(av_state,'id')
-av_state <- order_by(av_state,'Day')
-av_state <- add_derived_column(av_state,'Activity_hours','Activity',
-                               operation='MINUTES_TO_HOURS')
+av_state <- load_file("../data/input/ID68 basisbestand.sav",log_level=3)
+av_state <- add_trend(av_state)
+av_state <- set_timestamps(av_state,date_of_first_measurement="2012-07-12",
+                           measurements_per_day=3,log_level=3)
 store_file(av_state)
 }
 

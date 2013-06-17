@@ -2,14 +2,28 @@
 #' 
 #' This function selects which rows of a data set should be included. Either the \code{begin} or the \code{end} argument need to be specified. The column does not need to be sorted for this function to work. Values are included if they are \code{>= begin} and \code{<= end}, if specified, for the specified column. Values that are \code{NA} are never removed by this function.
 #' @param av_state an object of class \code{av_state}
-#' @param subset_id either an integer subset index or the the value for the \code{id_field} column that was used in the \code{group_by} function. The \code{subset_id} argument is required if the data set is grouped into multiple data sets (i.e., if the \code{\link{group_by}} function was used), in which case the function works on the specified data subset.
+#' @param subset_id either an integer subset index or the the value for the \code{id_field} column that was used in the \code{\link{group_by}} function. The \code{subset_id} argument is required if the data set is grouped into multiple data sets (i.e., if the \code{\link{group_by}} function was used), in which case the function works on the specified data subset.
 #' @param column specifies which column the \code{begin} and \code{end} values should be taken over. This argument is optional, and if it is missing, \code{id_field} used in \code{\link{order_by}} will be used.
 #' @param begin indicates which values should be included. Values that are \code{>= begin} are included. This argument is optional if \code{end} is specified.
 #' @param end indicates which values should be included. Values that are \code{<= end} are included. This argument is optional if \code{begin} is specified.
 #' @return This function returns the modified \code{av_state} object.
 #' @examples
-#' av_state <- load_file("../data/input/RuwedataAngela.sav")
-#' av_state <- select_range(av_state,'1',begin=20,end=40)
+#' av_state <- load_file("../data/input/pp2 nieuw compleet_64dagen.sav",log_level=3)
+#' av_state <- order_by(av_state,'tijdstip')
+#' print(av_state)
+#' av_state$data[[1]]['tijdstip']
+#' # default column is the order_by column in this case:
+#' av_state <- select_range(av_state,begin=20,end=40)
+#' print(av_state)
+#' av_state$data[[1]]['tijdstip']
+#' 
+#' av_state <- load_file("../data/input/pp2 nieuw compleet_64dagen.sav",log_level=3)
+#' print(av_state)
+#' av_state$data[[1]]['lnSomPHQ']
+#' # now only retain rows with 0 <= lnSomPHQ <= 2
+#' av_state <- select_range(av_state,column='lnSomPHQ',begin=0,end=2)
+#' print(av_state)
+#' av_state$data[[1]]['lnSomPHQ']
 #' @export
 select_range <- function(av_state,subset_id=1,column,begin,end) {
   assert_av_state(av_state)

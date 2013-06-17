@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>group_by. autovar 0.1-0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">autovar 0.1-0</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Split up a data set into different subsets</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre>group_by(av_state, id_field)</pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>av_state</dt>
+      <dd>an object of class <code>av_state</code></dd>
+      <dt>id_field</dt>
+      <dd>the name of a column in the data set</dd>
+    </dl>
+    
+    <div class="Value">
+      <h2>Value</h2>
+      
+      <p>This function returns the modified <code>av_state</code>
+  object.</p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+      
+      <p>This function splits up the initial data set into
+  multiple sets based on their value for <code>id_field</code>.
+  For example, if we have a data set with a field named
+  <code>id</code> that has values ranging from 11 to 15, calling
+  <code>av_state <- group_by('id')</code> will set
+  <code>av_state$data</code> to a list of five items. This list
+  is ordered by the value of the id field. Then, we can use
+  <code>av_state$data[[1]]</code> (or equivalently,
+  <code>av_state$data[['11']]</code>) to retrieve the rows in the
+  data set that have <code>id</code> 11. Likewise, use
+  <code>av_state$data[[2]]</code> or <code>av_state$data[['12']]</code>
+  for rows with <code>id</code> 12. This function can only be
+  called once per <code>av_state</code>.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
+print(av_state)
+</div>
+<div class='output'>
+file_name: C:/Users/KyD/Desktop/work/work/r/code/preprocessing/../data/input/RuwedataAngela.sav 
+real_file_name: ../data/input/RuwedataAngela.sav 
+file_type: SPSS 
+raw_data: 318 samples with 35 features [missing: 22.47% (2501)]
+data: 
+  multiple: 318 samples with 35 features [missing: 22.47% (2501)]
+
+</div>
+<div class='input'>av_state <- group_by(av_state,'id')
+</div>
+<div class='output'>group_by: identified 5 groups based on distinct values for attribute 'id'
+</div>
+<div class='input'>print(av_state)
+</div>
+<div class='output'>
+file_name: C:/Users/KyD/Desktop/work/work/r/code/preprocessing/../data/input/RuwedataAngela.sav 
+real_file_name: ../data/input/RuwedataAngela.sav 
+file_type: SPSS 
+raw_data: 318 samples with 35 features [missing: 22.47% (2501)]
+data: 
+  1: 85 samples with 35 features [missing: 18.05% (537)]
+  2: 95 samples with 35 features [missing: 31.76% (1056)]
+  3: 14 samples with 35 features [missing: 18.57% (91)]
+  4: 65 samples with 35 features [missing: 20.18% (459)]
+  5: 59 samples with 35 features [missing: 17.34% (358)]
+group_by: id 
+
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>group_by</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

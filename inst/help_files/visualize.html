@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>visualize. autovar 0.1-0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">autovar 0.1-0</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Visualize columns of the data set</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre>visualize(av_state, columns, ...)</pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>av_state</dt>
+      <dd>an object of class <code>av_state</code></dd>
+      <dt>columns</dt>
+      <dd>specifies the columns to be displayed.
+  When given the name of a single column, the function
+  behaves differently depending on the class of the column:
+  <ul>
+<li> If the class of the column is
+  <code>factor</code>, the column is seen as a nominal column,
+  and the following arguments are accepted:
+  <code>visualize(column,type=c('PIE','BAR','DOT','LINE'),title="",...)</code>.
+  All plots also accept the <code>xlab</code> argument, e.g.,
+  <code>xlab='minuten'</code>. Furthermore, when the type is
+  <code>'BAR'</code>, an additional argument <code>horiz</code> can be
+  supplied (<code>horiz</code> is <code>FALSE</code> by default), which
+  will draw horizontal bar charts instead of vertical ones.
+  To show values over time rather than total values, the
+  <code>'LINE'</code> type can be used. Example:
+  <code>visualize('PHQ1')</code> (assuming <code>'PHQ1'</code> is a
+  <code>factor</code> column). </li>
+<li> If the class of the column
+  is <code>numeric</code>, the column is seen as a scale column,
+  and the following arguments are accepted:
+  <code>visualize(column,type=c('LINE','BOX'),title="",...)</code>.
+  Furthermore, when the type is <code>'LINE'</code>, an
+  additional argument <code>acc</code> can be supplied
+  (<code>acc</code> is <code>FALSE</code> by default), which will plot
+  lines of accumulated values rather than the individual
+  values. Example:
+  <code>visualize('minuten_sport',type='LINE',acc=TRUE)</code>
+  (assuming <code>'minuten_sport'</code> is a <code>numeric</code>
+  column). </li>
+</ul>
+ When the <code>columns</code> argument is given a
+  vector of column names, the columns are either shown as
+  multiple lines in a line plot (when <code>type='LINE'</code>),
+  or the sums of the columns are displayed in the plots
+  (for any of the other types). When given a vector of
+  column names as the <code>columns</code> argument, the function
+  accepts the following arguments:
+  <code>visualize(columns,labels=columns,type=c('LINE','PIE','BAR','DOT'),
+  title="",...)</code>. The arguments of this function work much
+  like the ones described above for individual
+  <code>factor</code> columns. The added optional <code>labels</code>
+  argument should be a vector of the same length as the
+  <code>columns</code> argument, specifying custom names for the
+  columns. This argument is ignored when
+  <code>type='LINE'</code>.</dd>
+    </dl>
+    
+    <div class="Description">
+      <h2>Description</h2>
+      
+      <p>This function works with single or multiple columns. When
+  given an array of multiple columns as <code>columns</code>
+  argument, all nonnumeric columns are converted to numeric
+  class in the plot. This function creates a combined plot
+  with individual plots for each identified group (if the
+  <code><a href='group_by.html'>group_by</a></code> was used) in the current data set.
+  Any supplied arguments other than the ones described are
+  passed on to the plotting functions.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
+av_state <- add_derived_column(av_state,'sum_minuten_licht',
+              c('minuten_woonwerk','minuten_werk_licht',
+                'minuten_licht_huishouden'))
+av_state <- add_derived_column(av_state,'sum_minuten_zwaar',
+              c('minuten_zwaarhuishouden','minuten_zwaar_werk'))
+visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar',
+          'minuten_vrijetijd','minuten_sport'),
+          labels=c('licht werk','zwaar werk','vrije tijd','sport'),
+          type='BAR',horiz=TRUE)
+</div>
+<p><img src='visualize-2.png' alt='' width='400' height='400' /></p>
+<p><img src='visualize-3.png' alt='' width='400' height='400' /></p>
+<div class='input'>visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar',
+          'minuten_vrijetijd','minuten_sport'),
+          type='DOT',xlab='minuten')
+</div>
+<p><img src='visualize-5.png' alt='' width='400' height='400' /></p>
+<div class='input'>visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar',
+          'minuten_vrijetijd','minuten_sport'))
+</div>
+<strong class='warning'>Warning message:
+Removed 24 rows containing missing values (geom_point).</strong>
+<strong class='warning'>Warning message:
+Removed 34 rows containing missing values (geom_point).</strong>
+<p><img src='visualize-9.png' alt='' width='400' height='400' /></p></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>visualize</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

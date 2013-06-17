@@ -45,9 +45,13 @@
   had relatively most \code{NA} values.
 }
 \examples{
-av_state <- load_file("../data/input/RuwedataAngela.sav")
+av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
+av_state <- group_by(av_state,'id')
+print(av_state)
 av_statea <- impute_missing_values(av_state,'norm_bewegen')
+print(av_statea)
 av_stateb <- impute_missing_values(av_state,c('norm_bewegen',
                                    'minuten_woonwerk'),subset_ids=1)
+print(av_stateb)
 }
 

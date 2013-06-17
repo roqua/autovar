@@ -9,7 +9,7 @@
 
   \item{subset_id}{either an integer subset index or the
   the value for the \code{id_field} column that was used in
-  the \code{group_by} function. The \code{subset_id}
+  the \code{\link{group_by}} function. The \code{subset_id}
   argument is required if the data set is grouped into
   multiple data sets (i.e., if the \code{\link{group_by}}
   function was used), in which case the function works on
@@ -42,7 +42,21 @@
   \code{NA} are never removed by this function.
 }
 \examples{
-av_state <- load_file("../data/input/RuwedataAngela.sav")
-av_state <- select_range(av_state,'1',begin=20,end=40)
+av_state <- load_file("../data/input/pp2 nieuw compleet_64dagen.sav",log_level=3)
+av_state <- order_by(av_state,'tijdstip')
+print(av_state)
+av_state$data[[1]]['tijdstip']
+# default column is the order_by column in this case:
+av_state <- select_range(av_state,begin=20,end=40)
+print(av_state)
+av_state$data[[1]]['tijdstip']
+
+av_state <- load_file("../data/input/pp2 nieuw compleet_64dagen.sav",log_level=3)
+print(av_state)
+av_state$data[[1]]['lnSomPHQ']
+# now only retain rows with 0 <= lnSomPHQ <= 2
+av_state <- select_range(av_state,column='lnSomPHQ',begin=0,end=2)
+print(av_state)
+av_state$data[[1]]['lnSomPHQ']
 }
 

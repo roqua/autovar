@@ -2,14 +2,15 @@
 \alias{add_trend}
 \title{Adds a trend variable to a data set}
 \usage{
-  add_trend(av_state, subset_id = 1, varname = "index")
+  add_trend(av_state, subset_id = 1, varname = "index",
+    log_level = 0)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
 
   \item{subset_id}{either an integer subset index or the
   the value for the \code{id_field} column that was used in
-  the \code{group_by} function. The \code{subset_id}
+  the \code{\link{group_by}} function. The \code{subset_id}
   argument is required if the data set is grouped into
   multiple data sets (i.e., if the \code{\link{group_by}}
   function was used), in which case the function works on
@@ -18,6 +19,11 @@
   \item{varname}{the name of the newly created indexing
   column. Will be postfixed with underscores if the column
   already exists}
+
+  \item{log_level}{sets the minimum level of output that
+  should be shown (a number between 0 and 3). A lower level
+  means more verbosity. Specify a log_level of 3 to hide
+  messages about the columns being added.}
 }
 \description{
   This function adds a column to a dataset, running from 1
@@ -26,7 +32,9 @@
   for every subset.
 }
 \examples{
-av_state <- load_file("../data/input/RuwedataAngela.sav")
+av_state <- load_file("../data/input/pp1 nieuw compleet.sav")
 av_state <- add_trend(av_state)
+column_names_output(av_state)
+av_state$data[[1]][c('index','index2')]
 }
 

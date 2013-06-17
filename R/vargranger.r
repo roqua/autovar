@@ -38,75 +38,51 @@ vargranger_graph <- function(av_state) {
 }
 
 vargranger_graph_aux <- function(av_state,lst) {
-  str <- NULL
-  rls <- list()
-  rlsa <- list()
-  rlsr <- list()
-  nonecount <- 0
-  for (model in lst) {
-    res <- vargranger_call(model$varest)
-    foundflag <- FALSE
-    for (row in df_in_rows(res)) {
-      if (row$P <= av_state_significance(model$varest)) {
-        weight <- 2
-        foundflag <- TRUE
-      } else if (row$P <= 2*av_state_significance(model$varest)) {
-        weight <- 1
-        foundflag <- TRUE
-      } else { 
-        next
-      }
-      edgename <- paste(unprefix_ln(row$Excluded),unprefix_ln(row$Equation))
-      if (is.null(rls[[edgename]])) {
-        rls[[edgename]] <- 0
-      }
-      rls[[edgename]] <- rls[[edgename]]+weight
-      if (weight == 2) {
-        if (is.null(rlsr[[edgename]])) {
-          rlsr[[edgename]] <- 0
-        }
-        rlsr[[edgename]] <- rlsr[[edgename]]+1
-      } else {
-        if (is.null(rlsa[[edgename]])) {
-          rlsa[[edgename]] <- 0
-        }
-        rlsa[[edgename]] <- rlsa[[edgename]]+1
-      }
-    }
-    if (!foundflag) {
-      nonecount <- nonecount+1
-    }
-  }
-  i <- 0
-  enms <- names(rls)
-  edgelabels <- NULL
-  for (edgeweight in rls) {
-    i <- i+1
-    edgename <- enms[[i]]
-    edgelabel <- ''
-    if (!is.null(rlsr[[edgename]])) { 
-      edgelabel <- paste(edgelabel,
-                         rlsr[[edgename]],
-                         ' model',
-                         ifelse(rlsr[[edgename]] == 1,'','s'),
-                         sep='')
-    }
-    if (!is.null(rlsa[[edgename]])) {
-      edgelabel <- paste(edgelabel,
-                         ifelse(edgelabel == '','(','\n(+'),
-                         rlsa[[edgename]],
-                         ' almost)',
-                         sep='')
-    }
-    edgelabels <- c(edgelabels,edgelabel)
-    str <- paste(str,edgename,' ',edgeweight,'\n',sep='')
-  }
-  if (!is.null(str)) {
-    list(str=str,nonecount=nonecount,
-         allcount=length(lst),edgelabels=edgelabels)
-  } else {
+  vlist <- vargranger_list(lst)
+  if (length(which(vlist$causevr != '')) == 0) {
     NULL
+  } else {
+    r <- list()
+    r$str <- paste(sapply(df_in_rows(vlist[which(vlist$causevr != ''),]),
+                          function(x) paste(x$causevr,' ',x$othervr,' ',2*x$cnt + x$cnta,'\n',sep='')),
+                   collapse='')
+    r$nonecount <- ifelse(any(vlist$causevr == ''),vlist[vlist$causevr == '',]$cnt,0)
+    r$allcount <- length(lst)
+    r$edgelabels <- sapply(df_in_rows(vlist[which(vlist$causevr != ''),]),
+                           function(x) {
+                             str <- ''
+                             if (x$cnt > 0) {
+                               str <- paste(x$cnt,' model',
+                                            ifelse(x$cnt == 1,'','s'),sep='')
+                               if (x$cnta > 0) {
+                                 str <- paste(str,'\n(+',sep='')
+                               }
+                             }
+                             if (x$cnta > 0) {
+                               if (str == '') {
+                                 str <- '('
+                               }
+                               str <- paste(str,x$cnta,' almost)',sep='')
+                             }
+                             str
+                           })
+    r$edgecolors <- sapply(df_in_rows(vlist[which(vlist$causevr != ''),]),
+                           function(x) color_for_sign(x$sign))
+    r
   }
+}
+
+color_for_sign <- function(sgn) {
+  sgns <- c('+','~','-',' ')
+  clrs <- c(517,123,33,168)
+  clri <- clrs[which(sgn == sgns)]
+  colors()[clri]
+}
+
+igraph_legend <- function() {
+  cols <- colors()[c(517,123,33,168)]
+  str <- c('positive associations','mixed pos/neg associations','negative associations','undirected associations')
+  mtext(str,side=1,line=-1:2,col=cols,font=2,adj=0,cex=0.8)
 }
 
 vargranger_plot <- function(av_state) {
@@ -120,11 +96,20 @@ vargranger_plot <- function(av_state) {
     a <- read.graph(file,format="ncol",directed=TRUE,weights="yes")
     cols <- c('springgreen4','steelblue','chocolate1')
     E(a)$width <- E(a)$weight
+    
+    V(a)$label <- sapply(V(a)$name,function(x) {
+      if (!is.null(get_var_label(av_state,x)) && get_var_label(av_state,x) != "") {
+        paste(strwrap(paste(get_var_label(av_state,x)," [",x,"]",sep=''),width=15),
+                                                                  collapse="\n")
+      } else {
+        x
+      }
+      })
     E(a)$label <- graphi$edgelabels
+    E(a)$color <- graphi$edgecolors
     plot(a,
          edge.arrow.size=2,
          edge.arrow.width=2,
-         edge.color='gray15',
          edge.curved=TRUE,
          edge.label.family='sans',
          edge.label.color=colors()[[190]],
@@ -134,9 +119,10 @@ vargranger_plot <- function(av_state) {
          vertex.label.cex=1,
          vertex.color=cols[1:(length(V(a)))],
          vertex.label.color='black',
-         vertex.label.font=2,
+         vertex.label.font=1,
          main="Granger causality",
          sub=paste('found in',graphi$allcount - graphi$nonecount,'out of',graphi$allcount,'valid models'))
+    igraph_legend()
     gname <- gsub("\\.[^ ]{3,4}$","",basename(av_state$real_file_name))
     fname <- gname
     i <- 0
@@ -144,18 +130,48 @@ vargranger_plot <- function(av_state) {
       i <- i + 1
       fname <- paste(gname,'_',i,sep='')
     }
-    fname <- paste(fname,'.pdf',sep='')
-    dev.copy2pdf(file=fname)
-    scat(av_state$log_level,3,"\nGranger causality plot saved to \"",fname,"\"\n",sep='')
+    fname1 <- paste(fname,'.pdf',sep='')
+    i <- i + 1
+    fname <- paste(gname,'_',i,sep='')
+    while (file.exists(paste(fname,'.pdf',sep=''))) {
+      i <- i + 1
+      fname <- paste(gname,'_',i,sep='')
+    }
+    fname2 <- paste(fname,'.pdf',sep='')
+    dev.copy2pdf(file=fname1)
+    fsize1 <- file.info(fname1)$size
+    dev.copy2pdf(file=fname2)
+    fsize2 <- file.info(fname2)$size
+    if (fsize1 != fsize2) {
+      warning("file sizes not equal")
+    }
+    if (fsize2 > fsize1) {
+      file.remove(fname1)
+      fname <- fname2
+    } else {
+      file.remove(fname2)
+      fname <- fname1
+    }
+    scat(av_state$log_level,3,
+         "\nGranger causality plot saved to \"",
+         fname,"\" (",file.info(fname)$size,")\n",sep='')
     invisible(a)
   }
 }
 
+get_var_label <- function(av_state,varname) {
+  if (!is.null(attr(av_state$raw_data,"variable.labels"))) {
+    attr(av_state$raw_data,"variable.labels")[[varname]]
+  } else {
+    NULL
+  }
+}
+
 iplot_test <- function(a,...) {
+  cols <- c('springgreen4','steelblue','chocolate1')
   plot(a,
        edge.arrow.size=2,
        edge.arrow.width=2,
-       edge.color='gray15',
        edge.curved=TRUE,
        edge.label.family='sans',
        edge.label.color=colors()[[190]],
@@ -165,7 +181,7 @@ iplot_test <- function(a,...) {
        vertex.label.cex=1,
        vertex.color=cols[1:(length(V(a)))],
        vertex.label.color='black',
-       vertex.label.font=2,
+       vertex.label.font=1,
        main="Granger causality",
        sub=paste('found in X out of Y valid models'),...)
 }
@@ -288,11 +304,37 @@ get_named <- function(arr,name) {
 }
 
 granger_causality_sign <- function(varest,exname,eqname) {
-  coefs <- varest$varresult[[eqname]]$coefficients
-  dnames <- names(coefs)
-  vars <- !is.na(str_locate(dnames,paste(exname,"\\.l[0-9]+$",sep=''))[,1])
-  matching_indices <- which(vars)
-  sum(coefs[matching_indices])
+  coefs <- summary(varest)$varresult[[eqname]]$coefficients
+  d1names <- dimnames(coefs)[[1]]
+  d2names <- dimnames(coefs)[[2]]
+  # 2* because of almost Granger causalities
+  selnames <- which(coefs[,4] <= 2*av_state_significance(varest))
+  coefs <- coefs[selnames,]
+  if (length(coefs) > 0) {
+    if (class(coefs) != "matrix") {
+      coefs <- t(as.matrix(coefs))
+      dimnames(coefs) <- list(d1names[selnames],d2names)
+    }
+    dnames <- dimnames(coefs)[[1]]
+    vars <- !is.na(str_locate(dnames,paste(exname,"\\.l[0-9]+$",sep=''))[,1])
+    if (length(vars) != 0) {
+      matching_indices <- which(vars)
+      mcoefs <- coefs[matching_indices,1]
+      if (is.null(mcoefs) || length(mcoefs) == 0) {
+        " "
+      } else if (all(mcoefs > 0)) {
+        "+"
+      } else if (all(mcoefs < 0)) {
+        "-"
+      } else {
+        "~"
+      }
+    } else {
+      " "
+    }
+  } else {
+    " "
+  }
 }
 
 vargranger_to_string <- function(varest,res,include_significance=TRUE) {
@@ -300,15 +342,17 @@ vargranger_to_string <- function(varest,res,include_significance=TRUE) {
   str <- NULL
   for (row in df_in_rows(res)) {
     if (row$P <= av_state_significance(varest)) {
+      ssign <- granger_causality_sign(varest,row$Excluded,row$Equation)
       str <- c(str,paste(unprefix_ln(row$Excluded),
-                         ' Granger causes ',
+                         ' ',ssign,'Granger causes',ssign,' ',
                          unprefix_ln(row$Equation),
                          ifelse(include_significance,
                                 paste(' (',signif(row$P,digits=3),')',sep=''),
                                 ''),sep=''))
     } else if (row$P <= 2*av_state_significance(varest)) {
+      ssign <- granger_causality_sign(varest,row$Excluded,row$Equation)
       str <- c(str,paste(unprefix_ln(row$Excluded),
-                         ' almost Granger causes ',
+                         ' almost ',ssign,'Granger causes',ssign,' ',
                          unprefix_ln(row$Equation),
                          ifelse(include_significance,
                                 paste(' (',signif(row$P,digits=3),')',sep=''),
@@ -353,14 +397,20 @@ vargranger_list <- function(lst) {
           llst[[cmbvr]] <- list(causevr=causevr,
                                 othervr=othervr,
                                 signplus=0,
+                                signboth=0,
                                 signminus=0,
+                                signnone=0,
                                 cnt=0,
                                 cnta=0)
         }
-        if (gsign > 0) {
+        if (gsign == "+") {
           llst[[cmbvr]]$signplus <- llst[[cmbvr]]$signplus + 1
-        } else if (gsign < 0) {
+        } else if (gsign == "~") {
+          llst[[cmbvr]]$signboth <- llst[[cmbvr]]$signboth + 1
+        } else if (gsign == "-") {
           llst[[cmbvr]]$signminus <- llst[[cmbvr]]$signminus + 1
+        } else if (gsign == " ") {
+          llst[[cmbvr]]$signnone <- llst[[cmbvr]]$signnone + 1
         }
         if (row$P <= av_state_significance(varest)) {
           llst[[cmbvr]]$cnt <- llst[[cmbvr]]$cnt +1
@@ -374,7 +424,9 @@ vargranger_list <- function(lst) {
         llst[["none"]] <- list(causevr='',
                                othervr='',
                                signplus=0,
+                               signboth=0,
                                signminus=0,
+                               signnone=0,
                                cnt=0,
                                cnta=0)
       }
@@ -384,20 +436,25 @@ vargranger_list <- function(lst) {
   causevr <- NULL
   othervr <- NULL
   signplus <- NULL
+  signboth <- NULL
   signminus <- NULL
+  signnone <- NULL
   cnt <- NULL
   cnta <- NULL
   for (item in llst) {
     causevr <- c(causevr,item$causevr)
     othervr <- c(othervr,item$othervr)
     signplus <- c(signplus,item$signplus)
+    signboth <- c(signboth,item$signboth)
     signminus <- c(signminus,item$signminus)
+    signnone <- c(signnone,item$signnone)
     cnt <- c(cnt,item$cnt)
     cnta <- c(cnta,item$cnta)
   }
-  df <- data.frame(causevr=causevr,othervr=othervr,signplus=signplus,
-                   signminus=signminus,cnt=cnt,cnta=cnta,stringsAsFactors=FALSE)
-  df <- cbind(df,list(sign=signplus-signminus))
+  df <- data.frame(causevr=causevr,othervr=othervr,signplus=signplus,signboth=signboth,
+                   signminus=signminus,signnone=signnone,cnt=cnt,cnta=cnta,stringsAsFactors=FALSE)
+  ssign <- get_majority_sign(signplus,signboth,signminus,signnone)
+  df <- cbind(df,list(sign=ssign))
   df <- cbind(df,list(tcnt=cnt+cnta))
   df <- cbind(df,list(perc=(cnt+cnta)/length(lst)))
   df <- df[with(df,order(df$tcnt,df$cnt,df$causevr,decreasing=TRUE)),]
@@ -407,6 +464,27 @@ vargranger_list <- function(lst) {
                                function(x) compact_varline(x,varwidth))),
               stringsAsFactors=FALSE)
   df
+}
+
+get_majority_sign <- function(signplus,signboth,signminus,signnone) {
+  signs <- c('+','~','-',' ')
+  sr <- NULL
+  for (i in 1:(length(signplus))) {
+    sri <- NULL
+    signplusi <- signplus[[i]]
+    signbothi <- signboth[[i]]
+    signminusi <- signminus[[i]]
+    signnonei <- signnone[[i]]
+    signv <- c(signplusi,signbothi,signminusi,signnonei)
+    r <- sort(signv,decreasing=TRUE,index.return=TRUE)$ix[[1]]
+    if (max(signv[-r]) == signv[r]) {
+      sri <- ' '
+    } else {
+      sri <- signs[[r]]
+    }
+    sr <- c(sr,sri)
+  }
+  sr
 }
 
 compact_varline <- function(x,varwidth) {
@@ -423,8 +501,7 @@ compact_varline <- function(x,varwidth) {
                  ifelse(x$cnt == 1,'','s'),
                  ')',sep='')
   } else {
-    sign <- ifelse(x$sign > 0,'+',ifelse(x$sign < 0,'-',' '))
-    str <- paste(percstr,'   ',causevr,' ',sign,'Granger causes',sign,' ',
+    str <- paste(percstr,'   ',causevr,' ',x$sign,'Granger causes',x$sign,' ',
                  othervr,'   (',sep='')
     if (x$cnt > 0) {
       str <- paste(str,x$cnt,' model',
@@ -438,17 +515,22 @@ compact_varline <- function(x,varwidth) {
     if (x$cnta > 0) {
       str <- paste(str,x$cnta,' almost)',sep='')
     }
-    if (x$signplus != 0 || x$signminus != 0) {
+    if (x$signplus != 0 || x$signboth != 0 || x$signminus != 0 || x$signnone != 0) {
       str <- paste(str,' (sign: ',sep='')
+      sstr <- NULL
       if (x$signplus != 0) {
-        str <- paste(str,x$signplus,' +',sep='')
-        if (x$signminus != 0) {
-          str <- paste(str,', ',sep='')
-        }
+        sstr <- c(sstr,paste(x$signplus,' +',sep=''))
+      }
+      if (x$signboth != 0) {
+        sstr <- c(sstr,paste(x$signboth,' ~',sep=''))
       }
       if (x$signminus != 0) {
-        str <- paste(str,x$signminus,' -',sep='')
+        sstr <- c(sstr,paste(x$signminus,' -',sep=''))
       }
+      if (x$signnone != 0) {
+        sstr <- c(sstr,paste(x$signnone,'  ',sep=''))
+      }
+      str <- paste(str,paste(sstr,collapse=', '),sep='')
       str <- paste(str,')',sep='')
     }
   }
