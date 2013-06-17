@@ -30,5 +30,5 @@ plot_barchart <- function(av_state, x,y,...) {
   df[['Manual_model']] <- c(x,y)
   dfm <- melt(df,id.vars = 1)
   ggplot(dfm,aes(x = Input,y = value,fill=variable)) +
-  geom_bar(position= "dodge",width=0.5,colour="white")  
+  geom_bar(position= "dodge",stat="identity", width=0.5,colour="white")
 }
