@@ -34,6 +34,7 @@
 #' @param include_squared_trend determines whether the square of the trend is included if the trend is included for a model. The trend variable is specified using the \code{\link{order_by}} function.
 #' @param normalize_data determines whether the endogenous variables should be normalized.
 #' @param include_lag_zero determines whether models at lag order 0 are should be considered. These are models at lag 1 with constrained lag-1 parameters in all equations.
+#' @param split_up_outliers determines whether each outlier should have its own exogenous variable. This will make a difference for restricted models only, and only when there is a variable with multiple outliers.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta",log_level=3)
@@ -53,7 +54,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      use_varsoc=FALSE,use_pperron=TRUE,
                      include_squared_trend=FALSE,
                      normalize_data=FALSE,
-                     include_lag_zero=FALSE) {
+                     include_lag_zero=FALSE,
+                     split_up_outliers=FALSE) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -87,6 +89,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$include_squared_trend <- include_squared_trend
   av_state$normalize_data <- normalize_data
   av_state$include_lag_zero <- include_lag_zero
+  av_state$split_up_outliers <- split_up_outliers
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   

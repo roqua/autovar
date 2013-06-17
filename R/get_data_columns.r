@@ -33,21 +33,46 @@ get_data_columns <- function(av_state,model) {
     nr_obs <- dim(av_state$data[[av_state$subset]])[[1]]
     if (!is.null(orig_resids)) {
       exovrs <- NULL
-      for (i in 1:nr_rows(model$exogenous_variables)) {
-        exovar <- model$exogenous_variables[i,]
-        cname <- prefix_ln_cond(exovar$variable,model)
-        cresids <- orig_resids[,cname]
-        exovr <- paste(exovar$variable,'_outliers',sep='')
-        av_state$data[[av_state$subset]][[exovr]] <-
-          get_outliers_column(cresids,exovar$iteration,nr_obs)
-        if (!is_outliers_column_valid(cresids,
-                                      exovar$iteration,
-                                      cname,
-                                      nr_obs,
-                                      av_state$log_level)) {
-          model_valid <- FALSE
+      if (av_state$split_up_outliers) {
+        outlier_indices <- rep.int(0,nr_obs)
+        for (i in 1:nr_rows(model$exogenous_variables)) {
+          exovar <- model$exogenous_variables[i,]
+          cname <- prefix_ln_cond(exovar$variable,model)
+          cresids <- orig_resids[,cname]
+          outliers_column <- get_outliers_column(cresids,exovar$iteration,nr_obs)
+          if (!is_outliers_column_valid(cresids,
+                                        exovar$iteration,
+                                        cname,
+                                        nr_obs,
+                                        av_state$log_level)) {
+            model_valid <- FALSE
+          }
+          outlier_indices <- pmax(outlier_indices,outliers_column)
         }
-        exovrs <- c(exovrs,exovr)
+        outlier_list <- which(outlier_indices == 1)
+        for (idx in outlier_list) {
+          exovr <- paste('outlier_',idx,sep='')
+          av_state$data[[av_state$subset]][[exovr]] <- 
+            get_outlier_column(nr_obs,idx)
+          exovrs <- c(exovrs,exovr)
+        }
+      } else {
+        for (i in 1:nr_rows(model$exogenous_variables)) {
+          exovar <- model$exogenous_variables[i,]
+          cname <- prefix_ln_cond(exovar$variable,model)
+          cresids <- orig_resids[,cname]
+          exovr <- paste(exovar$variable,'_outliers',sep='')
+          av_state$data[[av_state$subset]][[exovr]] <-
+            get_outliers_column(cresids,exovar$iteration,nr_obs)
+          if (!is_outliers_column_valid(cresids,
+                                        exovar$iteration,
+                                        cname,
+                                        nr_obs,
+                                        av_state$log_level)) {
+            model_valid <- FALSE
+          }
+          exovrs <- c(exovrs,exovr)
+        }
       }
       remaining_exogenous_variables <- remaining_exogenous_variables(av_state,model)
       if (!is.null(remaining_exogenous_variables)) {
@@ -56,6 +81,9 @@ get_data_columns <- function(av_state,model) {
       exodta <- av_state$data[[av_state$subset]][exovrs]
       exodta <- as.matrix(exodta)
       colnames(exodta) <- exovrs
+      if (!is.null(exodta) && dim(exodta)[[2]] == 0) {
+        exodta <- NULL
+      }
     }
   } else if (!is.null(remaining_exogenous_variables(av_state,model))) {
     exovrs <- remaining_exogenous_variables(av_state,model)
@@ -68,6 +96,10 @@ get_data_columns <- function(av_state,model) {
   }
   list(av_state = av_state,endogenous = endo, 
        exogenous = exodta, model_valid = model_valid)
+}
+
+get_outlier_column <- function(len,idx) {
+  c(rep.int(0,idx-1),1,rep.int(0,len-idx))
 }
 
 remaining_exogenous_variables <- function(av_state,model) {
