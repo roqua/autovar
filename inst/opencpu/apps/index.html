@@ -485,9 +485,9 @@ function var_main(str) {
     str = str+ ',exogenous_max_iterations=3'
   }
   if ($('#use_jbtest').is(':checked')) {
-    str = str+ ',use_sktest=FALSE'
+    str = str+ ',use_sktest=TRUE'
   }
-  if ($('#split_ouliers').is(':checked')) {
+  if ($('#split_outliers').is(':checked')) {
     str = str+ ',split_outliers=TRUE'
   }
   if ($('#lutkepohl_restrictions').is(':checked')) {
