@@ -374,6 +374,15 @@ hljs.initHighlightingOnLoad();
 </div>
 </div>
 <div class='control-group'>
+<label class='control-label'>split_up_outliers</label>
+<div class='controls'>
+  <label class='checkbox'>
+    <input type='checkbox' id='split_outliers'>split up the outliers
+  </label>
+  <span class='help-block'>Use when the variety of outliers are to be split up into various small number of individual outliers and show it on the run page.</span>
+</div>
+</div>
+<div class='control-group'>
 <label class='control-label'>Normality testing</label>
 <div class='controls'>
   <label class='checkbox'>
@@ -477,6 +486,9 @@ function var_main(str) {
   }
   if ($('#use_jbtest').is(':checked')) {
     str = str+ ',use_sktest=FALSE'
+  }
+  if ($('#split_ouliers').is(':checked')) {
+    str = str+ ',split_outliers=TRUE'
   }
   if ($('#lutkepohl_restrictions').is(':checked')) {
     str = str+ ',restrictions.verify_validity_in_every_step=FALSE,restrictions.extensive_search=FALSE'
