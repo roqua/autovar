@@ -374,12 +374,12 @@ hljs.initHighlightingOnLoad();
 </div>
 </div>
 <div class='control-group'>
-<label class='control-label'>split_up_outliers</label>
+<label class='control-label'>split outliers</label>
 <div class='controls'>
   <label class='checkbox'>
     <input type='checkbox' id='split_outliers'>split up the outliers
   </label>
-  <span class='help-block'>Use when the variety of outliers are to be split up into various small number of individual outliers and show it on the run page.</span>
+  <span class='help-block'>determines whether each outlier should have its own exogenous variable. This will make a difference for restricted models only, and only when there is a variable with multiple outliers.</span>
 </div>
 </div>
 <div class='control-group'>
@@ -485,10 +485,10 @@ function var_main(str) {
     str = str+ ',exogenous_max_iterations=3'
   }
   if ($('#use_jbtest').is(':checked')) {
-    str = str+ ',use_sktest=TRUE'
+    str = str+ ',use_sktest=FALSE'
   }
   if ($('#split_outliers').is(':checked')) {
-    str = str+ ',split_outliers=TRUE'
+    str = str+ ',split_up_outliers=TRUE'
   }
   if ($('#lutkepohl_restrictions').is(':checked')) {
     str = str+ ',restrictions.verify_validity_in_every_step=FALSE,restrictions.extensive_search=FALSE'
