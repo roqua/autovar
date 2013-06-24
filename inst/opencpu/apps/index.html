@@ -410,6 +410,15 @@ hljs.initHighlightingOnLoad();
 </div>
 </div>
 <div class='control-group'>
+<label class='control-label'>Format output</label>
+<div class='controls'>
+  <label class='checkbox'>
+    <input type='checkbox' id='format_output_like_stata'>Format output like stata
+  </label>
+  <span class='help-block'>To format the output of the constraints in the list of valid models like the way used in stata.  </span>
+</div>
+</div>
+<div class='control-group'>
 <label class='control-label'>Log level</label>
 <div class='controls'>
   <label class='radio'>
@@ -501,6 +510,9 @@ function var_main(str) {
   }
   if ($('#include_lag_zero').is(':checked')) {
     str = str+ ',include_lag_zero=TRUE'
+  }
+   if ($('#format_output_like_stata').is(':checked')) {
+    str = str+ ',format_output_like_stata=TRUE'
   }
   str = str+ ',log_level=' + $('[name=logLevelRadios]:checked').val()
   if ($('#exovrs_line').val() != '') {

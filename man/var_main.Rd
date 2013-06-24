@@ -12,7 +12,8 @@
     criterion = c("AIC", "BIC"), use_varsoc = FALSE,
     use_pperron = TRUE, include_squared_trend = FALSE,
     normalize_data = FALSE, include_lag_zero = FALSE,
-    split_up_outliers = FALSE)
+    split_up_outliers = FALSE,
+    format_output_like_stata = FALSE)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -162,6 +163,9 @@
   should have its own exogenous variable. This will make a
   difference for restricted models only, and only when
   there is a variable with multiple outliers.}
+
+  \item{format_output_like_stata}{formats the constraint
+  output used in STATA.}
 }
 \value{
   This function returns the modified \code{av_state}

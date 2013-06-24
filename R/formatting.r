@@ -32,7 +32,7 @@ format_accepted_models <- function(av_state) {
                  format_constraints(x$varest,
                                     unique(c(av_state$exogenous_variables,
                                              av_state$day_dummies,
-                                             av_state$trend_vars))))
+                                             av_state$trend_vars))),av_state$format_output_like_stata)
     
     if (!is.null(x$varest$restrictions)) {
       # Remaining Formulas:
@@ -115,11 +115,11 @@ remove_restricted_variables <- function(exog_vars,varest) {
 format_varname <- function(varname) {
   paste(varname,' outliers',sep='')
 }
-format_constraints <- function(varest,exogvars) {
+format_constraints <- function(varest,exogvars,format_output_like_stata) {
   if (is.null(varest$restrictions)) {
     "none\n"
   } else {
-    paste(restrictions_tostring(varest,exogvars),"\n",sep='')
+    paste(restrictions_tostring(varest,exogvars,format_output_like_stata),"\n",sep='')
   }
 }
 

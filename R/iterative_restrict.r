@@ -103,12 +103,22 @@ model_without_term <- function(varest, eqname, varname) {
 
 # formatting functions
 
-restrictions_tostring <- function(varest,skip_to_be_excluded=NULL) {
+restrictions_tostring <- function(varest,skip_to_be_excluded=NULL,format_output_like_stata) {
   r <- ''
   if (!is.null(varest$restrictions)) {
     restricts <- as.vector(t(varest$restrictions))
     idxs <- which(restricts == 0)
-    vecs <- sapply(idxs,function(idx) format_restriction(varest,idx,skip_to_be_excluded))
+    a <- 0
+    vecs <- NULL
+    for (idx in idxs) {
+    #vecs <- sapply(idxs,function(idx) { 
+      a<-a+1
+      vecs <- c(vecs,paste('constraint',a ,format_restriction(varest,idx,skip_to_be_excluded,format_output_like_stata),sep=''))
+    
+       #})
+    }
+    print(class(vecs))
+    print(vecs)
     r <- paste('\n    ',paste(vecs[!sapply(vecs, is.null)],collapse='\n    '),sep='')
   }
   r
@@ -118,7 +128,7 @@ restriction_should_be_excluded <- function(varname,restricts,exogvars) {
   varname %in% exogvars && all(restricts[,varname] == 0)
 }
 
-format_restriction <- function(varest,idx,skip_to_be_excluded=NULL) {
+format_restriction <- function(varest,idx,skip_to_be_excluded=NULL,format_output_like_stata) {
   cnames <- restriction_matrix_colnames(varest)
   rnames <- restriction_matrix_rownames(varest)
   if (!is.null(skip_to_be_excluded) && 
@@ -127,8 +137,12 @@ format_restriction <- function(varest,idx,skip_to_be_excluded=NULL) {
                                        skip_to_be_excluded)) {
     NULL
   } else {
-    paste("[",get_rowname(idx,cnames,rnames),"]",
-          get_colname(idx,cnames)," = 0",sep='')
+    
+    secondpart <- paste("[",get_rowname(idx,cnames,rnames),"]",
+                   get_colname(idx,cnames),sep='')
+    secondpart <- str_replace(secondpart,"^(\\[[^]]+\\])(.*?)\\.l([0-9]+)$","\\1L\\3\\.\\2")
+    #cat(secondpart,"\n",sep='')
+    secondpart
   }
 }
 
