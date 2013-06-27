@@ -153,16 +153,6 @@ get_orig_resids <- function(model,av_state) {
   list(av_state = av_state,resids = resids)
 }
 
-store_residuals <- function(av_state,model,resids) {
-  lstname <- ifelse(apply_log_transform(model),'log_resids','resids')
-  if (model$lag > length(av_state[[lstname]]) || is.null(av_state[[lstname]][[model$lag]])) {
-    #cat("store_residuals: caching for: log_transform:",apply_log_transform(model),
-    #      "lag:",model$lag,"\n")
-    av_state[[lstname]][[model$lag]] <- resids
-  }
-  av_state
-}
-
 apply_log_transform <- function(model) {
   !is.null(model$apply_log_transform) && model$apply_log_transform
 }
