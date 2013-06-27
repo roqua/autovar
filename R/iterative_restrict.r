@@ -109,7 +109,7 @@ restrictions_tostring <- function(varest,skip_to_be_excluded=NULL,format_output_
     restricts <- as.vector(t(varest$restrictions))
     idxs <- which(restricts == 0)
     vecs <- NULL
-    if(av_state$format_output_like_stata)
+    if(format_output_like_stata)
     {
       a <- 0
       for (idx in idxs) {
@@ -118,7 +118,7 @@ restrictions_tostring <- function(varest,skip_to_be_excluded=NULL,format_output_
       }
     }
     else
-    {  vecs <- sapply(idxs,function(idx) format_restriction(varest,idx,skip_to_be_excluded))
+    {  vecs <- sapply(idxs,function(idx) format_restriction(varest,idx,skip_to_be_excluded,format_output_like_stata))
     }
     r <- paste('\n    ',paste(vecs[!sapply(vecs, is.null)],collapse='\n    '),sep='')
   }
@@ -138,7 +138,7 @@ format_restriction <- function(varest,idx,skip_to_be_excluded=NULL,format_output
                                        skip_to_be_excluded)) {
     NULL
   } else {
-    if(av_state$format_output_like_stata)
+    if(format_output_like_stata)
     {
       secondpart <- paste("[",get_rowname(idx,cnames,rnames),"]",
                           get_colname(idx,cnames),sep='')

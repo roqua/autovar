@@ -102,7 +102,7 @@ print.var_modelres <- function(x,av_state=NULL,...) {
 restrictions_toline <- function(varest) {
   r <- ''
   if (!is.null(varest$restrictions)) {
-    r <- paste('\n  constraints: ',restrictions_tostring(varest),sep='')
+    r <- paste('\n  constraints: ',restrictions_tostring(varest,format_output_like_stata=FALSE),sep='')
   }
   r
 }
