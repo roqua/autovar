@@ -518,14 +518,6 @@ av_state_criterion <- function(varest) {
   }
 }
 
-av_state_format_output_like_stata <- function(varest) {
-  if (!is.null(varest$format_output_like_stata)) {
-    varest$format_output_like_stata
-  } else {
-    FALSE
-  }
-}
-
 add_log_transform_columns <- function(av_state) {
   for (name in av_state$vars) {
     ln_name <- prefix_ln(name)
