@@ -65,13 +65,10 @@ idx_chars <- function(idx) {
   chars
 }
 format_exogenous_variables <- function(exogvars,av_state,model,varest,format_output_like_stata) {
-  if(format_output_like_stata)
-  { 
-    "none\n"}
-  else{
   remaining_exog_vars <- remaining_exogenous_variables(av_state,model)
-  remaining_exog_vars <- remove_restricted_variables(remaining_exog_vars,varest)
-  if (is.null(exogvars) && is.null(remaining_exog_vars)) {
+  if(format_output_like_stata) {
+  remaining_exog_vars <- remove_restricted_variables(remaining_exog_vars,varest) }
+    if (is.null(exogvars) && is.null(remaining_exog_vars)) {
     "none\n"
   } else {
     res <- "\n"
@@ -103,7 +100,7 @@ format_exogenous_variables <- function(exogvars,av_state,model,varest,format_out
     res
   }
 }
-}
+
 remove_restricted_variables <- function(exog_vars,varest) {
   if (!is.null(varest$restrictions)) {
     new_exog_vars <- NULL

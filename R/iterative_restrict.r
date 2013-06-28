@@ -132,7 +132,7 @@ format_restriction <- function(varest,idx,skip_to_be_excluded=NULL,format_output
   if (!is.null(skip_to_be_excluded) && 
         restriction_should_be_excluded(get_colname(idx,cnames),
                                        varest$restrictions,
-                                       skip_to_be_excluded)) {
+                                       skip_to_be_excluded) && format_output_like_stata) {
     NULL
   } else {
     if(format_output_like_stata)
