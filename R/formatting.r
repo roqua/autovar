@@ -24,7 +24,7 @@ format_accepted_models <- function(av_state) {
     res <- paste(res,
                  format_exogenous_variables(x$parameters$exogenous_variables,
                                             av_state,
-                                            x$parameters,x$varest),
+                                            x$parameters,x$varest,av_state$format_output_like_stata),
                  sep='')
     # Constraints:
     res <- paste(res,"  Constraints: ",sep='')
@@ -32,7 +32,7 @@ format_accepted_models <- function(av_state) {
                  format_constraints(x$varest,
                                     unique(c(av_state$exogenous_variables,
                                              av_state$day_dummies,
-                                             av_state$trend_vars)),av_state$format_output_like_stata)
+                                             av_state$trend_vars)),av_state$format_output_like_stata))
     
     if (!is.null(x$varest$restrictions)) {
       # Remaining Formulas:
@@ -64,7 +64,11 @@ idx_chars <- function(idx) {
   }
   chars
 }
-format_exogenous_variables <- function(exogvars,av_state,model,varest) {
+format_exogenous_variables <- function(exogvars,av_state,model,varest,format_output_like_stata) {
+  if(format_output_like_stata)
+  { 
+    "none\n"}
+  else{
   remaining_exog_vars <- remaining_exogenous_variables(av_state,model)
   remaining_exog_vars <- remove_restricted_variables(remaining_exog_vars,varest)
   if (is.null(exogvars) && is.null(remaining_exog_vars)) {
@@ -98,6 +102,7 @@ format_exogenous_variables <- function(exogvars,av_state,model,varest) {
     }
     res
   }
+}
 }
 remove_restricted_variables <- function(exog_vars,varest) {
   if (!is.null(varest$restrictions)) {

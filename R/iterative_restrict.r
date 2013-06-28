@@ -142,9 +142,7 @@ format_restriction <- function(varest,idx,skip_to_be_excluded=NULL,format_output
       secondpart
        }
     else {paste("[",get_rowname(idx,cnames,rnames),"]",
-                get_colname(idx,cnames)," = 0",sep='')
-      
-   }
+                get_colname(idx,cnames)," = 0",sep='')  }
   }
 }
 
