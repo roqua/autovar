@@ -47,12 +47,7 @@ evaluate_model <- function(av_state,model,index,totmodelcnt) {
         res$model_valid <- FALSE
       }
     }
-    
-    # help the caching of residuals a bit by using stuff we already computed
-    if (is.null(model$exogenous_variables) && !is_restricted_model(model)) {
-      #av_state <- store_residuals(av_state,model,resid(res$varest))
-    }
-    
+       
     # run all the tests and queue potential models:
     
     # stability test
