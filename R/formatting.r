@@ -32,7 +32,7 @@ format_accepted_models <- function(av_state) {
                  format_constraints(x$varest,
                                     unique(c(av_state$exogenous_variables,
                                              av_state$day_dummies,
-                                             av_state$trend_vars))),av_state$format_output_like_stata)
+                                             av_state$trend_vars)),av_state$format_output_like_stata))
     
     if (!is.null(x$varest$restrictions)) {
       # Remaining Formulas:

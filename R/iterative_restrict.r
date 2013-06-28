@@ -108,18 +108,15 @@ restrictions_tostring <- function(varest,skip_to_be_excluded=NULL,format_output_
   if (!is.null(varest$restrictions)) {
     restricts <- as.vector(t(varest$restrictions))
     idxs <- which(restricts == 0)
-    vecs <- NULL
     if(format_output_like_stata)
-    {
+    { vecs <- NULL
       a <- 0
       for (idx in idxs) {
         a<-a+1
-        vecs <- c(vecs,paste('constraint ',a,'. ',format_restriction(varest,idx,skip_to_be_excluded,format_output_like_stata),sep=''))
-      }
-    }
-    else
-    {  vecs <- sapply(idxs,function(idx) format_restriction(varest,idx,skip_to_be_excluded,format_output_like_stata))
-    }
+        vecs <- c(vecs,paste('constraint ',a,'. ',format_restriction(varest,idx,skip_to_be_excluded,format_output_like_stata),sep='')) 
+      }  }
+else {  vecs <- sapply(idxs,function(idx) format_restriction(varest,idx,skip_to_be_excluded,format_output_like_stata))
+}
     r <- paste('\n    ',paste(vecs[!sapply(vecs, is.null)],collapse='\n    '),sep='')
   }
   r
@@ -139,16 +136,15 @@ format_restriction <- function(varest,idx,skip_to_be_excluded=NULL,format_output
     NULL
   } else {
     if(format_output_like_stata)
-    {
-      secondpart <- paste("[",get_rowname(idx,cnames,rnames),"]",
+    { secondpart <- paste("[",get_rowname(idx,cnames,rnames),"]",
                           get_colname(idx,cnames),sep='')
       secondpart <- str_replace(secondpart,"^(\\[[^]]+\\])(.*?)\\.l([0-9]+)$","\\1L\\3\\.\\2")
       secondpart
-    }
-    else {
-      paste("[",get_rowname(idx,cnames,rnames),"]",
-            get_colname(idx,cnames)," = 0",sep='')
-    }
+       }
+    else {paste("[",get_rowname(idx,cnames,rnames),"]",
+                get_colname(idx,cnames)," = 0",sep='')
+      
+   }
   }
 }
 
