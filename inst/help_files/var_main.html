@@ -45,7 +45,7 @@
       exogenous_variables = NULL, use_sktest = TRUE, restrictions.verify_validity_in_every_step = TRUE, 
       restrictions.extensive_search = TRUE, criterion = c("AIC", "BIC"), use_varsoc = FALSE, 
       use_pperron = TRUE, include_squared_trend = FALSE, normalize_data = FALSE, include_lag_zero = FALSE, 
-      split_up_outliers = FALSE)</pre>
+      split_up_outliers = FALSE, format_output_like_stata = FALSE)</pre>
     
     <h2>Arguments</h2>
     <dl>
@@ -202,6 +202,9 @@
   should have its own exogenous variable. This will make a
   difference for restricted models only, and only when
   there is a variable with multiple outliers.</dd>
+      <dt>format_output_like_stata</dt>
+      <dd>formats the constraint
+  output used in STATA.</dd>
     </dl>
     
     <div class="Value">
@@ -258,7 +261,7 @@ Granger causality summary of all 1 valid unrestricted models:
 </div>
 <p><img src='var_main-5.png' alt='' width='400' height='400' /></p>
 <div class='output'>
-Granger causality plot saved to "Activity and depression pp5 Angela_7.pdf" (5411)
+Granger causality plot saved to "Activity and depression pp5 Angela_8.pdf" (5409)
 
 Summary of all valid models:
   lag:
