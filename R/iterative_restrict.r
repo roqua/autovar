@@ -46,6 +46,7 @@ varname_with_best_model <- function(varest,verify_validity,extensive_search) {
   } else {
     best_model <- list(model_score=model_score(varest))
     for (i in 1:nr_rows(coefs)) {
+      if(i>nr_rows(coefs)) { break }
       coef <- coefs[i,]
       new_model <- model_without_term(varest,coef$eqname,coef$varname)
       if ((!verify_validity || new_model$model_is_valid) && model_is_better_than(new_model,best_model)) {
