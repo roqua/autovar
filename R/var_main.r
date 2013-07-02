@@ -35,7 +35,7 @@
 #' @param normalize_data determines whether the endogenous variables should be normalized.
 #' @param include_lag_zero determines whether models at lag order 0 are should be considered. These are models at lag 1 with constrained lag-1 parameters in all equations.
 #' @param split_up_outliers determines whether each outlier should have its own exogenous variable. This will make a difference for restricted models only, and only when there is a variable with multiple outliers.
-#' @param format_output_like_stata formats the constraint output used in STATA.
+#' @param format_output_like_stata when TRUE, all constraints and exogenous variables are always shown (i.e., it will now show exogenous variables that were included but constrained in all equations), and the constraints are formatted like in Stata.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta",log_level=3)

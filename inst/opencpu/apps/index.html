@@ -410,12 +410,12 @@ hljs.initHighlightingOnLoad();
 </div>
 </div>
 <div class='control-group'>
-<label class='control-label'>Format output</label>
+<label class='control-label'>Stata-like output</label>
 <div class='controls'>
   <label class='checkbox'>
-    <input type='checkbox' id='format_output_like_stata'>Format output like stata
+    <input type='checkbox' id='format_output_like_stata'>Format output like in Stata
   </label>
-  <span class='help-block'>To format the output of the constraints in the list of valid models like the way used in stata.  </span>
+  <span class='help-block'>When checked, all constraints and exogenous variables are always shown (i.e., it will now show exogenous variables that were included but constrained in all equations), and the constraints are formatted like in Stata.</span>
 </div>
 </div>
 <div class='control-group'>
@@ -511,7 +511,7 @@ function var_main(str) {
   if ($('#include_lag_zero').is(':checked')) {
     str = str+ ',include_lag_zero=TRUE'
   }
-   if ($('#format_output_like_stata').is(':checked')) {
+  if ($('#format_output_like_stata').is(':checked')) {
     str = str+ ',format_output_like_stata=TRUE'
   }
   str = str+ ',log_level=' + $('[name=logLevelRadios]:checked').val()

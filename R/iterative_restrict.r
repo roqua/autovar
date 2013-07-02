@@ -113,11 +113,13 @@ restrictions_tostring <- function(varest,skip_to_be_excluded=NULL,format_output_
       a <- 0
       for (idx in idxs) {
         a<-a+1
-        vecs <- c(vecs,paste('constraint ',a,'. ',format_restriction(varest,idx,skip_to_be_excluded,format_output_like_stata),sep='')) 
+        vecs <- c(vecs,paste('constraint ',a,' ',
+                             format_restriction(varest,idx,skip_to_be_excluded,format_output_like_stata),
+                             ' = 0',sep='')) 
       }
     } else {
       vecs <- sapply(idxs,function(idx) format_restriction(varest,idx,skip_to_be_excluded,format_output_like_stata))
-     }
+    }
     r <- paste('\n    ',paste(vecs[!sapply(vecs, is.null)],collapse='\n    '),sep='')
   }
   r
