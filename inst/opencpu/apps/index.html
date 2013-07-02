@@ -323,6 +323,10 @@ hljs.initHighlightingOnLoad();
     <input type='checkbox' id='identify_trend' checked='checked'>Include trend variables
   </label>
   <span class='help-block'>Check to create and include a trend variable (named 'index') for models that need a trend according to the Phillips-Perron test.</span>
+  <label class='checkbox' style='margin-top:5px;'>
+    <input type='checkbox' id='squared_trend'>Include squared trend
+  </label>
+  <span class='help-block'>For those models that include a trend variable, also include the square of this trend.</span>
 </div>
 </div>
 <div class='control-group'>
@@ -362,15 +366,6 @@ hljs.initHighlightingOnLoad();
     <input type='checkbox' id='more_outliers'>Exclude more outliers
   </label>
   <span class='help-block'>Use only when you find no models. Enabling this option will find more models but they exclude more data in 'outlier' dummy variables.</span>
-</div>
-</div>
-<div class='control-group'>
-<label class='control-label'>Squared trend</label>
-<div class='controls'>
-  <label class='checkbox'>
-    <input type='checkbox' id='squared_trend'>Include squared trend
-  </label>
-  <span class='help-block'>For those models that include a trend variable, also include the square of this trend. This option only applies when 'Include trend variables' is checked.</span>
 </div>
 </div>
 <div class='control-group'>
@@ -505,7 +500,7 @@ function var_main(str) {
   if ($('#use_bic').is(':checked')) {
     str = str+ ',criterion="BIC"'
   }
-  if ($('#squared_trend').is(':checked')) {
+  if ($('#squared_trend').is(':checked') && $('#identify_trend').is(':checked')) {
     str = str+ ',include_squared_trend=TRUE'
   }
   if ($('#include_lag_zero').is(':checked')) {
@@ -535,6 +530,13 @@ function clickRunVar(e) {
 }
 function disableFields() {
   $('#timestamp,#measurements_per_day,#first_measurement_index').attr('disabled',true);
+}
+function change_trend() {
+  if ($('#identify_trend').is(':checked')) {
+    $('#squared_trend').removeAttr('disabled');
+  } else {
+    $('#squared_trend').attr('disabled',true);
+  }
 }
 function change_timestamps() {
   if ($('#set_timestamps').is(':checked')) {
@@ -582,6 +584,7 @@ $('#varnames').change(varnamechange);
 $('#exovrs').change(exovrschange);
 $('textarea[name="x"]').attr('value', 'print(d)\n');
 $('#set_timestamps').change(change_timestamps);
+$('#identify_trend').change(change_trend);
 $('#knit').click(function() {
   $('#knit,#knitdl,#runvar').addClass('disabled');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
