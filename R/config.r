@@ -42,6 +42,7 @@ print.av_state <- function(x,...) {
 exogvars_to_string <- function(av_state,x,model) {
   str <- "\n    "
   for (i in 1:nr_rows(x)) {
+    if(i>nr_rows) {break}
     exovar <- model$exogenous_variables[i,]
     if (i != 1) {
       str <- paste(str,"\n    ",sep='')

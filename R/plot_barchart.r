@@ -18,6 +18,7 @@ plot_barchart <- function(av_state, x,y,...) {
   l <- length(av_state$accepted_model)
   for(i in 1:l)
   {
+    if(i>l { break }
     a <- c(a,estat_ic(av_state$accepted_model[[i]]$varest)$AIC)
     b <- c(b,estat_ic(av_state$accepted_model[[i]]$varest)$BIC)
     name <- c(name,paste('model ',idx_chars(i),sep=''))
@@ -25,6 +26,7 @@ plot_barchart <- function(av_state, x,y,...) {
   df <- data.frame (criterion=c('AIC','BIC'))
   for(i in 1:l)
   {
+    if(i>l { break }
   df[[name[[i]]]] <- c(a[[i]],b[[i]])
   }
   df[['Manual model']] <- c(x,y)

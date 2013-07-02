@@ -8,6 +8,7 @@ varnorm2 <- function(varest,log_level=0) {
   names <- dimnames(r)[[1]]
   fails <- NULL
   for (i in 1:(dim(r)[1])) {
+    if(i>(dim(r)[1])) { break }
     if (r$P[[i]] <= av_state_significance(varest)) {
       column <- names[i]
       fails <- c(fails,column)
@@ -36,6 +37,7 @@ sktest <- function(varest) {
   names <- dimnames(resids)[[2]]
   sks <- NULL
   for (i in 1:(dim(resids)[2])) {
+    if(i>(dim(resids)[2])) { break }
     x <- resids[,i]
     g1 <- coefficient_of_skewness(x)
     b2 <- coefficient_of_kurtosis(x)
@@ -118,6 +120,7 @@ rth_moment_about_the_mean <- function(x,r) {
   n <- length(x)
   tsum <- 0
   for (i in 1:n) {
+    if(i>n) { break }
     tsum <- tsum + (x[[i]] - mmean)^(r)
   }
   tsum <- (1/n)*tsum

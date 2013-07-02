@@ -36,6 +36,7 @@ get_data_columns <- function(av_state,model) {
       if (av_state$split_up_outliers) {
         outlier_indices <- rep.int(0,nr_obs)
         for (i in 1:nr_rows(model$exogenous_variables)) {
+          if(i>nr_rows(model$exogenous_variables)) { break }
           exovar <- model$exogenous_variables[i,]
           cname <- prefix_ln_cond(exovar$variable,model)
           cresids <- orig_resids[,cname]
@@ -58,6 +59,7 @@ get_data_columns <- function(av_state,model) {
         }
       } else {
         for (i in 1:nr_rows(model$exogenous_variables)) {
+          if(i>nr_rows(model$exogenous_variables)) { break }
           exovar <- model$exogenous_variables[i,]
           cname <- prefix_ln_cond(exovar$variable,model)
           cresids <- orig_resids[,cname]

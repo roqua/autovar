@@ -86,6 +86,7 @@ format_exogenous_variables <- function(exogvars,av_state,model,varest,format_out
     }
     if (!is.null(exogvars)) {
       for (i in 1:nr_rows(exogvars)) {
+        if(i>nr_rows(exogvars)) { break }
         exovar <- exogvars[i,]
         desc <- format_varname(exovar$variable)
         std_factor <- std_factor_for_iteration(exovar$iteration)
@@ -130,6 +131,7 @@ format_formulas <- function(varest) {
   dim <- length(varest$varresult)
   names <- colnames(varest$y)
   for (i in 1:dim) {
+    if(i>dim { break }
     result <- coef(varest$varresult[[i]])
     r <- paste(r,"    ", names[i], " = ", paste(names(result), 
                                                      collapse = " + "),"\n", sep = "")

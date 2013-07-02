@@ -387,6 +387,7 @@ expand_model <- function(model_params,av_state) {
     r <- c(r,list(model_params))
   } else {
     for (i in 1:(dim(model_params$exogenous_variables)[1])) {
+      if(i>(dim(model_params$exogenous_variables)[1])) { break }
       exorow <- model_params$exogenous_variables[i,]
       exovec <- get_outliers_as_vector(av_state,exorow$variable,exorow$iteration,model_params)
       new_model <- merge_lists(model_params,list(exogenous_variables=exovec))
@@ -575,6 +576,7 @@ print_model_statistics_aux <- function(av_state,lst,param) {
   scat(av_state$log_level, 3, paste("  ",param,":\n",sep=''))
   glist <- model_statistics(lst,param)
   for (i in 1:nr_rows(glist)) {
+    if(i>nr_rows(glist)) { break }
     gres <- glist[i,]
     scat(av_state$log_level,3,"    ", gres$perc,"   ",
          gres$desc,"   (",gres$freq," models)\n",sep='')
@@ -592,6 +594,7 @@ model_statistics <- function(lst,param) {
   freqs <- NULL
   percs <- NULL
   for (i in 1:length(tbl)) {
+    if(i>length(tbl)) {break }
     desc <- tdescs[[i]]
     freq <- tbl[[i]]
     perc <- format_as_percentage(freq/tfreq)
@@ -635,6 +638,7 @@ create_total_model_queue <- function(av_state) {
     for (apply_log_transform in c(FALSE,TRUE)) {
       for (lag in lags) {
         for (i in 1:ncombs) {
+          if(i>ncombs) {break }
           combline <- sapply(1:nvars,function(x) determine_var_index(i,x,nexo))
           exogenous_variables <- exogenous_dataframe_for_combline(combline,vars)
           model <- list()
@@ -656,6 +660,7 @@ determine_var_index <- function(i,vari,nexo) {
 exogenous_dataframe_for_combline <- function(combline,vars) {
   dfs <- NULL
   for (i in 1:length(combline)) {
+    if(i>length(combline)) { break }
     if (combline[[i]] != 0) {
       df <- data.frame(variable=vars[[i]],iteration=combline[[i]],stringsAsFactors=FALSE)
       if (is.null(dfs)) {

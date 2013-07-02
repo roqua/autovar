@@ -63,6 +63,7 @@ evaluate_model <- function(av_state,model,index,totmodelcnt) {
     sqflag <- FALSE
     siflag <- FALSE
     for (i in 1:(dim(ptests)[1])) {
+      if(i>(dim(ptests)[1])) { break }
       test <- ptests[i,]
       if (!test$passes_test) {
         res$model_valid <- FALSE
@@ -152,6 +153,7 @@ queue_models_with_more_outliers <- function(av_state,model,vns) {
         old_exogvars <- model$exogenous_variables
         new_exogvars <- old_exogvars
         for (i in 1:nr_rows(old_exogvars)) {
+          if(i>nr_rows(old_exogvars)) { break }
           exovar <- old_exogvars[i,]
           if (exovar$variable %in% vn) {
             new_exogvars[i,]$iteration <- min(exovar$iteration +1,
