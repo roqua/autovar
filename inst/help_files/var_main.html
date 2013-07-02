@@ -203,8 +203,11 @@
   difference for restricted models only, and only when
   there is a variable with multiple outliers.</dd>
       <dt>format_output_like_stata</dt>
-      <dd>formats the constraint
-  output used in STATA.</dd>
+      <dd>when TRUE, all
+  constraints and exogenous variables are always shown
+  (i.e., it will now show exogenous variables that were
+  included but constrained in all equations), and the
+  constraints are formatted like in Stata.</dd>
     </dl>
     
     <div class="Value">
@@ -261,8 +264,6 @@ Granger causality summary of all 1 valid unrestricted models:
 </div>
 <p><img src='var_main-5.png' alt='' width='400' height='400' /></p>
 <div class='output'>
-Granger causality plot saved to "Activity and depression pp5 Angela_8.pdf" (5409)
-
 Summary of all valid models:
   lag:
     100.00%   1   (2 models)

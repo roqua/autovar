@@ -164,8 +164,11 @@
   difference for restricted models only, and only when
   there is a variable with multiple outliers.}
 
-  \item{format_output_like_stata}{formats the constraint
-  output used in STATA.}
+  \item{format_output_like_stata}{when TRUE, all
+  constraints and exogenous variables are always shown
+  (i.e., it will now show exogenous variables that were
+  included but constrained in all equations), and the
+  constraints are formatted like in Stata.}
 }
 \value{
   This function returns the modified \code{av_state}
