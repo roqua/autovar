@@ -283,7 +283,7 @@ get_lag_varnames <- function(varest,varname) {
   len <- length(colnames(varest$datamat))
   lst <- NULL
   for (i in 1:len) {
-    if(i>len) { break }
+    if (i > len) { break }
     lst <- c(lst,paste(varname,'.l',i,sep=''))
   }
   lst
@@ -377,7 +377,7 @@ print_vargranger_list <- function(av_state,lst,title) {
                length(lst)," ",title,":\n",sep=''))
     glist <- vargranger_list(lst)
     for (i in 1:nr_rows(glist)) {
-      for(i>nr_rows(glist)) { break }
+      if (i > nr_rows(glist)) { break }
       gres <- glist[i,]
       scat(av_state$log_level,3,"  ",gres$desc,"\n",sep='')
     }

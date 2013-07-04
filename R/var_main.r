@@ -594,7 +594,7 @@ model_statistics <- function(lst,param) {
   freqs <- NULL
   percs <- NULL
   for (i in 1:length(tbl)) {
-    if(i>length(tbl)) {break }
+    if (i > length(tbl)) {break }
     desc <- tdescs[[i]]
     freq <- tbl[[i]]
     perc <- format_as_percentage(freq/tfreq)

@@ -10,7 +10,7 @@ pperron <- function(av_state,lag,apply_log_transform) {
   sprint(av_state$log_level,1,pt[c('name','trend_p','trend_p_signif','teststat','five_crit_val','teststat_signif')])
   fail_names <- NULL
   for (i in 1:(dim(pt)[1])) {
-    if(i>(dim(pt)[1]) { break }
+    if (i > (dim(pt)[1])) { break }
     test <- pt[i,]
     if (test$needs_trend) {
       fail_names <- c(fail_names,test$name)

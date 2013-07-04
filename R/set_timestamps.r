@@ -150,7 +150,7 @@ daypart_string <- function(len) {
     r <- c('Morning','Afternoon','Evening')
   } else {
     for (i in 1:len) {
-      if(i>len) { break }
+      if (i > len) { break }
       r <- c(r,paste('dailymeas_',i,'_of_',len,sep=''))
     }
   }

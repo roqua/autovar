@@ -54,7 +54,7 @@ varnorm <- function(varest,log_level=0) {
   names <- dimnames(r$kt)[[1]]
   fails <- NULL
   for (i in 1:(dim(r$kt)[1])) {
-    if(i>)(dim(r$kt)[1]) { break }
+    if (i > (dim(r$kt)[1])) { break }
     if (r$kt$P[[i]] <= av_state_significance(varest)) {
       column <- names[i]
       fails <- c(fails,column)
@@ -86,7 +86,7 @@ varnorm <- function(varest,log_level=0) {
 powerset <- function(lst) {
   res <- NULL
   for (i in 1:length(lst)) {
-    if(i>length(lst)) { break }
+    if (i > length(lst)) { break }
     cmbs <- utils::combn(lst,i)
     for (j in 1:(dim(cmbs)[[2]])) {
       res <- c(res,list(cmbs[,j]))

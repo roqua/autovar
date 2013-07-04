@@ -132,7 +132,7 @@ format_formulas <- function(varest) {
   dim <- length(varest$varresult)
   names <- colnames(varest$y)
   for (i in 1:dim) {
-    if(i>dim { break }
+    if ( i > dim) { break }
     result <- coef(varest$varresult[[i]])
     r <- paste(r,"    ", names[i], " = ", paste(names(result), 
                                                      collapse = " + "),"\n", sep = "")

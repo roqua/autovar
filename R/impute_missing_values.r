@@ -99,7 +99,7 @@ calc_missing <- function(data_frame) {
 calc_missing_all <- function(av_state) {
   na_cnt <- 0
   for (subset_id in 1:length(av_state$data)) {
-    if(i>length(av_state$data)) { break }
+    if (i > length(av_state$data)) { break }
     na_cnt <- na_cnt+sum(is.na(av_state$data[[subset_id]]))
   }
   na_cnt
