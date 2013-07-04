@@ -4,6 +4,7 @@ wntestq <- function(varest,log_level=0) {
   ptests <- portmanteau_test(varest)
   fail_names <- NULL
   for (i in 1:(dim(ptests)[1])) {
+    if(i>(dim(ptests)[1])) { break }
     test <- ptests[i,]
     scat(log_level,1,"  ",test$name,':\n',sep="")
     scat(log_level,1,'    Portmanteau (Q) statistic = ',test$q,"\n",sep="")
@@ -40,6 +41,7 @@ portmanteau_test <- function(varest) {
   isq <- NULL
   pst <- NULL
   for (i in 1:(dim(st$resid)[2])) {
+    if(i>(dim(st$resid)[2])) { break }
     name <- dimnames(st$resid)[[2]][i]
     data <- st$resid[,i]
     q <- portmanteau_test_statistic(data,n,h)
@@ -78,6 +80,7 @@ portmanteau_test_statistic <- function(data,n,h) {
   data <- data-mean(data)
   suma <- 0
   for (k in 1:h) {
+    if(k>h) { break }
     suma <- suma + (sample_autocorrelation(data,k,n)^2)/(n-k)
   }
   q <- n*(n+2)*suma
@@ -92,6 +95,7 @@ sample_autocorrelation <- function(data,k,n) {
   # see paper of Ljung-Box test for this definition of autocorrelation
   denom <- 0
   for (t in 1:n) {
+    if(t>n) { break }
     denom <- denom + data[t]^2
   }
   res <- res/denom

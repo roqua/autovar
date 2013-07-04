@@ -8,6 +8,7 @@ varnorm <- function(varest,log_level=0) {
   names <- dimnames(r$jb)[[1]]
   fails <- NULL
   for (i in 1:(dim(r$jb)[1])) {
+    if(i>(dim(r$jb)[1])) { break }
     if (r$jb$P[[i]] <= av_state_significance(varest)) {
       column <- names[i]
       fails <- c(fails,column)
@@ -30,6 +31,7 @@ varnorm <- function(varest,log_level=0) {
   names <- dimnames(r$sk)[[1]]
   fails <- NULL
   for (i in 1:(dim(r$sk)[1])) {
+    if(i>(dim(r$sk)[1])) { break }
     if (r$sk$P[[i]] <= av_state_significance(varest)) {
       column <- names[i]
       fails <- c(fails,column)
@@ -52,6 +54,7 @@ varnorm <- function(varest,log_level=0) {
   names <- dimnames(r$kt)[[1]]
   fails <- NULL
   for (i in 1:(dim(r$kt)[1])) {
+    if(i>)(dim(r$kt)[1]) { break }
     if (r$kt$P[[i]] <= av_state_significance(varest)) {
       column <- names[i]
       fails <- c(fails,column)
@@ -83,6 +86,7 @@ varnorm <- function(varest,log_level=0) {
 powerset <- function(lst) {
   res <- NULL
   for (i in 1:length(lst)) {
+    if(i>length(lst)) { break }
     cmbs <- utils::combn(lst,i)
     for (j in 1:(dim(cmbs)[[2]])) {
       res <- c(res,list(cmbs[,j]))
@@ -97,6 +101,7 @@ sample_skewness <- function(x,m) {
   sumfourths <- 0
   sumquads <- 0
   for (i in 1:n) {
+    if(i>n) { break }
     sumfourths <- sumfourths + (x[[i]] - smu)^3
     sumquads <- sumquads + (x[[i]] - smu)^2
   }
@@ -113,6 +118,7 @@ sample_kurtosis <- function(x,m) {
   sumfourths <- 0
   sumquads <- 0
   for (i in 1:n) {
+    if(i>n) { break }
     sumfourths <- sumfourths + (x[[i]] - smu)^4
     sumquads <- sumquads + (x[[i]] - smu)^2
   }
@@ -149,6 +155,7 @@ jb <- function(varest) {
   # JB test
   jbtab <- NULL
   for (i in 1:(dim(resids)[2])) {
+    if(i>(dim(resids)[2])) { break }
     x <- resids[,i]
     if (i == 1) {
       jbtab <- jb_test(x,m)
@@ -170,6 +177,7 @@ jb <- function(varest) {
   sktab <- NULL
   names <- dimnames(resids)[[2]]
   for (i in 1:(dim(resids)[2])) {
+    if(i>(dim(resids)[2])) { break }
     x <- resids[,i]
     if (i == 1) {
       sktab <- sample_skewness(x,m)
@@ -193,6 +201,7 @@ jb <- function(varest) {
   kttab <- NULL
   names <- dimnames(resids)[[2]]
   for (i in 1:(dim(resids)[2])) {
+    if(i>(dim(resids)[2])) { break }
     x <- resids[,i]
     if (i == 1) {
       kttab <- sample_kurtosis(x,m)

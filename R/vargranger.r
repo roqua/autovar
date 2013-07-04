@@ -283,6 +283,7 @@ get_lag_varnames <- function(varest,varname) {
   len <- length(colnames(varest$datamat))
   lst <- NULL
   for (i in 1:len) {
+    if(i>len) { break }
     lst <- c(lst,paste(varname,'.l',i,sep=''))
   }
   lst
@@ -376,6 +377,7 @@ print_vargranger_list <- function(av_state,lst,title) {
                length(lst)," ",title,":\n",sep=''))
     glist <- vargranger_list(lst)
     for (i in 1:nr_rows(glist)) {
+      for(i>nr_rows(glist)) { break }
       gres <- glist[i,]
       scat(av_state$log_level,3,"  ",gres$desc,"\n",sep='')
     }
@@ -472,6 +474,7 @@ get_majority_sign <- function(signplus,signboth,signminus,signnone) {
   signs <- c('+','~','-',' ')
   sr <- NULL
   for (i in 1:(length(signplus))) {
+    if(i>(length(signplus))) { break }
     sri <- NULL
     signplusi <- signplus[[i]]
     signbothi <- signboth[[i]]
@@ -582,7 +585,10 @@ causality2 <- function (x, cause = NULL, equation = NULL, vcov. = NULL, boot = F
   w <- which(as.vector(R2) != 0)
   N <- length(w)
   R <- matrix(0, ncol = ncol(PI) * nrow(PI), nrow = N)
-  for (i in 1:N) R[i, w[i]] <- 1
+  for (i in 1:N) {
+   if(i>N) { break }
+   R[i, w[i]] <- 1
+  }
   sigma.pi <- if (is.null(vcov.)) 
     vcov(xMlm)
   else if (is.function(vcov.)) 
@@ -616,6 +622,7 @@ causality2 <- function (x, cause = NULL, equation = NULL, vcov. = NULL, boot = F
   N <- length(index)
   Cmat <- matrix(0, nrow = N, ncol = length(sig.vech))
   for (i in 1:N) {
+    if(i>N) { break }
     Cmat[i, index[i]] <- 1
   }
   Dmat <- vars:::.duplicate(K)
