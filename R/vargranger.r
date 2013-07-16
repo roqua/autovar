@@ -73,15 +73,16 @@ vargranger_graph_aux <- function(av_state,lst) {
 }
 
 color_for_sign <- function(sgn) {
-  sgns <- c('+','~','-',' ')
-  clrs <- c(517,123,33,168)
+  sgns <- c('+','~','-','#',' ')
+  clrs <- c(517,123,33,500,168)
   clri <- clrs[which(sgn == sgns)]
   colors()[clri]
 }
 
 igraph_legend <- function() {
-  cols <- colors()[c(517,123,33,168)]
-  str <- c('positive associations','mixed pos/neg associations','negative associations','undirected associations')
+  cols <- colors()[c(517,123,33,500)]
+  str <- c('positive associations','mixed pos/neg associations (among models)',
+           'negative associations','mixed pos/neg associations (within models)')
   mtext(str,side=1,line=-1:2,col=cols,font=2,adj=0,cex=0.8)
 }
 
@@ -483,7 +484,7 @@ get_majority_sign <- function(signplus,signboth,signminus,signnone) {
     signv <- c(signplusi,signbothi,signminusi,signnonei)
     r <- sort(signv,decreasing=TRUE,index.return=TRUE)$ix[[1]]
     if (max(signv[-r]) == signv[r]) {
-      sri <- ' '
+      sri <- '#'
     } else {
       sri <- signs[[r]]
     }
