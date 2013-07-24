@@ -613,64 +613,22 @@ model_statistics <- function(lst,param) {
 search_space_used <- function(av_state) {
   nvars <- length(av_state$vars)
   nexo <- 1+av_state$exogenous_max_iterations
-  dlags <- distinct_lags(c(av_state$accepted_models,av_state$rejected_models))
+  minlag <- 1
+  if (av_state$include_lag_zero) { minlag <- 0 }
+  dlags <- minlag:(av_state$lag_max)
   nlags <- length(dlags)
-  tot_models <- 2* 2* nlags * nexo^nvars
+  tot_models <- 1
+  tot_models <- tot_models * nlags # #lags
+  tot_models <- tot_models * 2 # with logtransform/without logtransform
+  if (!is.null(av_state$day_dummies)) { tot_models <- tot_models * 2 } # with daydummies/without daydummies
+  if (!is.null(av_state$trend_vars)) { tot_models <- tot_models * 2 } # with trendvariable/without trendvariable
+  tot_models <- tot_models * 2 # with constraints/without constraints
+  tot_models <- tot_models * nexo^nvars # 3^(#vars) without dumyvariable for outliers/dummyvariable for outliers 3.5x std/dummyvariable for outliers 3x std
   searched_models <- length(av_state$model_queue) - 
     length(find_models(c(av_state$accepted_models,av_state$rejected_models),list(lag=-1)))
   scat(av_state$log_level,3,'Tested ',searched_models,' of ',tot_models,' (',
       format_as_percentage(searched_models/tot_models),') of the combinatorial search space at the given lags (',paste(dlags,collapse=', '),').\n',sep='')
   invisible(av_state)
-}
-distinct_lags <- function(lst) {
-  sort(unique(sapply(lst,function(x) x$parameters$lag)))
-}
-
-# Creating the total search space
-create_total_model_queue <- function(av_state) {
-  r <- list()
-  lags <- distinct_lags(c(av_state$accepted_models,av_state$rejected_models))
-  vars <- sort(av_state$vars)
-  nvars <- length(vars)
-  nexo <- 1+av_state$exogenous_max_iteration
-  ncombs <- nexo^nvars
-  for (restrict in c(FALSE,TRUE)) {
-    for (apply_log_transform in c(FALSE,TRUE)) {
-      for (lag in lags) {
-        for (i in 1:ncombs) {
-          if(i>ncombs) {break }
-          combline <- sapply(1:nvars,function(x) determine_var_index(i,x,nexo))
-          exogenous_variables <- exogenous_dataframe_for_combline(combline,vars)
-          model <- list()
-          if (apply_log_transform) { model$apply_log_transform <- TRUE }
-          if (!is.null(exogenous_variables)) { model$exogenous_variables <- exogenous_variables }
-          model$lag <-lag
-          if (restrict) { model$restrict <- TRUE }
-          class(model) <- 'var_model'
-          r <- c(r,list(model))
-        }
-      }
-    }
-  }
-  r
-}
-determine_var_index <- function(i,vari,nexo) {
-  ((i-1)%/%(nexo^(vari-1)))%%nexo
-}
-exogenous_dataframe_for_combline <- function(combline,vars) {
-  dfs <- NULL
-  for (i in 1:length(combline)) {
-    if(i>length(combline)) { break }
-    if (combline[[i]] != 0) {
-      df <- data.frame(variable=vars[[i]],iteration=combline[[i]],stringsAsFactors=FALSE)
-      if (is.null(dfs)) {
-        dfs <- df
-      } else {
-        dfs <- rbind(dfs,df)
-      }
-    }
-  }
-  dfs
 }
 
 
