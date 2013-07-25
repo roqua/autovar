@@ -455,8 +455,8 @@ print_best_models <- function(av_state) {
     scat(av_state$log_level,3,"\n",paste(rep('-',times=53),collapse=''),"\n",sep='')
     scat(av_state$log_level,3,"Details for the best log-transformed model (model ",
          idx_chars(logm[[1]]),"):\n",sep='')
-    plot_contemporaneous_correlations(av_state)
     scat(av_state$log_level,3,paste(rep('-',times=53),collapse=''),"\n",sep='')
+    plot_contemporaneous_correlations(av_state)
     var_info(best_log$varest)
   }
   non_logm <- find_models(av_state$accepted_models,list(apply_log_transform = FALSE))
@@ -465,8 +465,8 @@ print_best_models <- function(av_state) {
     scat(av_state$log_level,3,"\n\n",paste(rep('-',times=59),collapse=''),"\n",sep='')
     scat(av_state$log_level,3,"Details for the best model without log-transform (model ",
          idx_chars(non_logm[[1]]),"):\n",sep='')
-    plot_contemporaneous_correlations(av_state)
     scat(av_state$log_level,3,paste(rep('-',times=59),collapse=''),"\n",sep='')
+    plot_contemporaneous_correlations(av_state)
     var_info(best_non_log$varest)
   }
 }
