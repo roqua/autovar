@@ -1,5 +1,5 @@
 igraph_legend1 <- function() {
-  cols <- colors()[c(517,123,33)]
+  cols <- colors()[c(517,33)]
   str <- c('positive associations','negative associations')
   mtext(str,side=1,line= 1:2,col=cols,font=2,adj=0,cex=0.8)
 }
@@ -31,10 +31,12 @@ plot_contemporaneous_correlations <- function(av_state) {
   sign <- NULL
   for(i in 1:n) {
     if ( i > n) { break }
-    if (E(g)$weight[[i]]>0) { sign[i] <- 'palegreen'}
-    else if (E(g)$weight[[i]]<0)  { sign[i] <- 'brown1'}
-    else if (E(g)$weight[[i]]==0) { sign[i] <- 'deepskyblue2'}
-    else { sign[i] <- 'gray15'}
+    if (E(g)$weight[[i]]>0) { 
+      sign[i] <- 'palegreen'
+    }
+    else { 
+      sign[i] <- 'brown1'
+    }
   }
 cols <- c('springgreen4','steelblue','chocolate1')
 E(g)$width <- E(g)$weight
