@@ -430,7 +430,6 @@ var_summary <- function(av_state,msg=NULL) {
   search_space_used(av_state)
   print_granger_statistics(av_state)
   vargranger_plot(av_state)
-  plot_contemporaneous_correlations(av_state)
   print_model_statistics(av_state)
   if (length(av_state$accepted_models) > 0) {
     scat(av_state$log_level,3,"\nThe valid models (sorted by",av_state$criterion,"score):\n")
@@ -458,6 +457,7 @@ print_best_models <- function(av_state) {
          idx_chars(logm[[1]]),"):\n",sep='')
     scat(av_state$log_level,3,paste(rep('-',times=53),collapse=''),"\n",sep='')
     var_info(best_log$varest)
+    plot_contemporaneous_correlations(av_state)
   }
   non_logm <- find_models(av_state$accepted_models,list(apply_log_transform = FALSE))
   if (!is.null(non_logm)) {
@@ -467,6 +467,7 @@ print_best_models <- function(av_state) {
          idx_chars(non_logm[[1]]),"):\n",sep='')
     scat(av_state$log_level,3,paste(rep('-',times=59),collapse=''),"\n",sep='')
     var_info(best_non_log$varest)
+    plot_contemporaneous_correlations(av_state)
   }
 }
 

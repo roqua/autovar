@@ -4,7 +4,14 @@ igraph_legend1 <- function() {
   mtext(str,side=1,line= 1:2,col=cols,font=2,adj=0,cex=0.8)
 }
 plot_contemporaneous_correlations <- function(av_state) {
-  a <- summary(av_state$accepted_models[[1]]$varest)
+  logm <- find_models(av_state$accepted_models,list(apply_log_transform = TRUE))
+  non_logm <- find_models(av_state$accepted_models,list(apply_log_transform = FALSE))
+  if (!is.null(logm)) {
+  a <- summary(av_state$accepted_models[[logm[[1]]]]$varest)
+  }
+  if (!is.null(non_logm)) {
+  a <- summary(av_state$accepted_models[[non_logm[[1]]]]$varest)
+  }
   p <- NULL
   n <- length(av_state$vars)
   r <- av_state$vars[[(n)]]
