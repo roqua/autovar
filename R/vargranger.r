@@ -39,7 +39,9 @@ vargranger_graph <- function(av_state) {
 
 vargranger_graph_aux <- function(av_state,lst) {
   vlist <- vargranger_list(lst)
-  if (length(which(vlist$causevr != '')) == 0) {
+  if (is.null(vlist)) {
+    NULL
+  } else if (length(which(vlist$causevr != '')) == 0) {
     NULL
   } else {
     r <- list()
@@ -373,14 +375,16 @@ vargranger_to_string <- function(varest,res,include_significance=TRUE) {
 
 print_vargranger_list <- function(av_state,lst,title) {
   if (length(lst) != 0) {
-    scat(av_state$log_level,3,
-         paste("\nGranger causality summary of all ",
-               length(lst)," ",title,":\n",sep=''))
     glist <- vargranger_list(lst)
-    for (i in 1:nr_rows(glist)) {
-      if (i > nr_rows(glist)) { break }
-      gres <- glist[i,]
-      scat(av_state$log_level,3,"  ",gres$desc,"\n",sep='')
+    if (!is.null(glist)) {
+      scat(av_state$log_level,3,
+           paste("\nGranger causality summary of all ",
+                 length(lst)," ",title,":\n",sep=''))
+      for (i in 1:nr_rows(glist)) {
+        if (i > nr_rows(glist)) { break }
+        gres <- glist[i,]
+        scat(av_state$log_level,3,"  ",gres$desc,"\n",sep='')
+      }
     }
   }
 }
@@ -456,19 +460,23 @@ vargranger_list <- function(lst) {
     cnt <- c(cnt,item$cnt)
     cnta <- c(cnta,item$cnta)
   }
-  df <- data.frame(causevr=causevr,othervr=othervr,signplus=signplus,signboth=signboth,
-                   signminus=signminus,signnone=signnone,cnt=cnt,cnta=cnta,stringsAsFactors=FALSE)
-  ssign <- get_majority_sign(signplus,signboth,signminus,signnone)
-  df <- cbind(df,list(sign=ssign))
-  df <- cbind(df,list(tcnt=cnt+cnta))
-  df <- cbind(df,list(perc=(cnt+cnta)/length(lst)))
-  df <- df[with(df,order(df$tcnt,df$cnt,df$causevr,decreasing=TRUE)),]
-  varwidth <- max(sapply(unique(c(df$causevr,df$othervr)),nchar))
-  df <- cbind(df,
-              list(desc=sapply(df_in_rows(df),
-                               function(x) compact_varline(x,varwidth))),
-              stringsAsFactors=FALSE)
-  df
+  if (is.null(llst)) {
+    NULL
+  } else {
+    df <- data.frame(causevr=causevr,othervr=othervr,signplus=signplus,signboth=signboth,
+                     signminus=signminus,signnone=signnone,cnt=cnt,cnta=cnta,stringsAsFactors=FALSE)
+    ssign <- get_majority_sign(signplus,signboth,signminus,signnone)
+    df <- cbind(df,list(sign=ssign))
+    df <- cbind(df,list(tcnt=cnt+cnta))
+    df <- cbind(df,list(perc=(cnt+cnta)/length(lst)))
+    df <- df[with(df,order(df$tcnt,df$cnt,df$causevr,decreasing=TRUE)),]
+    varwidth <- max(sapply(unique(c(df$causevr,df$othervr)),nchar))
+    df <- cbind(df,
+                list(desc=sapply(df_in_rows(df),
+                                 function(x) compact_varline(x,varwidth))),
+                stringsAsFactors=FALSE)
+    df
+  }
 }
 
 get_majority_sign <- function(signplus,signboth,signminus,signnone) {
