@@ -460,7 +460,7 @@ vargranger_list <- function(lst) {
     cnt <- c(cnt,item$cnt)
     cnta <- c(cnta,item$cnta)
   }
-  if (is.null(llst)) {
+  if (length(llst) == 0) {
     NULL
   } else {
     df <- data.frame(causevr=causevr,othervr=othervr,signplus=signplus,signboth=signboth,
