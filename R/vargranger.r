@@ -14,6 +14,11 @@ vargranger <- function(varest,log_level=0) {
 
 # Print Granger Statistics
 print_granger_statistics <- function(av_state) {
+  scat(av_state$log_level,3,"\nGranger causality legend:\n")
+  scat(av_state$log_level,3,"   +   majority positive associations\n")
+  scat(av_state$log_level,3,"   ~   majority mixed pos/neg associations within models\n")
+  scat(av_state$log_level,3,"   -   majority negative associations\n")
+  scat(av_state$log_level,3,"   #   no majority among models\n")
   lst <- c(av_state$accepted_models,av_state$rejected_models)
   #print_vargranger_list(av_state,lst,"processed models")
   lst2 <- filter_lag_zero_models(lst[find_models(lst,list(restrict=FALSE))])
@@ -83,8 +88,8 @@ color_for_sign <- function(sgn) {
 
 igraph_legend <- function() {
   cols <- colors()[c(517,123,33,500)]
-  str <- c('positive associations','mixed pos/neg associations (among models)',
-           'negative associations','mixed pos/neg associations (within models)')
+  str <- c('majority positive associations','majority mixed pos/neg associations within models',
+           'majority negative associations','no majority among models')
   mtext(str,side=1,line=-1:2,col=cols,font=2,adj=0,cex=0.8)
 }
 
@@ -120,7 +125,7 @@ vargranger_plot <- function(av_state) {
          vertex.size=65,
          vertex.label.family='sans',
          vertex.label.cex=1,
-         vertex.color=cols[1:(length(V(a)))],
+         vertex.color=cols[order(V(a)$name)],
          vertex.label.color='black',
          vertex.label.font=1,
          main="Granger causality",
