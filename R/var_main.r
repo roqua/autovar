@@ -386,15 +386,50 @@ expand_model <- function(model_params,av_state) {
   if (is.null(model_params$exogenous_variables)) {
     r <- c(r,list(model_params))
   } else {
-    for (i in 1:(dim(model_params$exogenous_variables)[1])) {
-      if(i>(dim(model_params$exogenous_variables)[1])) { break }
-      exorow <- model_params$exogenous_variables[i,]
-      exovec <- get_outliers_as_vector(av_state,exorow$variable,exorow$iteration,model_params)
-      new_model <- merge_lists(model_params,list(exogenous_variables=exovec))
+    if (av_state$split_up_outliers) {
+      outlier_indices<-NULL
+      for (i in 1:(dim(model_params$exogenous_variables)[1])) {
+        if(i>(dim(model_params$exogenous_variables)[1])) { break }
+        exorow <- model_params$exogenous_variables[i,]
+        exovec <- get_outliers_as_vector(av_state,exorow$variable,exorow$iteration,model_params)
+        outlier_indices <- merge_vectors(outlier_indices,exovec)
+      }
+      new_model <- merge_lists(model_params,list(exogenous_variables=outlier_indices))
       r <- c(r,list(new_model))
+    } else {
+      for (i in 1:(dim(model_params$exogenous_variables)[1])) {
+        if(i>(dim(model_params$exogenous_variables)[1])) { break }
+        exorow <- model_params$exogenous_variables[i,]
+        exovec <- get_outliers_as_vector(av_state,exorow$variable,exorow$iteration,model_params)
+        new_model <- merge_lists(model_params,list(exogenous_variables=exovec))
+        r <- c(r,list(new_model))
+      }
     }
   }
-  r 
+  r
+}
+merge_vectors <- function(a,b) {
+  # assume a and b are sorted nondecreasing
+  cc<-NULL
+  ai <- 1
+  bi <- 1
+  lastc <- -1
+  while (ai <= length(a) || bi <= length(b)) {
+    if (ai <= length(a) && (bi > length(b) || a[[ai]] <= b[[bi]])) {
+      if (lastc != a[[ai]]) {
+        cc <- c(cc,a[[ai]])
+        lastc = a[[ai]]
+      }
+      ai <- ai+1
+    } else {
+      if (lastc != b[[bi]]) {
+        cc <- c(cc,b[[bi]])
+        lastc = b[[bi]]
+      }
+      bi <- bi+1
+    }
+  }
+  cc
 }
 
 default_model_props <- function() {
