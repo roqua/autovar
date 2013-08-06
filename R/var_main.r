@@ -36,6 +36,7 @@
 #' @param include_lag_zero determines whether models at lag order 0 are should be considered. These are models at lag 1 with constrained lag-1 parameters in all equations.
 #' @param split_up_outliers determines whether each outlier should have its own exogenous variable. This will make a difference for restricted models only, and only when there is a variable with multiple outliers.
 #' @param format_output_like_stata when TRUE, all constraints and exogenous variables are always shown (i.e., it will now show exogenous variables that were included but constrained in all equations), and the constraints are formatted like in Stata.
+#' @param exclude_almost when true, effects the granger causality and relax the boundary values for significance by multiplying it by a factor of 2.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta",log_level=3)
@@ -57,7 +58,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      normalize_data=FALSE,
                      include_lag_zero=FALSE,
                      split_up_outliers=FALSE,
-                     format_output_like_stata=FALSE) {
+                     format_output_like_stata=FALSE,
+                     exclude_almost=FALSE) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -93,6 +95,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$include_lag_zero <- include_lag_zero
   av_state$split_up_outliers <- split_up_outliers
   av_state$format_output_like_stata <- format_output_like_stata
+  av_state$exclude_almost <- exclude_almost
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   

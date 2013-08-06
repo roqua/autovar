@@ -43,8 +43,8 @@ vargranger_graph <- function(av_state) {
 }
 
 vargranger_graph_aux <- function(av_state,lst) {
-  vlist <- vargranger_list(lst)
-  if (is.null(vlist)) {
+  vlist <- vargranger_list(lst,av_state$exclude_almost)
+  if (length(vlist)==0) {
     NULL
   } else if (length(which(vlist$causevr != '')) == 0) {
     NULL
@@ -380,7 +380,7 @@ vargranger_to_string <- function(varest,res,include_significance=TRUE) {
 
 print_vargranger_list <- function(av_state,lst,title) {
   if (length(lst) != 0) {
-    glist <- vargranger_list(lst)
+    glist <- vargranger_list(lst,av_state$exclude_almost)
     if (!is.null(glist)) {
       scat(av_state$log_level,3,
            paste("\nGranger causality summary of all ",
@@ -394,14 +394,14 @@ print_vargranger_list <- function(av_state,lst,title) {
   }
 }
 
-vargranger_list <- function(lst) {
+vargranger_list <- function(lst,exclude_almost) {
   llst <- list()
   for (item in lst) {
     varest <- item$varest
     res <- vargranger_call(varest)
     noneflag <- TRUE
     for (row in df_in_rows(res)) {
-      if (row$P <= 2*av_state_significance(varest)) {
+      if ((row$P <= av_state_significance(varest) ) || (row$P <= 2*av_state_significance(varest) && !exclude_almost)) {
         noneflag <- FALSE
         gsign <- granger_causality_sign(varest,row$Excluded,row$Equation)
         causevr <- unprefix_ln(row$Excluded)

@@ -405,6 +405,15 @@ hljs.initHighlightingOnLoad();
 </div>
 </div>
 <div class='control-group'>
+<label class='control-label'>Exclude almost</label>
+<div class='controls'>
+  <label class='checkbox'>
+    <input type='checkbox' id='exclude_almost'>Exclude nearby values 
+  </label>
+  <span class='help-block'>When checked, excludes the models with granger causality in the range of 0.05 to 0.10</span>
+</div>
+</div>
+<div class='control-group'>
 <label class='control-label'>Stata-like output</label>
 <div class='controls'>
   <label class='checkbox'>
@@ -505,6 +514,9 @@ function var_main(str) {
   }
   if ($('#include_lag_zero').is(':checked')) {
     str = str+ ',include_lag_zero=TRUE'
+  }
+  if ($('#exclude_almost').is(':checked')) {
+    str = str+ ',exclude_almost=TRUE'
   }
   if ($('#format_output_like_stata').is(':checked')) {
     str = str+ ',format_output_like_stata=TRUE'

@@ -13,7 +13,8 @@
     use_pperron = TRUE, include_squared_trend = FALSE,
     normalize_data = FALSE, include_lag_zero = FALSE,
     split_up_outliers = FALSE,
-    format_output_like_stata = FALSE)
+    format_output_like_stata = FALSE,
+    exclude_almost = FALSE)
 }
 \arguments{
   \item{av_state}{an object of class \code{av_state}}
@@ -169,6 +170,10 @@
   (i.e., it will now show exogenous variables that were
   included but constrained in all equations), and the
   constraints are formatted like in Stata.}
+
+  \item{exclude_almost}{when true, effects the granger
+  causality and relax the boundary values for significance
+  by multiplying it by a factor of 2.}
 }
 \value{
   This function returns the modified \code{av_state}
