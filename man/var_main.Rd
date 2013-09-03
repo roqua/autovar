@@ -165,15 +165,18 @@
   difference for restricted models only, and only when
   there is a variable with multiple outliers.}
 
-  \item{format_output_like_stata}{when TRUE, all
+  \item{format_output_like_stata}{when \code{TRUE}, all
   constraints and exogenous variables are always shown
   (i.e., it will now show exogenous variables that were
   included but constrained in all equations), and the
   constraints are formatted like in Stata.}
 
-  \item{exclude_almost}{when true, effects the granger
-  causality and relax the boundary values for significance
-  by multiplying it by a factor of 2.}
+  \item{exclude_almost}{when \code{TRUE}, only Granger
+  causalities with p-value <= 0.05 are included in the
+  results. When \code{FALSE}, p-values between 0.05 and
+  0.10 are also included in results as "almost Granger
+  causalities" that have half the weight of actual Granger
+  causalities in the Granger causality summary graph.}
 }
 \value{
   This function returns the modified \code{av_state}

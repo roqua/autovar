@@ -45,7 +45,7 @@
       exogenous_variables = NULL, use_sktest = TRUE, restrictions.verify_validity_in_every_step = TRUE, 
       restrictions.extensive_search = TRUE, criterion = c("AIC", "BIC"), use_varsoc = FALSE, 
       use_pperron = TRUE, include_squared_trend = FALSE, normalize_data = FALSE, include_lag_zero = FALSE, 
-      split_up_outliers = FALSE, format_output_like_stata = FALSE)</pre>
+      split_up_outliers = FALSE, format_output_like_stata = FALSE, exclude_almost = FALSE)</pre>
     
     <h2>Arguments</h2>
     <dl>
@@ -203,11 +203,18 @@
   difference for restricted models only, and only when
   there is a variable with multiple outliers.</dd>
       <dt>format_output_like_stata</dt>
-      <dd>when TRUE, all
+      <dd>when <code>TRUE</code>, all
   constraints and exogenous variables are always shown
   (i.e., it will now show exogenous variables that were
   included but constrained in all equations), and the
   constraints are formatted like in Stata.</dd>
+      <dt>exclude_almost</dt>
+      <dd>when <code>TRUE</code>, only Granger
+  causalities with p-value <= 0.05 are included in the
+  results. When <code>FALSE</code>, p-values between 0.05 and
+  0.10 are also included in results as "almost Granger
+  causalities" that have half the weight of actual Granger
+  causalities in the Granger causality summary graph.</dd>
     </dl>
     
     <div class="Value">
@@ -251,7 +258,13 @@ Starting VAR with variables: Activity_hours, Depression, for subset: 1
 ====================
 
 Done. Processed 9 distinct models, of which 2 were valid.
-Tested 18 of 72 ( 25.00%) of the combinatorial search space at the given lags (1, 2).
+Tested 18 of 144 ( 12.50%) of the combinatorial search space at the given lags (1, 2).
+
+Granger causality legend:
+   +   majority positive associations
+   ~   majority mixed pos/neg associations within models
+   -   majority negative associations
+   #   no majority among models
 
 Granger causality summary of all 8 unrestricted models:
   100.00%   Depression     -Granger causes- Activity_hours   (3 models +5 almost) (sign: 1 ~, 7 -)
@@ -262,7 +275,9 @@ Granger causality summary of all 2 valid models:
 Granger causality summary of all 1 valid unrestricted models:
   100.00%   Depression     -Granger causes- Activity_hours   (1 almost) (sign: 1 -)
 </div>
-<p><img src='var_main-5.png' alt='' width='400' height='400' /></p>
+<strong class='warning'>Warning message:
+file sizes not equal</strong>
+<p><img src='var_main-6.png' alt='' width='400' height='400' /></p>
 <div class='output'>
 Summary of all valid models:
   lag:
