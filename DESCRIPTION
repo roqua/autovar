@@ -54,4 +54,4 @@ Collate:
     'add_trend.r'
     'stats_overrides.r'
     'plot_barchart.r'
-    'plot_contemporaneous_correlations.R'
+    'plot_contemporaneous_correlations.r'
