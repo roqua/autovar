@@ -143,6 +143,7 @@ format_restriction <- function(varest,idx,skip_to_be_excluded,format_output_like
       secondpart <- paste("[",get_rowname(idx,cnames,rnames),"]",
                           get_colname(idx,cnames),sep='')
       secondpart <- str_replace(secondpart,"^(\\[[^]]+\\])(.*?)\\.l([0-9]+)$","\\1L\\3\\.\\2")
+      secondpart <- str_replace(secondpart,"(\\]L)1(\\.)","\\1\\2")
       secondpart
     } else {
       paste("[",get_rowname(idx,cnames,rnames),"]",
