@@ -6,6 +6,12 @@ igraph_legend1 <- function() {
 plot_contemporaneous_correlations <- function(av_state,log_transform) {
   model_list <- find_models(av_state$accepted_models,list(apply_log_transform = log_transform))
   a <- summary(av_state$accepted_models[[model_list[[1]]]]$varest)
+  ac <- summary(av_state$accepted_models[[model_list[[1]]]]$varest)$corres
+  cnt <- 1
+  for (i in 2:length(model_list)) {
+    ac <- ac+summary(av_state$accepted_models[[model_list[[i]]]]$varest)$corres
+  }
+  ac = ac/length(model_list)
   vars <- dimnames(a$corres)[[1]]
   p <- NULL
   n <- length(vars)
@@ -27,7 +33,7 @@ plot_contemporaneous_correlations <- function(av_state,log_transform) {
   g <- graph.data.frame(relations, directed=FALSE, vertices=z)
   for (i in 1:n) {
     if (i > n) { break }
-    E(g)$weight[[i]] <- a$corres[i,q[i]]
+    E(g)$weight[[i]] <- ac[i,q[i]]
   }
   sign <- NULL
   for(i in 1:n) {
@@ -57,7 +63,10 @@ plot_contemporaneous_correlations <- function(av_state,log_transform) {
      vertex.label.font=1,
      vertex.label.family='sans',
      edge.curved=FALSE,
-     main="Contemporaneous Correlations")
+     main="Contemporaneous Correlations",
+     sub=paste('averaged over',length(model_list),ifelse(log_transform,
+                                                         'log-transformed valid models',
+                                                         'valid models without log transform')))
   igraph_legend1()
   invisible(g)
 }
