@@ -3,37 +3,31 @@ igraph_legend1 <- function() {
   str <- c('positive associations','negative associations')
   mtext(str,side=1,line= 1:2,col=cols,font=2,adj=0,cex=0.8)
 }
-plot_contemporaneous_correlations <- function(av_state) {
-  logm <- find_models(av_state$accepted_models,list(apply_log_transform = TRUE))
-  non_logm <- find_models(av_state$accepted_models,list(apply_log_transform = FALSE))
-  if (!is.null(logm)) {
-  a <- summary(av_state$accepted_models[[logm[[1]]]]$varest)
-  }
-  if (!is.null(non_logm)) {
-  a <- summary(av_state$accepted_models[[non_logm[[1]]]]$varest)
-  }
+plot_contemporaneous_correlations <- function(av_state,log_transform) {
+  model_list <- find_models(av_state$accepted_models,list(apply_log_transform = log_transform))
+  a <- summary(av_state$accepted_models[[model_list[[1]]]]$varest)
+  vars <- dimnames(a$corres)[[1]]
   p <- NULL
-  n <- length(av_state$vars)
-  r <- av_state$vars[[(n)]]
+  n <- length(vars)
+  r <- vars[[n]]
   for (i in 1:n) {
-    p <- c(p,av_state$vars[i])
+    p <- c(p,vars[i])
   }
   s <- NULL
   q <- NULL
   for(i in 1:(n-1)) {
-    if ( i > (n-1)) { break } 
-    s <-c(s,av_state$vars[i])
-    q[i]<-i
+    if (i > (n-1)) { break } 
+    s <- c(s,vars[i])
+    q[i] <- i
   }
-  s<-c(r,s)
-  q<-c(n,q)
-  z<- data.frame(name=c(p)) 
-  relations <- data.frame(from=c(p),
-                          to=c(s))
+  s <- c(r,s)
+  q <- c(n,q)
+  z <- data.frame(name=c(p))
+  relations <- data.frame(from=c(p),to=c(s))
   g <- graph.data.frame(relations, directed=FALSE, vertices=z)
-  for(i in 1:n) {
+  for (i in 1:n) {
     if (i > n) { break }
-    E(g)$weight[[i]] <- a$corres[i,(q[i])]
+    E(g)$weight[[i]] <- a$corres[i,q[i]]
   }
   sign <- NULL
   for(i in 1:n) {
@@ -45,12 +39,12 @@ plot_contemporaneous_correlations <- function(av_state) {
       sign[i] <- 'brown1'
     }
   }
-cols <- c('springgreen4','steelblue','chocolate1')
-E(g)$width <- E(g)$weight
-E(g)$width <- 20*abs(E(g)$width)*1/max(abs(E(g)$width))
-E(g)$color <- sign
-E(g)$label <- round(E(g)$weight,2)
-plot(g,layout=layout.kamada.kawai, 
+  cols <- c('springgreen4','steelblue','chocolate1')
+  E(g)$width <- E(g)$weight
+  E(g)$width <- 20*abs(E(g)$width)*1/max(abs(E(g)$width))
+  E(g)$color <- sign
+  E(g)$label <- round(E(g)$weight,2)
+  plot(g,layout=layout.kamada.kawai, 
      edge.arrow.size=2,
      edge.arrow.width=2,
      edge.label.family='sans',
@@ -61,6 +55,7 @@ plot(g,layout=layout.kamada.kawai,
      vertex.color=cols[1:(length(V(g)))],
      vertex.label.color='black',
      vertex.label.font=1,
+     vertex.label.family='sans',
      edge.curved=FALSE,
      main="Contemporaneous Correlations")
   igraph_legend1()
