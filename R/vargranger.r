@@ -18,7 +18,7 @@ print_granger_statistics <- function(av_state) {
   scat(av_state$log_level,3,"   +   majority positive associations\n")
   scat(av_state$log_level,3,"   ~   majority mixed pos/neg associations within models\n")
   scat(av_state$log_level,3,"   -   majority negative associations\n")
-  scat(av_state$log_level,3,"   #   no majority among models\n")
+  scat(av_state$log_level,3,"   #   mixed pos/neg associations among models\n")
   lst <- c(av_state$accepted_models,av_state$rejected_models)
   #print_vargranger_list(av_state,lst,"processed models")
   lst2 <- filter_lag_zero_models(lst[find_models(lst,list(restrict=FALSE))])
@@ -89,7 +89,7 @@ color_for_sign <- function(sgn) {
 igraph_legend <- function() {
   cols <- colors()[c(517,123,33,500)]
   str <- c('majority positive associations','majority mixed pos/neg associations within models',
-           'majority negative associations','no majority among models')
+           'majority negative associations','mixed pos/neg associations among models')
   mtext(str,side=1,line=-1:2,col=cols,font=2,adj=0,cex=0.8)
 }
 
