@@ -271,6 +271,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     }
     i <- i+1
   }
+  accepted_models <- remove_restriction_duplicates(av_state,accepted_models)
   av_state$accepted_models <- accepted_models
   av_state$rejected_models <- rejected_models
   av_state$model_queue <- model_queue
@@ -312,6 +313,57 @@ process_model <- function(av_state,model,i,totmodelcnt) {
   list(av_state=av_state,accepted_model=accepted_model,rejected_model=rejected_model)
 }
 
+models_are_equal <- function(av_state,modela,modelb) {
+  if (modela$parameters$lag != modelb$parameters$lag) FALSE
+  else if (apply_log_transform(modela$parameters) != apply_log_transform(modelb$parameters)) FALSE
+  else if (format_exogenous_variables(modela$parameters$exogenous_variables,
+                                 av_state,
+                                 modela$parameters,modela$varest,av_state$format_output_like_stata) !=
+        format_exogenous_variables(modelb$parameters$exogenous_variables,
+                                   av_state,
+                                   modelb$parameters,modelb$varest,av_state$format_output_like_stata)) FALSE
+  else if (format_constraints(modela$varest,
+                         unique(c(av_state$exogenous_variables,
+                                  av_state$day_dummies,
+                                  av_state$trend_vars)),av_state$format_output_like_stata) !=
+        format_constraints(modelb$varest,
+                           unique(c(av_state$exogenous_variables,
+                                    av_state$day_dummies,
+                                    av_state$trend_vars)),av_state$format_output_like_stata)) FALSE
+  else TRUE
+}
+model_to_string <-function(av_state,model) {
+  res <- ""
+  res <- paste(res,"  Lag: ",model$parameters$lag,"\n",sep='')
+  res <- paste(res,"  Log transform: ",
+                 ifelse(apply_log_transform(model$parameters),"YES","NO")
+                 ,"\n",sep='')
+  res <- paste(res,"  Exogenous variables: ",sep='')
+  res <- paste(res,
+               format_exogenous_variables(model$parameters$exogenous_variables,
+                                          av_state,
+                                          model$parameters,model$varest,av_state$format_output_like_stata),
+               sep='')
+  res <- paste(res,"  Constraints: ",sep='')
+  res <- paste(res,
+               format_constraints(model$varest,
+                                  unique(c(av_state$exogenous_variables,
+                                           av_state$day_dummies,
+                                           av_state$trend_vars)),av_state$format_output_like_stata))
+  res
+}
+remove_restriction_duplicates <- function(av_state,lst) {
+  rlst <- NULL
+  lststrings <- NULL
+  for (model in lst) {
+    modelstring <- model_to_string(av_state,model)
+    if (!(modelstring %in% lststrings)) {
+      lststrings <- c(lststrings,modelstring)
+      rlst <- c(rlst,list(model))
+    }
+  }
+  rlst
+}
 remove_duplicates <- function(av_state,lst) {
   lst <- add_expanded_models(lst,av_state)
   rlst <- lst
@@ -488,25 +540,48 @@ var_summary <- function(av_state,msg=NULL) {
 #' @export
 print_best_models <- function(av_state) {
   logm <- find_models(av_state$accepted_models,list(apply_log_transform = TRUE))
+  bestlogscore <- -1
   if (!is.null(logm)) {
     best_log <- av_state$accepted_models[[logm[[1]]]]
-    scat(av_state$log_level,3,"\n",paste(rep('-',times=53),collapse=''),"\n",sep='')
-    scat(av_state$log_level,3,"Details for the best log-transformed model (model ",
-         idx_chars(logm[[1]]),"):\n",sep='')
-    scat(av_state$log_level,3,paste(rep('-',times=53),collapse=''),"\n",sep='')
-    plot_contemporaneous_correlations(av_state)
-    var_info(best_log$varest)
+    bestlogscore <- model_score(best_log$varest)
   }
+  bestnonlogscore <- -1
   non_logm <- find_models(av_state$accepted_models,list(apply_log_transform = FALSE))
   if (!is.null(non_logm)) {
     best_non_log <- av_state$accepted_models[[non_logm[[1]]]]
-    scat(av_state$log_level,3,"\n\n",paste(rep('-',times=59),collapse=''),"\n",sep='')
-    scat(av_state$log_level,3,"Details for the best model without log-transform (model ",
-         idx_chars(non_logm[[1]]),"):\n",sep='')
-    scat(av_state$log_level,3,paste(rep('-',times=59),collapse=''),"\n",sep='')
-    plot_contemporaneous_correlations(av_state)
-    var_info(best_non_log$varest)
+    bestnonlogscore <- model_score(best_non_log$varest)
   }
+  if (bestlogscore != -1 && bestnonlogscore != -1) {
+    if (bestnonlogscore < bestlogscore) {
+      print_best_non_log(av_state,non_logm)
+      print_best_log(av_state,logm)
+    } else {
+      print_best_log(av_state,logm)
+      print_best_non_log(av_state,non_logm)
+    }
+  } else if (bestlogscore != -1) {
+    print_best_log(av_state,logm)
+  } else if (bestnonlogscore != -1) {
+    print_best_non_log(av_state,non_logm)
+  }
+}
+print_best_non_log <- function(av_state,non_logm) {
+  best_non_log <- av_state$accepted_models[[non_logm[[1]]]]
+  scat(av_state$log_level,3,"\n\n",paste(rep('-',times=59),collapse=''),"\n",sep='')
+  scat(av_state$log_level,3,"Details for the best model without log-transform (model ",
+       idx_chars(non_logm[[1]]),"):\n",sep='')
+  scat(av_state$log_level,3,paste(rep('-',times=59),collapse=''),"\n",sep='')
+  plot_contemporaneous_correlations(av_state)
+  var_info(best_non_log$varest)
+}
+print_best_log <- function(av_state,logm) {
+  best_log <- av_state$accepted_models[[logm[[1]]]]
+  scat(av_state$log_level,3,"\n",paste(rep('-',times=53),collapse=''),"\n",sep='')
+  scat(av_state$log_level,3,"Details for the best log-transformed model (model ",
+       idx_chars(logm[[1]]),"):\n",sep='')
+  scat(av_state$log_level,3,paste(rep('-',times=53),collapse=''),"\n",sep='')
+  plot_contemporaneous_correlations(av_state)
+  var_info(best_log$varest)
 }
 
 set_varest_values <- function(av_state,varest,model) {
