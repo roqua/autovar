@@ -353,7 +353,7 @@ model_to_string <-function(av_state,model) {
   res
 }
 remove_restriction_duplicates <- function(av_state,lst) {
-  rlst <- NULL
+  rlst <- list()
   lststrings <- NULL
   for (model in lst) {
     modelstring <- model_to_string(av_state,model)

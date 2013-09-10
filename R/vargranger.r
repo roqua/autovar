@@ -151,7 +151,7 @@ vargranger_plot <- function(av_state) {
     dev.copy2pdf(file=fname2)
     fsize2 <- file.info(fname2)$size
     if (fsize1 != fsize2) {
-      warning("file sizes not equal")
+      #warning("file sizes not equal")
     }
     if (fsize2 > fsize1) {
       file.remove(fname1)

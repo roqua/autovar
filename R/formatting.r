@@ -102,6 +102,31 @@ format_exogenous_variables <- function(exogvars,av_state,model,varest,format_out
     res
   }
 }
+format_exogenous_variables_oneline <- function(exogvars,av_state,model,varest) {
+  remaining_exog_vars <- remaining_exogenous_variables(av_state,model)
+  remaining_exog_vars <- remove_restricted_variables(remaining_exog_vars,varest)
+  if (is.null(exogvars) && is.null(remaining_exog_vars)) {
+    ""
+  } else {
+    res <- ""
+    if (!is.null(remaining_exog_vars)) {
+      for (i in 1:length(remaining_exog_vars)) {
+        exovar <- remaining_exog_vars[[i]]
+        if (exovar == 'index') exovar <- 'Nr'
+        res <- paste(res,ifelse(res == "",""," "),exovar,sep='')
+      }
+    }
+    if (!is.null(exogvars)) {
+      for (i in 1:nr_rows(exogvars)) {
+        if(i>nr_rows(exogvars)) { break }
+        exovar <- exogvars[i,]
+        desc <- paste('Outlier',exovar$variable,sep='')
+        res <- paste(res,ifelse(res == "",""," "),desc,sep='')
+      }
+    }
+    res
+  }
+}
 
 remove_restricted_variables <- function(exog_vars,varest) {
   if (!is.null(varest$restrictions)) {
