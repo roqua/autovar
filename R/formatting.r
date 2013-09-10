@@ -108,12 +108,12 @@ format_exogenous_variables_oneline <- function(exogvars,av_state,model,varest) {
   if (is.null(exogvars) && is.null(remaining_exog_vars)) {
     ""
   } else {
-    res <- ""
+    res <- " exog("
     if (!is.null(remaining_exog_vars)) {
       for (i in 1:length(remaining_exog_vars)) {
         exovar <- remaining_exog_vars[[i]]
         if (exovar == 'index') exovar <- 'Nr'
-        res <- paste(res,ifelse(res == "",""," "),exovar,sep='')
+        res <- paste(res,ifelse(res == " exog(",""," "),exovar,sep='')
       }
     }
     if (!is.null(exogvars)) {
@@ -121,9 +121,10 @@ format_exogenous_variables_oneline <- function(exogvars,av_state,model,varest) {
         if(i>nr_rows(exogvars)) { break }
         exovar <- exogvars[i,]
         desc <- paste('Outlier',exovar$variable,sep='')
-        res <- paste(res,ifelse(res == "",""," "),desc,sep='')
+        res <- paste(res,ifelse(res == " exog(",""," "),desc,sep='')
       }
     }
+    res <- paste(res,")",sep='')
     res
   }
 }
