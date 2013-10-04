@@ -96,6 +96,7 @@ model_without_term <- function(varest, eqname, varname) {
   varest_new <- restrict(varest,
                          method="manual",
                          resmat=format_restriction_matrix(varest,resmat))
+  varest_new <- add_intercepts(varest_new)
   list(model_score=model_score(varest_new),
        model_is_valid=model_is_valid(varest_new),
        new_varest=varest_new)

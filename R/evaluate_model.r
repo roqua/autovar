@@ -215,10 +215,17 @@ run_var <- function(data,lag,...) {
     m <- restrict(m,
              method="manual",
              resmat=format_restriction_matrix(m,resmat))
+    m <- add_intercepts(m)
   } else {
     m <- VAR(data,p = lag,...)
   }
   m
+}
+
+add_intercepts <- function(varest) {
+  for (i in 1:length(varest$varresult))
+    attr(varest$varresult[[i]]$terms,"intercept") <- 1
+  varest
 }
 
 calc_varest <- function(av_state,model) {
