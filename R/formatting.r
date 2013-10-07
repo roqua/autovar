@@ -110,9 +110,10 @@ format_exogenous_variables_oneline <- function(exogvars,av_state,model,varest) {
   } else {
     res <- " exog("
     if (!is.null(remaining_exog_vars)) {
+      if ('index' %in% remaining_exog_vars) { res <- paste(res,'Nr',sep='') }
       for (i in 1:length(remaining_exog_vars)) {
         exovar <- remaining_exog_vars[[i]]
-        if (exovar == 'index') exovar <- 'Nr'
+        if (exovar == 'index') next;
         res <- paste(res,ifelse(res == " exog(",""," "),exovar,sep='')
       }
     }
@@ -127,6 +128,29 @@ format_exogenous_variables_oneline <- function(exogvars,av_state,model,varest) {
     res <- paste(res,")",sep='')
     res
   }
+}
+real_lag <- function(varest,model) {
+  vars <- dimnames(varest$restrictions)[[1]]
+  reported_lag <- model$lag
+  actual_lag <- reported_lag
+  if (!is.null(vars) && reported_lag > 0) {
+    for (lag in reported_lag:1) {
+      notused <- TRUE
+      for (i in 1:length(vars)) {
+        varname <- paste(vars[[i]],'.l',lag,sep='')
+        if (any(varest$restrictions[,varname] == 1)) {
+          notused = FALSE;
+          break;
+        }
+      }
+      if (notused) {
+        actual_lag <- actual_lag - 1;
+      } else {
+        break;
+      }
+    }
+  }
+  actual_lag
 }
 
 remove_restricted_variables <- function(exog_vars,varest) {

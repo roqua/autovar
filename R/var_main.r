@@ -271,6 +271,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     }
     i <- i+1
   }
+  accepted_models <- remove_lag_duplicates(av_state,accepted_models)
   accepted_models <- remove_restriction_duplicates(av_state,accepted_models)
   av_state$accepted_models <- accepted_models
   av_state$rejected_models <- rejected_models
@@ -351,6 +352,27 @@ model_to_string <-function(av_state,model) {
                                            av_state$day_dummies,
                                            av_state$trend_vars)),av_state$format_output_like_stata))
   res
+}
+remove_lag_duplicates <- function(av_state,lst) {
+  rlst <- list()
+  lststrings <- NULL
+  for (model in lst) {
+    reported_lag <- model$parameters$lag
+    actual_lag <- real_lag(model$varest,model$parameters)
+    hastostay <- TRUE
+    if (actual_lag != reported_lag && (reported_lag != 1 || av_state$include_lag_zero)) {
+      for (model2 in lst) {
+        if (model2$parameters$lag == actual_lag && real_lag(model2$varest,model2$parameters) == actual_lag) {
+          hastostay <- FALSE
+          break
+        }
+      }
+    }
+    if (hastostay) {
+      rlst <- c(rlst,list(model))
+    }
+  }
+  rlst
 }
 remove_restriction_duplicates <- function(av_state,lst) {
   rlst <- list()

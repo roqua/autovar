@@ -81,11 +81,11 @@ coefs_and_pvalues <- function(varest) {
   }
   df <- data.frame(eqname = eqnames_v, varname = varnames_v,
                    pvalue = pvalues_v,stringsAsFactors=FALSE)
-  df <- df[with(df,order(df$pvalue,decreasing=TRUE)),]
-  df <- df[df$pvalue > av_state_significance(varest) & df$varname != 'const',]
   if (dim(df)[[1]] == 0) {
     NULL
   } else {
+    df <- df[with(df,order(df$pvalue,decreasing=TRUE)),]
+    df <- df[df$pvalue > av_state_significance(varest) & df$varname != 'const',]
     rownames(df) <- NULL
     df
   }
