@@ -11,7 +11,7 @@ iterative_restrict <- function(varest,verify_validity_in_every_step=TRUE,extensi
   #                        constrain the second highest model. When this option is FALSE,
   #                        we stop constraining the model as soon as restricting the term
   #                        with the highest p-value no longer decreases the model_score.
-  if (model_is_valid(varest)) {
+  #if (model_is_valid(varest)) {
     last_valid_model <- varest
     old_model <- NULL
     new_model <- varname_with_best_model(varest,
@@ -27,9 +27,9 @@ iterative_restrict <- function(varest,verify_validity_in_every_step=TRUE,extensi
                                            extensive_search)
     }
     last_valid_model
-  } else {
-    varest
-  }
+  #} else {
+   # varest
+  #}
 }
 
 model_is_better_than <- function(a,b) {
