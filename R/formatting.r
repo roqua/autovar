@@ -14,7 +14,13 @@ format_accepted_models <- function(av_state) {
                  "\n",
                  sep='')
     # Lag: 2
-    res <- paste(res,"  Lag: ",x$parameters$lag,"\n",sep='')
+    reallag <- real_lag(x$varest,x$parameters)
+    if (reallag == x$parameters$lag) {
+      res <- paste(res,"  Lag: ",x$parameters$lag,"\n",sep='')
+    } else {
+      res <- paste(res,"  Lag: ",reallag," (without constraints: ",x$parameters$lag,")\n",sep='')
+    }
+    
     # Log transform: YES
     res <- paste(res,"  Log transform: ",
                  ifelse(apply_log_transform(x$parameters),"YES","NO")
