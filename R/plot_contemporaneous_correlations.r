@@ -1,72 +1,137 @@
-igraph_legend1 <- function() {
-  cols <- colors()[c(517,33)]
-  str <- c('positive associations','negative associations')
-  mtext(str,side=1,line= 1:2,col=cols,font=2,adj=0,cex=0.8)
+contemporaneous_correlations_graph <- function(av_state) {
+  count <- list()
+  value <- list()
+  vrs <- av_state$vars
+  if (is.null(vrs) || length(vrs) < 2 || 
+      is.null(av_state$accepted_models) ||
+      length(av_state$accepted_models) == 0) return(NULL)
+  n <- length(vrs)
+  for (i in 1:n)
+    for (j in 1:n) {
+      if (i == j) next
+      count[[paste(vrs[[i]],vrs[[j]])]] <- 0
+      value[[paste(vrs[[i]],vrs[[j]])]] <- 0
+    }
+  r <- list()
+  r$allcount <- 0
+  r$nonecount <- 0
+  for (model in av_state$accepted_models) {
+    signmat <- significance_matrix(summary(model$varest))
+    r$allcount <- r$allcount+1
+    foundsomething <- FALSE
+    for (i in 1:(n-1))
+      for (j in (i+1):n) {
+        if (signmat[j*2,i] > av_state_significance(model$varest) || signmat[j*2-1,i] == 0) next
+        foundsomething <- TRUE
+        t <- paste(sort(c(vrs[[i]],vrs[[j]]),decreasing = (signmat[j*2-1,i] < 0)),collapse=" ")
+        count[[t]] <- count[[t]]+1
+        value[[t]] <- value[[t]]+signmat[j*2-1,i]
+      }
+    if (!foundsomething) r$nonecount <- r$nonecount + 1
+  }
+  r$str <- ""
+  r$edgelabels <- NULL
+  r$edgecolors <- NULL
+  emptyresults <- TRUE
+  for (i in 1:n)
+    for (j in 1:n) {
+      if (i == j) next
+      posrel <- (vrs[[i]] < vrs[[j]])
+      t <- paste(vrs[[i]],vrs[[j]])
+      if (count[[t]] == 0) next
+      emptyresults <- FALSE
+      value[[t]] <- value[[t]] / count[[t]]
+      r$str <- paste(r$str,t," ",2*count[[t]],"\n",sep="")
+      r$edgelabels <- c(r$edgelabels,paste(count[[t]]," model",ifelse(count[[t]] == 1,"","s"),
+                                           "\n",ifelse(posrel,"+",""),round(value[[t]],digits=3),sep=""))
+      r$edgecolors <- c(r$edgecolors,color_for_sign(ifelse(posrel,"+","-")))
+    }
+  if (emptyresults) return(NULL)
+  r
 }
-plot_contemporaneous_correlations <- function(av_state,log_transform) {
-  model_list <- find_models(av_state$accepted_models,list(apply_log_transform = log_transform))
-  a <- summary(av_state$accepted_models[[model_list[[1]]]]$varest)
-  ac <- summary(av_state$accepted_models[[model_list[[1]]]]$varest)$corres
-  cnt <- 1
-  for (i in 2:length(model_list)) {
-    ac <- ac+summary(av_state$accepted_models[[model_list[[i]]]]$varest)$corres
-  }
-  ac = ac/length(model_list)
-  vars <- dimnames(a$corres)[[1]]
-  p <- NULL
-  n <- length(vars)
-  r <- vars[[n]]
-  for (i in 1:n) {
-    p <- c(p,vars[i])
-  }
-  s <- NULL
-  q <- NULL
-  for(i in 1:(n-1)) {
-    if (i > (n-1)) { break } 
-    s <- c(s,vars[i])
-    q[i] <- i
-  }
-  s <- c(r,s)
-  q <- c(n,q)
-  z <- data.frame(name=c(p))
-  relations <- data.frame(from=c(p),to=c(s))
-  g <- graph.data.frame(relations, directed=FALSE, vertices=z)
-  for (i in 1:n) {
-    if (i > n) { break }
-    E(g)$weight[[i]] <- ac[i,q[i]]
-  }
-  sign <- NULL
-  for(i in 1:n) {
-    if ( i > n) { break }
-    if (E(g)$weight[[i]]>0) { 
-      sign[i] <- 'palegreen'
+# TODO: textual contemporaneous correlation summary
+
+# TODO: refactoring, lots of double code with vargranger_plot
+# TODO: can easily use one function for both graphs
+contemporaneous_correlations_plot <- function(av_state) {
+  graphi <- contemporaneous_correlations_graph(av_state)
+  if (!is.null(graphi)) {
+    graphstring <- graphi$str
+    # TODO: check if temp files are cleaned up
+    file <- tempfile()
+    #cat("tempfile:",file,"\n")
+    cat(graphstring, file = file)
+    a <- read.graph(file,format="ncol",directed=TRUE,weights="yes")
+    cols <- c('springgreen4','steelblue','chocolate1')
+    E(a)$width <- E(a)$weight
+    V(a)$label <- sapply(V(a)$name,function(x) {
+      if (!is.null(get_var_label(av_state,x)) && get_var_label(av_state,x) != "") {
+        paste(strwrap(paste(get_var_label(av_state,x)," [",x,"]",sep=''),width=15),
+              collapse="\n")
+      } else {
+        x
+      }
+    })
+    E(a)$label <- graphi$edgelabels
+    E(a)$color <- graphi$edgecolors
+    plot(a,
+         edge.arrow.size=2,
+         edge.arrow.width=2,
+         edge.arrow.mode=0,
+         edge.curved=TRUE,
+         edge.label.family='sans',
+         edge.label.color=colors()[[190]],
+         edge.label.cex=0.75,
+         vertex.size=65,
+         vertex.label.family='sans',
+         vertex.label.cex=1,
+         vertex.color=cols[order(V(a)$name)],
+         vertex.label.color='black',
+         vertex.label.font=1,
+         main="Contemporaneous correlations",
+         sub=paste('found in',graphi$allcount - graphi$nonecount,'out of',graphi$allcount,'valid models'))
+    igraph_legend_concor()
+    gname <- gsub("\\.[^ ]{3,4}$","",basename(av_state$real_file_name))
+    gname <- paste(gname,"_concor",sep="")
+    fname <- gname
+    i <- 0
+    while (file.exists(paste(fname,'.pdf',sep=''))) {
+      i <- i + 1
+      fname <- paste(gname,'_',i,sep='')
     }
-    else { 
-      sign[i] <- 'brown1'
+    fname1 <- paste(fname,'.pdf',sep='')
+    i <- i + 1
+    fname <- paste(gname,'_',i,sep='')
+    while (file.exists(paste(fname,'.pdf',sep=''))) {
+      i <- i + 1
+      fname <- paste(gname,'_',i,sep='')
     }
+    fname2 <- paste(fname,'.pdf',sep='')
+    dev.copy2pdf(file=fname1)
+    fsize1 <- file.info(fname1)$size
+    dev.copy2pdf(file=fname2)
+    fsize2 <- file.info(fname2)$size
+    if (fsize1 != fsize2) {
+      #warning("file sizes not equal")
+    }
+    if (fsize2 > fsize1) {
+      file.remove(fname1)
+      fname <- fname2
+    } else {
+      file.remove(fname2)
+      fname <- fname1
+    }
+    if (interactive() && !exists("currently_generating_help_files")) {
+      scat(av_state$log_level,3,
+           "\nContemporaneous correlations plot saved to \"",
+           fname,"\" (",file.info(fname)$size,")\n",sep='')
+    }
+    invisible(a)
   }
-  cols <- c('springgreen4','steelblue','chocolate1')
-  E(g)$width <- E(g)$weight
-  E(g)$width <- 20*abs(E(g)$width)*1/max(abs(E(g)$width))
-  E(g)$color <- sign
-  E(g)$label <- round(E(g)$weight,2)
-  plot(g,layout=layout.kamada.kawai, 
-     edge.arrow.size=2,
-     edge.arrow.width=2,
-     edge.label.family='sans',
-     edge.label.color='black',
-     edge.label.cex=1.25,
-     vertex.size=65,
-     vertex.label.cex=1,
-     vertex.color=cols[1:(length(V(g)))],
-     vertex.label.color='black',
-     vertex.label.font=1,
-     vertex.label.family='sans',
-     edge.curved=FALSE,
-     main="Contemporaneous Correlations",
-     sub=paste('averaged over',length(model_list),ifelse(log_transform,
-                                                         'log-transformed valid models',
-                                                         'valid models without log transform')))
-  igraph_legend1()
-  invisible(g)
+}
+igraph_legend_concor <- function() {
+  cols <- colors()[c(517,33)]
+  str <- c('positive correlation',
+           'negative correlation')
+  mtext(str,side=1,line=0:1,col=cols,font=2,adj=0,cex=0.8)
 }

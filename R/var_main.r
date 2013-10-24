@@ -540,6 +540,7 @@ var_summary <- function(av_state,msg=NULL) {
   }
   scat(av_state$log_level,3,msg)
   search_space_used(av_state)
+  contemporaneous_correlations_plot(av_state)
   print_granger_statistics(av_state)
   vargranger_plot(av_state)
   print_model_statistics(av_state)
@@ -593,7 +594,6 @@ print_best_non_log <- function(av_state,non_logm) {
   scat(av_state$log_level,3,"Details for the best model without log-transform (model ",
        idx_chars(non_logm[[1]]),"):\n",sep='')
   scat(av_state$log_level,3,paste(rep('-',times=59),collapse=''),"\n",sep='')
-  plot_contemporaneous_correlations(av_state,FALSE)
   var_info(best_non_log$varest)
 }
 print_best_log <- function(av_state,logm) {
@@ -602,7 +602,6 @@ print_best_log <- function(av_state,logm) {
   scat(av_state$log_level,3,"Details for the best log-transformed model (model ",
        idx_chars(logm[[1]]),"):\n",sep='')
   scat(av_state$log_level,3,paste(rep('-',times=53),collapse=''),"\n",sep='')
-  plot_contemporaneous_correlations(av_state,TRUE)
   var_info(best_log$varest)
 }
 
