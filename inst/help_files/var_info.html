@@ -77,12 +77,14 @@ Starting VAR with variables: SomBewegUur, SomPHQ, for subset: 1
 
 Done. Processed 17 distinct models, of which 2 were valid.
 Tested 25 of 72 ( 34.72%) of the combinatorial search space at the given lags (1, 2).
-
+</div>
+<p><img src='var_info-3.png' alt='' width='400' height='400' /></p>
+<div class='output'>
 Granger causality legend:
    +   majority positive associations
    ~   majority mixed pos/neg associations within models
    -   majority negative associations
-   #   no majority among models
+   #   mixed pos/neg associations among models
 
 Granger causality summary of all 16 unrestricted models:
    62.50%   SomBewegUur -Granger causes- SomPHQ        (7 models +3 almost) (sign: 10 -)
@@ -94,7 +96,7 @@ Granger causality summary of all 2 valid models:
 Granger causality summary of all 1 valid unrestricted models:
   100.00%   SomBewegUur -Granger causes- SomPHQ        (1 model) (sign: 1 -)
 </div>
-<p><img src='var_info-3.png' alt='' width='400' height='400' /></p>
+<p><img src='var_info-5.png' alt='' width='400' height='400' /></p>
 <div class='output'>
 Summary of all valid models:
   lag:
@@ -158,8 +160,8 @@ Signif. codes:  '***' <=0.001, '**' <=0.01, '*' <=0.05, '.' <=0.10
 
 
 Residual standard error: 1.513 on 79 degrees of freedom
-Multiple R-Squared: 0.9621,	Adjusted R-squared: 0.9602 
-F-statistic: 501.9 on 4 and 79 DF,  p-value: < 2.2e-16 
+Multiple R-Squared: 0.5657,	Adjusted R-squared: 0.5492 
+F-statistic:  34.3 on 3 and 79 DF,  p-value: 2.683e-14 
 
 
 Estimation results for equation SomPHQ: 
@@ -178,8 +180,8 @@ Signif. codes:  '***' <=0.001, '**' <=0.01, '*' <=0.05, '.' <=0.10
 
 
 Residual standard error: 1.68 on 77 degrees of freedom
-Multiple R-Squared: 0.9816,	Adjusted R-squared: 0.9801 
-F-statistic:   683 on 6 and 77 DF,  p-value: < 2.2e-16 
+Multiple R-Squared: 0.393,	Adjusted R-squared: 0.3536 
+F-statistic: 9.971 on 5 and 77 DF,  p-value: 2.211e-07 
 
 
 
@@ -189,9 +191,11 @@ SomBewegUur      2.3800 -0.5958
 SomPHQ          -0.5958  2.8606
 
 Correlation matrix of residuals:
-            SomBewegUur  SomPHQ
-SomBewegUur      1.0000 -0.2283
-SomPHQ          -0.2283  1.0000
+            SomBewegUur SomPHQ
+SomBewegUur     1.00000     NA
+p               0.00000     NA
+SomPHQ         -0.22834      1
+p               0.03787      0
 
 
 
@@ -307,9 +311,11 @@ SomBewegUur      3.2036 0.3473
 SomPHQ           0.3473 3.7879
 
 Correlation matrix of residuals:
-            SomBewegUur  SomPHQ
-SomBewegUur     1.00000 0.09969
-SomPHQ          0.09969 1.00000
+            SomBewegUur SomPHQ
+SomBewegUur     1.00000     NA
+p               0.00000     NA
+SomPHQ          0.09969      1
+p               0.36695      0
 
 
 

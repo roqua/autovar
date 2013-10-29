@@ -79,7 +79,7 @@ Granger causality legend:
    +   majority positive associations
    ~   majority mixed pos/neg associations within models
    -   majority negative associations
-   #   no majority among models
+   #   mixed pos/neg associations among models
 
 Granger causality summary of all 8 unrestricted models:
   100.00%   SomPHQ      -Granger causes- SomBewegUur   (3 models +5 almost) (sign: 1 ~, 7 -)
@@ -127,9 +127,7 @@ print_best_models(av_state)
 -----------------------------------------------------
 Details for the best log-transformed model (model A):
 -----------------------------------------------------
-</div>
-<p><img src='print_best_models-7.png' alt='' width='400' height='400' /></p>
-<div class='output'>
+
 VAR Estimation Results:
 ========================= 
 Endogenous variables: lnSomBewegUur, lnSomPHQ 
@@ -155,8 +153,8 @@ Signif. codes:  '***' <=0.001, '**' <=0.01, '*' <=0.05, '.' <=0.10
 
 
 Residual standard error: 0.4096 on 55 degrees of freedom
-Multiple R-Squared: 0.8771,	Adjusted R-squared: 0.8704 
-F-statistic: 130.9 on 3 and 55 DF,  p-value: < 2.2e-16 
+Multiple R-Squared: 0.1647,	Adjusted R-squared: 0.1343 
+F-statistic: 5.423 on 2 and 55 DF,  p-value: 0.007087 
 
 
 Estimation results for equation lnSomPHQ: 
@@ -172,8 +170,8 @@ Signif. codes:  '***' <=0.001, '**' <=0.01, '*' <=0.05, '.' <=0.10
 
 
 Residual standard error: 0.2046 on 55 degrees of freedom
-Multiple R-Squared: 0.9886,	Adjusted R-squared: 0.988 
-F-statistic:  1590 on 3 and 55 DF,  p-value: < 2.2e-16 
+Multiple R-Squared: 0.5006,	Adjusted R-squared: 0.4825 
+F-statistic: 27.57 on 2 and 55 DF,  p-value: 5.089e-09 
 
 
 
@@ -184,8 +182,10 @@ lnSomPHQ           -0.01468  0.04265
 
 Correlation matrix of residuals:
               lnSomBewegUur lnSomPHQ
-lnSomBewegUur         1.000   -0.172
-lnSomPHQ             -0.172    1.000
+lnSomBewegUur        1.0000       NA
+p                    0.0000       NA
+lnSomPHQ            -0.1720        1
+p                    0.1968        0
 
 
 
