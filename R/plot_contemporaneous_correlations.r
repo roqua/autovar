@@ -9,6 +9,9 @@ contemporaneous_correlations_graph <- function(av_state) {
   for (i in 1:n)
     for (j in 1:n) {
       if (i == j) next
+      # identify insignificant relationships by double spaces
+      t <- paste(sort(c(vrs[[i]],vrs[[j]])),collapse="  ")
+      count[[t]] <- 0
       count[[paste(vrs[[i]],vrs[[j]])]] <- 0
       value[[paste(vrs[[i]],vrs[[j]])]] <- 0
     }
@@ -21,27 +24,44 @@ contemporaneous_correlations_graph <- function(av_state) {
     foundsomething <- FALSE
     for (i in 1:(n-1))
       for (j in (i+1):n) {
-        if (signmat[j*2,i] > av_state_significance(model$varest) || signmat[j*2-1,i] == 0) next
-        foundsomething <- TRUE
-        t <- paste(sort(c(vrs[[i]],vrs[[j]]),decreasing = (signmat[j*2-1,i] < 0)),collapse=" ")
-        count[[t]] <- count[[t]]+1
-        value[[t]] <- value[[t]]+signmat[j*2-1,i]
+        if (signmat[j*2,i] > av_state_significance(model$varest) || signmat[j*2-1,i] == 0) {
+          t <- paste(sort(c(vrs[[i]],vrs[[j]])),collapse="  ")
+          count[[t]] <- count[[t]]+1
+        } else {
+          foundsomething <- TRUE
+          t <- paste(sort(c(vrs[[i]],vrs[[j]]),decreasing = (signmat[j*2-1,i] < 0)),collapse=" ")
+          count[[t]] <- count[[t]]+1
+          value[[t]] <- value[[t]]+signmat[j*2-1,i]
+        }
       }
     if (!foundsomething) r$nonecount <- r$nonecount + 1
   }
   r$str <- ""
   r$edgelabels <- NULL
   r$edgecolors <- NULL
+  r$curved <- NULL
   emptyresults <- TRUE
   for (i in 1:n)
     for (j in 1:n) {
       if (i == j) next
       posrel <- (vrs[[i]] < vrs[[j]])
+      if (posrel) {
+        t <- paste(vrs[[i]],vrs[[j]],sep="  ")
+        if (count[[t]] > 0) {
+          emptyresults <- FALSE
+          r$str <- paste(r$str,t," ",2*count[[t]],"\n",sep="")
+          r$curved <- c(r$curved,FALSE)
+          r$edgelabels <- c(r$edgelabels,paste("\n\n\n\n\n",count[[t]]," model",ifelse(count[[t]] == 1,"","s"),
+                                               "\n<no sign. correlation>",sep=""))
+          r$edgecolors <- c(r$edgecolors,color_for_sign(" "))
+        }
+      }
       t <- paste(vrs[[i]],vrs[[j]])
       if (count[[t]] == 0) next
       emptyresults <- FALSE
       value[[t]] <- value[[t]] / count[[t]]
       r$str <- paste(r$str,t," ",2*count[[t]],"\n",sep="")
+      r$curved <- c(r$curved,TRUE)
       r$edgelabels <- c(r$edgelabels,paste(count[[t]]," model",ifelse(count[[t]] == 1,"","s"),
                                            "\n",ifelse(posrel,"+",""),round(value[[t]],digits=3),sep=""))
       r$edgecolors <- c(r$edgecolors,color_for_sign(ifelse(posrel,"+","-")))
@@ -72,13 +92,13 @@ contemporaneous_correlations_plot <- function(av_state) {
         x
       }
     })
+    E(a)$curved <- graphi$curved
     E(a)$label <- graphi$edgelabels
     E(a)$color <- graphi$edgecolors
     plot(a,
          edge.arrow.size=2,
          edge.arrow.width=2,
          edge.arrow.mode=0,
-         edge.curved=TRUE,
          edge.label.family='sans',
          edge.label.color=colors()[[190]],
          edge.label.cex=0.75,
@@ -89,7 +109,7 @@ contemporaneous_correlations_plot <- function(av_state) {
          vertex.label.color='black',
          vertex.label.font=1,
          main="Contemporaneous correlations",
-         sub=paste('found in',graphi$allcount - graphi$nonecount,'out of',graphi$allcount,'valid models'))
+         sub=paste('found significant contemporaneous correlations in',graphi$allcount - graphi$nonecount,'out of',graphi$allcount,'valid models'))
     igraph_legend_concor()
     gname <- gsub("\\.[^ ]{3,4}$","",basename(av_state$real_file_name))
     gname <- paste(gname,"_concor",sep="")
@@ -130,8 +150,9 @@ contemporaneous_correlations_plot <- function(av_state) {
   }
 }
 igraph_legend_concor <- function() {
-  cols <- colors()[c(517,33)]
+  cols <- colors()[c(517,33,340)]
   str <- c('positive correlation',
-           'negative correlation')
-  mtext(str,side=1,line=0:1,col=cols,font=2,adj=0,cex=0.8)
+           'negative correlation',
+           'no significant correlation')
+  mtext(str,side=1,line=0:2,col=cols,font=2,adj=0,cex=0.8)
 }

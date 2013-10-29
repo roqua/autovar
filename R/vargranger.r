@@ -81,7 +81,7 @@ vargranger_graph_aux <- function(av_state,lst) {
 
 color_for_sign <- function(sgn) {
   sgns <- c('+','~','-','#',' ')
-  clrs <- c(517,123,33,500,168)
+  clrs <- c(517,123,33,500,340)
   clri <- clrs[which(sgn == sgns)]
   colors()[clri]
 }
