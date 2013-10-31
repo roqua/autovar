@@ -52,7 +52,7 @@ contemporaneous_correlations_graph <- function(av_state) {
           r$str <- paste(r$str,t," ",2*count[[t]],"\n",sep="")
           r$curved <- c(r$curved,FALSE)
           r$edgelabels <- c(r$edgelabels,paste("\n\n\n\n\n",count[[t]]," model",ifelse(count[[t]] == 1,"","s"),
-                                               "\n<no sign. correlation>",sep=""))
+                                               "\n(no sign. correlation)",sep=""))
           r$edgecolors <- c(r$edgecolors,color_for_sign(" "))
         }
       }
