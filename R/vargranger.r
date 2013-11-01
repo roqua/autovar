@@ -129,7 +129,7 @@ vargranger_plot <- function(av_state) {
          vertex.label.color='black',
          vertex.label.font=1,
          main="Granger causality",
-         sub=paste('found in',graphi$allcount - graphi$nonecount,'out of',graphi$allcount,'valid models'))
+         sub=paste('found significant Granger causalities in',graphi$allcount - graphi$nonecount,'out of',graphi$allcount,'valid models'))
     igraph_legend()
     gname <- gsub("\\.[^ ]{3,4}$","",basename(av_state$real_file_name))
     fname <- gname
@@ -170,7 +170,9 @@ vargranger_plot <- function(av_state) {
 }
 
 get_var_label <- function(av_state,varname) {
-  if (!is.null(attr(av_state$raw_data,"variable.labels"))) {
+  if (!is.null(attr(av_state$raw_data,"variable.labels")) &&
+        !is.null(names(attr(av_state$raw_data,"variable.labels"))) &&
+        (varname %in% names(attr(av_state$raw_data,"variable.labels")))) {
     attr(av_state$raw_data,"variable.labels")[[varname]]
   } else {
     NULL
@@ -514,7 +516,7 @@ compact_varline <- function(x,varwidth) {
   if (x$causevr == '') {
     str <- paste(percstr,'   ',
                  format('<None>',width=varwidth,justify="left"),
-                 paste(rep(' ',18+varwidth),collapse=''),
+                 paste(rep(' ',18+varwidth-ifelse(6>varwidth,6-varwidth,0)),collapse=''),
                  '   (',
                  x$cnt,' model',
                  ifelse(x$cnt == 1,'','s'),
