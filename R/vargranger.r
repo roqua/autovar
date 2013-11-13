@@ -43,13 +43,13 @@ vargranger_graph <- function(av_state) {
 }
 
 vargranger_graph_aux <- function(av_state,lst) {
+  n <- length(lst)
   vlist <- vargranger_list(lst,av_state$exclude_almost)
   if (length(vlist)==0) {
     NULL
   } else if (length(which(vlist$causevr != '')) == 0) {
     NULL
   } else {
-    n <- length(lst)
     r <- list()
     r$str <- paste(sapply(df_in_rows(vlist[which(vlist$causevr != ''),]),
                           function(x) paste(x$causevr,' ',x$othervr,' ',2*n,'\n',
