@@ -150,7 +150,7 @@ contemporaneous_correlations_plot <- function(av_state) {
   }
 }
 igraph_legend_concor <- function() {
-  cols <- colors()[c(517,33,340)]
+  cols <- colors()[c(517,33,345)]
   str <- c('positive correlation',
            'negative correlation',
            'no significant correlation')

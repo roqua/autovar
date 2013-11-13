@@ -49,9 +49,11 @@ vargranger_graph_aux <- function(av_state,lst) {
   } else if (length(which(vlist$causevr != '')) == 0) {
     NULL
   } else {
+    n <- length(lst)
     r <- list()
     r$str <- paste(sapply(df_in_rows(vlist[which(vlist$causevr != ''),]),
-                          function(x) paste(x$causevr,' ',x$othervr,' ',2*x$cnt + x$cnta,'\n',sep='')),
+                          function(x) paste(x$causevr,' ',x$othervr,' ',2*n,'\n',
+                                            x$causevr,' ',x$othervr,'  ',2*x$cnt + x$cnta,'\n',sep='')),
                    collapse='')
     r$nonecount <- ifelse(any(vlist$causevr == ''),vlist[vlist$causevr == '',]$cnt,0)
     r$allcount <- length(lst)
@@ -73,15 +75,26 @@ vargranger_graph_aux <- function(av_state,lst) {
                              }
                              str
                            })
+    r$edgelabels <- put_before_every(r$edgelabels,"")
     r$edgecolors <- sapply(df_in_rows(vlist[which(vlist$causevr != ''),]),
                            function(x) color_for_sign(x$sign))
+    r$edgecolors <- put_before_every(r$edgecolors,color_for_sign(" "))
     r
   }
 }
 
+put_before_every <- function(lst, item) {
+  r <- NULL
+  for (itm in lst) {
+    r <- c(r,item)
+    r <- c(r,itm)
+  }
+  r
+}
+
 color_for_sign <- function(sgn) {
   sgns <- c('+','~','-','#',' ')
-  clrs <- c(517,123,33,500,340)
+  clrs <- c(517,123,33,500,345)
   clri <- clrs[which(sgn == sgns)]
   colors()[clri]
 }
