@@ -117,7 +117,6 @@ vargranger_plot <- function(av_state) {
     a <- read.graph(file,format="ncol",directed=TRUE,weights="yes")
     cols <- c('springgreen4','steelblue','chocolate1')
     E(a)$width <- E(a)$weight
-    
     V(a)$label <- sapply(V(a)$name,function(x) {
       if (!is.null(get_var_label(av_state,x)) && get_var_label(av_state,x) != "") {
         paste(strwrap(paste(get_var_label(av_state,x)," [",x,"]",sep=''),width=15),
@@ -187,6 +186,10 @@ get_var_label <- function(av_state,varname) {
         !is.null(names(attr(av_state$raw_data,"variable.labels"))) &&
         (varname %in% names(attr(av_state$raw_data,"variable.labels")))) {
     attr(av_state$raw_data,"variable.labels")[[varname]]
+  } else if (!is.null(attr(av_state$raw_data,"names")) &&
+               !is.null(attr(av_state$raw_data,"var.labels")) &&
+               length(which(attr(av_state$raw_data,"names") == varname)) > 0) {
+    attr(av_state$raw_data,"var.labels")[which(attr(av_state$raw_data,"names") == varname)]
   } else {
     NULL
   }
