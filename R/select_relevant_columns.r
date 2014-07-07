@@ -59,7 +59,6 @@ z_skewness_columns <- function(df) {
   names(r) <- names(df)
   r
 }
-se <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))
 
 add_max_of <- function(rnames, mssds, var1, var2) {
   max_name <- var1
