@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>add_trend. autovar 0.1-0</title>
+<title>add_trend. autovar 0.1-1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -20,7 +20,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="#">autovar 0.1-0</a>
+      <a class="brand" href="#">autovar 0.1-1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
@@ -40,85 +40,76 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre>add_trend(av_state, subset_id = 1, varname = "index", log_level = 0)</pre>
+    <pre><div>add_trend(av_state, subset_id&nbsp;=&nbsp;1, varname&nbsp;=&nbsp;"index", log_level&nbsp;=&nbsp;0)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
       <dt>av_state</dt>
       <dd>an object of class <code>av_state</code></dd>
       <dt>subset_id</dt>
-      <dd>either an integer subset index or the
-  the value for the <code>id_field</code> column that was used in
-  the <code><a href='group_by.html'>group_by</a></code> function. The <code>subset_id</code>
-  argument is required if the data set is grouped into
-  multiple data sets (i.e., if the <code><a href='group_by.html'>group_by</a></code>
-  function was used), in which case the function works on
-  the specified data subset.</dd>
+      <dd>either an integer subset index or the the value for the <code>id_field</code> column that was used in the <code><a href='group_by.html'>group_by</a></code> function. The <code>subset_id</code> argument is required if the data set is grouped into multiple data sets (i.e., if the <code><a href='group_by.html'>group_by</a></code> function was used), in which case the function works on the specified data subset.</dd>
       <dt>varname</dt>
-      <dd>the name of the newly created indexing
-  column. Will be postfixed with underscores if the column
-  already exists</dd>
+      <dd>the name of the newly created indexing column. Will be postfixed with underscores if the column already exists</dd>
       <dt>log_level</dt>
-      <dd>sets the minimum level of output that
-  should be shown (a number between 0 and 3). A lower level
-  means more verbosity. Specify a log_level of 3 to hide
-  messages about the columns being added.</dd>
+      <dd>sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about the columns being added.</dd>
     </dl>
     
+    <div class="Adds a trend variable to a data set">
+      <h2>Adds a trend variable to a data set</h2>
+      
+    </div>
+
     <div class="Description">
       <h2>Description</h2>
       
-      <p>This function adds a column to a dataset, running from 1
-  to the length of the data set. If the data set is
-  segmented using the group_by function, a column is added
-  for every subset.</p>
+      <p>This function adds a column to a dataset, running from 1 to the length of the data set. If the data set is segmented using the group_by function, a column is added for every subset.</p>
   
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/pp1 nieuw compleet.sav")
+    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/pp1 nieuw compleet.sav&quot;)
 </div>
 <div class='output'>load_file loaded SPSS file with 44 columns:
- [1] "id (scl)"                       "geslacht (nom)"                 "leeftijd (scl)"                
- [4] "datum_MI (scl)"                 "roken (nom)"                    "BMI (scl)"                     
- [7] "depressie_verleden (scl)"       "hartfalen (nom)"                "tijdstip (scl)"                
-[10] "norm_bewegen (nom)"             "woon_werk (nom)"                "minuten_woonwerk (scl)"        
-[13] "licht_matigwerk (nom)"          "minuten_werk_licht (scl)"       "zwaar_werk (nom)"              
-[16] "minuten_zwaar_werk (scl)"       "licht_huishouden (nom)"         "minuten_licht_huishouden (scl)"
-[19] "zwaar_huishouden (nom)"         "minuten_zwaarhuishouden (scl)"  "vrije_tijd (nom)"              
-[22] "minuten_vrijetijd (scl)"        "sport (nom)"                    "minuten_sport (scl)"           
-[25] "PHQ1 (nom)"                     "PHQ2 (nom)"                     "PHQ3 (nom)"                    
-[28] "PHQ4 (nom)"                     "PHQ5 (nom)"                     "PHQ6 (nom)"                    
-[31] "PHQ7 (nom)"                     "PHQ8 (nom)"                     "PHQ9 (nom)"                    
-[34] "beperking (nom)"                "angst (nom)"                    "SomBewegen (scl)"              
-[37] "SomBewegUur (scl)"              "SomPHQ (scl)"                   "PHQ_Somatisch (scl)"           
-[40] "PHQ_Cognitief (scl)"            "lnSomPHQ (scl)"                 "lnSomBewegUur (scl)"           
-[43] "UitbijterPHQ (scl)"             "UitbijterBeweg (scl)"          
+ [1] &quot;id (scl)&quot;                       &quot;geslacht (nom)&quot;                 &quot;leeftijd (scl)&quot;                
+ [4] &quot;datum_MI (scl)&quot;                 &quot;roken (nom)&quot;                    &quot;BMI (scl)&quot;                     
+ [7] &quot;depressie_verleden (scl)&quot;       &quot;hartfalen (nom)&quot;                &quot;tijdstip (scl)&quot;                
+[10] &quot;norm_bewegen (nom)&quot;             &quot;woon_werk (nom)&quot;                &quot;minuten_woonwerk (scl)&quot;        
+[13] &quot;licht_matigwerk (nom)&quot;          &quot;minuten_werk_licht (scl)&quot;       &quot;zwaar_werk (nom)&quot;              
+[16] &quot;minuten_zwaar_werk (scl)&quot;       &quot;licht_huishouden (nom)&quot;         &quot;minuten_licht_huishouden (scl)&quot;
+[19] &quot;zwaar_huishouden (nom)&quot;         &quot;minuten_zwaarhuishouden (scl)&quot;  &quot;vrije_tijd (nom)&quot;              
+[22] &quot;minuten_vrijetijd (scl)&quot;        &quot;sport (nom)&quot;                    &quot;minuten_sport (scl)&quot;           
+[25] &quot;PHQ1 (nom)&quot;                     &quot;PHQ2 (nom)&quot;                     &quot;PHQ3 (nom)&quot;                    
+[28] &quot;PHQ4 (nom)&quot;                     &quot;PHQ5 (nom)&quot;                     &quot;PHQ6 (nom)&quot;                    
+[31] &quot;PHQ7 (nom)&quot;                     &quot;PHQ8 (nom)&quot;                     &quot;PHQ9 (nom)&quot;                    
+[34] &quot;beperking (nom)&quot;                &quot;angst (nom)&quot;                    &quot;SomBewegen (scl)&quot;              
+[37] &quot;SomBewegUur (scl)&quot;              &quot;SomPHQ (scl)&quot;                   &quot;PHQ_Somatisch (scl)&quot;           
+[40] &quot;PHQ_Cognitief (scl)&quot;            &quot;lnSomPHQ (scl)&quot;                 &quot;lnSomBewegUur (scl)&quot;           
+[43] &quot;UitbijterPHQ (scl)&quot;             &quot;UitbijterBeweg (scl)&quot;          
 </div>
-<div class='input'>av_state <- add_trend(av_state)
+<div class='input'>av_state &lt;- add_trend(av_state)
 </div>
 <div class='output'>add_trend: add trend and squared trend columns: index and index2
 </div>
 <div class='input'>column_names_output(av_state)
 </div>
-<div class='output'> [1] "id (scl)"                       "geslacht (nom)"                 "leeftijd (scl)"                
- [4] "datum_MI (scl)"                 "roken (nom)"                    "BMI (scl)"                     
- [7] "depressie_verleden (scl)"       "hartfalen (nom)"                "tijdstip (scl)"                
-[10] "norm_bewegen (nom)"             "woon_werk (nom)"                "minuten_woonwerk (scl)"        
-[13] "licht_matigwerk (nom)"          "minuten_werk_licht (scl)"       "zwaar_werk (nom)"              
-[16] "minuten_zwaar_werk (scl)"       "licht_huishouden (nom)"         "minuten_licht_huishouden (scl)"
-[19] "zwaar_huishouden (nom)"         "minuten_zwaarhuishouden (scl)"  "vrije_tijd (nom)"              
-[22] "minuten_vrijetijd (scl)"        "sport (nom)"                    "minuten_sport (scl)"           
-[25] "PHQ1 (nom)"                     "PHQ2 (nom)"                     "PHQ3 (nom)"                    
-[28] "PHQ4 (nom)"                     "PHQ5 (nom)"                     "PHQ6 (nom)"                    
-[31] "PHQ7 (nom)"                     "PHQ8 (nom)"                     "PHQ9 (nom)"                    
-[34] "beperking (nom)"                "angst (nom)"                    "SomBewegen (scl)"              
-[37] "SomBewegUur (scl)"              "SomPHQ (scl)"                   "PHQ_Somatisch (scl)"           
-[40] "PHQ_Cognitief (scl)"            "lnSomPHQ (scl)"                 "lnSomBewegUur (scl)"           
-[43] "UitbijterPHQ (scl)"             "UitbijterBeweg (scl)"           "index (scl)"                   
-[46] "index2 (scl)"                  
+<div class='output'> [1] &quot;id (scl)&quot;                       &quot;geslacht (nom)&quot;                 &quot;leeftijd (scl)&quot;                
+ [4] &quot;datum_MI (scl)&quot;                 &quot;roken (nom)&quot;                    &quot;BMI (scl)&quot;                     
+ [7] &quot;depressie_verleden (scl)&quot;       &quot;hartfalen (nom)&quot;                &quot;tijdstip (scl)&quot;                
+[10] &quot;norm_bewegen (nom)&quot;             &quot;woon_werk (nom)&quot;                &quot;minuten_woonwerk (scl)&quot;        
+[13] &quot;licht_matigwerk (nom)&quot;          &quot;minuten_werk_licht (scl)&quot;       &quot;zwaar_werk (nom)&quot;              
+[16] &quot;minuten_zwaar_werk (scl)&quot;       &quot;licht_huishouden (nom)&quot;         &quot;minuten_licht_huishouden (scl)&quot;
+[19] &quot;zwaar_huishouden (nom)&quot;         &quot;minuten_zwaarhuishouden (scl)&quot;  &quot;vrije_tijd (nom)&quot;              
+[22] &quot;minuten_vrijetijd (scl)&quot;        &quot;sport (nom)&quot;                    &quot;minuten_sport (scl)&quot;           
+[25] &quot;PHQ1 (nom)&quot;                     &quot;PHQ2 (nom)&quot;                     &quot;PHQ3 (nom)&quot;                    
+[28] &quot;PHQ4 (nom)&quot;                     &quot;PHQ5 (nom)&quot;                     &quot;PHQ6 (nom)&quot;                    
+[31] &quot;PHQ7 (nom)&quot;                     &quot;PHQ8 (nom)&quot;                     &quot;PHQ9 (nom)&quot;                    
+[34] &quot;beperking (nom)&quot;                &quot;angst (nom)&quot;                    &quot;SomBewegen (scl)&quot;              
+[37] &quot;SomBewegUur (scl)&quot;              &quot;SomPHQ (scl)&quot;                   &quot;PHQ_Somatisch (scl)&quot;           
+[40] &quot;PHQ_Cognitief (scl)&quot;            &quot;lnSomPHQ (scl)&quot;                 &quot;lnSomBewegUur (scl)&quot;           
+[43] &quot;UitbijterPHQ (scl)&quot;             &quot;UitbijterBeweg (scl)&quot;           &quot;index (scl)&quot;                   
+[46] &quot;index2 (scl)&quot;                  
 </div>
-<div class='input'>av_state$data[[1]][c('index','index2')]
+<div class='input'>av_state$data[[1]][c(&#39;index&#39;,&#39;index2&#39;)]
 </div>
 <div class='output'>   index index2
 1      1      1

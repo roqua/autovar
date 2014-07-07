@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>set_timestamps. autovar 0.1-0</title>
+<title>set_timestamps. autovar 0.1-1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -20,7 +20,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="#">autovar 0.1-0</a>
+      <a class="brand" href="#">autovar 0.1-1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
@@ -40,83 +40,50 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre>set_timestamps(av_state, subset_id = 1, date_of_first_measurement, measurements_per_day = 1, 
-  log_level = 0, first_measurement_index = 1, add_days_as_exogenous = TRUE, add_dayparts_as_exogenous = TRUE)</pre>
+    <pre><div>set_timestamps(av_state, subset_id&nbsp;=&nbsp;1, date_of_first_measurement, measurements_per_day&nbsp;=&nbsp;1, log_level&nbsp;=&nbsp;0, first_measurement_index&nbsp;=&nbsp;1, add_days_as_exogenous&nbsp;=&nbsp;TRUE, add_dayparts_as_exogenous&nbsp;=&nbsp;TRUE)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
       <dt>av_state</dt>
       <dd>an object of class <code>av_state</code></dd>
       <dt>subset_id</dt>
-      <dd>either an integer subset index or the
-  the value for the <code>id_field</code> column that was used in
-  the <code><a href='group_by.html'>group_by</a></code> function. The <code>subset_id</code>
-  argument is required if the data set is grouped into
-  multiple data sets (i.e., if the <code><a href='group_by.html'>group_by</a></code>
-  function was used), in which case the function works on
-  the specified data subset.</dd>
+      <dd>either an integer subset index or the the value for the <code>id_field</code> column that was used in the <code><a href='group_by.html'>group_by</a></code> function. The <code>subset_id</code> argument is required if the data set is grouped into multiple data sets (i.e., if the <code><a href='group_by.html'>group_by</a></code> function was used), in which case the function works on the specified data subset.</dd>
       <dt>date_of_first_measurement</dt>
-      <dd>the date of the first
-  measurement. This argument should be given in the format:
-  <code>"yyyy-mm-dd"</code>, e.g., <code>"2004-03-28"</code>.</dd>
+      <dd>the date of the first measurement. This argument should be given in the format: <code>"yyyy-mm-dd"</code>, e.g., <code>"2004-03-28"</code>.</dd>
       <dt>measurements_per_day</dt>
-      <dd>how many measurements were
-  taken per day. This default is 1. It is assumed that
-  every day has exactly this amount of measurements, and
-  that the first measurement in the dataset was the first
-  measurement on that day.</dd>
+      <dd>how many measurements were taken per day. This default is 1. It is assumed that every day has exactly this amount of measurements, and that the first measurement in the dataset was the first measurement on that day.</dd>
       <dt>log_level</dt>
-      <dd>sets the minimum level of output that
-  should be shown (a number between 0 and 3). A lower level
-  means more verbosity. Specify a log_level of 3 to hide
-  messages about the exogenous columns being added.</dd>
+      <dd>sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about the exogenous columns being added.</dd>
       <dt>first_measurement_index</dt>
-      <dd>is used to specify that
-  the first day of measurements has fewer than
-  <code>measurements_per_day</code> measurements. Here, we assume
-  that the measurements in the data set still form a
-  connected sequence. In other words, the assumption is
-  that the missing measurements of the first day precede
-  the first measurement in the data set. For example, by
-  specifying <code>measurements_per_day = 3,
-  first_measurement_index = 2</code>, the first measurement in
-  the data set will be treated as the second measurement of
-  that day. So the first two measurements in the data set
-  will be tagged with <code>Afternoon</code> and <code>Evening</code>,
-  and the third measurement in the data set will be tagged
-  with <code>Morning</code> of the next day.</dd>
+      <dd>is used to specify that the first day of measurements has fewer than <code>measurements_per_day</code> measurements. Here, we assume that the measurements in the data set still form a connected sequence. In other words, the assumption is that the missing measurements of the first day precede the first measurement in the data set. For example, by specifying <code>measurements_per_day = 3, first_measurement_index = 2</code>, the first measurement in the data set will be treated as the second measurement of that day. So the first two measurements in the data set will be tagged with <code>Afternoon</code> and <code>Evening</code>, and the third measurement in the data set will be tagged with <code>Morning</code> of the next day.</dd>
       <dt>add_days_as_exogenous</dt>
-      <dd>adds days as exogenous dummy
-  variables to VAR models.</dd>
+      <dd>adds days as exogenous dummy variables to VAR models.</dd>
       <dt>add_dayparts_as_exogenous</dt>
-      <dd>adds day parts as
-  exogenous dummy variables to VAR models.</dd>
+      <dd>adds day parts as exogenous dummy variables to VAR models.</dd>
     </dl>
     
+    <div class="Add dummy variables for weekdays and hours of the day">
+      <h2>Add dummy variables for weekdays and hours of the day</h2>
+      
+    </div>
+
     <div class="Value">
       <h2>Value</h2>
       
-      <p>This function returns the modified <code>av_state</code>
-  object.</p>
+      <p>This function returns the modified <code>av_state</code> object.</p>
   
     </div>
 
     <div class="Description">
       <h2>Description</h2>
       
-      <p>This function adds dummy columns for weekdays (named
-  <code>Sunday</code>, <code>Monday</code>, <code>Tuesday</code>,
-  <code>Wednesday</code>, <code>Thursday</code>, <code>Friday</code> and
-  <code>Saturday</code>) and hours of the day to the given subset
-  of the specified data set. These are used by
-  <code><a href='var_main.html'>var_main</a></code> to find better models by removing
-  cyclicity from the data set.</p>
+      <p>This function adds dummy columns for weekdays (named <code>Sunday</code>, <code>Monday</code>, <code>Tuesday</code>, <code>Wednesday</code>, <code>Thursday</code>, <code>Friday</code> and <code>Saturday</code>) and hours of the day to the given subset of the specified data set. These are used by <code><a href='var_main.html'>var_main</a></code> to find better models by removing cyclicity from the data set.</p>
   
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/pp4 nieuw compleet met 140min.sav",log_level=3)
-av_state <- set_timestamps(av_state,date_of_first_measurement="2010-04-14")
+    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/pp4 nieuw compleet met 140min.sav&quot;,log_level=3)
+av_state &lt;- set_timestamps(av_state,date_of_first_measurement=&quot;2010-04-14&quot;)
 </div>
 <div class='output'>set_timestamps: dates range from 2010-04-14 to 2010-06-17
 set_timestamps: using additional exogenous variables in models:
@@ -124,8 +91,8 @@ set_timestamps: using additional exogenous variables in models:
 </div>
 <div class='input'>
 # an example with multiple measurements per day:
-av_state <- load_file("../data/input/ID68 basisbestand.sav",log_level=3)
-av_state <- set_timestamps(av_state,date_of_first_measurement="2012-07-12",
+av_state &lt;- load_file(&quot;../data/input/ID68 basisbestand.sav&quot;,log_level=3)
+av_state &lt;- set_timestamps(av_state,date_of_first_measurement=&quot;2012-07-12&quot;,
                            measurements_per_day=3)
 </div>
 <div class='output'>set_timestamps: dates range from 2012-07-12 to 2012-08-10
@@ -134,8 +101,8 @@ set_timestamps: using additional exogenous variables in models:
 </div>
 <div class='input'>
 # same data set, but one extra day because the first day only has one measurement
-av_state <- load_file("../data/input/ID68 basisbestand.sav",log_level=3)
-av_state <- set_timestamps(av_state,date_of_first_measurement="2012-07-12",
+av_state &lt;- load_file(&quot;../data/input/ID68 basisbestand.sav&quot;,log_level=3)
+av_state &lt;- set_timestamps(av_state,date_of_first_measurement=&quot;2012-07-12&quot;,
                            measurements_per_day=3,first_measurement_index=3)
 </div>
 <div class='output'>set_timestamps: dates range from 2012-07-12 to 2012-08-11

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>print_best_models. autovar 0.1-0</title>
+<title>print_best_models. autovar 0.1-1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -20,7 +20,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="#">autovar 0.1-0</a>
+      <a class="brand" href="#">autovar 0.1-1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
@@ -40,33 +40,34 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre>print_best_models(av_state)</pre>
+    <pre><div>print_best_models(av_state)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
       <dt>av_state</dt>
-      <dd>an object of class <code>av_state</code> that
-  was the result of a call to <code><a href='var_main.html'>var_main</a></code></dd>
+      <dd>an object of class <code>av_state</code> that was the result of a call to <code><a href='var_main.html'>var_main</a></code></dd>
     </dl>
     
+    <div class="Prints the best model from the list of accepted models">
+      <h2>Prints the best model from the list of accepted models</h2>
+      
+    </div>
+
     <div class="Description">
       <h2>Description</h2>
       
-      <p>This functions uses log transformation (logm).If logm is
-  true it gives the best log-transformed model. And if the
-  logm is false it gives the best model without
-  log-transform. The best model is the measured with the
-  lowest AIC+BIC value.</p>
+      <p>This functions uses log transformation (logm).If logm is true it gives the best log-transformed model. And if the logm is false it gives the best model without log-transform.
+The best model is the measured with the lowest AIC+BIC value.</p>
   
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
-av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_level=3)
+    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/pp5 nieuw compleet.sav&quot;,log_level=3)
+av_state &lt;- var_main(av_state,c(&#39;SomBewegUur&#39;,&#39;SomPHQ&#39;),criterion=&quot;BIC&quot;,log_level=3)
 </div>
 <div class='output'>
 ====================
-var_main(av_state, vars = c("SomBewegUur", "SomPHQ"), log_level = 3, criterion = "BIC")
+var_main(av_state, vars = c(&quot;SomBewegUur&quot;, &quot;SomPHQ&quot;), log_level = 3, criterion = &quot;BIC&quot;)
 
 Starting VAR with variables: SomBewegUur, SomPHQ, for subset: 1
 
@@ -74,7 +75,9 @@ Starting VAR with variables: SomBewegUur, SomPHQ, for subset: 1
 
 Done. Processed 9 distinct models, of which 2 were valid.
 Tested 18 of 72 ( 25.00%) of the combinatorial search space at the given lags (1, 2).
-
+</div>
+<p><img src='print_best_models-3.png' alt='' width='400' height='400' /></p>
+<div class='output'>
 Granger causality legend:
    +   majority positive associations
    ~   majority mixed pos/neg associations within models
@@ -90,7 +93,7 @@ Granger causality summary of all 2 valid models:
 Granger causality summary of all 1 valid unrestricted models:
   100.00%   SomPHQ      -Granger causes- SomBewegUur   (1 almost) (sign: 1 -)
 </div>
-<p><img src='print_best_models-3.png' alt='' width='400' height='400' /></p>
+<p><img src='print_best_models-5.png' alt='' width='400' height='400' /></p>
 <div class='output'>
 Summary of all valid models:
   lag:
@@ -144,12 +147,12 @@ Estimation results for equation lnSomBewegUur:
 ============================================== 
 lnSomBewegUur = lnSomPHQ.l1 + const + SomPHQ_outliers 
 
-                Estimate Std. Error t value Pr(>|t|)    
+                Estimate Std. Error t value Pr(&gt;|t|)    
 lnSomPHQ.l1      -0.3806     0.1869  -2.037   0.0465 *  
 const             1.7680     0.3473   5.090 4.49e-06 ***
 SomPHQ_outliers  -1.0274     0.4137  -2.484   0.0161 *  
 ---
-Signif. codes:  '***' <=0.001, '**' <=0.01, '*' <=0.05, '.' <=0.10
+Signif. codes:  &#39;***&#39; &lt;=0.001, &#39;**&#39; &lt;=0.01, &#39;*&#39; &lt;=0.05, &#39;.&#39; &lt;=0.10
 
 
 Residual standard error: 0.4096 on 55 degrees of freedom
@@ -161,12 +164,12 @@ Estimation results for equation lnSomPHQ:
 ========================================= 
 lnSomPHQ = lnSomPHQ.l1 + const + SomPHQ_outliers 
 
-                Estimate Std. Error t value Pr(>|t|)    
+                Estimate Std. Error t value Pr(&gt;|t|)    
 lnSomPHQ.l1      0.56815    0.09335   6.086 1.17e-07 ***
 const            0.78666    0.17354   4.533 3.18e-05 ***
 SomPHQ_outliers  0.81583    0.20668   3.947 0.000227 ***
 ---
-Signif. codes:  '***' <=0.001, '**' <=0.01, '*' <=0.05, '.' <=0.10
+Signif. codes:  &#39;***&#39; &lt;=0.001, &#39;**&#39; &lt;=0.01, &#39;*&#39; &lt;=0.05, &#39;.&#39; &lt;=0.10
 
 
 Residual standard error: 0.2046 on 55 degrees of freedom
@@ -198,16 +201,16 @@ PASS: All the eigen values lie in the unit circle. VAR satisfies stability condi
 Portmanteau tests for white noise
   lnSomBewegUur:
     Portmanteau (Q) statistic = 27.59799
-    Prob > chi2(27) = 0.4319169
+    Prob &gt; chi2(27) = 0.4319169
   lnSomBewegUur squared:
     Portmanteau (Q) statistic = 28.89861
-    Prob > chi2(27) = 0.3658326
+    Prob &gt; chi2(27) = 0.3658326
   lnSomPHQ:
     Portmanteau (Q) statistic = 19.45961
-    Prob > chi2(27) = 0.8526515
+    Prob &gt; chi2(27) = 0.8526515
   lnSomPHQ squared:
     Portmanteau (Q) statistic = 20.64334
-    Prob > chi2(27) = 0.8027036
+    Prob &gt; chi2(27) = 0.8027036
 PASS: There is no autocorrelation in the residuals.
 
 Jarque-Bera, Skewness, and Kurtosis tests

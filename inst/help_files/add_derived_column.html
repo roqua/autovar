@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>add_derived_column. autovar 0.1-0</title>
+<title>add_derived_column. autovar 0.1-1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -20,7 +20,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="#">autovar 0.1-0</a>
+      <a class="brand" href="#">autovar 0.1-1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
@@ -40,8 +40,7 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre>add_derived_column(av_state, name, columns, operation = c("SUM", "LN", "MINUTES_TO_HOURS", 
-  "SQUARED"), log_level = 0)</pre>
+    <pre><div>add_derived_column(av_state, name, columns, operation&nbsp;=&nbsp;c("SUM", "LN", "MINUTES_TO_HOURS", "SQUARED"), log_level&nbsp;=&nbsp;0)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
@@ -50,114 +49,89 @@
       <dt>name</dt>
       <dd>the name of the new column</dd>
       <dt>columns</dt>
-      <dd>the existing columns that the new column
-  will be based on</dd>
+      <dd>the existing columns that the new column will be based on</dd>
       <dt>operation</dt>
-      <dd>this argument has three possible values:
-  <ul>
-<li> <code>'SUM'</code> - The new column is the sum
-  of the columns specified in the columns argument. So for
-  this option, the columns argument is an array of column
-  names. Values in the summation of columns that are NA are
-  treated as if they're zero. Columns that are not numeric
-  are transformed to numeric. For example, Factor columns
-  are transformed to numbers starting at 0 for the first
-  factor level. </li>
-<li> <code>'LN'</code> - The new column is the
-  natural logarithm of the specified column in columns.
-  Thus, for this option, the columns argument is simply the
-  name of a single column. This operation does not work on
-  columns that are not numeric. Values in the original
-  column that are NA are left as NA in the new column. Note
-  that values are increased if necessary so that the
-  resulting column has no negative values. </li>
-<li>
-  <code>'MINUTES_TO_HOURS'</code> - The new column is the values
-  of the specified column divided by 60. Thus, for this
-  option, the columns argument is simply the name of a
-  single column. This operation does not work on columns
-  that are not numeric. Values in the original column that
-  are NA are left as NA in the new column. </li>
-<li>
-  <code>'SQUARED'</code> - The new column ise the square of the
-  values of the specified column. Thus, for this option,
-  the columns argument is simply the name of a single
-  column. This operation does not work on columns that are
-  not numeric. Values in the original column that are NA
-  are left as NA in the new column. </li>
+      <dd>this argument has three possible values: <ul>
+<li> <code>'SUM'</code> - The new column is the sum of the columns specified in the columns argument. So for this option, the columns argument is an array of column names. Values in the summation of columns that are NA are treated as if they're zero. Columns that are not numeric are transformed to numeric. For example, Factor columns are transformed to numbers starting at 0 for the first factor level.
+</li>
+<li> <code>'LN'</code> - The new column is the natural logarithm of the specified column in columns. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column. Note that values are increased if necessary so that the resulting column has no negative values.
+</li>
+<li> <code>'MINUTES_TO_HOURS'</code> - The new column is the values of the specified column divided by 60. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column.
+</li>
+<li> <code>'SQUARED'</code> - The new column ise the square of the values of the specified column. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column.
+</li>
 </ul>
 </dd>
       <dt>log_level</dt>
-      <dd>sets the minimum level of output that
-  should be shown (a number between 0 and 3). A lower level
-  means more verbosity. Specify a log_level of 3 to hide
-  messages about converting columns or increasing values
-  for the 'LN' option.</dd>
+      <dd>sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about converting columns or increasing values for the 'LN' option.</dd>
     </dl>
     
+    <div class="Add a new column using data from other columns">
+      <h2>Add a new column using data from other columns</h2>
+      
+    </div>
+
     <div class="Value">
       <h2>Value</h2>
       
-      <p>This function returns the modified <code>av_state</code>
-  object.</p>
+      <p>This function returns the modified <code>av_state</code> object.</p>
   
     </div>
 
     <div class="Description">
       <h2>Description</h2>
       
-      <p>This function adds a new column, based on existing
-  columns, to all identified groups in the given data set.</p>
+      <p>This function adds a new column, based on existing columns, to all identified groups in the given data set.</p>
   
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/RuwedataAngela.sav")
+    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/RuwedataAngela.sav&quot;)
 </div>
 <div class='output'>load_file loaded SPSS file with 35 columns:
- [1] "id (scl)"                       "geslacht (nom)"                 "leeftijd (scl)"                
- [4] "datum_MI (scl)"                 "roken (nom)"                    "BMI (scl)"                     
- [7] "depressie_verleden (scl)"       "hartfalen (nom)"                "tijdstip (scl)"                
-[10] "norm_bewegen (nom)"             "woon_werk (nom)"                "minuten_woonwerk (scl)"        
-[13] "licht_matigwerk (nom)"          "minuten_werk_licht (scl)"       "zwaar_werk (nom)"              
-[16] "minuten_zwaar_werk (scl)"       "licht_huishouden (nom)"         "minuten_licht_huishouden (scl)"
-[19] "zwaar_huishouden (nom)"         "minuten_zwaarhuishouden (scl)"  "vrije_tijd (nom)"              
-[22] "minuten_vrijetijd (scl)"        "sport (nom)"                    "minuten_sport (scl)"           
-[25] "PHQ1 (nom)"                     "PHQ2 (nom)"                     "PHQ3 (nom)"                    
-[28] "PHQ4 (nom)"                     "PHQ5 (nom)"                     "PHQ6 (nom)"                    
-[31] "PHQ7 (nom)"                     "PHQ8 (nom)"                     "PHQ9 (nom)"                    
-[34] "beperking (nom)"                "angst (nom)"                   
+ [1] &quot;id (scl)&quot;                       &quot;geslacht (nom)&quot;                 &quot;leeftijd (scl)&quot;                
+ [4] &quot;datum_MI (scl)&quot;                 &quot;roken (nom)&quot;                    &quot;BMI (scl)&quot;                     
+ [7] &quot;depressie_verleden (scl)&quot;       &quot;hartfalen (nom)&quot;                &quot;tijdstip (scl)&quot;                
+[10] &quot;norm_bewegen (nom)&quot;             &quot;woon_werk (nom)&quot;                &quot;minuten_woonwerk (scl)&quot;        
+[13] &quot;licht_matigwerk (nom)&quot;          &quot;minuten_werk_licht (scl)&quot;       &quot;zwaar_werk (nom)&quot;              
+[16] &quot;minuten_zwaar_werk (scl)&quot;       &quot;licht_huishouden (nom)&quot;         &quot;minuten_licht_huishouden (scl)&quot;
+[19] &quot;zwaar_huishouden (nom)&quot;         &quot;minuten_zwaarhuishouden (scl)&quot;  &quot;vrije_tijd (nom)&quot;              
+[22] &quot;minuten_vrijetijd (scl)&quot;        &quot;sport (nom)&quot;                    &quot;minuten_sport (scl)&quot;           
+[25] &quot;PHQ1 (nom)&quot;                     &quot;PHQ2 (nom)&quot;                     &quot;PHQ3 (nom)&quot;                    
+[28] &quot;PHQ4 (nom)&quot;                     &quot;PHQ5 (nom)&quot;                     &quot;PHQ6 (nom)&quot;                    
+[31] &quot;PHQ7 (nom)&quot;                     &quot;PHQ8 (nom)&quot;                     &quot;PHQ9 (nom)&quot;                    
+[34] &quot;beperking (nom)&quot;                &quot;angst (nom)&quot;                   
 </div>
-<div class='input'>av_state <- add_derived_column(av_state,'SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4',
-                               'PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),
-                               operation='SUM')
+<div class='input'>av_state &lt;- add_derived_column(av_state,&#39;SomPHQ&#39;,c(&#39;PHQ1&#39;,&#39;PHQ2&#39;,&#39;PHQ3&#39;,&#39;PHQ4&#39;,
+                               &#39;PHQ5&#39;,&#39;PHQ6&#39;,&#39;PHQ7&#39;,&#39;PHQ8&#39;,&#39;PHQ9&#39;),
+                               operation=&#39;SUM&#39;)
 </div>
 <div class='output'>column PHQ1 is not numeric: converting... (for subset 1)
 </div>
 <div class='input'>column_names_output(av_state)
 </div>
-<div class='output'> [1] "id (scl)"                       "geslacht (nom)"                 "leeftijd (scl)"                
- [4] "datum_MI (scl)"                 "roken (nom)"                    "BMI (scl)"                     
- [7] "depressie_verleden (scl)"       "hartfalen (nom)"                "tijdstip (scl)"                
-[10] "norm_bewegen (nom)"             "woon_werk (nom)"                "minuten_woonwerk (scl)"        
-[13] "licht_matigwerk (nom)"          "minuten_werk_licht (scl)"       "zwaar_werk (nom)"              
-[16] "minuten_zwaar_werk (scl)"       "licht_huishouden (nom)"         "minuten_licht_huishouden (scl)"
-[19] "zwaar_huishouden (nom)"         "minuten_zwaarhuishouden (scl)"  "vrije_tijd (nom)"              
-[22] "minuten_vrijetijd (scl)"        "sport (nom)"                    "minuten_sport (scl)"           
-[25] "PHQ1 (nom)"                     "PHQ2 (nom)"                     "PHQ3 (nom)"                    
-[28] "PHQ4 (nom)"                     "PHQ5 (nom)"                     "PHQ6 (nom)"                    
-[31] "PHQ7 (nom)"                     "PHQ8 (nom)"                     "PHQ9 (nom)"                    
-[34] "beperking (nom)"                "angst (nom)"                    "SomPHQ (scl)"                  
+<div class='output'> [1] &quot;id (scl)&quot;                       &quot;geslacht (nom)&quot;                 &quot;leeftijd (scl)&quot;                
+ [4] &quot;datum_MI (scl)&quot;                 &quot;roken (nom)&quot;                    &quot;BMI (scl)&quot;                     
+ [7] &quot;depressie_verleden (scl)&quot;       &quot;hartfalen (nom)&quot;                &quot;tijdstip (scl)&quot;                
+[10] &quot;norm_bewegen (nom)&quot;             &quot;woon_werk (nom)&quot;                &quot;minuten_woonwerk (scl)&quot;        
+[13] &quot;licht_matigwerk (nom)&quot;          &quot;minuten_werk_licht (scl)&quot;       &quot;zwaar_werk (nom)&quot;              
+[16] &quot;minuten_zwaar_werk (scl)&quot;       &quot;licht_huishouden (nom)&quot;         &quot;minuten_licht_huishouden (scl)&quot;
+[19] &quot;zwaar_huishouden (nom)&quot;         &quot;minuten_zwaarhuishouden (scl)&quot;  &quot;vrije_tijd (nom)&quot;              
+[22] &quot;minuten_vrijetijd (scl)&quot;        &quot;sport (nom)&quot;                    &quot;minuten_sport (scl)&quot;           
+[25] &quot;PHQ1 (nom)&quot;                     &quot;PHQ2 (nom)&quot;                     &quot;PHQ3 (nom)&quot;                    
+[28] &quot;PHQ4 (nom)&quot;                     &quot;PHQ5 (nom)&quot;                     &quot;PHQ6 (nom)&quot;                    
+[31] &quot;PHQ7 (nom)&quot;                     &quot;PHQ8 (nom)&quot;                     &quot;PHQ9 (nom)&quot;                    
+[34] &quot;beperking (nom)&quot;                &quot;angst (nom)&quot;                    &quot;SomPHQ (scl)&quot;                  
 </div>
-<div class='input'>av_state <- load_file("../data/input/pp1 nieuw compleet.sav",log_level=3)
-av_state <- add_derived_column(av_state,'SomBewegUur','SomBewegen',
-                               operation='MINUTES_TO_HOURS')
-av_state <- add_derived_column(av_state,'lnSomBewegUur','SomBewegUur',
-                               operation='LN')
+<div class='input'>av_state &lt;- load_file(&quot;../data/input/pp1 nieuw compleet.sav&quot;,log_level=3)
+av_state &lt;- add_derived_column(av_state,&#39;SomBewegUur&#39;,&#39;SomBewegen&#39;,
+                               operation=&#39;MINUTES_TO_HOURS&#39;)
+av_state &lt;- add_derived_column(av_state,&#39;lnSomBewegUur&#39;,&#39;SomBewegUur&#39;,
+                               operation=&#39;LN&#39;)
 </div>
 <div class='output'>add_derived_column_ln: increasing all values of column SomBewegUur by 1 for subset 1 
 </div>
-<div class='input'>av_state$data[[1]][c('SomBewegen','SomBewegUur','lnSomBewegUur')]
+<div class='input'>av_state$data[[1]][c(&#39;SomBewegen&#39;,&#39;SomBewegUur&#39;,&#39;lnSomBewegUur&#39;)]
 </div>
 <div class='output'>   SomBewegen SomBewegUur lnSomBewegUur
 1    378.0895    6.301492      1.988079

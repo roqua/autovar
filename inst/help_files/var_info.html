@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>var_info. autovar 0.1-0</title>
+<title>var_info. autovar 0.1-1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -20,7 +20,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="#">autovar 0.1-0</a>
+      <a class="brand" href="#">autovar 0.1-1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
@@ -40,36 +40,35 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre>var_info(varest, log_level = 0)</pre>
+    <pre><div>var_info(varest, log_level&nbsp;=&nbsp;0)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
       <dt>varest</dt>
       <dd>an object of class <code>varest</code></dd>
       <dt>log_level</dt>
-      <dd>sets the minimum level of output that
-  should be shown (a number between 0 and 3). A lower level
-  means more verbosity.</dd>
+      <dd>sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity.</dd>
     </dl>
     
+    <div class="Print summary information and tests for a VAR model estimation">
+      <h2>Print summary information and tests for a VAR model estimation</h2>
+      
+    </div>
+
     <div class="Description">
       <h2>Description</h2>
       
-      <p>This function prints a summary and the output of the
-  tests for a VAR model. The tests it shows are the
-  Eigenvalue stability condition, the Portmanteau tests,
-  the Jarque-Bera tests, the sk tests, the Granger
-  causality Wald tests, and Stata's <code>estat ic</code>.</p>
+      <p>This function prints a summary and the output of the tests for a VAR model. The tests it shows are the Eigenvalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the sk tests, the Granger causality Wald tests, and Stata's <code>estat ic</code>.</p>
   
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/pp1 nieuw compleet.sav",log_level=3)
-av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion='BIC',log_level=3)
+    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/pp1 nieuw compleet.sav&quot;,log_level=3)
+av_state &lt;- var_main(av_state,c(&#39;SomBewegUur&#39;,&#39;SomPHQ&#39;),criterion=&#39;BIC&#39;,log_level=3)
 </div>
 <div class='output'>
 ====================
-var_main(av_state, vars = c("SomBewegUur", "SomPHQ"), log_level = 3, criterion = "BIC")
+var_main(av_state, vars = c(&quot;SomBewegUur&quot;, &quot;SomPHQ&quot;), log_level = 3, criterion = &quot;BIC&quot;)
 
 Starting VAR with variables: SomBewegUur, SomPHQ, for subset: 1
 
@@ -88,7 +87,7 @@ Granger causality legend:
 
 Granger causality summary of all 16 unrestricted models:
    62.50%   SomBewegUur -Granger causes- SomPHQ        (7 models +3 almost) (sign: 10 -)
-   37.50%   <None>                                     (6 models)
+   37.50%   &lt;None&gt;                                     (6 models)
 
 Granger causality summary of all 2 valid models:
   100.00%   SomBewegUur -Granger causes- SomPHQ        (2 models) (sign: 2 -)
@@ -150,13 +149,13 @@ Estimation results for equation SomBewegUur:
 ============================================ 
 SomBewegUur = SomBewegUur.l1 + SomBewegUur.l2 + const + SomBewegUur_outliers 
 
-                     Estimate Std. Error t value Pr(>|t|)    
+                     Estimate Std. Error t value Pr(&gt;|t|)    
 SomBewegUur.l1        0.46313    0.09455   4.898 5.04e-06 ***
 SomBewegUur.l2        0.24718    0.09499   2.602 0.011060 *  
 const                 2.22633    0.60275   3.694 0.000405 ***
 SomBewegUur_outliers -7.19848    1.52243  -4.728 9.72e-06 ***
 ---
-Signif. codes:  '***' <=0.001, '**' <=0.01, '*' <=0.05, '.' <=0.10
+Signif. codes:  &#39;***&#39; &lt;=0.001, &#39;**&#39; &lt;=0.01, &#39;*&#39; &lt;=0.05, &#39;.&#39; &lt;=0.10
 
 
 Residual standard error: 1.513 on 79 degrees of freedom
@@ -168,7 +167,7 @@ Estimation results for equation SomPHQ:
 ======================================= 
 SomPHQ = SomBewegUur.l1 + SomPHQ.l1 + SomBewegUur.l2 + const + SomBewegUur_outliers + SomPHQ_outliers 
 
-                     Estimate Std. Error t value Pr(>|t|)    
+                     Estimate Std. Error t value Pr(&gt;|t|)    
 SomBewegUur.l1       -0.27182    0.10540  -2.579  0.01182 *  
 SomBewegUur.l2        0.13832    0.10839   1.276  0.20574    
 SomPHQ.l1             0.43196    0.09216   4.687 1.18e-05 ***
@@ -176,7 +175,7 @@ const                 7.76992    1.34925   5.759 1.65e-07 ***
 SomBewegUur_outliers -5.31474    1.71731  -3.095  0.00275 ** 
 SomPHQ_outliers      -7.28106    1.72815  -4.213 6.78e-05 ***
 ---
-Signif. codes:  '***' <=0.001, '**' <=0.01, '*' <=0.05, '.' <=0.10
+Signif. codes:  &#39;***&#39; &lt;=0.001, &#39;**&#39; &lt;=0.01, &#39;*&#39; &lt;=0.05, &#39;.&#39; &lt;=0.10
 
 
 Residual standard error: 1.68 on 77 degrees of freedom
@@ -210,16 +209,16 @@ PASS: All the eigen values lie in the unit circle. VAR satisfies stability condi
 Portmanteau tests for white noise
   SomBewegUur:
     Portmanteau (Q) statistic = 38.61956
-    Prob > chi2(39) = 0.4870685
+    Prob &gt; chi2(39) = 0.4870685
   SomBewegUur squared:
     Portmanteau (Q) statistic = 42.25662
-    Prob > chi2(39) = 0.3321387
+    Prob &gt; chi2(39) = 0.3321387
   SomPHQ:
     Portmanteau (Q) statistic = 51.11229
-    Prob > chi2(39) = 0.09267092
+    Prob &gt; chi2(39) = 0.09267092
   SomPHQ squared:
     Portmanteau (Q) statistic = 34.69628
-    Prob > chi2(39) = 0.6664694
+    Prob &gt; chi2(39) = 0.6664694
 PASS: There is no autocorrelation in the residuals.
 
 Jarque-Bera, Skewness, and Kurtosis tests
@@ -274,12 +273,12 @@ Estimation results for equation SomBewegUur:
 ============================================ 
 SomBewegUur = SomBewegUur.l1 + SomPHQ.l1 + const 
 
-               Estimate Std. Error t value Pr(>|t|)    
+               Estimate Std. Error t value Pr(&gt;|t|)    
 SomBewegUur.l1  0.62749    0.08602   7.295 1.81e-10 ***
 SomPHQ.l1      -0.07137    0.09368  -0.762   0.4484    
 const           3.53590    1.30880   2.702   0.0084 ** 
 ---
-Signif. codes:  '***' <=0.001, '**' <=0.01, '*' <=0.05, '.' <=0.10
+Signif. codes:  &#39;***&#39; &lt;=0.001, &#39;**&#39; &lt;=0.01, &#39;*&#39; &lt;=0.05, &#39;.&#39; &lt;=0.10
 
 
 Residual standard error: 1.79 on 81 degrees of freedom
@@ -291,12 +290,12 @@ Estimation results for equation SomPHQ:
 ======================================= 
 SomPHQ = SomBewegUur.l1 + SomPHQ.l1 + const 
 
-               Estimate Std. Error t value Pr(>|t|)    
+               Estimate Std. Error t value Pr(&gt;|t|)    
 SomBewegUur.l1 -0.12789    0.09353  -1.367   0.1753    
 SomPHQ.l1       0.34215    0.10187   3.359   0.0012 ** 
 const           8.61157    1.42318   6.051 4.26e-08 ***
 ---
-Signif. codes:  '***' <=0.001, '**' <=0.01, '*' <=0.05, '.' <=0.10
+Signif. codes:  &#39;***&#39; &lt;=0.001, &#39;**&#39; &lt;=0.01, &#39;*&#39; &lt;=0.05, &#39;.&#39; &lt;=0.10
 
 
 Residual standard error: 1.946 on 81 degrees of freedom
@@ -328,16 +327,16 @@ PASS: All the eigen values lie in the unit circle. VAR satisfies stability condi
 Portmanteau tests for white noise
   SomBewegUur:
     Portmanteau (Q) statistic = 41.30083
-    Prob > chi2(40) = 0.4135921
+    Prob &gt; chi2(40) = 0.4135921
   SomBewegUur squared:
     Portmanteau (Q) statistic = 30.12343
-    Prob > chi2(40) = 0.8717499
+    Prob &gt; chi2(40) = 0.8717499
   SomPHQ:
     Portmanteau (Q) statistic = 45.47917
-    Prob > chi2(40) = 0.2544755
+    Prob &gt; chi2(40) = 0.2544755
   SomPHQ squared:
     Portmanteau (Q) statistic = 40.48387
-    Prob > chi2(40) = 0.4489041
+    Prob &gt; chi2(40) = 0.4489041
 PASS: There is no autocorrelation in the residuals.
 
 Jarque-Bera, Skewness, and Kurtosis tests

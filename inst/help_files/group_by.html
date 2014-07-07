@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>group_by. autovar 0.1-0</title>
+<title>group_by. autovar 0.1-1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -20,7 +20,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="#">autovar 0.1-0</a>
+      <a class="brand" href="#">autovar 0.1-1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
@@ -40,7 +40,7 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre>group_by(av_state, id_field)</pre>
+    <pre><div>group_by(av_state, id_field)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
@@ -50,35 +50,27 @@
       <dd>the name of a column in the data set</dd>
     </dl>
     
+    <div class="Split up a data set into different subsets">
+      <h2>Split up a data set into different subsets</h2>
+      
+    </div>
+
     <div class="Value">
       <h2>Value</h2>
       
-      <p>This function returns the modified <code>av_state</code>
-  object.</p>
+      <p>This function returns the modified <code>av_state</code> object.</p>
   
     </div>
 
     <div class="Description">
       <h2>Description</h2>
       
-      <p>This function splits up the initial data set into
-  multiple sets based on their value for <code>id_field</code>.
-  For example, if we have a data set with a field named
-  <code>id</code> that has values ranging from 11 to 15, calling
-  <code>av_state <- group_by('id')</code> will set
-  <code>av_state$data</code> to a list of five items. This list
-  is ordered by the value of the id field. Then, we can use
-  <code>av_state$data[[1]]</code> (or equivalently,
-  <code>av_state$data[['11']]</code>) to retrieve the rows in the
-  data set that have <code>id</code> 11. Likewise, use
-  <code>av_state$data[[2]]</code> or <code>av_state$data[['12']]</code>
-  for rows with <code>id</code> 12. This function can only be
-  called once per <code>av_state</code>.</p>
+      <p>This function splits up the initial data set into multiple sets based on their value for <code>id_field</code>. For example, if we have a data set with a field named <code>id</code>  that has values ranging from 11 to 15, calling <code>av_state <- group_by('id')</code> will set <code>av_state$data</code> to a list of five items. This list is ordered by the value of the id field. Then, we can use <code>av_state$data[[1]]</code> (or equivalently, <code>av_state$data[['11']]</code>) to retrieve the rows in the data set that have <code>id</code> 11. Likewise, use <code>av_state$data[[2]]</code> or <code>av_state$data[['12']]</code> for rows with <code>id</code> 12. This function can only be called once per <code>av_state</code>.</p>
   
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
+    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/RuwedataAngela.sav&quot;,log_level=3)
 print(av_state)
 </div>
 <div class='output'>
@@ -90,9 +82,9 @@ data:
   multiple: 318 samples with 35 features [missing: 22.47% (2501)]
 
 </div>
-<div class='input'>av_state <- group_by(av_state,'id')
+<div class='input'>av_state &lt;- group_by(av_state,&#39;id&#39;)
 </div>
-<div class='output'>group_by: identified 5 groups based on distinct values for attribute 'id'
+<div class='output'>group_by: identified 5 groups based on distinct values for attribute &#39;id&#39;
 </div>
 <div class='input'>print(av_state)
 </div>

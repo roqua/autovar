@@ -1,17 +1,19 @@
 Package: autovar
-Version: 0.1-0
-Date: 2012-11-03
+Version: 0.1-1
+Date: 2014-07-07
 Title: Automated Vector Autoregression Model Creation
 Authors@R: c(person("Ando","Emerencia",role = c("aut","cre"),
     email = "ando.emerencia@gmail.com"))
 Author: Ando Emerencia
 Maintainer: Ando Emerencia <ando.emerencia@gmail.com>
 Depends:
+    e1071,
     foreign,
     ggplot2,
     gridExtra,
     igraph,
     norm,
+    psych,
     reshape2,
     stringr,
     TimeProjection,
@@ -23,35 +25,3 @@ Suggests:
 Description: A package to simplify the process from raw SPSS or
     STATA data to VAR models.
 License: Unlimited
-Collate:
-    'add_derived_column.r'
-    'add_to_queue.r'
-    'config.r'
-    'create_model.r'
-    'evaluate_model.r'
-    'get_data_columns.r'
-    'group_by.r'
-    'impute_missing_values.r'
-    'load_file.r'
-    'model_is_stable.r'
-    'model_score.r'
-    'order_by.r'
-    'output.r'
-    'read_spss.r'
-    'select_range.r'
-    'sort_models.r'
-    'store_file.r'
-    'var_main.r'
-    'vargranger.r'
-    'varnorm.r'
-    'visualize.r'
-    'wntestq.r'
-    'iterative_restrict.r'
-    'sktest.r'
-    'formatting.r'
-    'set_timestamps.r'
-    'pperron.r'
-    'add_trend.r'
-    'stats_overrides.r'
-    'plot_barchart.r'
-    'plot_contemporaneous_correlations.r'

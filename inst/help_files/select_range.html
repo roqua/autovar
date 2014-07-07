@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>select_range. autovar 0.1-0</title>
+<title>select_range. autovar 0.1-1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -20,7 +20,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="#">autovar 0.1-0</a>
+      <a class="brand" href="#">autovar 0.1-1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
@@ -40,59 +40,44 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre>select_range(av_state, subset_id = 1, column, begin, end)</pre>
+    <pre><div>select_range(av_state, subset_id&nbsp;=&nbsp;1, column, begin, end)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
       <dt>av_state</dt>
       <dd>an object of class <code>av_state</code></dd>
       <dt>subset_id</dt>
-      <dd>either an integer subset index or the
-  the value for the <code>id_field</code> column that was used in
-  the <code><a href='group_by.html'>group_by</a></code> function. The <code>subset_id</code>
-  argument is required if the data set is grouped into
-  multiple data sets (i.e., if the <code><a href='group_by.html'>group_by</a></code>
-  function was used), in which case the function works on
-  the specified data subset.</dd>
+      <dd>either an integer subset index or the the value for the <code>id_field</code> column that was used in the <code><a href='group_by.html'>group_by</a></code> function. The <code>subset_id</code> argument is required if the data set is grouped into multiple data sets (i.e., if the <code><a href='group_by.html'>group_by</a></code> function was used), in which case the function works on the specified data subset.</dd>
       <dt>column</dt>
-      <dd>specifies which column the <code>begin</code> and
-  <code>end</code> values should be taken over. This argument is
-  optional, and if it is missing, <code>id_field</code> used in
-  <code><a href='order_by.html'>order_by</a></code> will be used.</dd>
+      <dd>specifies which column the <code>begin</code> and <code>end</code> values should be taken over. This argument is optional, and if it is missing, <code>id_field</code> used in <code><a href='order_by.html'>order_by</a></code> will be used.</dd>
       <dt>begin</dt>
-      <dd>indicates which values should be included.
-  Values that are <code>>= begin</code> are included. This
-  argument is optional if <code>end</code> is specified.</dd>
+      <dd>indicates which values should be included. Values that are <code>>= begin</code> are included. This argument is optional if <code>end</code> is specified.</dd>
       <dt>end</dt>
-      <dd>indicates which values should be included.
-  Values that are <code><= end</code> are included. This argument
-  is optional if <code>begin</code> is specified.</dd>
+      <dd>indicates which values should be included. Values that are <code><= end</code> are included. This argument is optional if <code>begin</code> is specified.</dd>
     </dl>
     
+    <div class="Select a subset of rows of a data set to be retained">
+      <h2>Select a subset of rows of a data set to be retained</h2>
+      
+    </div>
+
     <div class="Value">
       <h2>Value</h2>
       
-      <p>This function returns the modified <code>av_state</code>
-  object.</p>
+      <p>This function returns the modified <code>av_state</code> object.</p>
   
     </div>
 
     <div class="Description">
       <h2>Description</h2>
       
-      <p>This function selects which rows of a data set should be
-  included. Either the <code>begin</code> or the <code>end</code>
-  argument need to be specified. The column does not need
-  to be sorted for this function to work. Values are
-  included if they are <code>>= begin</code> and <code><= end</code>,
-  if specified, for the specified column. Values that are
-  <code>NA</code> are never removed by this function.</p>
+      <p>This function selects which rows of a data set should be included. Either the <code>begin</code> or the <code>end</code> argument need to be specified. The column does not need to be sorted for this function to work. Values are included if they are <code>>= begin</code> and <code><= end</code>, if specified, for the specified column. Values that are <code>NA</code> are never removed by this function.</p>
   
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/pp2 nieuw compleet_64dagen.sav",log_level=3)
-av_state <- order_by(av_state,'tijdstip')
+    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/pp2 nieuw compleet_64dagen.sav&quot;,log_level=3)
+av_state &lt;- order_by(av_state,&#39;tijdstip&#39;)
 print(av_state)
 </div>
 <div class='output'>
@@ -106,7 +91,7 @@ order_by: tijdstip
 trend_vars: tijdstip 
 
 </div>
-<div class='input'>av_state$data[[1]]['tijdstip']
+<div class='input'>av_state$data[[1]][&#39;tijdstip&#39;]
 </div>
 <div class='output'>   tijdstip
 1         1
@@ -175,7 +160,7 @@ trend_vars: tijdstip
 64       64
 </div>
 <div class='input'># default column is the order_by column in this case:
-av_state <- select_range(av_state,begin=20,end=40)
+av_state &lt;- select_range(av_state,begin=20,end=40)
 </div>
 <div class='output'>select_range: for subset 1, number of rows cut: 43, number of rows remaining: 21
 select_range: for subset 1, missing values went from 16.35% (471) to 13.97% (132)
@@ -193,7 +178,7 @@ order_by: tijdstip
 trend_vars: tijdstip 
 
 </div>
-<div class='input'>av_state$data[[1]]['tijdstip']
+<div class='input'>av_state$data[[1]][&#39;tijdstip&#39;]
 </div>
 <div class='output'>   tijdstip
 20       20
@@ -219,7 +204,7 @@ trend_vars: tijdstip
 40       40
 </div>
 <div class='input'>
-av_state <- load_file("../data/input/pp2 nieuw compleet_64dagen.sav",log_level=3)
+av_state &lt;- load_file(&quot;../data/input/pp2 nieuw compleet_64dagen.sav&quot;,log_level=3)
 print(av_state)
 </div>
 <div class='output'>
@@ -231,7 +216,7 @@ data:
   multiple: 64 samples with 44 features [missing: 16.73% (471)]
 
 </div>
-<div class='input'>av_state$data[[1]]['lnSomPHQ']
+<div class='input'>av_state$data[[1]][&#39;lnSomPHQ&#39;]
 </div>
 <div class='output'>   lnSomPHQ
 1  2.197225
@@ -299,8 +284,8 @@ data:
 63 1.609438
 64 1.609438
 </div>
-<div class='input'># now only retain rows with 0 <= lnSomPHQ <= 2
-av_state <- select_range(av_state,column='lnSomPHQ',begin=0,end=2)
+<div class='input'># now only retain rows with 0 &lt;= lnSomPHQ &lt;= 2
+av_state &lt;- select_range(av_state,column=&#39;lnSomPHQ&#39;,begin=0,end=2)
 </div>
 <div class='output'>select_range: for subset 1, number of rows cut: 10, number of rows remaining: 54
 select_range: for subset 1, missing values went from 16.73% (471) to 17.13% (407)
@@ -316,7 +301,7 @@ data:
   multiple: 54 samples with 44 features [missing: 17.13% (407)]
 
 </div>
-<div class='input'>av_state$data[[1]]['lnSomPHQ']
+<div class='input'>av_state$data[[1]][&#39;lnSomPHQ&#39;]
 </div>
 <div class='output'>   lnSomPHQ
 2  1.609438

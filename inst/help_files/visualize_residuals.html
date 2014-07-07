@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>visualize_residuals. autovar 0.1-0</title>
+<title>visualize_residuals. autovar 0.1-1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -20,7 +20,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="#">autovar 0.1-0</a>
+      <a class="brand" href="#">autovar 0.1-1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
@@ -40,7 +40,7 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre>visualize_residuals(varest)</pre>
+    <pre><div>visualize_residuals(varest)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
@@ -48,27 +48,31 @@
       <dd>the varest object.</dd>
     </dl>
     
+    <div class="Visualize the residuals of a VAR model">
+      <h2>Visualize the residuals of a VAR model</h2>
+      
+    </div>
+
     <div class="Description">
       <h2>Description</h2>
       
-      <p>This function takes a varest object and plots the
-  residuals and the squared residuals.</p>
+      <p>This function takes a varest object and plots the residuals and the squared residuals.</p>
   
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>d<-load_file("../data/input/pp4 nieuw compleet met 140min.sav",log_level=3)
-d<-set_timestamps(d,date_of_first_measurement='2010-04-14')
+    <pre class="examples"><div class='input'>d&lt;-load_file(&quot;../data/input/pp4 nieuw compleet met 140min.sav&quot;,log_level=3)
+d&lt;-set_timestamps(d,date_of_first_measurement=&#39;2010-04-14&#39;)
 </div>
 <div class='output'>set_timestamps: dates range from 2010-04-14 to 2010-06-17
 set_timestamps: using additional exogenous variables in models:
     Sunday, Monday, Tuesday, Wednesday, Thursday, Friday 
 </div>
-<div class='input'>d<-var_main(d,c('SomBewegUur','SomPHQ'),log_level=3,exogenous_variables='Work')
+<div class='input'>d&lt;-var_main(d,c(&#39;SomBewegUur&#39;,&#39;SomPHQ&#39;),log_level=3,exogenous_variables=&#39;Work&#39;)
 </div>
 <div class='output'>
 ====================
-var_main(av_state, vars = c("SomBewegUur", "SomPHQ"), log_level = 3, exogenous_variables = "Work")
+var_main(av_state, vars = c(&quot;SomBewegUur&quot;, &quot;SomPHQ&quot;), log_level = 3, exogenous_variables = &quot;Work&quot;)
 
 Starting VAR with variables: SomBewegUur, SomPHQ, for subset: 1
 
@@ -76,7 +80,9 @@ Starting VAR with variables: SomBewegUur, SomPHQ, for subset: 1
 
 Done. Processed 18 distinct models, of which 4 were valid.
 Tested 46 of 144 ( 31.94%) of the combinatorial search space at the given lags (1, 2).
-
+</div>
+<p><img src='visualize_residuals-5.png' alt='' width='400' height='400' /></p>
+<div class='output'>
 Granger causality legend:
    +   majority positive associations
    ~   majority mixed pos/neg associations within models
@@ -92,7 +98,7 @@ Granger causality summary of all 4 valid models:
 Granger causality summary of all 2 valid unrestricted models:
   100.00%   SomPHQ      -Granger causes- SomBewegUur   (2 models) (sign: 2 -)
 </div>
-<p><img src='visualize_residuals-5.png' alt='' width='400' height='400' /></p>
+<p><img src='visualize_residuals-7.png' alt='' width='400' height='400' /></p>
 <div class='output'>
 Summary of all valid models:
   lag:
@@ -181,7 +187,7 @@ D: (AIC: 327.402, BIC: 374.898) : SomPHQ -Granger causes- SomBewegUur (8.68e-06)
 </div>
 <div class='input'>visualize_residuals(d$accepted_models[[1]]$varest)
 </div>
-<p><img src='visualize_residuals-8.png' alt='' width='400' height='400' /></p></pre>
+<p><img src='visualize_residuals-10.png' alt='' width='400' height='400' /></p></pre>
   </div>
   <div class="span4">
     <!-- <ul>

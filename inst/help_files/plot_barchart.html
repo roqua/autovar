@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>plot_barchart. autovar 0.1-0</title>
+<title>plot_barchart. autovar 0.1-1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -20,7 +20,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="#">autovar 0.1-0</a>
+      <a class="brand" href="#">autovar 0.1-1</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
@@ -40,34 +40,35 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre>plot_barchart(av_state, x, y, ...)</pre>
+    <pre><div>plot_barchart(av_state, x, y, ...)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
       <dt>av_state</dt>
-      <dd>an object of class <code>av_state</code> that
-  was the result of a call to <code><a href='var_main.html'>var_main</a></code></dd>
+      <dd>an object of class <code>av_state</code> that was the result of a call to <code><a href='var_main.html'>var_main</a></code></dd>
       <dt>manual_scores:</dt>
-      <dd>The manual entries that are to be
-  compared with the av_scores</dd>
+      <dd>The manual entries that are to be compared with the av_scores</dd>
     </dl>
     
+    <div class="Plots a barchart of manual_score and the av_scores">
+      <h2>Plots a barchart of manual_score and the av_scores</h2>
+      
+    </div>
+
     <div class="Description">
       <h2>Description</h2>
       
-      <p>This function plots the bar chart for the AIC and BIC
-  scores of the accepted models and compares the Manual AIC
-  and BIC scores graphically.</p>
+      <p>This function plots the bar chart for the AIC and BIC scores of the accepted models and compares the Manual AIC and BIC scores graphically.</p>
   
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
-av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_level=3)
+    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/pp5 nieuw compleet.sav&quot;,log_level=3)
+av_state &lt;- var_main(av_state,c(&#39;SomBewegUur&#39;,&#39;SomPHQ&#39;),criterion=&quot;BIC&quot;,log_level=3)
 </div>
 <div class='output'>
 ====================
-var_main(av_state, vars = c("SomBewegUur", "SomPHQ"), log_level = 3, criterion = "BIC")
+var_main(av_state, vars = c(&quot;SomBewegUur&quot;, &quot;SomPHQ&quot;), log_level = 3, criterion = &quot;BIC&quot;)
 
 Starting VAR with variables: SomBewegUur, SomPHQ, for subset: 1
 
@@ -75,7 +76,9 @@ Starting VAR with variables: SomBewegUur, SomPHQ, for subset: 1
 
 Done. Processed 9 distinct models, of which 2 were valid.
 Tested 18 of 72 ( 25.00%) of the combinatorial search space at the given lags (1, 2).
-
+</div>
+<p><img src='plot_barchart-3.png' alt='' width='400' height='400' /></p>
+<div class='output'>
 Granger causality legend:
    +   majority positive associations
    ~   majority mixed pos/neg associations within models
@@ -91,7 +94,7 @@ Granger causality summary of all 2 valid models:
 Granger causality summary of all 1 valid unrestricted models:
   100.00%   SomPHQ      -Granger causes- SomBewegUur   (1 almost) (sign: 1 -)
 </div>
-<p><img src='plot_barchart-3.png' alt='' width='400' height='400' /></p>
+<p><img src='plot_barchart-5.png' alt='' width='400' height='400' /></p>
 <div class='output'>
 Summary of all valid models:
   lag:
@@ -124,7 +127,7 @@ B: (AIC: 388.391 (orig: 47.879), BIC: 404.875 (orig: 64.363)) : SomPHQ almost -G
 <div class='input'># av_state is the result of a call to var_main
 plot_barchart(av_state,20.02,61.48)
 </div>
-<p><img src='plot_barchart-6.png' alt='' width='400' height='400' /></p></pre>
+<p><img src='plot_barchart-8.png' alt='' width='400' height='400' /></p></pre>
   </div>
   <div class="span4">
     <!-- <ul>
