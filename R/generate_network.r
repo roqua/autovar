@@ -6,9 +6,6 @@
 #' @return This function returns a string representing a json array of two networks.
 #' @export
 generate_network <- function(data, timestamp) {
-  # data is a data.frame with 17 columns and 90 rows:
-  # 
-  
   # impute data
   # TODO: impute data not implemented
   # data <- impute_data(data,timestamp) # oid
