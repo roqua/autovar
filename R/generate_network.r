@@ -8,7 +8,7 @@
 generate_network <- function(data, timestamp) {
   # TODO: impute data not implemented
   # data <- impute_data(data,timestamp) # oid
-  return("Franque")
+  return(paste(timestamp,timestamp))
   data <- select_relevant_columns(data)
   SIGNIFICANCES <- c(0.05,0.01,0.005,0.001)
   for (signif in SIGNIFICANCES) {
