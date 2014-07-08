@@ -105,8 +105,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   for (name in names(forms)) {
     if (name == 'av_state') { next }
     curarg <- eval(parse(text=name))
-    if (deparse(forms[[name]]) != deparse(curarg)) {
-      rcall <- c(rcall,paste(name,' = ',deparse(curarg),sep=''))
+    if (deparse(forms[[name]],width.cutoff=500L) != deparse(curarg,width.cutoff=500L)) {
+      rcall <- c(rcall,paste(name,' = ',deparse(curarg,width.cutoff=500L),sep=''))
     }
   }
   rcall <- paste(rcall,collapse=', ')

@@ -115,7 +115,7 @@ vargranger_plot <- function(av_state) {
     #cat("tempfile:",file,"\n")
     cat(graphstring, file = file)
     a <- read.graph(file,format="ncol",directed=TRUE,weights="yes")
-    cols <- c('springgreen4','steelblue','chocolate1')
+    cols <- c('springgreen4','steelblue','chocolate1','violet','indianred1','lightgoldenrod1')
     E(a)$width <- E(a)$weight
     V(a)$label <- sapply(V(a)$name,function(x) {
       if (!is.null(get_var_label(av_state,x)) && get_var_label(av_state,x) != "") {
@@ -196,7 +196,7 @@ get_var_label <- function(av_state,varname) {
 }
 
 iplot_test <- function(a,...) {
-  cols <- c('springgreen4','steelblue','chocolate1')
+  cols <- c('springgreen4','steelblue','chocolate1','violet','indianred1','lightgoldenrod1')
   plot(a,
        edge.arrow.size=2,
        edge.arrow.width=2,

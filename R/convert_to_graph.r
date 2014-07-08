@@ -5,5 +5,5 @@
 #' @return This function returns a string representing a json array of two networks.
 #' @export
 convert_to_graph <- function(av_state) {
-  
+  paste("GRAAF",av_state$significance)
 }
