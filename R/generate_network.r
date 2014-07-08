@@ -20,7 +20,7 @@ generate_network <- function(data, timestamp) {
     print(system.time({
       # squared trend always included when trend is
       d<-var_main(d,names(data),lag_max=1,significance=signif,
-                  exogenous_max_iterations=1,log_level=3,
+                  exogenous_max_iterations=0,log_level=3,
                   criterion="AIC",include_squared_trend=TRUE,
                   exclude_almost=TRUE)
     }))

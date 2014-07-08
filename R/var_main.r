@@ -71,8 +71,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   if (!(log_level %in% 0:4)) {
     stop(paste("log_level needs to be in 0:4"))
   }
-  if (!(exogenous_max_iterations %in% 1:3)) {
-    stop(paste("exogenous_max_iterations needs to be in 1:3"))
+  if (!(exogenous_max_iterations %in% 0:3)) {
+    stop(paste("exogenous_max_iterations needs to be in 0:3"))
   }
   real_log_level <- av_state$log_level
   
