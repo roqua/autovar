@@ -88,10 +88,17 @@ order_by_quantity <- function(rnames,data,balance) {
   rorder
 }
 is_positive_property <- function(rname) {
-  positive_properties <- c('opgewektheid','ontspanning','hier_en_nu',
-                           'concentratie', 'beweging','iets_betekenen',
-                           'humor', 'buiten_zijn','eigenwaarde', 'levenslust')
-  rname %in% positive_properties
+  property_balance(rname) == 1
+}
+property_balance <- function(rname) {
+  if (rname %in% c('opgewektheid','ontspanning','hier_en_nu',
+                 'concentratie', 'beweging','iets_betekenen',
+                 'humor', 'buiten_zijn','eigenwaarde', 'levenslust'))
+    return(1)
+  if (rname %in% c('onrust','somberheid','lichamelijk_ongemak',
+                 'tekortschieten','piekeren','eenzaamheid'))
+    return(-1)
+  0
 }
 z_skewness_columns <- function(df) {
   r <- NULL

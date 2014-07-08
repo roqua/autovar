@@ -12,6 +12,7 @@ Depends:
     ggplot2,
     gridExtra,
     igraph,
+    jsonlite,
     norm,
     psych,
     reshape2,

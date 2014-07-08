@@ -8,8 +8,6 @@
 generate_network <- function(data, timestamp) {
   # TODO: impute data not implemented
   # data <- impute_data(data,timestamp) # oid
-  
-  # select relevant columns (reduce number of columns to 6 max.)
   data <- select_relevant_columns(data)
   SIGNIFICANCES <- c(0.05,0.01,0.005,0.001)
   for (signif in SIGNIFICANCES) {
@@ -17,19 +15,14 @@ generate_network <- function(data, timestamp) {
     d<-add_trend(d,log_level=3)
     d<-set_timestamps(d,date_of_first_measurement=timestamp,
                       measurements_per_day=3,log_level=3)
-    print(system.time({
-      # squared trend always included when trend is
-      d<-var_main(d,names(data),lag_max=1,significance=signif,
-                  exogenous_max_iterations=0,log_level=3,
-                  criterion="AIC",include_squared_trend=TRUE,
-                  exclude_almost=TRUE)
-    }))
-    if (length(d$accepted_models) > 0) {
+    # squared trend is always included when trend is
+    d<-var_main(d,names(data),lag_max=1,significance=signif,
+                exogenous_max_iterations=1,log_level=3,
+                criterion="AIC",include_squared_trend=TRUE,
+                exclude_almost=TRUE,simple_models=TRUE)
+    if (length(d$accepted_models) > 0)
       return(convert_to_graph(d))
-    }
-    # - geen constraints(?)
     # 8 modellen
-    # wel-niet logtransform
     # av_state$simple_models means: do not look for constraints AND add those special ones at the start
   }
   NULL

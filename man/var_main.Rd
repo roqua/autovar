@@ -12,7 +12,7 @@ var_main(av_state, vars, lag_max = 2, significance = 0.05,
   use_varsoc = FALSE, use_pperron = TRUE, include_squared_trend = FALSE,
   normalize_data = FALSE, include_lag_zero = FALSE,
   split_up_outliers = FALSE, format_output_like_stata = FALSE,
-  exclude_almost = FALSE)
+  exclude_almost = FALSE, simple_models = FALSE)
 }
 \arguments{
 \item{av_state}{an object of class \code{av_state}}
@@ -72,6 +72,8 @@ The above example includes a model with \code{lag=3} (so lags 1, 2, and 3 are in
 \item{format_output_like_stata}{when \code{TRUE}, all constraints and exogenous variables are always shown (i.e., it will now show exogenous variables that were included but constrained in all equations), and the constraints are formatted like in Stata.}
 
 \item{exclude_almost}{when \code{TRUE}, only Granger causalities with p-value <= 0.05 are included in the results. When \code{FALSE}, p-values between 0.05 and 0.10 are also included in results as "almost Granger causalities" that have half the weight of actual Granger causalities in the Granger causality summary graph.}
+
+\item{simple_models}{when \code{TRUE}, only simple models are returned, meaning we don't add constrained models.}
 }
 \value{
 This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.

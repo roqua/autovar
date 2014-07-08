@@ -37,6 +37,7 @@
 #' @param split_up_outliers determines whether each outlier should have its own exogenous variable. This will make a difference for restricted models only, and only when there is a variable with multiple outliers.
 #' @param format_output_like_stata when \code{TRUE}, all constraints and exogenous variables are always shown (i.e., it will now show exogenous variables that were included but constrained in all equations), and the constraints are formatted like in Stata.
 #' @param exclude_almost when \code{TRUE}, only Granger causalities with p-value <= 0.05 are included in the results. When \code{FALSE}, p-values between 0.05 and 0.10 are also included in results as "almost Granger causalities" that have half the weight of actual Granger causalities in the Granger causality summary graph.
+#' @param simple_models when \code{TRUE}, only simple models are returned, meaning we don't add constrained models.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta",log_level=3)
@@ -59,7 +60,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      include_lag_zero=FALSE,
                      split_up_outliers=FALSE,
                      format_output_like_stata=FALSE,
-                     exclude_almost=FALSE) {
+                     exclude_almost=FALSE,
+                     simple_models=FALSE) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -71,8 +73,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   if (!(log_level %in% 0:4)) {
     stop(paste("log_level needs to be in 0:4"))
   }
-  if (!(exogenous_max_iterations %in% 0:3)) {
-    stop(paste("exogenous_max_iterations needs to be in 0:3"))
+  if (!(exogenous_max_iterations %in% 1:3)) {
+    stop(paste("exogenous_max_iterations needs to be in 1:3"))
   }
   real_log_level <- av_state$log_level
   
@@ -96,6 +98,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$split_up_outliers <- split_up_outliers
   av_state$format_output_like_stata <- format_output_like_stata
   av_state$exclude_almost <- exclude_almost
+  av_state$simple_models <- simple_models
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   
@@ -247,29 +250,33 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   }
   # first, clean up the valid models
   accepted_models <- remove_duplicates(av_state,accepted_models)
-  # now queue the valid models again with constraints
-  scat(av_state$log_level,2,'\n> Done. Queueing the valid models again with constraints...\n')
-  for (model in accepted_models) {
-    new_model <- create_model(model$parameters,restrict=TRUE)
-    model_queue <- add_to_queue(model_queue,new_model,av_state$log_level)
-  }
-  # process the valid models with constraints
-  while (TRUE) {
-    if (i > length(model_queue)) { break }
-    pm <- process_model(av_state,model_queue[[i]],i,length(model_queue))
-    av_state <- pm$av_state
-    if (!is.null(pm$accepted_model)) {
-      accepted_models <- c(accepted_models,list(pm$accepted_model))
-    } else if (!is.null(pm$rejected_model)) {
-      rejected_models <- c(rejected_models,list(pm$rejected_model))
+  if (!av_state$simple_models) {
+    # now queue the valid models again with constraints
+    scat(av_state$log_level,2,'\n> Done. Queueing the valid models again with constraints...\n')
+    for (model in accepted_models) {
+      new_model <- create_model(model$parameters,restrict=TRUE)
+      model_queue <- add_to_queue(model_queue,new_model,av_state$log_level)
     }
-    if (!is.null(av_state$model_queue)) {
-      for (model in av_state$model_queue) {
-        model_queue <- add_to_queue(model_queue,model,av_state$log_level)
+    # process the valid models with constraints
+    while (TRUE) {
+      if (i > length(model_queue)) { break }
+      pm <- process_model(av_state,model_queue[[i]],i,length(model_queue))
+      av_state <- pm$av_state
+      if (!is.null(pm$accepted_model)) {
+        accepted_models <- c(accepted_models,list(pm$accepted_model))
+      } else if (!is.null(pm$rejected_model)) {
+        rejected_models <- c(rejected_models,list(pm$rejected_model))
       }
-      av_state$model_queue <- NULL
+      if (!is.null(av_state$model_queue)) {
+        for (model in av_state$model_queue) {
+          model_queue <- add_to_queue(model_queue,model,av_state$log_level)
+        }
+        av_state$model_queue <- NULL
+      }
+      i <- i+1
     }
-    i <- i+1
+  } else {
+    scat(av_state$log_level,2,'\n> Done.\n')
   }
   accepted_models <- remove_lag_duplicates(av_state,accepted_models)
   accepted_models <- remove_restriction_duplicates(av_state,accepted_models)
@@ -277,17 +284,21 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$rejected_models <- rejected_models
   av_state$model_queue <- model_queue
   
-  scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
+  if (!av_state$simple_models)
+    scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   class(av_state$accepted_models) <- 'model_list'
   class(av_state$rejected_models) <- 'model_list'
   if (length(av_state$accepted_models) > 0) {
     av_state$accepted_models <- sort_models(av_state$accepted_models)
   }
-  var_summary(av_state,
-              paste("\nDone. Processed",av_state$model_cnt,"distinct models, of which",
-                    length(av_state$accepted_models),
-                    ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n"))
-
+  donemsg <- paste("\nDone. Processed",av_state$model_cnt,"distinct models, of which",
+                   length(av_state$accepted_models),
+                   ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n")
+  if (av_state$simple_models) {
+    scat(av_state$log_level,3,donemsg)
+  } else {
+    var_summary(av_state,donemsg)
+  }
   av_state$log_level <- real_log_level
   av_state
 }
