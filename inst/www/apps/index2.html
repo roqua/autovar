@@ -335,7 +335,7 @@ $('#knitForm').submit(function(event) {
     $('#knit,#knitdl').removeClass('disabled');
     var data = $("#outputframe").contents().find("body").text();
     if ($('#knitForm').attr("action") == "/ocpu/library/autovar/R/opencpu_wrapper/save") {
-      var cont = data.replace(/(\/ocpu\/tmp\/[^/]+\/(.*))\n/gm,'<a href="$1">$2</a>\n');
+      var cont = data.replace(/(\/ocpu\/tmp\/[^/]+\/(.*))\n/gm,'<a href="$1">$2</a><br/>\n');
       $("#outputframe").contents().find("body").html(cont);
     } else {
       if (data.indexOf("<pre>") != -1) {
