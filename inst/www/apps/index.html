@@ -268,7 +268,7 @@ hljs.initHighlightingOnLoad();
 <label class='control-label' for='filename'>Data set</label>
 <div class='controls'>
   <form action="/ocpu/library/base/R/identity/ascii" target="outputframe" method="POST" id="knitForm">
-  <input class="input-file realinputvalue" id="filename" type="file" name="myfilename" />
+  <input class="input-file realinputvalue" id="filename" type="file" name="!copy:myfilename" />
   <span class='help-block' id='loadingtext'>Select .sav or .dta file containing the data set. </span>
   <div class='hidealways'>
   <textarea name="x" id="x"></textarea>
@@ -458,8 +458,8 @@ hljs.initHighlightingOnLoad();
 <script>
 function postToIframe(target){
 	var paramform = $("#knitForm");
-    var hasfiles = $("#knitForm").find(".input-file").length > 0;
-    paramform.attr("enctype", hasfiles ? "multipart/form-data" : "application/x-www-form-urlencoded");
+  var hasfiles = $("#knitForm").find(".input-file").length > 0;
+  paramform.attr("enctype", hasfiles ? "multipart/form-data" : "application/x-www-form-urlencoded");
 	paramform.attr("target", target);
 	return true;
 }
