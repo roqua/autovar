@@ -1,4 +1,4 @@
 opencpu_wrapper <- function(x,myfilenamearg) {
   myfilename <<- myfilenamearg
-  x
+  eval(parse(text=x))
 }
