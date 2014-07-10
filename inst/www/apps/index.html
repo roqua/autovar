@@ -267,7 +267,7 @@ hljs.initHighlightingOnLoad();
 <div class='control-group'>
 <label class='control-label' for='filename'>Data set</label>
 <div class='controls'>
-  <form action="/ocpu/library/base/R/identity/ascii" target="outputframe" method="POST" id="knitForm">
+  <form action="/ocpu/library/autovar/opencpu_wrapper/ascii" target="outputframe" method="POST" id="knitForm">
   <input class="input-file realinputvalue" id="filename" type="file" name="myfilenamearg" />
   <span class='help-block' id='loadingtext'>Select .sav or .dta file containing the data set. </span>
   <div class='hidealways'>
@@ -562,7 +562,7 @@ function filenameChange() {
   $('#loadingtext').html('Loading...');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
   $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename,log_level=3);names(d$data[[1]])\n")
-  $('#knitForm').attr("action","/ocpu/library/base/R/identity/json");
+  $('#knitForm').attr("action","/ocpu/library/autovar/opencpu_wrapper/json");
   $('#knitForm').submit();
   $('#knitForm').find('textarea[name="x"]').val(oldtextarea);
 }
@@ -601,7 +601,7 @@ $('#knit').click(function() {
   $('#knit,#knitdl,#runvar').addClass('disabled');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
   $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename,log_level=3)\n"+oldtextarea)
-  $('#knitForm').attr("action","/ocpu/library/base/R/identity/ascii");
+  $('#knitForm').attr("action","/ocpu/library/autovar/opencpu_wrapper/ascii");
   $('#knitForm').submit();
   $('#knitForm').find('textarea[name="x"]').val(oldtextarea);
 });
@@ -609,7 +609,7 @@ $('#knitdl').click(function() {
   $('#knit,#knitdl,#runvar').addClass('disabled');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
   $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename,log_level=3)\n"+oldtextarea+"\nstore_file(d)\n");
-  $('#knitForm').attr("action","/ocpu/library/base/R/identity/save");
+  $('#knitForm').attr("action","/ocpu/library/autovar/opencpu_wrapper/save");
   $('#knitForm').submit();
   $('#knitForm').find('textarea[name="x"]').val(oldtextarea);
 });
@@ -631,7 +631,7 @@ $('#knitForm').submit(function(event) {
       rcode = '{library(autovar); library(knitr); library(markdown);' +
               'sub(".*<body>(.*)</body>.*", "\\\\1", ' +
               'markdownToHTML(text = knit(text = "```{r,fig.width='+fwid+',fig.height='+fhei+'}\n' + term + '\n```\n")))}';
-  if ($('#knitForm').attr("action") == "/ocpu/library/base/R/identity/json") {
+  if ($('#knitForm').attr("action") == "/ocpu/library/autovar/opencpu_wrapper/json") {
     rcode = '{library(autovar);'+term+'}';
   }
   /* Send the data using post and put the results in a div */
@@ -641,7 +641,7 @@ $('#knitForm').submit(function(event) {
   $('#outputframe').load(function() {
     $('#knit,#knitdl,#runvar').removeClass('disabled');
     var data = $("#outputframe").contents().find("body").text();
-    if ($('#knitForm').attr("action") == "/ocpu/library/base/R/identity/save") {
+    if ($('#knitForm').attr("action") == "/ocpu/library/autovar/opencpu_wrapper/save") {
       var jsono = JSON.parse(data);
       var cont = "";
       for (file in jsono.files) {
@@ -649,7 +649,7 @@ $('#knitForm').submit(function(event) {
         cont = cont + "<a href='"+filepath+"'>"+file+"</a><br/>";
       }
       $("#outputframe").contents().find("body").html(cont);
-    } else if ($('#knitForm').attr("action") == "/ocpu/library/base/R/identity/json") {
+    } else if ($('#knitForm').attr("action") == "/ocpu/library/autovar/opencpu_wrapper/json") {
       data = eval(data);
       $('#varnames,#exovrs').html('');
       $('#varnames_line,#exovrs_line').val('');

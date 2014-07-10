@@ -235,7 +235,7 @@ hljs.initHighlightingOnLoad();
 <div class="container-fluid">
 <div class="row-fluid">
 <div class="span6">
-<form action="/ocpu/library/base/R/identity/ascii" target="outputframe" method="POST" id="knitForm">
+<form action="/ocpu/library/autovar/opencpu_wrapper/ascii" target="outputframe" method="POST" id="knitForm">
 <p>Select .sav or .dta file containing the data set:<br/>
 <input class="input-file realinputvalue" type="file" name="myfilenamearg" /></p>
 <p>Enter R code below. The variable <code>d</code> contains the autovar state object for the supplied data set.<br>
@@ -297,7 +297,7 @@ $('#knit').click(function() {
   $('#knit,#knitdl').addClass('disabled');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
   $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename,log_level=3)\n"+oldtextarea)
-  $('#knitForm').attr("action","/ocpu/library/base/R/identity/ascii");
+  $('#knitForm').attr("action","/ocpu/library/autovar/opencpu_wrapper/ascii");
   $('#knitForm').submit();
   $('#knitForm').find('textarea[name="x"]').val(oldtextarea);
 });
@@ -305,7 +305,7 @@ $('#knitdl').click(function() {
   $('#knit,#knitdl').addClass('disabled');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
   $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename,log_level=3)\n"+oldtextarea+"\nstore_file(d)\n");
-  $('#knitForm').attr("action","/ocpu/library/base/R/identity/save");
+  $('#knitForm').attr("action","/ocpu/library/autovar/opencpu_wrapper/save");
   $('#knitForm').submit();
   $('#knitForm').find('textarea[name="x"]').val(oldtextarea);
 });
@@ -334,7 +334,7 @@ $('#knitForm').submit(function(event) {
   $('#outputframe').load(function() {
     $('#knit,#knitdl').removeClass('disabled');
     var data = $("#outputframe").contents().find("body").text();
-    if ($('#knitForm').attr("action") == "/ocpu/library/base/R/identity/save") {
+    if ($('#knitForm').attr("action") == "/ocpu/library/autovar/opencpu_wrapper/save") {
       var jsono = JSON.parse(data);
       var cont = "";
       for (file in jsono.files) {
