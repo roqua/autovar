@@ -7,7 +7,7 @@
 #' @export
 generate_network <- function(data, timestamp) {
   # TODO: impute data not implemented
-  # data <- impute_data(data,timestamp) # oid
+  # data <- impute_data(data,timestamp) #  oid
   if (class(data) != "data.frame") return("data argument is not a data.frame")
   if (any(dim(data) != c(90,17))) return("Wrong number of columns or rows in the data.frame")
   if (class(timestamp) != "character") return("timestamp argument is not a character string")
