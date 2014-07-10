@@ -8,6 +8,10 @@
 generate_network <- function(data, timestamp) {
   # TODO: impute data not implemented
   # data <- impute_data(data,timestamp) # oid
+  if (class(data) != "data.frame") return("data argument is not a data.frame")
+  if (any(dim(data) != c(90,17))) return("Wrong number of columns or rows in the data.frame")
+  if (class(timestamp) != "character") return("timestamp argument is not a character string")
+  if (nchar(timestamp) != 10) return("Wrong timestamp format, should be: yyyy-mm-dd")
   data <- select_relevant_columns(data)
   SIGNIFICANCES <- c(0.05,0.01,0.005,0.001)
   for (signif in SIGNIFICANCES) {
