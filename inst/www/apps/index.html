@@ -270,7 +270,7 @@ hljs.initHighlightingOnLoad();
 <div class='control-group'>
 <label class='control-label' for='filename'>Data set</label>
 <div class='controls'>
-  <form action="/ocpu/library/autovar/R/opencpu_wrapper/ascii" target="outputframe" method="POST" id="knitForm">
+  <form action="/ocpu/library/autovar/R/opencpu_wrapper/print" target="outputframe" method="POST" id="knitForm">
   <input class="input-file realinputvalue" id="filename" type="file" name="myfilenamearg" />
   <span class='help-block' id='loadingtext'>Select .sav or .dta file containing the data set. </span>
   <div class='hidealways'>
@@ -604,7 +604,7 @@ $('#knit').click(function() {
   $('#knit,#knitdl,#runvar').addClass('disabled');
   var oldtextarea = $('#knitForm').find('textarea[name="x"]').val();
   $('#knitForm').find('textarea[name="x"]').val("d<-load_file(myfilename,log_level=3)\n"+oldtextarea)
-  $('#knitForm').attr("action","/ocpu/library/autovar/R/opencpu_wrapper/ascii");
+  $('#knitForm').attr("action","/ocpu/library/autovar/R/opencpu_wrapper/print");
   $('#knitForm').submit();
   $('#knitForm').find('textarea[name="x"]').val(oldtextarea);
 });
@@ -645,12 +645,7 @@ $('#knitForm').submit(function(event) {
     $('#knit,#knitdl,#runvar').removeClass('disabled');
     var data = $("#outputframe").contents().find("body").text();
     if ($('#knitForm').attr("action") == "/ocpu/library/autovar/R/opencpu_wrapper/save") {
-      var jsono = JSON.parse(data);
-      var cont = "";
-      for (file in jsono.files) {
-        var filepath = "/R/tmp/" + jsono.files[file] + "/bin"
-        cont = cont + "<a href='"+filepath+"'>"+file+"</a><br/>";
-      }
+      var cont = data.replace(/(\/ocpu\/tmp\/[^/]+\/(.*))\n/gm,'<a href="$1">$2</a><br/>\n');
       $("#outputframe").contents().find("body").html(cont);
     } else if ($('#knitForm').attr("action") == "/ocpu/library/autovar/R/opencpu_wrapper/json") {
       data = eval(data);
@@ -664,6 +659,9 @@ $('#knitForm').submit(function(event) {
       $('.hide-initially').removeClass('hide-initially');
       resizeBoxes();
     } else {
+      if (data.substring(0,4) == "[1] ") {
+        data = data.substring(4,data.length);
+      }
       if (data.indexOf("<pre>") != -1) {
         data = data.replace(/(<code)(>## Warning: )/g,'$1 class=\\"warning\\"$2');
         data = data.replace(/(<code)(>## Error: )/g,'$1 class=\\"error\\"$2');
