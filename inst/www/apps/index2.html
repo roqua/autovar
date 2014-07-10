@@ -338,6 +338,10 @@ $('#knitForm').submit(function(event) {
       var cont = data.replace(/(\/ocpu\/tmp\/[^/]+\/(.*))\n/gm,'<a href="$1">$2</a><br/>\n');
       $("#outputframe").contents().find("body").html(cont);
     } else {
+      console.log(data);
+      if (data.substring(0,4) == "[1] ") {
+        data = data.substring(4,data.length);
+      }
       if (data.indexOf("<pre>") != -1) {
         data = data.replace(/(<code)(>## Warning: )/g,'$1 class=\\"warning\\"$2');
         data = data.replace(/(<code)(>## Error: )/g,'$1 class=\\"error\\"$2');
