@@ -25,8 +25,8 @@ convert_to_graph <- function(av_state) {
       for (varname in c(eqname,fromnodename)) {
         if (varname %in% rnames) next
         nodedata <- rbind(nodedata,data.frame(index=nodecount,
-                                              name=format_property_name(varname),
-                                              type=format_property_type(varname),
+                                              name=format_property_name(unprefix_ln(varname)),
+                                              type=format_property_type(unprefix_ln(varname)),
                                               stringsAsFactors=FALSE))
         rnames <- c(rnames,varname)
         nodecount <- nodecount+1
@@ -52,8 +52,8 @@ convert_to_graph <- function(av_state) {
       for (varname in c(var_names[[i]],var_names[[j]])) {
         if (varname %in% rnamesc) next
         nodedatac <- rbind(nodedatac,data.frame(index=nodecountc,
-                                                name=format_property_name(varname),
-                                                type=format_property_type(varname),
+                                                name=format_property_name(unprefix_ln(varname)),
+                                                type=format_property_type(unprefix_ln(varname)),
                                                 stringsAsFactors=FALSE))
         rnamesc <- c(rnamesc,varname)
         nodecountc <- nodecountc+1

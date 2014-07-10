@@ -21,7 +21,7 @@ generate_network <- function(data, timestamp) {
                       measurements_per_day=3,log_level=3)
     # squared trend is always included when trend is
     d<-var_main(d,names(data),lag_max=1,significance=signif,
-                exogenous_max_iterations=2,log_level=3,
+                exogenous_max_iterations=1,log_level=3,
                 criterion="AIC",include_squared_trend=TRUE,
                 exclude_almost=TRUE,simple_models=TRUE)
     if (length(d$accepted_models) > 0)
