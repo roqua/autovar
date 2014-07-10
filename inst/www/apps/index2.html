@@ -340,7 +340,7 @@ $('#knitForm').submit(function(event) {
     } else {
       console.log(data);
       if (data.substring(0,4) == "[1] ") {
-        data = data.substring(5,data.length-2);
+        data = data.substring(4,data.length);
       }
       console.log(data);
       if (data.indexOf("<pre>") != -1) {
