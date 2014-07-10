@@ -338,7 +338,7 @@ $('#knitForm').submit(function(event) {
       var jsono = JSON.parse(data);
       var cont = "";
       for (file in jsono.files) {
-        var filepath = "/R/tmp/" + jsono.files[file] + "/bin"
+        var filepath = "/ocpu/tmp/" + jsono.files[file] + "/bin"
         cont = cont + "<a href='"+filepath+"'>"+file+"</a><br/>";
       }
       $("#outputframe").contents().find("body").html(cont);
