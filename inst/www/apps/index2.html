@@ -335,13 +335,7 @@ $('#knitForm').submit(function(event) {
     $('#knit,#knitdl').removeClass('disabled');
     var data = $("#outputframe").contents().find("body").text();
     if ($('#knitForm').attr("action") == "/ocpu/library/autovar/R/opencpu_wrapper/save") {
-      console.log(data);
-      var jsono = JSON.parse(data);
-      var cont = "";
-      for (file in jsono.files) {
-        var filepath = "/ocpu/tmp/" + jsono.files[file] + "/bin"
-        cont = cont + "<a href='"+filepath+"'>"+file+"</a><br/>";
-      }
+      var cont = data.replace(/(\/ocpu\/tmp\/[^/]+\/(.*))\n/gm,'<a href="$1">$2</a>\n');
       $("#outputframe").contents().find("body").html(cont);
     } else {
       if (data.indexOf("<pre>") != -1) {
