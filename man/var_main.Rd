@@ -73,7 +73,7 @@ The above example includes a model with \code{lag=3} (so lags 1, 2, and 3 are in
 
 \item{exclude_almost}{when \code{TRUE}, only Granger causalities with p-value <= 0.05 are included in the results. When \code{FALSE}, p-values between 0.05 and 0.10 are also included in results as "almost Granger causalities" that have half the weight of actual Granger causalities in the Granger causality summary graph.}
 
-\item{simple_models}{when \code{TRUE}, only simple models are returned, meaning we don't add constrained models.}
+\item{simple_models}{when \code{TRUE}, only simple models are returned, meaning we don't add constrained models. Also, this setting forces \code{exogenous_max_iterations} to 1.}
 }
 \value{
 This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.

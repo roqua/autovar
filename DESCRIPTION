@@ -7,6 +7,7 @@ Authors@R: c(person("Ando","Emerencia",role = c("aut","cre"),
 Author: Ando Emerencia
 Maintainer: Ando Emerencia <ando.emerencia@gmail.com>
 Depends:
+    Amelia,
     e1071,
     foreign,
     ggplot2,
@@ -17,6 +18,7 @@ Depends:
     markdown,
     norm,
     psych,
+    RcppArmadillo,
     reshape2,
     stringr,
     TimeProjection,

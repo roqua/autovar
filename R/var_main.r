@@ -37,7 +37,7 @@
 #' @param split_up_outliers determines whether each outlier should have its own exogenous variable. This will make a difference for restricted models only, and only when there is a variable with multiple outliers.
 #' @param format_output_like_stata when \code{TRUE}, all constraints and exogenous variables are always shown (i.e., it will now show exogenous variables that were included but constrained in all equations), and the constraints are formatted like in Stata.
 #' @param exclude_almost when \code{TRUE}, only Granger causalities with p-value <= 0.05 are included in the results. When \code{FALSE}, p-values between 0.05 and 0.10 are also included in results as "almost Granger causalities" that have half the weight of actual Granger causalities in the Granger causality summary graph.
-#' @param simple_models when \code{TRUE}, only simple models are returned, meaning we don't add constrained models.
+#' @param simple_models when \code{TRUE}, only simple models are returned, meaning we don't add constrained models. Also, this setting forces \code{exogenous_max_iterations} to 1.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta",log_level=3)
@@ -80,6 +80,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   
   av_state$significance <- significance  
   av_state$lag_max <- lag_max
+  if (simple_models) exogenous_max_iterations <- 1
   av_state$exogenous_max_iterations <- exogenous_max_iterations
   av_state$vars <- vars
   av_state$subset <- subset

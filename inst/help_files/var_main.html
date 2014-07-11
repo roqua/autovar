@@ -40,7 +40,7 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre><div>var_main(av_state, vars, lag_max&nbsp;=&nbsp;2, significance&nbsp;=&nbsp;0.05, exogenous_max_iterations&nbsp;=&nbsp;2, subset&nbsp;=&nbsp;1, log_level&nbsp;=&nbsp;av_state$log_level, small&nbsp;=&nbsp;FALSE, include_model&nbsp;=&nbsp;NULL, exogenous_variables&nbsp;=&nbsp;NULL, use_sktest&nbsp;=&nbsp;TRUE, restrictions.verify_validity_in_every_step&nbsp;=&nbsp;TRUE, restrictions.extensive_search&nbsp;=&nbsp;TRUE, criterion&nbsp;=&nbsp;c("AIC", "BIC"), use_varsoc&nbsp;=&nbsp;FALSE, use_pperron&nbsp;=&nbsp;TRUE, include_squared_trend&nbsp;=&nbsp;FALSE, normalize_data&nbsp;=&nbsp;FALSE, include_lag_zero&nbsp;=&nbsp;FALSE, split_up_outliers&nbsp;=&nbsp;FALSE, format_output_like_stata&nbsp;=&nbsp;FALSE, exclude_almost&nbsp;=&nbsp;FALSE)</div></pre>
+    <pre><div>var_main(av_state, vars, lag_max&nbsp;=&nbsp;2, significance&nbsp;=&nbsp;0.05, exogenous_max_iterations&nbsp;=&nbsp;2, subset&nbsp;=&nbsp;1, log_level&nbsp;=&nbsp;av_state$log_level, small&nbsp;=&nbsp;FALSE, include_model&nbsp;=&nbsp;NULL, exogenous_variables&nbsp;=&nbsp;NULL, use_sktest&nbsp;=&nbsp;TRUE, restrictions.verify_validity_in_every_step&nbsp;=&nbsp;TRUE, restrictions.extensive_search&nbsp;=&nbsp;TRUE, criterion&nbsp;=&nbsp;c("AIC", "BIC"), use_varsoc&nbsp;=&nbsp;FALSE, use_pperron&nbsp;=&nbsp;TRUE, include_squared_trend&nbsp;=&nbsp;FALSE, normalize_data&nbsp;=&nbsp;FALSE, include_lag_zero&nbsp;=&nbsp;FALSE, split_up_outliers&nbsp;=&nbsp;FALSE, format_output_like_stata&nbsp;=&nbsp;FALSE, exclude_almost&nbsp;=&nbsp;FALSE, simple_models&nbsp;=&nbsp;FALSE)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
@@ -106,6 +106,8 @@ The above example includes a model with <code>lag=3</code> (so lags 1, 2, and 3 
       <dd>when <code>TRUE</code>, all constraints and exogenous variables are always shown (i.e., it will now show exogenous variables that were included but constrained in all equations), and the constraints are formatted like in Stata.</dd>
       <dt>exclude_almost</dt>
       <dd>when <code>TRUE</code>, only Granger causalities with p-value <= 0.05 are included in the results. When <code>FALSE</code>, p-values between 0.05 and 0.10 are also included in results as "almost Granger causalities" that have half the weight of actual Granger causalities in the Granger causality summary graph.</dd>
+      <dt>simple_models</dt>
+      <dd>when <code>TRUE</code>, only simple models are returned, meaning we don't add constrained models. Also, this setting forces <code>exogenous_max_iterations</code> to 1.</dd>
     </dl>
     
     <div class="Determine possibly optimal models for Vector Autoregression">

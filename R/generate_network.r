@@ -6,28 +6,41 @@
 #' @return This function returns a string representing a json array of two networks.
 #' @export
 generate_network <- function(data, timestamp) {
-  # TODO: impute data not implemented
-  # data <- impute_data(data,timestamp) #  oid
   if (class(data) != "data.frame") return("data argument is not a data.frame")
   if (any(dim(data) != c(90,17))) return("Wrong number of columns or rows in the data.frame")
   if (class(timestamp) != "character") return("timestamp argument is not a character string")
   if (nchar(timestamp) != 10) return("Wrong timestamp format, should be: yyyy-mm-dd")
   data <- select_relevant_columns(data)
+  imin <- 0
+  imax <- 0
+  ndata2 <- NULL
+  ndata1 <- NULL
+  if (any(is.na(data))) {
+    imin <- 1
+    imax <- 2
+    ndata1 <- impute_dataframe(data,1)
+    ndata2 <- impute_dataframe(data,2)
+  }
   SIGNIFICANCES <- c(0.05,0.01,0.005,0.001)
   for (signif in SIGNIFICANCES) {
-    d<-load_dataframe(data,log_level=3)
-    d<-add_trend(d,log_level=3)
-    d<-set_timestamps(d,date_of_first_measurement=timestamp,
-                      measurements_per_day=3,log_level=3)
-    # squared trend is always included when trend is
-    d<-var_main(d,names(data),lag_max=1,significance=signif,
-                exogenous_max_iterations=1,log_level=3,
-                criterion="AIC",include_squared_trend=TRUE,
-                exclude_almost=TRUE,simple_models=TRUE)
-    if (length(d$accepted_models) > 0)
-      return(convert_to_graph(d))
-    # 8 modellen
-    # av_state$simple_models means: do not look for constraints AND add those special ones at the start
+    for (ptime in imin:imax) {
+      ndata <- data
+      if (ptime == 1) ndata <- ndata2
+      if (ptime == 2) ndata <- ndata1
+      if (any(is.na(ndata))) next # sometimes it fails
+      d<-load_dataframe(ndata,log_level=3)
+      d<-add_trend(d,log_level=3)
+      d<-set_timestamps(d,date_of_first_measurement=timestamp,
+                        measurements_per_day=3,log_level=3)
+      # squared trend is always included when trend is
+      d<-var_main(d,names(ndata),lag_max=1,significance=signif,
+                  exogenous_max_iterations=1,log_level=3,
+                  criterion="AIC",include_squared_trend=TRUE,
+                  exclude_almost=TRUE,simple_models=TRUE)
+      if (length(d$accepted_models) > 0)
+        return(convert_to_graph(d))
+      # av_state$simple_models means: do not look for constraints AND add those special ones at the start
+    }
   }
   NULL
 }

@@ -13,7 +13,9 @@ load_dataframe <- function(df,log_level=0) {
   av_state$file_name <- 'fake_filename.sav'
   av_state$real_file_name <- 'fake_filename.sav'
   av_state$file_type <- 'SPSS'
-  attr(df,'variable.labels') <- to_var_labels(names(df))
+  name_labels <- to_var_labels(names(df))
+  if (any(name_labels != names(df))) 
+    attr(df,'variable.labels') <- name_labels
   av_state$raw_data <- df
   av_state$data <- list('multiple'=av_state$raw_data)
   scat(log_level,2,"load_dataframe loaded data.frame with",length(av_state$data[[1]]),"columns:\n")
@@ -23,7 +25,7 @@ load_dataframe <- function(df,log_level=0) {
 to_var_labels <- function(rnames) {
   r <- NULL
   for (rname in rnames)
-    r <- c(r,format_property_name(rname))
+    r <- c(r,ifelse(is.null(format_property_name(rname)),rname,format_property_name(rname)))
   names(r) <- rnames
   r
 }
