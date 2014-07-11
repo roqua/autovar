@@ -13,6 +13,8 @@ Depends:
     gridExtra,
     igraph,
     jsonlite,
+    knitr,
+    markdown,
     norm,
     psych,
     reshape2,
