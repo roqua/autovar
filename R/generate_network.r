@@ -17,11 +17,12 @@ generate_network <- function(data, timestamp) {
   ndata1 <- NULL
   if (any(is.na(data))) {
     imin <- 1
-    imax <- 2
+    imax <- 1
     ndata1 <- impute_dataframe(data,1)
     ndata2 <- impute_dataframe(data,2)
   }
   SIGNIFICANCES <- c(0.05,0.01,0.005,0.001)
+  #SIGNIFICANCES <- 0.05
   for (signif in SIGNIFICANCES) {
     for (ptime in imin:imax) {
       ndata <- data
@@ -36,7 +37,7 @@ generate_network <- function(data, timestamp) {
       d<-var_main(d,names(ndata),lag_max=1,significance=signif,
                   exogenous_max_iterations=1,log_level=3,
                   criterion="AIC",include_squared_trend=TRUE,
-                  exclude_almost=TRUE,simple_models=TRUE)
+                  exclude_almost=TRUE,simple_models=TRUE,split_up_outliers=TRUE)
       if (length(d$accepted_models) > 0)
         return(convert_to_graph(d))
       # av_state$simple_models means: do not look for constraints AND add those special ones at the start

@@ -622,6 +622,7 @@ set_varest_values <- function(av_state,varest,model) {
   varest$significance <- av_state$significance
   varest$vars <- av_state$vars
   varest$use_sktest <- av_state$use_sktest
+  varest$simple_models <- av_state$simple_models
   varest$criterion <- av_state$criterion
   varest$apply_log_transform <- model$apply_log_transform
   varest

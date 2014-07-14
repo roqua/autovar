@@ -9,7 +9,9 @@ varnorm2 <- function(varest,log_level=0) {
   fails <- NULL
   for (i in 1:(dim(r)[1])) {
     if(i>(dim(r)[1])) { break }
-    if (r$P[[i]] <= av_state_significance(varest)) {
+    condition <- r$P[[i]]
+    if (varest$simple_models) condition <- r$Pr_Skewness[[i]]
+    if (condition <= av_state_significance(varest)) {
       column <- names[i]
       fails <- c(fails,column)
       real_column <- unprefix_ln(column)
