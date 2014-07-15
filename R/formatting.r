@@ -96,7 +96,7 @@ format_exogenous_variables <- function(exogvars,av_state,model,varest,format_out
         if(i>nr_rows(exogvars)) { break }
         exovar <- exogvars[i,]
         desc <- format_varname(exovar$variable)
-        std_factor <- std_factor_for_iteration(exovar$iteration)
+        std_factor <- std_factor_for_iteration(ifelse(av_state$simple_models,3,exovar$iteration))
         res <- paste(res,'    ',desc,' (',std_factor,'x std. of res.): ',
                      get_outliers_as_string(av_state,exovar$variable,
                                             exovar$iteration,

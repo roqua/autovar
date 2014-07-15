@@ -79,8 +79,11 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   real_log_level <- av_state$log_level
   
   av_state$significance <- significance  
+  if (simple_models) {
+    exogenous_max_iterations <- 1
+    lag_max <- 2
+  }
   av_state$lag_max <- lag_max
-  if (simple_models) exogenous_max_iterations <- 1
   av_state$exogenous_max_iterations <- exogenous_max_iterations
   av_state$vars <- vars
   av_state$subset <- subset

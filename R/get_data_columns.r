@@ -144,7 +144,7 @@ get_orig_resids <- function(model,av_state) {
         exodta <- NULL
       }
     }
-    varest <- run_var(data = endodta, lag = model$lag, exogen = exodta)
+    varest <- run_var(data = endodta, lag = model$lag, simple_models = av_state$simple_models, exogen = exodta)
     resids <- resid(varest)
   }
   list(av_state = av_state,resids = resids)

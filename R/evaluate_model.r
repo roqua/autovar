@@ -31,7 +31,8 @@ evaluate_model <- function(av_state,model,index,totmodelcnt) {
   } else {
   
     # get the var estimate for this model. This is the 'var' command in STATA.
-    res$varest <- run_var(data = endodta, lag = model$lag, exogen=exodta)
+    res$varest <- run_var(data = endodta, lag = model$lag, 
+                          simple_models = av_state$simple_models, exogen=exodta)
     res$varest <- set_varest_values(av_state,res$varest,model)
     
     # remove nonsignificant coefficients from the formula
@@ -203,7 +204,7 @@ determine_var_order <- function(dta,log_level,...) {
   lags
 }
 
-run_var <- function(data,lag,...) {
+run_var <- function(data,lag,simple_models,...) {
   # default type is const
   # (specifies what the rest term in the formula should be)
   m <- NULL
@@ -215,6 +216,18 @@ run_var <- function(data,lag,...) {
     m <- restrict(m,
              method="manual",
              resmat=format_restriction_matrix(m,resmat))
+    m <- add_intercepts(m)
+  } else if (lag == 2 && simple_models) {
+    # restricting second lag in all models but the one using it
+    m <- VAR(data,p = lag,...)
+    resmat <- rep.int(1,length(restriction_matrix_colnames(m)))
+    nr_vars <- (length(colnames(m$y)))
+    resmat[(nr_vars+1):(2*nr_vars)] <- 0
+    resmat <- rep(resmat,length(colnames(m$y)))
+    resmat[seq(nr_vars+1,length(resmat),length(restriction_matrix_colnames(m))+1)] <- 1
+    m <- restrict(m,
+                  method="manual",
+                  resmat=format_restriction_matrix(m,resmat))
     m <- add_intercepts(m)
   } else {
     m <- VAR(data,p = lag,...)
@@ -231,7 +244,8 @@ add_intercepts <- function(varest) {
 calc_varest <- function(av_state,model) {
   dta <- get_data_columns(av_state,model)
   av_state <- dta$av_state
-  varest <- run_var(data = dta$endogenous, lag = model$lag, exogen=dta$exogenous)
+  varest <- run_var(data = dta$endogenous, lag = model$lag, 
+                    simple_models = av_state$simple_models, exogen=dta$exogenous)
   varest <- set_varest_values(av_state,varest,model)
   if (is_restricted_model(model)) {
     varest <- iterative_restrict(varest,

@@ -5,7 +5,6 @@
 #' @return This function returns a string representing a json array of two networks.
 #' @export
 convert_to_graph <- function(av_state) {
-  #gn <<- av_state
   rnames <- NULL
   nodedata <- NULL
   linkdata <- NULL

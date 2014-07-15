@@ -47,8 +47,10 @@ exogvars_to_string <- function(av_state,x,model) {
     if (i != 1) {
       str <- paste(str,"\n    ",sep='')
     }
+    iteration <- exovar$iteration
+    if (!is.null(av_state) && av_state$simple_models) iteration <- 3
     str <- paste(str,
-                 std_factor_for_iteration(exovar$iteration),
+                 std_factor_for_iteration(iteration),
                  "x std of res. ",
                  prefix_ln_cond(exovar$variable,model),sep='')
     outliers <- '???'
