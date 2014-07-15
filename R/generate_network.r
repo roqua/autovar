@@ -11,6 +11,11 @@ generate_network <- function(data, timestamp) {
   if (class(timestamp) != "character") return("timestamp argument is not a character string")
   if (nchar(timestamp) != 10) return("Wrong timestamp format, should be: yyyy-mm-dd")
   data <- select_relevant_columns(data)
+  first_measurement_index <- 1
+  res <- select_relevant_rows(data,timestamp)
+  data <- res$data
+  first_measurement_index <- res$first_measurement_index
+  timestamp <- res$timestamp
   imin <- 0
   imax <- 0
   if (any(is.na(data))) {
@@ -28,6 +33,7 @@ generate_network <- function(data, timestamp) {
       d<-load_dataframe(ndata,log_level=3)
       d<-add_trend(d,log_level=3)
       d<-set_timestamps(d,date_of_first_measurement=timestamp,
+                        first_measurement_index=first_measurement_index,
                         measurements_per_day=3,log_level=3)
       # squared trend is always included when trend is
       d<-var_main(d,names(ndata),significance=signif,log_level=3,

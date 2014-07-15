@@ -7,8 +7,8 @@
 #' @export
 impute_dataframe <- function(df,polytime) {
   ncols <- ncol(df)
-  df$time <- 1:90
-  df$daypart <- rep(c(0,1,2),30)
+  df$time <- 1:nrow(df)
+  df$daypart <- rep(c(0,1,2),30)[1:nrow(df)]
   a_out <- amelia(df,
                   tol=0.1, # higher tolerance to reach conversion faster
                   ts="time",
