@@ -3,10 +3,12 @@
 \alias{select_relevant_columns}
 \title{Select and return the relevant columns}
 \usage{
-select_relevant_columns(data)
+select_relevant_columns(data, log_level = 0)
 }
 \arguments{
 \item{data}{a data frame of 17 columns (ontspanning, opgewektheid, hier_en_nu, concentratie, beweging, iets_betekenen, humor, buiten_zijn, eigenwaarde, levenslust, onrust, somberheid, lichamelijk_ongemak, tekortschieten, piekeren, eenzaamheid, uw_eigen_factor) and 90 rows}
+
+\item{log_level}{sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity.}
 }
 \value{
 This function returns the modified data frame consisting of at most 6 columns.
