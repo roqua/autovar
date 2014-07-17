@@ -10,7 +10,7 @@ generate_network <- function(data, timestamp) {
   if (any(dim(data) != c(90,17))) return("Wrong number of columns or rows in the data.frame")
   if (class(timestamp) != "character") return("timestamp argument is not a character string")
   if (nchar(timestamp) != 10) return("Wrong timestamp format, should be: yyyy-mm-dd")
-  data <- select_relevant_columns(data)
+  data <- select_relevant_columns(data,log_level=3)
   first_measurement_index <- 1
   res <- select_relevant_rows(data,timestamp)
   data <- res$data
@@ -23,7 +23,6 @@ generate_network <- function(data, timestamp) {
     imax <- 1
   }
   SIGNIFICANCES <- c(0.05,0.01,0.005,0.001)
-  #SIGNIFICANCES <- 0.05
   for (signif in SIGNIFICANCES) {
     for (ptime in imin:imax) {
       ndata <- data
@@ -35,12 +34,11 @@ generate_network <- function(data, timestamp) {
       d<-set_timestamps(d,date_of_first_measurement=timestamp,
                         first_measurement_index=first_measurement_index,
                         measurements_per_day=3,log_level=3)
-      # squared trend is always included when trend is
       d<-var_main(d,names(ndata),significance=signif,log_level=3,
                   criterion="AIC",include_squared_trend=TRUE,
                   exclude_almost=TRUE,simple_models=TRUE,
                   split_up_outliers=TRUE)
-      #gn <<- d
+      # gn <<- d
       if (length(d$accepted_models) > 0)
         return(convert_to_graph(d))
     }

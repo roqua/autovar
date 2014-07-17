@@ -2,17 +2,23 @@
 #' 
 #' This function returns a subset of the columns in the given data frame that are considered most relevant for time series analysis.
 #' @param data a data frame of 17 columns (ontspanning, opgewektheid, hier_en_nu, concentratie, beweging, iets_betekenen, humor, buiten_zijn, eigenwaarde, levenslust, onrust, somberheid, lichamelijk_ongemak, tekortschieten, piekeren, eenzaamheid, uw_eigen_factor) and 90 rows
+#' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity.
 #' @return This function returns the modified data frame consisting of at most 6 columns.
 #' @export
-select_relevant_columns <- function(data) {
+select_relevant_columns <- function(data, log_level = 0) {
   rnames <- NULL
   mssds <- psych::mssd(data)
-  
-  if (mssds[['uw_eigen_factor']] > mssd_threshold())
+  if (mssds[['uw_eigen_factor']] > mssd_threshold()) {
+    scat(log_level,2,"select_relevant_columns: adding 'uw_eigen_factor' because its mssd is > ",
+         mssd_threshold(),": ",mssds[['uw_eigen_factor']],"\n",sep='')
     rnames <- c(rnames,'uw_eigen_factor')
-  rnames <- add_max_of(rnames,mssds,'opgewektheid','somberheid')
-  rnames <- add_max_of(rnames,mssds,'onrust','ontspanning')
-
+  } else {
+    scat(log_level,2,"select_relevant_columns: not adding 'uw_eigen_factor' because ",
+         "its mssd is less than or equal to ",mssd_threshold()," (",
+         mssds[['uw_eigen_factor']],")\n",sep='')
+  }
+  rnames <- add_max_of(rnames,mssds,'opgewektheid','somberheid', log_level)
+  rnames <- add_max_of(rnames,mssds,'onrust','ontspanning', log_level)
   remaining_columns <- c('hier_en_nu', 'concentratie', 'beweging',
                          'iets_betekenen', 'humor', 'buiten_zijn',
                          'eigenwaarde', 'levenslust', 'lichamelijk_ongemak',
@@ -114,12 +120,20 @@ se_skewness <- function(n) {
   if (ses == 0) return(1)
   ses
 }
-add_max_of <- function(rnames, mssds, var1, var2) {
+add_max_of <- function(rnames, mssds, var1, var2, log_level) {
   max_name <- var1
   if (mssds[[var2]] > mssds[[max_name]])
     max_name <- var2
-  if (mssds[[max_name]] > mssd_threshold())
+  if (mssds[[max_name]] > mssd_threshold()) {
     rnames <- c(rnames,max_name)
+    scat(log_level,2,"select_relevant_columns: adding '",max_name,"' because its mssd is > ",
+         mssd_threshold()," and larger than that of '",
+         ifelse(var1 == max_name,var2,var1),"'\n",sep='')
+  } else {
+    scat(log_level,2,"select_relevant_columns: not adding '",var1,"' nor '",var2,
+         "because their mssds are less than or equal to  ",mssd_threshold()," (",
+         mssds[[max_name]],")\n",sep='')
+  }
   rnames
 }
 select_mssd_columns <- function(rnames, mssds) {
