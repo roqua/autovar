@@ -43,7 +43,7 @@ generate_network <- function(data, timestamp) {
                     criterion="AIC",include_squared_trend=TRUE,
                     exclude_almost=TRUE,simple_models=TRUE,
                     split_up_outliers=TRUE)
-        gn <<- d
+        # gn <<- d
         if (length(d$accepted_models) > 0)
           return(convert_to_graph(d))
       }
