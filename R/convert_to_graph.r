@@ -1,5 +1,5 @@
 #' Convert best model to graph
-#' 
+#'
 #' This function returns a JSON representation of a the graphs for the best valid model found in the given \code{av_state}.
 #' @param av_state an object of class \code{av_state}, containing at least one valid model
 #' @return This function returns a string representing a json array of two networks.
@@ -12,6 +12,17 @@ convert_to_graph <- function(av_state) {
   res <- av_state$accepted_models[[1]]$varest$varresult
   var_names <- names(res)
   i <- 0
+  for (varname in var_names) {
+    nodedata <- rbind(nodedata,data.frame(index=nodecount,
+                                          name=format_property_name(unprefix_ln(varname)),
+                                          type=format_property_type(unprefix_ln(varname)),
+                                          stringsAsFactors=FALSE))
+    rnames <- c(rnames,varname)
+    nodecount <- nodecount+1
+  }
+  nodedatac <- nodedata
+  nodecountc <- nodecount
+  rnamesc <- rnames
   for (equation in res) {
     i <- i+1
     eqsum <- summary(equation)
@@ -40,9 +51,6 @@ convert_to_graph <- function(av_state) {
   }
   # contemp eqs
   linkdatac <- NULL
-  nodedatac <- NULL
-  nodecountc <- 0
-  rnamesc <- NULL
   signmat <- significance_matrix(summary(av_state$accepted_models[[1]]$varest))
   n <- length(var_names)
   for (i in 1:(n-1))

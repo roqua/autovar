@@ -1,24 +1,66 @@
 #' Select and return the relevant columns
-#' 
+#'
 #' This function returns a subset of the columns in the given data frame that are considered most relevant for time series analysis.
 #' @param data a data frame of 17 columns (ontspanning, opgewektheid, hier_en_nu, concentratie, beweging, iets_betekenen, humor, buiten_zijn, eigenwaarde, levenslust, onrust, somberheid, lichamelijk_ongemak, tekortschieten, piekeren, eenzaamheid, uw_eigen_factor) and 90 rows
+#' @param failsafe does not include any pairs by default and simply returns the up to 6 column names with lowest z_skewness that have an MSSD above the threshold. \code{failsafe} defaults to \code{FALSE}.
 #' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity.
 #' @return This function returns the modified data frame consisting of at most 6 columns.
 #' @export
-select_relevant_columns <- function(data, log_level = 0) {
-  rnames <- NULL
+select_relevant_columns <- function(data, failsafe = FALSE, log_level = 0) {
   mssds <- psych::mssd(data)
-  if (mssds[['uw_eigen_factor']] > mssd_threshold()) {
-    scat(log_level,2,"select_relevant_columns: adding 'uw_eigen_factor' because its mssd is > ",
-         mssd_threshold(),": ",mssds[['uw_eigen_factor']],"\n",sep='')
-    rnames <- c(rnames,'uw_eigen_factor')
-  } else {
-    scat(log_level,2,"select_relevant_columns: not adding 'uw_eigen_factor' because ",
-         "its mssd is less than or equal to ",mssd_threshold()," (",
-         mssds[['uw_eigen_factor']],")\n",sep='')
+  rnames <- NULL
+  if (failsafe) { # perform option b
+    all_columns <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
+                     'beweging', 'iets_betekenen', 'humor', 'buiten_zijn', 'eigenwaarde',
+                     'levenslust', 'onrust', 'somberheid', 'lichamelijk_ongemak',
+                     'tekortschieten', 'piekeren', 'eenzaamheid', 'uw_eigen_factor')
+    remaining_columns <- select_mssd_columns(all_columns,mssds)
+    if (length(remaining_columns) > 0) {
+      df <- data[,remaining_columns]
+      skews <- z_skewness_columns(df)
+      remaining_order <- order_by_quantity_unbalanced(remaining_columns,skews)
+      rnames <- c(rnames,remaining_columns[remaining_order])
+    } else {
+      return(NULL)
+    }
+    if (length(rnames) > 6)
+      rnames <- rnames[1:6]
+    return(data[,rnames])
   }
-  rnames <- add_max_of(rnames,mssds,'opgewektheid','somberheid', log_level)
-  rnames <- add_max_of(rnames,mssds,'onrust','ontspanning', log_level)
+  skews <- z_skewness_columns(data)
+  if (mssds[['uw_eigen_factor']] > mssd_threshold() &&
+      skews[['uw_eigen_factor']] < skew_max_threshold())
+    rnames <- c(rnames,'uw_eigen_factor')
+  # adding three pairs
+  pair1 <- c('opgewektheid','somberheid','somberheid')
+  pair2 <- c('onrust','ontspanning','onrust')
+  top_pair <- NULL
+  top_pair_max_skewness <- 100000
+  for (i in 1:length(pair1)) {
+    if (!pair_is_valid(pair1[i],pair2[i],skews,mssds)) next
+    pms <- pair_max_skewness(pair1[i],pair2[i],skews)
+    if (pms < top_pair_max_skewness) {
+      top_pair <- c(pair1[i],pair2[i])
+      top_pair_max_skewness <- pms
+    }
+  }
+  if (!is.null(top_pair)) {
+    rnames <- c(rnames,top_pair)
+  } else {
+    # add one with lowest z_skew
+    singles <- c('opgewektheid','somberheid','onrust','ontspanning')
+    top_var <- NULL
+    top_var_skew <- 100000
+    for (varname in singles)
+      if (skews[[varname]] < skew_max_threshold() &&
+          mssds[[varname]] > mssd_threshold() &&
+          skews[[varname]] < top_var_skew) {
+        top_var_skew <- skews[[varname]]
+        top_var <- varname
+      }
+    if (!is.null(top_var))
+      rnames <- c(rnames,top_var)
+  }
   remaining_columns <- c('hier_en_nu', 'concentratie', 'beweging',
                          'iets_betekenen', 'humor', 'buiten_zijn',
                          'eigenwaarde', 'levenslust', 'lichamelijk_ongemak',
@@ -29,7 +71,7 @@ select_relevant_columns <- function(data, log_level = 0) {
     skews <- z_skewness_columns(df)
     bal <- sentiment_balance(rnames)
     extra_order <- NULL
-    if (max(skews) < skew_threshold()) {
+    if (max(skews) < skew_min_threshold()) {
       extra_order <- order_by_quantity(extra_columns,-mssds,bal)
     } else {
       extra_order <- order_by_quantity(extra_columns,skews,bal)
@@ -39,16 +81,28 @@ select_relevant_columns <- function(data, log_level = 0) {
   }
   if (length(rnames) > 6)
     rnames <- rnames[1:6]
+  if (length(rnames) == 0)
+    return(NULL)
   data[,rnames]
 }
 
 mssd_threshold <- function() {
   50
 }
-skew_threshold <- function() {
+skew_min_threshold <- function() {
   0.6
 }
+skew_max_threshold <- function() {
+  4
+}
 
+pair_is_valid <- function(var1,var2,skews,mssds) {
+  skews[[var1]] < skew_max_threshold() && skews[[var2]] < skew_max_threshold() &&
+    mssds[[var1]] > mssd_threshold() && mssds[[var2]] > mssd_threshold()
+}
+pair_max_skewness <- function(var1,var2,skews) {
+  max(skews[[var1]],skews[[var2]])
+}
 sentiment_balance <- function(rnames) {
   r <- 0
   for (rname in rnames) {
@@ -93,6 +147,12 @@ order_by_quantity <- function(rnames,data,balance) {
   }
   rorder
 }
+order_by_quantity_unbalanced <- function(rnames,data) {
+  r <- NULL
+  for (rname in rnames)
+    r <- c(r,data[[rname]])
+  order(r)
+}
 is_positive_property <- function(rname) {
   property_balance(rname) == 1
 }
@@ -120,22 +180,7 @@ se_skewness <- function(n) {
   if (ses == 0) return(1)
   ses
 }
-add_max_of <- function(rnames, mssds, var1, var2, log_level) {
-  max_name <- var1
-  if (mssds[[var2]] > mssds[[max_name]])
-    max_name <- var2
-  if (mssds[[max_name]] > mssd_threshold()) {
-    rnames <- c(rnames,max_name)
-    scat(log_level,2,"select_relevant_columns: adding '",max_name,"' because its mssd is > ",
-         mssd_threshold()," and larger than that of '",
-         ifelse(var1 == max_name,var2,var1),"'\n",sep='')
-  } else {
-    scat(log_level,2,"select_relevant_columns: not adding '",var1,"' nor '",var2,
-         "because their mssds are less than or equal to  ",mssd_threshold()," (",
-         mssds[[max_name]],")\n",sep='')
-  }
-  rnames
-}
+
 select_mssd_columns <- function(rnames, mssds) {
   r <- NULL
   for (rname in rnames)
