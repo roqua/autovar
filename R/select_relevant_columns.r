@@ -3,10 +3,11 @@
 #' This function returns a subset of the columns in the given data frame that are considered most relevant for time series analysis.
 #' @param data a data frame of 17 columns (ontspanning, opgewektheid, hier_en_nu, concentratie, beweging, iets_betekenen, humor, buiten_zijn, eigenwaarde, levenslust, onrust, somberheid, lichamelijk_ongemak, tekortschieten, piekeren, eenzaamheid, uw_eigen_factor) and 90 rows
 #' @param failsafe does not include any pairs by default and simply returns the up to 6 column names with lowest z_skewness that have an MSSD above the threshold. \code{failsafe} defaults to \code{FALSE}.
+#' @param number_of_columns the maximum number of columns to return
 #' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity.
 #' @return This function returns the modified data frame consisting of at most 6 columns.
 #' @export
-select_relevant_columns <- function(data, failsafe = FALSE, log_level = 0) {
+select_relevant_columns <- function(data, failsafe = FALSE, number_of_columns = 6, log_level = 0) {
   mssds <- psych::mssd(data)
   rnames <- NULL
   if (failsafe) { # perform option b
@@ -23,8 +24,8 @@ select_relevant_columns <- function(data, failsafe = FALSE, log_level = 0) {
     } else {
       return(NULL)
     }
-    if (length(rnames) > 6)
-      rnames <- rnames[1:6]
+    if (length(rnames) > number_of_columns)
+      rnames <- rnames[1:number_of_columns]
     return(data[,rnames])
   }
   skews <- z_skewness_columns(data)
@@ -79,8 +80,8 @@ select_relevant_columns <- function(data, failsafe = FALSE, log_level = 0) {
     extra_columns <- extra_columns[extra_order]
     rnames <- c(rnames,extra_columns)
   }
-  if (length(rnames) > 6)
-    rnames <- rnames[1:6]
+  if (length(rnames) > number_of_columns)
+    rnames <- rnames[1:number_of_columns]
   if (length(rnames) == 0)
     return(NULL)
   data[,rnames]

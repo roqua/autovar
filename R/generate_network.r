@@ -10,10 +10,14 @@ generate_network <- function(data, timestamp) {
   if (any(dim(data) != c(90,17))) return("Wrong number of columns or rows in the data.frame")
   if (class(timestamp) != "character") return("timestamp argument is not a character string")
   if (nchar(timestamp) != 10) return("Wrong timestamp format, should be: yyyy-mm-dd")
-  for (attempt in 1:2) {
+  for (attempt in 1:6) {
     fail_safe <- FALSE
-    if (attempt == 2) fail_safe <- TRUE
-    odata <- select_relevant_columns(data,fail_safe,log_level=3)
+    number_of_columns <- 6
+    if (attempt > 1) {
+      fail_safe <- TRUE
+      number_of_columns <- 8-attempt
+    }
+    odata <- select_relevant_columns(data,fail_safe,number_of_columns,log_level=3)
     if (is.null(odata)) next
     first_measurement_index <- 1
     res <- select_relevant_rows(odata,timestamp)
@@ -27,7 +31,7 @@ generate_network <- function(data, timestamp) {
       imax <- 1
     }
     SIGNIFICANCES <- c(0.05,0.01)
-    if (attempt == 2) SIGNIFICANCES <- c(0.05,0.01,0.005)
+    if (attempt > 1) SIGNIFICANCES <- c(0.05,0.01,0.005)
     for (signif in SIGNIFICANCES) {
       for (ptime in imin:imax) {
         ndata <- odata

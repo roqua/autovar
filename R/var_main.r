@@ -77,8 +77,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     stop(paste("exogenous_max_iterations needs to be in 1:3"))
   }
   real_log_level <- av_state$log_level
-  
-  av_state$significance <- significance  
+
+  av_state$significance <- significance
   if (simple_models) {
     exogenous_max_iterations <- 1
     lag_max <- 2
@@ -105,7 +105,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$simple_models <- simple_models
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
-  
+
   # print non-default arguments
   rcall <- 'av_state'
   forms <- formals()
@@ -122,41 +122,41 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
 
   scat(av_state$log_level,3,"Starting VAR with variables: ",paste(vars,collapse=', '),
        ", for subset: ",subset,"\n",sep='')
-  
+
   if (!is.null(av_state$trend_vars) && av_state$include_squared_trend) {
     trend_var <- av_state$trend_vars[[1]]
     sq_name <- paste(trend_var,'2',sep='')
     av_state$trend_vars <- c(trend_var,sq_name)
   }
-  
+
   # check if subset exists
   if (is.null(av_state$data[[av_state$subset]])) {
     stop(paste("invalid subset specified:",av_state$subset))
   }
-  
+
   # check if endogenous columns exist
   for (varname in av_state$vars) {
     if (!(varname %in% names(av_state$data[[av_state$subset]]))) {
       stop(paste("non-existant endogenous column specified:",varname))
     }
   }
-  
+
   # check if exogenous columns exist
   for (varname in unique(c(av_state$exogenous_variables,av_state$day_dummies,av_state$trend_vars))) {
     if (!(varname %in% names(av_state$data[[av_state$subset]]))) {
       stop(paste("non-existant exogenous column specified:",varname))
     }
   }
-  
+
   # make sure that the VAR columns are of the numeric type
   for (mvar in av_state$vars) {
     if (class(av_state$data[[av_state$subset]][[mvar]]) != "numeric") {
       scat(av_state$log_level,2,"column",mvar,"is not numeric, converting...\n")
-      av_state$data[[av_state$subset]][[mvar]] <- 
+      av_state$data[[av_state$subset]][[mvar]] <-
         as.numeric(av_state$data[[av_state$subset]][[mvar]])
     }
   }
-  
+
   # make sure that the exogenous columns are of the numeric type
   for (mvar in unique(c(av_state$exogenous_variables,av_state$day_dummies,av_state$trend_vars))) {
     if (class(av_state$data[[av_state$subset]][[mvar]]) != "numeric") {
@@ -165,17 +165,17 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
       av_state$data[[av_state$subset]][[mvar]] <- tv-min(tv)
     }
   }
-  
+
   default_model <- list()
   class(default_model) <- 'var_model'
-  
+
   if (av_state$normalize_data) {
     default_model <- create_model(default_model,normalized=TRUE)
   }
-  
+
   model_queue <- NULL
   av_state$model_queue <- NULL
-  
+
   if (av_state$use_varsoc) {
     model_queue <- list(default_model)
   } else {
@@ -287,7 +287,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$accepted_models <- accepted_models
   av_state$rejected_models <- rejected_models
   av_state$model_queue <- model_queue
-  
+
   if (!av_state$simple_models)
     scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
   class(av_state$accepted_models) <- 'model_list'
@@ -464,7 +464,7 @@ model_is_the_same_or_needs_fewer_outliers_than <- function(exp_model_a,exp_model
     flag
   }
 }
-  
+
 models_have_equal_params <- function(amodel,bmodel) {
   # amodel and bmodel are instances of expanded models
   amodel$exogenous_variables <- NULL
@@ -535,7 +535,7 @@ default_model_props <- function() {
 }
 
 #' Print the output of var_main
-#' 
+#'
 #' This function repeats the output that is shown after a call of var_main.
 #' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
 #' @param msg an optional message to display at the start. If this argument is \code{NULL}, a default message is shown instead.
@@ -566,9 +566,9 @@ var_summary <- function(av_state,msg=NULL) {
 }
 
 #' Prints the best model from the list of accepted models
-#' 
+#'
 #' This functions uses log transformation (logm).If logm is true it gives the best log-transformed model. And if the logm is false it gives the best model without log-transform.
-#' The best model is the measured with the lowest AIC+BIC value. 
+#' The best model is the measured with the lowest AIC+BIC value.
 #' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
 #' @examples
 #' av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
@@ -736,7 +736,7 @@ print_model_statistics_aux <- function(av_state,lst,param) {
 }
 
 model_statistics <- function(lst,param) {
-  tbl <- table(sapply(lst, 
+  tbl <- table(sapply(lst,
                       function(x) ifelse(is.null(x$parameters[[param]]),
                                          FALSE,
                                          x$parameters[[param]])))
@@ -754,7 +754,7 @@ model_statistics <- function(lst,param) {
     freqs <- c(freqs, freq)
     percs <- c(percs, perc)
   }
-  df <- data.frame(desc = descs, freq = freqs, perc = percs, 
+  df <- data.frame(desc = descs, freq = freqs, perc = percs,
                    stringsAsFactors = FALSE)
   df <- df[with(df, order(df$freq, decreasing = TRUE)),]
   df
@@ -776,7 +776,7 @@ search_space_used <- function(av_state) {
   if (!is.null(av_state$trend_vars)) { tot_models <- tot_models * 2 } # with trendvariable/without trendvariable
   tot_models <- tot_models * 2 # with constraints/without constraints
   tot_models <- tot_models * nexo^nvars # 3^(#vars) without dumyvariable for outliers/dummyvariable for outliers 3.5x std/dummyvariable for outliers 3x std
-  searched_models <- length(av_state$model_queue) - 
+  searched_models <- length(av_state$model_queue) -
     length(find_models(c(av_state$accepted_models,av_state$rejected_models),list(lag=-1)))
   scat(av_state$log_level,3,'Tested ',searched_models,' of ',tot_models,' (',
       format_as_percentage(searched_models/tot_models),') of the combinatorial search space at the given lags (',paste(dlags,collapse=', '),').\n',sep='')
@@ -785,7 +785,7 @@ search_space_used <- function(av_state) {
 
 
 #' Print a list of accepted models after a call to var_main
-#' 
+#'
 #' This function prints the list of accepted models when \code{av_state} is the result of a call to \code{\link{var_main}}. The printed list of models is sorted by AIC+BIC score.
 #' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
 #' @examples
@@ -799,7 +799,7 @@ print_accepted_models <- function(av_state) {
 }
 
 #' Print a list of rejected models after a call to var_main
-#' 
+#'
 #' This function prints the list of rejected models when \code{av_state} is the result of a call to \code{\link{var_main}}.
 #' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
 #' @examples
