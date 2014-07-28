@@ -2,9 +2,9 @@ get_data_columns <- function(av_state,model) {
   exodta <- NULL
   endo <- NULL
   model_valid <- TRUE
-  
+
   vrs <- av_state$vars
-  
+
   # check if log transform needs to be applied
   if (apply_log_transform(model)) {
     for (name in vrs) {
@@ -24,7 +24,7 @@ get_data_columns <- function(av_state,model) {
   if (!is.null(model$normalized) && model$normalized) {
     endo <- sapply(endo,function(x) (x-mean(x))/sd(x))
   }
-  
+
   # check if exogenous_variables need to be created
   if (!is.null(model$exogenous_variables)) {
     gor <- get_orig_resids(model,av_state)
@@ -54,7 +54,7 @@ get_data_columns <- function(av_state,model) {
         outlier_list <- which(outlier_indices == 1)
         for (idx in outlier_list) {
           exovr <- paste('outlier_',idx,sep='')
-          av_state$data[[av_state$subset]][[exovr]] <- 
+          av_state$data[[av_state$subset]][[exovr]] <-
             get_outlier_column(nr_obs,idx)
           exovrs <- c(exovrs,exovr)
         }
@@ -98,7 +98,7 @@ get_data_columns <- function(av_state,model) {
       exodta <- NULL
     }
   }
-  list(av_state = av_state,endogenous = endo, 
+  list(av_state = av_state,endogenous = endo,
        exogenous = exodta, model_valid = model_valid)
 }
 
@@ -188,7 +188,7 @@ get_outliers_column <- function(dta,iteration,nr_obs,simple_models) {
   if (simple_models) iteration <- 3
   std_factor <- std_factor_for_iteration(iteration)
   res <- unname(((dta < mu-std_factor*std) | (dta > mu+std_factor*std))+0)
-  if (iteration == 3) {
+  if (iteration == 3) { # && !simple_models) {
     dta <- dta*dta
     std <- sd(dta)
     mu <- mean(dta)
