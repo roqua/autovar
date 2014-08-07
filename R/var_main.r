@@ -38,6 +38,7 @@
 #' @param format_output_like_stata when \code{TRUE}, all constraints and exogenous variables are always shown (i.e., it will now show exogenous variables that were included but constrained in all equations), and the constraints are formatted like in Stata.
 #' @param exclude_almost when \code{TRUE}, only Granger causalities with p-value <= 0.05 are included in the results. When \code{FALSE}, p-values between 0.05 and 0.10 are also included in results as "almost Granger causalities" that have half the weight of actual Granger causalities in the Granger causality summary graph.
 #' @param simple_models when \code{TRUE}, only simple models are returned, meaning we don't add constrained models. Also, this setting forces \code{exogenous_max_iterations} to 1.
+#' @param numcores is the number of cores to use in parallel for evaluation the model. When this variable is \code{1}, no parallel processing is used and all processing is done serially. This variable has to be an integer between 1 and 16. The default value is the detected number of cores on the system (using \code{detectCores()}). If the \code{log_level} is less than 3, the value for \code{numcores} is forced to 1 because output doesn't show up otherwise.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta",log_level=3)
@@ -61,7 +62,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      split_up_outliers=FALSE,
                      format_output_like_stata=FALSE,
                      exclude_almost=FALSE,
-                     simple_models=FALSE) {
+                     simple_models=FALSE,
+                     numcores=detectCores()) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -103,6 +105,11 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$format_output_like_stata <- format_output_like_stata
   av_state$exclude_almost <- exclude_almost
   av_state$simple_models <- simple_models
+  if (av_state$log_level < 3) numcores <- 1
+  if (!(numcores %in% 1:16)) {
+    stop(paste("numcores needs to be in 1:16"))
+  }
+  av_state$numcores <- numcores
 
   scat(av_state$log_level,3,"\n",paste(rep('=',times=20),collapse=''),"\n",sep='')
 
@@ -120,8 +127,9 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   rcall <- paste('var_main(',rcall,')\n\n',sep='')
   scat(av_state$log_level,3,rcall)
 
-  scat(av_state$log_level,3,"Starting VAR with variables: ",paste(vars,collapse=', '),
-       ", for subset: ",subset,"\n",sep='')
+  scat(av_state$log_level,3,"Starting VAR (using ",av_state$numcores,
+       " core",ifelse(av_state$numcores == 1,"","s"),
+       ") with variables: ",paste(vars,collapse=', '),"\n",sep='')
 
   if (!is.null(av_state$trend_vars) && av_state$include_squared_trend) {
     trend_var <- av_state$trend_vars[[1]]
@@ -235,35 +243,50 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state$model_cnt <- 0
   i <- 1
   pm <- NULL
-  while (TRUE) {
-    if (i > length(model_queue)) { break }
-    pm <- process_model(av_state,model_queue[[i]],i,length(model_queue))
-    av_state <- pm$av_state
-    if (!is.null(pm$accepted_model)) {
-      accepted_models <- c(accepted_models,list(pm$accepted_model))
-    } else if (!is.null(pm$rejected_model)) {
-      rejected_models <- c(rejected_models,list(pm$rejected_model))
-    }
-    if (!is.null(av_state$model_queue)) {
-      for (model in av_state$model_queue) {
-        model_queue <- add_to_queue(model_queue,model,av_state$log_level)
-      }
-      av_state$model_queue <- NULL
-    }
-    i <- i+1
-  }
-  # first, clean up the valid models
-  accepted_models <- remove_duplicates(av_state,accepted_models)
-  if (!av_state$simple_models) {
-    # now queue the valid models again with constraints
-    scat(av_state$log_level,2,'\n> Done. Queueing the valid models again with constraints...\n')
-    for (model in accepted_models) {
-      new_model <- create_model(model$parameters,restrict=TRUE)
-      model_queue <- add_to_queue(model_queue,new_model,av_state$log_level)
-    }
-    # process the valid models with constraints
+  cl <- NULL
+  if (av_state$numcores > 1) {
+    cl <- makeCluster(av_state$numcores,type="PSOCK")
+    clusterCall(cl,setup_cluster)
+    next_model_queue <- model_queue
     while (TRUE) {
-      if (i > length(model_queue)) { break }
+      if (length(next_model_queue) == 0) break
+      modelcnt <- av_state$model_cnt
+      addedmodelcnt <- 0
+      tmcnt <- length(model_queue)
+      ilist <- tmcnt-length(next_model_queue)+(1:length(next_model_queue))
+      pmlist <- clusterMap(cl,process_model,next_model_queue,ilist,
+                           MoreArgs=list(av_state=av_state,totmodelcnt=tmcnt),
+                           SIMPLIFY=FALSE,USE.NAMES=FALSE)
+      all_added_models <- list()
+      for (pm in pmlist) {
+        av_state <- pm$av_state
+        if (av_state$model_cnt > modelcnt) addedmodelcnt <- addedmodelcnt + 1
+        if (!is.null(pm$accepted_model)) {
+          accepted_models <- c(accepted_models,list(pm$accepted_model))
+        } else if (!is.null(pm$rejected_model)) {
+          rejected_models <- c(rejected_models,list(pm$rejected_model))
+        }
+        if (!is.null(av_state$model_queue)) {
+          for (model in av_state$model_queue) {
+            if (list(model) %in% all_added_models) next
+            all_added_models <- c(all_added_models,list(model))
+          }
+          av_state$model_queue <- NULL
+        }
+      }
+      next_model_queue <- list()
+      for (model in all_added_models) {
+        if (list(model) %in% model_queue) next
+        model_queue <- c(model_queue,list(model))
+        next_model_queue <- c(next_model_queue,list(model))
+      }
+      all_added_models <- NULL
+      av_state$model_cnt <- modelcnt+addedmodelcnt
+    }
+    next_model_queue <- NULL
+  } else {
+    while (TRUE) {
+      if (i > length(model_queue)) break
       pm <- process_model(av_state,model_queue[[i]],i,length(model_queue))
       av_state <- pm$av_state
       if (!is.null(pm$accepted_model)) {
@@ -279,8 +302,81 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
       }
       i <- i+1
     }
+  }
+  # first, clean up the valid models
+  accepted_models <- remove_duplicates(av_state,accepted_models)
+  if (!av_state$simple_models) {
+    # now queue the valid models again with constraints
+    scat(av_state$log_level,2,'\n> Done. Queueing the valid models again with constraints...\n')
+    next_model_queue <- list()
+    for (model in accepted_models) {
+      new_model <- create_model(model$parameters,restrict=TRUE)
+      model_queue <- c(model_queue,list(new_model))
+      next_model_queue <- c(next_model_queue,list(new_model))
+    }
+    # process the valid models with constraints
+    if (av_state$numcores > 1) {
+      while (TRUE) {
+        if (length(next_model_queue) == 0) break
+        modelcnt <- av_state$model_cnt
+        addedmodelcnt <- 0
+        tmcnt <- length(model_queue)
+        ilist <- tmcnt-length(next_model_queue)+(1:length(next_model_queue))
+        pmlist <- clusterMap(cl,process_model,next_model_queue,ilist,
+                             MoreArgs=list(av_state=av_state,totmodelcnt=tmcnt),
+                             SIMPLIFY=FALSE,USE.NAMES=FALSE)
+        all_added_models <- list()
+        for (pm in pmlist) {
+          av_state <- pm$av_state
+          if (av_state$model_cnt > modelcnt) addedmodelcnt <- addedmodelcnt + 1
+          if (!is.null(pm$accepted_model)) {
+            accepted_models <- c(accepted_models,list(pm$accepted_model))
+          } else if (!is.null(pm$rejected_model)) {
+            rejected_models <- c(rejected_models,list(pm$rejected_model))
+          }
+          if (!is.null(av_state$model_queue)) {
+            for (model in av_state$model_queue) {
+              if (list(model) %in% all_added_models) next
+              all_added_models <- c(all_added_models,list(model))
+            }
+            av_state$model_queue <- NULL
+          }
+        }
+        next_model_queue <- list()
+        for (model in all_added_models) {
+          if (list(model) %in% model_queue) next
+          model_queue <- c(model_queue,list(model))
+          next_model_queue <- c(next_model_queue,list(model))
+        }
+        all_added_models <- NULL
+        av_state$model_cnt <- modelcnt+addedmodelcnt
+      }
+      next_model_queue <- NULL
+    } else {
+      next_model_queue <- NULL
+      while (TRUE) {
+        if (i > length(model_queue)) break
+        pm <- process_model(av_state,model_queue[[i]],i,length(model_queue))
+        av_state <- pm$av_state
+        if (!is.null(pm$accepted_model)) {
+          accepted_models <- c(accepted_models,list(pm$accepted_model))
+        } else if (!is.null(pm$rejected_model)) {
+          rejected_models <- c(rejected_models,list(pm$rejected_model))
+        }
+        if (!is.null(av_state$model_queue)) {
+          for (model in av_state$model_queue) {
+            model_queue <- add_to_queue(model_queue,model,av_state$log_level)
+          }
+          av_state$model_queue <- NULL
+        }
+        i <- i+1
+      }
+    }
   } else {
     scat(av_state$log_level,2,'\n> Done.\n')
+  }
+  if (av_state$numcores > 1) {
+    stopCluster(cl)
   }
   accepted_models <- remove_lag_duplicates(av_state,accepted_models)
   accepted_models <- remove_restriction_duplicates(av_state,accepted_models)
@@ -307,6 +403,9 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   av_state
 }
 
+setup_cluster <- function() {
+  library('vars')
+}
 process_model <- function(av_state,model,i,totmodelcnt) {
   ev_modelres <- evaluate_model(av_state,model,i,totmodelcnt)
   av_state <- ev_modelres$av_state

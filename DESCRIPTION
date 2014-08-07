@@ -17,6 +17,7 @@ Depends:
     knitr,
     markdown,
     norm,
+    parallel,
     psych,
     RcppArmadillo,
     reshape2,
