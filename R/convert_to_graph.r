@@ -84,6 +84,7 @@ correlation_significance <- function() {
 }
 
 format_property_name <- function(rname) {
+  # TODO: rewrite this to require a net_config
   switch(rname,
          ontspanning = "Ontspanning",
          opgewektheid = "Opgewektheid",
@@ -101,7 +102,8 @@ format_property_name <- function(rname) {
          tekortschieten = "Tekortschieten",
          piekeren = "Piekeren",
          eenzaamheid = "Eenzaamheid",
-         uw_eigen_factor = "Mijn eigen factor")
+         uw_eigen_factor = "Mijn eigen factor",
+         rname)
 }
 format_property_type <- function(rname) {
   bal <- property_balance(rname)
