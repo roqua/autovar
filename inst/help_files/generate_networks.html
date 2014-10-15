@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+<title>generate_networks. autovar 0.1-1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="">
+
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/bootstrap-responsive.css" rel="stylesheet">
+<link href="css/highlight.css" rel="stylesheet">
+<link href="css/staticdocs.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="#">autovar 0.1-1</a>
+      <div class="nav">
+        <ul class="nav">
+          <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="container">
+      <header>
+        
+      </header>
+      
+      <h1>Return a JSON array of network data of a fitting model</h1>
+
+<div class="row">
+  <div class="span8">
+    <h2>Usage</h2>
+    <pre><div>generate_networks(data, timestamp, always_include&nbsp;=&nbsp;NULL, pairs&nbsp;=&nbsp;NULL, positive_variables&nbsp;=&nbsp;NULL, negative_variables&nbsp;=&nbsp;NULL, labels&nbsp;=&nbsp;list(), measurements_per_day&nbsp;=&nbsp;3, max_network_size&nbsp;=&nbsp;6)</div></pre>
+    
+    <h2>Arguments</h2>
+    <dl>
+      <dt>data</dt>
+      <dd>a data frame. Each row is a measurement. Each column is an endogenous variable.</dd>
+      <dt>timestamp</dt>
+      <dd>the date of the first measurement in the format <code>'yyyy-mm-dd'</code>. If multiple measurements are taken per day, the first measurement (row) in the data frame should correspond to the first measurement on that day.</dd>
+      <dt>always_include</dt>
+      <dd>a vector of variable names that should always be included in the network if possible. Can also be <code>NULL</code>, in which case no variables are included by default.</dd>
+      <dt>pairs</dt>
+      <dd>a vector of variable names in the form <code>c('pair1a','pair1b','pair2a','pair2b','pair3a',...)</code>. In other words: it is a vector of even length in which each two subsequent positions are seen as a pair. The pairs are treated such that only one pair or one variable of the pairs is included in the networks.</dd>
+      <dt>positive_variables</dt>
+      <dd>a vector of names of variables that measure a positive effect (e.g., happiness). Variable names not occurring in the <code>positive_variables</code> or <code>negative_variables</code> list are considered neutral.</dd>
+      <dt>negative_variables</dt>
+      <dd>a vector of names of variables that measure a negative effect (e.g., sadness). Variable names not occurring in the <code>positive_variables</code> or <code>negative_variables</code> list are considered neutral.</dd>
+      <dt>labels</dt>
+      <dd>a list where keys are variable names and values are labels.</dd>
+      <dt>measurements_per_day</dt>
+      <dd>an integer in [1,16] denoting the number of measurements per day. Defaults to 3.</dd>
+      <dt>max_network_size</dt>
+      <dd>an integer in [2,6] denoting the number of nodes to include in the networks initially. Defaults to 6.</dd>
+    </dl>
+    
+    <div class="Return a JSON array of network data of a fitting model">
+      <h2>Return a JSON array of network data of a fitting model</h2>
+      
+    </div>
+
+    <div class="Value">
+      <h2>Value</h2>
+      
+      <p>This function returns a string representing a json array of two networks.</p>
+  
+    </div>
+
+    <div class="Description">
+      <h2>Description</h2>
+      
+      <p>This function uses repeated calls to <code><a href='var_main.html'>var_main</a></code> to find a fitting model for the data provided and then calls <code><a href='convert_to_graph.html'>convert_to_graph</a></code> to return a JSON representation of best valid model found.</p>
+  
+    </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>generate_networks(data = data,
+                  timestamp = timestamp,
+                  always_include = &#39;uw_eigen_factor&#39;,
+                  pairs = c(&#39;opgewektheid&#39;,&#39;onrust&#39;,
+                            &#39;somberheid&#39;,&#39;ontspanning&#39;,
+                            &#39;somberheid&#39;,&#39;onrust&#39;),
+                  positive_variables = c(&#39;opgewektheid&#39;,&#39;ontspanning&#39;,&#39;hier_en_nu&#39;,
+                                         &#39;concentratie&#39;, &#39;beweging&#39;,&#39;iets_betekenen&#39;,
+                                         &#39;humor&#39;, &#39;buiten_zijn&#39;,&#39;eigenwaarde&#39;, &#39;levenslust&#39;),
+                  negative_variables = c(&#39;onrust&#39;,&#39;somberheid&#39;,&#39;lichamelijk_ongemak&#39;,
+                                         &#39;tekortschieten&#39;,&#39;piekeren&#39;,&#39;eenzaamheid&#39;),
+                  labels = list(ontspanning = &quot;Ontspanning&quot;,
+                                opgewektheid = &quot;Opgewektheid&quot;,
+                                hier_en_nu = &quot;In het hier en nu leven&quot;,
+                                concentratie = &quot;Concentratie&quot;,
+                                beweging = &quot;Beweging&quot;,
+                                iets_betekenen = &quot;Iets betekenen&quot;,
+                                humor = &quot;Humor&quot;,
+                                buiten_zijn = &quot;Buiten zijn&quot;,
+                                eigenwaarde = &quot;Eigenwaarde&quot;,
+                                levenslust = &quot;Levenslust&quot;,
+                                onrust = &quot;Onrust&quot;,
+                                somberheid = &quot;Somberheid&quot;,
+                                lichamelijk_ongemak = &quot;Lichamelijk ongemak&quot;,
+                                tekortschieten = &quot;Tekortschieten&quot;,
+                                piekeren = &quot;Piekeren&quot;,
+                                eenzaamheid = &quot;Eenzaamheid&quot;,
+                                uw_eigen_factor = &quot;Mijn eigen factor&quot;),
+                  measurements_per_day = 3,
+                  max_network_size = 6)
+</div>
+<div class='output'>[1] &quot;Data argument is not a data.frame&quot;
+</div></pre>
+  </div>
+  <div class="span4">
+    <!-- <ul>
+      <li>generate_networks</li>
+    </ul>
+    <ul>
+      
+    </ul> -->
+      
+        
+  </div>
+</div>
+      
+      <footer>
+      <p class="pull-right"><a href="#">Back to top</a></p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+      </footer>
+    </div>
+  </body>
+</html>

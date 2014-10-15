@@ -3,10 +3,12 @@
 \alias{load_dataframe}
 \title{Returns an av_state for data loaded from a data.frame}
 \usage{
-load_dataframe(df, log_level = 0)
+load_dataframe(df, net_cfg, log_level = 0)
 }
 \arguments{
 \item{df}{a \code{data.frame} with features in columns and measurements in rows.}
+
+\item{net_cfg}{a net_cfg object providing metadata about the networks}
 
 \item{log_level}{sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about the data set that was loaded.}
 }
@@ -17,7 +19,7 @@ This function returns the newly created \code{av_state} object.
 This function constructs an object of class \code{av_state} based on a given \code{data.frame}.
 }
 \examples{
-av_state <- load_dataframe(generate_test_data())
+av_state <- load_dataframe(generate_test_data(),new_net_cfg())
 print(av_state)
 }
 

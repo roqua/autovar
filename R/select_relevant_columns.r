@@ -2,19 +2,17 @@
 #'
 #' This function returns a subset of the columns in the given data frame that are considered most relevant for time series analysis.
 #' @param data a data frame of 17 columns (ontspanning, opgewektheid, hier_en_nu, concentratie, beweging, iets_betekenen, humor, buiten_zijn, eigenwaarde, levenslust, onrust, somberheid, lichamelijk_ongemak, tekortschieten, piekeren, eenzaamheid, uw_eigen_factor) and 90 rows
+#' @param net_cfg a net_cfg object providing metadata about the networks
 #' @param failsafe does not include any pairs by default and simply returns the up to 6 column names with lowest z_skewness that have an MSSD above the threshold. \code{failsafe} defaults to \code{FALSE}.
 #' @param number_of_columns the maximum number of columns to return
 #' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity.
 #' @return This function returns the modified data frame consisting of at most 6 columns.
 #' @export
-select_relevant_columns <- function(data, failsafe = FALSE, number_of_columns = 6, log_level = 0) {
+select_relevant_columns <- function(data, net_cfg, failsafe = FALSE, number_of_columns = 6, log_level = 0) {
   mssds <- psych::mssd(data)
   rnames <- NULL
   if (failsafe) { # perform option b
-    all_columns <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
-                     'beweging', 'iets_betekenen', 'humor', 'buiten_zijn', 'eigenwaarde',
-                     'levenslust', 'onrust', 'somberheid', 'lichamelijk_ongemak',
-                     'tekortschieten', 'piekeren', 'eenzaamheid', 'uw_eigen_factor')
+    all_columns <- net_cfg$vars
     remaining_columns <- select_mssd_columns(all_columns,mssds)
     if (length(remaining_columns) > 0) {
       df <- data[,remaining_columns]
@@ -28,54 +26,61 @@ select_relevant_columns <- function(data, failsafe = FALSE, number_of_columns = 
       rnames <- rnames[1:number_of_columns]
     return(data[,rnames])
   }
+  # always include vars
   skews <- z_skewness_columns(data)
-  if (mssds[['uw_eigen_factor']] > mssd_threshold() &&
-      skews[['uw_eigen_factor']] < skew_max_threshold())
-    rnames <- c(rnames,'uw_eigen_factor')
-  # adding three pairs
-  pair1 <- c('opgewektheid','somberheid','somberheid')
-  pair2 <- c('onrust','ontspanning','onrust')
-  top_pair <- NULL
-  top_pair_max_skewness <- 100000
-  for (i in 1:length(pair1)) {
-    if (!pair_is_valid(pair1[i],pair2[i],skews,mssds)) next
-    pms <- pair_max_skewness(pair1[i],pair2[i],skews)
-    if (pms < top_pair_max_skewness) {
-      top_pair <- c(pair1[i],pair2[i])
-      top_pair_max_skewness <- pms
+  for (varname in net_cfg$always_include)
+    if (mssds[[varname]] > mssd_threshold() &&
+        skews[[varname]] < skew_max_threshold())
+      rnames <- c(rnames,varname)
+  # adding pairs
+  if (!is.null(net_cfg$pairs) && length(net_cfg$pairs) > 1) {
+    pair1 <- NULL
+    pair2 <- NULL
+    for (i in 1:length(net_cfg$pairs)) {
+      if (i%%2 == 1) pair1 <- c(pair1,net_cfg$pairs[i])
+      else pair2 <- c(pair2,net_cfg$pairs[i])
+    }
+    top_pair <- NULL
+    top_pair_max_skewness <- 100000
+    for (i in 1:length(pair1)) {
+      if (!pair_is_valid(pair1[i],pair2[i],skews,mssds)) next
+      pms <- pair_max_skewness(pair1[i],pair2[i],skews)
+      if (pms < top_pair_max_skewness) {
+        top_pair <- c(pair1[i],pair2[i])
+        top_pair_max_skewness <- pms
+      }
+    }
+    if (!is.null(top_pair)) {
+      rnames <- c(rnames,top_pair)
+    } else {
+      # add one with lowest z_skew
+      singles <- unique(net_cfg$pairs)
+      top_var <- NULL
+      top_var_skew <- 100000
+      for (varname in singles)
+        if (skews[[varname]] < skew_max_threshold() &&
+            mssds[[varname]] > mssd_threshold() &&
+            skews[[varname]] < top_var_skew) {
+          top_var_skew <- skews[[varname]]
+          top_var <- varname
+        }
+      if (!is.null(top_var))
+        rnames <- c(rnames,top_var)
     }
   }
-  if (!is.null(top_pair)) {
-    rnames <- c(rnames,top_pair)
-  } else {
-    # add one with lowest z_skew
-    singles <- c('opgewektheid','somberheid','onrust','ontspanning')
-    top_var <- NULL
-    top_var_skew <- 100000
-    for (varname in singles)
-      if (skews[[varname]] < skew_max_threshold() &&
-          mssds[[varname]] > mssd_threshold() &&
-          skews[[varname]] < top_var_skew) {
-        top_var_skew <- skews[[varname]]
-        top_var <- varname
-      }
-    if (!is.null(top_var))
-      rnames <- c(rnames,top_var)
-  }
-  remaining_columns <- c('hier_en_nu', 'concentratie', 'beweging',
-                         'iets_betekenen', 'humor', 'buiten_zijn',
-                         'eigenwaarde', 'levenslust', 'lichamelijk_ongemak',
-                         'tekortschieten', 'piekeren', 'eenzaamheid')
+  # calculate these are all vars minus pairs and minus always_include
+  remaining_columns <- remove_from_vector(net_cfg$vars,net_cfg$always_include)
+  remaining_columns <- remove_from_vector(remaining_columns,net_cfg$pairs)
   extra_columns <- select_mssd_columns(remaining_columns,mssds)
   if (length(extra_columns) > 0) {
     df <- data[,extra_columns]
     skews <- z_skewness_columns(df)
-    bal <- sentiment_balance(rnames)
+    bal <- sentiment_balance(rnames,net_cfg)
     extra_order <- NULL
     if (max(skews) < skew_min_threshold()) {
-      extra_order <- order_by_quantity(extra_columns,-mssds,bal)
+      extra_order <- order_by_quantity(extra_columns,-mssds,bal,net_cfg)
     } else {
-      extra_order <- order_by_quantity(extra_columns,skews,bal)
+      extra_order <- order_by_quantity(extra_columns,skews,bal,net_cfg)
     }
     extra_columns <- extra_columns[extra_order]
     rnames <- c(rnames,extra_columns)
@@ -87,6 +92,12 @@ select_relevant_columns <- function(data, failsafe = FALSE, number_of_columns = 
   data[,rnames]
 }
 
+remove_from_vector <- function(a,b) {
+  # remove b from a
+  r = a[!(a %in% b)]
+  if (length(r) == 0) return(NULL)
+  r
+}
 mssd_threshold <- function() {
   50
 }
@@ -104,16 +115,15 @@ pair_is_valid <- function(var1,var2,skews,mssds) {
 pair_max_skewness <- function(var1,var2,skews) {
   max(skews[[var1]],skews[[var2]])
 }
-sentiment_balance <- function(rnames) {
+sentiment_balance <- function(rnames,net_cfg) {
   r <- 0
   for (rname in rnames) {
-    if (rname == 'uw_eigen_factor') next
-    if (is_positive_property(rname)) r <- r+1
-    else r <- r-1
+    if (is_positive_property(rname,net_cfg)) r <- r+1
+    else if (is_negative_property(rname,net_cfg)) r <- r-1
   }
   r
 }
-order_by_quantity <- function(rnames,data,balance) {
+order_by_quantity <- function(rnames,data,balance,net_cfg) {
   r <- NULL
   for (rname in rnames)
     r <- c(r,data[[rname]])
@@ -122,8 +132,11 @@ order_by_quantity <- function(rnames,data,balance) {
   negi <- 1
   rorder <- NULL
   while (posi <= length(norder) || negi <= length(norder)) {
-    while (posi <= length(norder) && !is_positive_property(rnames[norder[posi]])) posi <- posi+1
-    while (negi <= length(norder) &&  is_positive_property(rnames[norder[negi]])) negi <- negi+1
+    # we treat variables that are not positive nor negative as negative here,
+    # since we have more positive variables on average
+    # (we don't have this problem if we include all neutral variables as 'always_include' variables)
+    while (posi <= length(norder) && !is_positive_property(rnames[norder[posi]],net_cfg)) posi <- posi+1
+    while (negi <= length(norder) &&  is_positive_property(rnames[norder[negi]],net_cfg)) negi <- negi+1
     if (negi > length(r) && posi <= length(r)) {
       rorder <- c(rorder,norder[posi])
     } else if (posi > length(r) && negi <= length(r)) {
@@ -154,16 +167,16 @@ order_by_quantity_unbalanced <- function(rnames,data) {
     r <- c(r,data[[rname]])
   order(r)
 }
-is_positive_property <- function(rname) {
-  property_balance(rname) == 1
+is_positive_property <- function(rname,net_cfg) {
+  property_balance(rname,net_cfg) == 1
 }
-property_balance <- function(rname) {
-  if (rname %in% c('opgewektheid','ontspanning','hier_en_nu',
-                 'concentratie', 'beweging','iets_betekenen',
-                 'humor', 'buiten_zijn','eigenwaarde', 'levenslust'))
+is_negative_property <- function(rname,net_cfg) {
+  property_balance(rname,net_cfg) == -1
+}
+property_balance <- function(rname,net_cfg) {
+  if (rname %in% net_cfg$positive_variables)
     return(1)
-  if (rname %in% c('onrust','somberheid','lichamelijk_ongemak',
-                 'tekortschieten','piekeren','eenzaamheid'))
+  if (rname %in% net_cfg$negative_variables)
     return(-1)
   0
 }

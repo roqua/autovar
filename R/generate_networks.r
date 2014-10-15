@@ -12,6 +12,14 @@
 #' @param max_network_size an integer in [2,6] denoting the number of nodes to include in the networks initially. Defaults to 6.
 #' @return This function returns a string representing a json array of two networks.
 #' @examples
+#' GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
+#'                 'beweging', 'iets_betekenen', 'humor', 'buiten_zijn',
+#'                 'eigenwaarde', 'levenslust', 'onrust', 'somberheid',
+#'                 'lichamelijk_ongemak', 'tekortschieten', 'piekeren', 'eenzaamheid',
+#'                 'uw_eigen_factor')
+#' d<-load_file("../data/input/DataDndN_nonimputed_voorAndo.sav",log_level=3)
+#' d<-d$raw_data[,GN_COLUMNS]
+#' timestamp <- '2014-03-01'
 #' generate_networks(data = data,
 #'                   timestamp = timestamp,
 #'                   always_include = 'uw_eigen_factor',
@@ -49,29 +57,33 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
   if (class(timestamp) != "character") return("Timestamp argument is not a character string")
   if (nchar(timestamp) != 10) return("Wrong timestamp format, should be: yyyy-mm-dd")
   net_cfg <- new_net_cfg()
-  net_cfg$vars <- names(data)
+  net_cfg$vars <- unique(names(data))
   net_cfg$timestamp <- timestamp
   net_cfg$always_include <- always_include
   if (length(pairs) %% 2 != 0) return("Vector of pairs should have even length")
   net_cfg$pairs <- pairs
-  net_cfg$positive_variables <- positive_variables
-  net_cfg$negative_variables <- negative_variables
+  net_cfg$positive_variables <- unique(positive_variables)
+  net_cfg$negative_variables <- unique(negative_variables)
   net_cfg$labels <- labels
   if (!(measurements_per_day %in% 1:16)) return("measurements_per_day needs to be in 1:16")
   net_cfg$measurements_per_day <- measurements_per_day
   if (!(max_network_size %in% 2:6)) return("max_network_size needs to be in 2:6")
   net_cfg$max_network_size <- max_network_size
-  for (attempt in 1:6) {
+  check_res <- check_config_integrity(net_cfg)
+  if (!is.null(check_res)) return(check_res)
+  for (attempt in 1:(net_cfg$max_network_size)) {
     fail_safe <- FALSE
-    number_of_columns <- 6
+    number_of_columns <- net_cfg$max_network_size
     if (attempt > 1) {
       fail_safe <- TRUE
-      number_of_columns <- 8-attempt
+      # attempt to generate networks for the initial network size (max_network_size) twice,
+      # once with balancing and once without.
+      number_of_columns <- net_cfg$max_network_size+2-attempt
     }
-    odata <- select_relevant_columns(data,fail_safe,number_of_columns,log_level=3)
+    odata <- select_relevant_columns(data,net_cfg,fail_safe,number_of_columns,log_level=3)
     if (is.null(odata)) next
     first_measurement_index <- 1
-    res <- select_relevant_rows(odata,timestamp)
+    res <- select_relevant_rows(odata,timestamp,net_cfg)
     odata <- res$data
     first_measurement_index <- res$first_measurement_index
     timestamp <- res$timestamp
@@ -86,24 +98,56 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
     for (signif in SIGNIFICANCES) {
       for (ptime in imin:imax) {
         ndata <- odata
-        if (ptime == 1) ndata <- impute_dataframe(odata,2)
-        if (ptime == 2) ndata <- impute_dataframe(odata,1)
+        if (ptime == 1) ndata <- impute_dataframe(odata,2,net_cfg)
+        if (ptime == 2) ndata <- impute_dataframe(odata,1,net_cfg)
         if (any(is.na(ndata))) next # sometimes it fails
-        d<-load_dataframe(ndata,log_level=3)
+        d<-load_dataframe(ndata,net_cfg,log_level=3)
         d<-add_trend(d,log_level=3)
         d<-set_timestamps(d,date_of_first_measurement=timestamp,
                           first_measurement_index=first_measurement_index,
-                          measurements_per_day=3,log_level=3)
+                          measurements_per_day=net_cfg$measurements_per_day,log_level=3)
         d<-var_main(d,names(ndata),significance=signif,log_level=3,
                     criterion="AIC",include_squared_trend=TRUE,
                     exclude_almost=TRUE,simple_models=TRUE,
                     split_up_outliers=TRUE)
         gn <<- d
         if (length(d$accepted_models) > 0)
-          return(convert_to_graph(d))
+          return(convert_to_graph(d,net_cfg))
       }
     }
   }
+  NULL
+}
+
+check_config_integrity <- function(net_cfg) {
+  for (varname in net_cfg$always_include) {
+    if (!(varname %in% net_cfg$vars))
+      return(paste("always include var",varname,"not found in data.frame"))
+    if (varname %in% net_cfg$pairs)
+      return(paste("always include var",varname,"also found in pairs"))
+  }
+  for (varname in net_cfg$pairs) {
+    if (!(varname %in% net_cfg$vars))
+      return(paste("pair var",varname,"not found in data.frame"))
+    if (varname %in% net_cfg$always_include)
+      return(paste("pair var",varname,"also found in always include"))
+  }
+  if (!is.null(net_cfg$pairs))
+    for (i in seq(1,length(net_cfg$pairs),2))
+      if (net_cfg$pairs[i] == net_cfg$pairs[i+1])
+        return(paste("variable",net_cfg$pairs[i],"cannot pair with itself"))
+  for (varname in net_cfg$positive_variables)
+    if (!(varname %in% net_cfg$vars))
+      return(paste("positive variable",varname,"not found in data.frame"))
+  for (varname in net_cfg$negative_variables)
+    if (!(varname %in% net_cfg$vars))
+      return(paste("negative variable",varname,"not found in data.frame"))
+  for (varname in net_cfg$vars)
+    if (varname %in% net_cfg$positive_variables && varname %in% net_cfg$negative_variables)
+      return(paste("variable",varname,"cannot be both positive and negative"))
+  for (varname in names(net_cfg$labels))
+    if (!(varname %in% net_cfg$vars))
+      return(paste("trying to specify label for unknown variable",varname))
   NULL
 }
 
@@ -113,7 +157,7 @@ new_net_cfg <- function() {
   x
 }
 
-#' Return a JSON array of network data of a fitting model
+#' Return a JSON array of network data of a fitting model specific to hoegekis.nl
 #'
 #' This function uses repeated calls to \code{\link{var_main}} to find a fitting model for the data provided and then calls \code{\link{convert_to_graph}} to return a JSON representation of best valid model found.
 #' @param data a data frame of 17 columns (ontspanning, opgewektheid, hier_en_nu, concentratie, beweging, iets_betekenen, humor, buiten_zijn, eigenwaarde, levenslust, onrust, somberheid, lichamelijk_ongemak, tekortschieten, piekeren, eenzaamheid, uw_eigen_factor) and 90 rows

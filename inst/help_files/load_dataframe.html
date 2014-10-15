@@ -40,12 +40,14 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre><div>load_dataframe(df, log_level&nbsp;=&nbsp;0)</div></pre>
+    <pre><div>load_dataframe(df, net_cfg, log_level&nbsp;=&nbsp;0)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
       <dt>df</dt>
       <dd>a <code>data.frame</code> with features in columns and measurements in rows.</dd>
+      <dt>net_cfg</dt>
+      <dd>a net_cfg object providing metadata about the networks</dd>
       <dt>log_level</dt>
       <dd>sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about the data set that was loaded.</dd>
     </dl>
@@ -70,7 +72,7 @@
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state &lt;- load_dataframe(generate_test_data())
+    <pre class="examples"><div class='input'>av_state &lt;- load_dataframe(generate_test_data(),new_net_cfg())
 </div>
 <div class='output'>load_dataframe loaded data.frame with 3 columns:
 [1] &quot;id (scl)&quot;       &quot;tijdstip (scl)&quot; &quot;home (nom)&quot;    

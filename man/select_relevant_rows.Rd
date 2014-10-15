@@ -3,12 +3,14 @@
 \alias{select_relevant_rows}
 \title{Select and return the relevant rows}
 \usage{
-select_relevant_rows(data, timestamp)
+select_relevant_rows(data, timestamp, net_cfg)
 }
 \arguments{
 \item{data}{a data frame}
 
 \item{timestamp}{the date of the first measurement in the format \code{'yyyy-mm-dd'}}
+
+\item{net_cfg}{a net_cfg object providing metadata about the networks}
 }
 \value{
 This function returns a list with three elements, \code{data} is the modified data frame, \code{first_measurement_index} is the possibly adjusted first_measurement index, and \code{timestamp} is the possibly updated timestamp (day).

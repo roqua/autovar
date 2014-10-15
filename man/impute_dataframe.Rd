@@ -3,12 +3,14 @@
 \alias{impute_dataframe}
 \title{Impute missing values in a data.frame using EM imputation}
 \usage{
-impute_dataframe(df, polytime)
+impute_dataframe(df, polytime, net_cfg)
 }
 \arguments{
 \item{df}{a data frame}
 
 \item{polytime}{integer between 0 and 3 indicating what power of polynomial should be included in the imputation model to account for the effects of time. A setting of 0 would indicate constant levels, 1 would indicate linear time effects, 2 would indicate squared effects, and 3 would indicate cubic time effects.}
+
+\item{net_cfg}{a net_cfg object providing metadata about the networks}
 }
 \value{
 This function returns the modified data frame.

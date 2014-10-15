@@ -40,7 +40,7 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre><div>select_relevant_rows(data, timestamp)</div></pre>
+    <pre><div>select_relevant_rows(data, timestamp, net_cfg)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
@@ -48,6 +48,8 @@
       <dd>a data frame</dd>
       <dt>timestamp</dt>
       <dd>the date of the first measurement in the format <code>'yyyy-mm-dd'</code></dd>
+      <dt>net_cfg</dt>
+      <dd>a net_cfg object providing metadata about the networks</dd>
     </dl>
     
     <div class="Select and return the relevant rows">

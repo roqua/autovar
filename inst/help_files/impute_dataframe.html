@@ -40,7 +40,7 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre><div>impute_dataframe(df, polytime)</div></pre>
+    <pre><div>impute_dataframe(df, polytime, net_cfg)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
@@ -48,6 +48,8 @@
       <dd>a data frame</dd>
       <dt>polytime</dt>
       <dd>integer between 0 and 3 indicating what power of polynomial should be included in the imputation model to account for the effects of time. A setting of 0 would indicate constant levels, 1 would indicate linear time effects, 2 would indicate squared effects, and 3 would indicate cubic time effects.</dd>
+      <dt>net_cfg</dt>
+      <dd>a net_cfg object providing metadata about the networks</dd>
     </dl>
     
     <div class="Impute missing values in a data.frame using EM imputation">

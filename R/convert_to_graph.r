@@ -2,9 +2,10 @@
 #'
 #' This function returns a JSON representation of a the graphs for the best valid model found in the given \code{av_state}.
 #' @param av_state an object of class \code{av_state}, containing at least one valid model
+#' @param net_cfg a net_cfg object providing metadata about the networks
 #' @return This function returns a string representing a json array of two networks.
 #' @export
-convert_to_graph <- function(av_state) {
+convert_to_graph <- function(av_state,net_cfg) {
   rnames <- NULL
   nodedata <- NULL
   linkdata <- NULL
@@ -14,8 +15,8 @@ convert_to_graph <- function(av_state) {
   i <- 0
   for (varname in var_names) {
     nodedata <- rbind(nodedata,data.frame(index=nodecount,
-                                          name=format_property_name(unprefix_ln(varname)),
-                                          type=format_property_type(unprefix_ln(varname)),
+                                          name=format_property_name(unprefix_ln(varname),net_cfg),
+                                          type=format_property_type(unprefix_ln(varname),net_cfg),
                                           stringsAsFactors=FALSE))
     rnames <- c(rnames,varname)
     nodecount <- nodecount+1
@@ -35,8 +36,8 @@ convert_to_graph <- function(av_state) {
       for (varname in c(eqname,fromnodename)) {
         if (varname %in% rnames) next
         nodedata <- rbind(nodedata,data.frame(index=nodecount,
-                                              name=format_property_name(unprefix_ln(varname)),
-                                              type=format_property_type(unprefix_ln(varname)),
+                                              name=format_property_name(unprefix_ln(varname),net_cfg),
+                                              type=format_property_type(unprefix_ln(varname),net_cfg),
                                               stringsAsFactors=FALSE))
         rnames <- c(rnames,varname)
         nodecount <- nodecount+1
@@ -59,8 +60,8 @@ convert_to_graph <- function(av_state) {
       for (varname in c(var_names[[i]],var_names[[j]])) {
         if (varname %in% rnamesc) next
         nodedatac <- rbind(nodedatac,data.frame(index=nodecountc,
-                                                name=format_property_name(unprefix_ln(varname)),
-                                                type=format_property_type(unprefix_ln(varname)),
+                                                name=format_property_name(unprefix_ln(varname),net_cfg),
+                                                type=format_property_type(unprefix_ln(varname),net_cfg),
                                                 stringsAsFactors=FALSE))
         rnamesc <- c(rnamesc,varname)
         nodecountc <- nodecountc+1
@@ -73,9 +74,9 @@ convert_to_graph <- function(av_state) {
                                               stringsAsFactors=FALSE))
     }
   paste('[',
-        toString(toJSON(list(links=linkdata,nodes=nodedata))),
+        toString(toJSON(list(links=linkdata,nodes=nodedata))),     # dynamic
         ',',
-        toString(toJSON(list(links=linkdatac,nodes=nodedatac))),
+        toString(toJSON(list(links=linkdatac,nodes=nodedatac))),   # contemporaneous
         ']',sep="")
 }
 
@@ -83,30 +84,13 @@ correlation_significance <- function() {
   0.05
 }
 
-format_property_name <- function(rname) {
-  # TODO: rewrite this to require a net_config
-  switch(rname,
-         ontspanning = "Ontspanning",
-         opgewektheid = "Opgewektheid",
-         hier_en_nu = "In het hier en nu leven",
-         concentratie = "Concentratie",
-         beweging = "Beweging",
-         iets_betekenen = "Iets betekenen",
-         humor = "Humor",
-         buiten_zijn = "Buiten zijn",
-         eigenwaarde = "Eigenwaarde",
-         levenslust = "Levenslust",
-         onrust = "Onrust",
-         somberheid = "Somberheid",
-         lichamelijk_ongemak = "Lichamelijk ongemak",
-         tekortschieten = "Tekortschieten",
-         piekeren = "Piekeren",
-         eenzaamheid = "Eenzaamheid",
-         uw_eigen_factor = "Mijn eigen factor",
-         rname)
+format_property_name <- function(rname,net_cfg) {
+  label <- net_cfg$labels[[rname]]
+  if (!is.null(label)) return(label)
+  rname
 }
-format_property_type <- function(rname) {
-  bal <- property_balance(rname)
+format_property_type <- function(rname,net_cfg) {
+  bal <- property_balance(rname,net_cfg)
   if (bal == 1) return('Positief')
   if (bal == -1) return('Negatief')
   'Neutraal'

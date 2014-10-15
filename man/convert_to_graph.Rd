@@ -3,10 +3,12 @@
 \alias{convert_to_graph}
 \title{Convert best model to graph}
 \usage{
-convert_to_graph(av_state)
+convert_to_graph(av_state, net_cfg)
 }
 \arguments{
 \item{av_state}{an object of class \code{av_state}, containing at least one valid model}
+
+\item{net_cfg}{a net_cfg object providing metadata about the networks}
 }
 \value{
 This function returns a string representing a json array of two networks.
