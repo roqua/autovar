@@ -33,7 +33,15 @@ This function returns a string representing a json array of two networks.
 This function uses repeated calls to \code{\link{var_main}} to find a fitting model for the data provided and then calls \code{\link{convert_to_graph}} to return a JSON representation of best valid model found.
 }
 \examples{
-generate_networks(data = data,
+GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
+                'beweging', 'iets_betekenen', 'humor', 'buiten_zijn',
+                'eigenwaarde', 'levenslust', 'onrust', 'somberheid',
+                'lichamelijk_ongemak', 'tekortschieten', 'piekeren', 'eenzaamheid',
+                'uw_eigen_factor')
+d<-load_file("../data/input/DataDndN_nonimputed_voorAndo.sav",log_level=3)
+d<-d$raw_data[,GN_COLUMNS]
+timestamp <- '2014-03-01'
+generate_networks(data = d,
                   timestamp = timestamp,
                   always_include = 'uw_eigen_factor',
                   pairs = c('opgewektheid','onrust',

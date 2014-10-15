@@ -84,7 +84,15 @@
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>generate_networks(data = data,
+    <pre class="examples"><div class='input'>GN_COLUMNS &lt;- c(&#39;ontspanning&#39;, &#39;opgewektheid&#39;, &#39;hier_en_nu&#39;, &#39;concentratie&#39;,
+                &#39;beweging&#39;, &#39;iets_betekenen&#39;, &#39;humor&#39;, &#39;buiten_zijn&#39;,
+                &#39;eigenwaarde&#39;, &#39;levenslust&#39;, &#39;onrust&#39;, &#39;somberheid&#39;,
+                &#39;lichamelijk_ongemak&#39;, &#39;tekortschieten&#39;, &#39;piekeren&#39;, &#39;eenzaamheid&#39;,
+                &#39;uw_eigen_factor&#39;)
+d&lt;-load_file(&quot;../data/input/DataDndN_nonimputed_voorAndo.sav&quot;,log_level=3)
+d&lt;-d$raw_data[,GN_COLUMNS]
+timestamp &lt;- &#39;2014-03-01&#39;
+generate_networks(data = d,
                   timestamp = timestamp,
                   always_include = &#39;uw_eigen_factor&#39;,
                   pairs = c(&#39;opgewektheid&#39;,&#39;onrust&#39;,
@@ -115,7 +123,22 @@
                   measurements_per_day = 3,
                   max_network_size = 6)
 </div>
-<div class='output'>[1] &quot;Data argument is not a data.frame&quot;
+<div class='output'>
+====================
+var_main(av_state, vars = c(&quot;uw_eigen_factor&quot;, &quot;somberheid&quot;, &quot;ontspanning&quot;, &quot;piekeren&quot;, &quot;hier_en_nu&quot;, &quot;humor&quot;), exogenous_max_iterations = 1, log_level = 3, criterion = &quot;AIC&quot;, include_squared_trend = TRUE, split_up_outliers = TRUE, exclude_almost = TRUE, simple_models = TRUE, numcores = 8L)
+
+Starting VAR (using 8 cores) with variables: uw_eigen_factor, somberheid, ontspanning, piekeren, hier_en_nu, humor
+
+Done. Processed 116 distinct models, of which 0 were valid.
+
+====================
+var_main(av_state, vars = c(&quot;uw_eigen_factor&quot;, &quot;somberheid&quot;, &quot;ontspanning&quot;, &quot;piekeren&quot;, &quot;hier_en_nu&quot;, &quot;humor&quot;), significance = 0.01, exogenous_max_iterations = 1, log_level = 3, criterion = &quot;AIC&quot;, include_squared_trend = TRUE, split_up_outliers = TRUE, exclude_almost = TRUE, simple_models = TRUE, numcores = 8L)
+
+Starting VAR (using 8 cores) with variables: uw_eigen_factor, somberheid, ontspanning, piekeren, hier_en_nu, humor
+
+Done. Processed 72 distinct models, of which 2 were valid.
+</div>
+<div class='output'>[1] &quot;[{\&quot;links\&quot;:[{\&quot;source\&quot;:3,\&quot;target\&quot;:5,\&quot;coef\&quot;:\&quot;0.491893221257561\&quot;}],\&quot;nodes\&quot;:[{\&quot;index\&quot;:0,\&quot;name\&quot;:\&quot;Mijn eigen factor\&quot;,\&quot;type\&quot;:\&quot;Neutraal\&quot;},{\&quot;index\&quot;:1,\&quot;name\&quot;:\&quot;Somberheid\&quot;,\&quot;type\&quot;:\&quot;Negatief\&quot;},{\&quot;index\&quot;:2,\&quot;name\&quot;:\&quot;Ontspanning\&quot;,\&quot;type\&quot;:\&quot;Positief\&quot;},{\&quot;index\&quot;:3,\&quot;name\&quot;:\&quot;Piekeren\&quot;,\&quot;type\&quot;:\&quot;Negatief\&quot;},{\&quot;index\&quot;:4,\&quot;name\&quot;:\&quot;In het hier en nu leven\&quot;,\&quot;type\&quot;:\&quot;Positief\&quot;},{\&quot;index\&quot;:5,\&quot;name\&quot;:\&quot;Humor\&quot;,\&quot;type\&quot;:\&quot;Positief\&quot;}]},{\&quot;links\&quot;:[{\&quot;source\&quot;:1,\&quot;target\&quot;:0,\&quot;coef\&quot;:\&quot;-0.70613872073849\&quot;},{\&quot;source\&quot;:2,\&quot;target\&quot;:0,\&quot;coef\&quot;:\&quot;0.379250264930448\&quot;},{\&quot;source\&quot;:3,\&quot;target\&quot;:0,\&quot;coef\&quot;:\&quot;-0.482945591752216\&quot;},{\&quot;source\&quot;:2,\&quot;target\&quot;:1,\&quot;coef\&quot;:\&quot;-0.492607298408977\&quot;},{\&quot;source\&quot;:3,\&quot;target\&quot;:1,\&quot;coef\&quot;:\&quot;0.718664492326815\&quot;},{\&quot;source\&quot;:3,\&quot;target\&quot;:2,\&quot;coef\&quot;:\&quot;-0.643288195387027\&quot;},{\&quot;source\&quot;:4,\&quot;target\&quot;:2,\&quot;coef\&quot;:\&quot;0.399805661643953\&quot;},{\&quot;source\&quot;:4,\&quot;target\&quot;:3,\&quot;coef\&quot;:\&quot;-0.422503213819477\&quot;},{\&quot;source\&quot;:5,\&quot;target\&quot;:3,\&quot;coef\&quot;:\&quot;-0.237402265439933\&quot;}],\&quot;nodes\&quot;:[{\&quot;index\&quot;:0,\&quot;name\&quot;:\&quot;Mijn eigen factor\&quot;,\&quot;type\&quot;:\&quot;Neutraal\&quot;},{\&quot;index\&quot;:1,\&quot;name\&quot;:\&quot;Somberheid\&quot;,\&quot;type\&quot;:\&quot;Negatief\&quot;},{\&quot;index\&quot;:2,\&quot;name\&quot;:\&quot;Ontspanning\&quot;,\&quot;type\&quot;:\&quot;Positief\&quot;},{\&quot;index\&quot;:3,\&quot;name\&quot;:\&quot;Piekeren\&quot;,\&quot;type\&quot;:\&quot;Negatief\&quot;},{\&quot;index\&quot;:4,\&quot;name\&quot;:\&quot;In het hier en nu leven\&quot;,\&quot;type\&quot;:\&quot;Positief\&quot;},{\&quot;index\&quot;:5,\&quot;name\&quot;:\&quot;Humor\&quot;,\&quot;type\&quot;:\&quot;Positief\&quot;}]}]&quot;
 </div></pre>
   </div>
   <div class="span4">
