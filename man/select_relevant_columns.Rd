@@ -23,4 +23,25 @@ This function returns the modified data frame consisting of at most 6 columns.
 \description{
 This function returns a subset of the columns in the given data frame that are considered most relevant for time series analysis.
 }
+\examples{
+GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
+                'beweging', 'iets_betekenen', 'humor', 'buiten_zijn',
+                'eigenwaarde', 'levenslust', 'onrust', 'somberheid',
+                'lichamelijk_ongemak', 'tekortschieten', 'piekeren', 'eenzaamheid',
+                'uw_eigen_factor')
+data<-load_file("../data/input/DataDndN_nonimputed_voorAndo.sav")
+data<-data$raw_data[,GN_COLUMNS]
+net_cfg <- new_net_cfg()
+net_cfg$vars <- unique(names(data))
+net_cfg$always_include <- 'uw_eigen_factor'
+net_cfg$pairs <- c('opgewektheid','onrust',
+                   'somberheid','ontspanning',
+                   'somberheid','onrust')
+net_cfg$positive_variables <- c('opgewektheid','ontspanning','hier_en_nu',
+                                'concentratie', 'beweging','iets_betekenen',
+                                'humor', 'buiten_zijn','eigenwaarde', 'levenslust')
+net_cfg$negative_variables <- c('onrust','somberheid','lichamelijk_ongemak',
+                                'tekortschieten','piekeren','eenzaamheid')
+names(select_relevant_columns(data,net_cfg,FALSE,6))
+}
 

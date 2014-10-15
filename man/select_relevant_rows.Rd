@@ -18,4 +18,11 @@ This function returns a list with three elements, \code{data} is the modified da
 \description{
 This function returns the data frame with the beginning and trailing rows that are all NA removed, it also returns updated \code{first_measurement_index} and \code{timestamp} variables. The timestamp may advance as a result of the data frame starting with three or more NA's.
 }
+\examples{
+data <- data.frame(id=c(NA,NA,NA,1,1,NA),tijdstip=c(NA,NA,NA,3,4,NA),something=c(NA,NA,NA,9,16,NA))
+data
+net_cfg <- new_net_cfg()
+net_cfg$measurements_per_day <- 2
+select_relevant_rows(data,'2014-05-06',net_cfg)
+}
 

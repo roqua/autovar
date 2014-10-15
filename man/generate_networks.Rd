@@ -41,7 +41,7 @@ GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
 d<-load_file("../data/input/DataDndN_nonimputed_voorAndo.sav",log_level=3)
 d<-d$raw_data[,GN_COLUMNS]
 timestamp <- '2014-03-01'
-generate_networks(data = d,
+cat(generate_networks(data = d,
                   timestamp = timestamp,
                   always_include = 'uw_eigen_factor',
                   pairs = c('opgewektheid','onrust',
@@ -70,6 +70,6 @@ generate_networks(data = d,
                                 eenzaamheid = "Eenzaamheid",
                                 uw_eigen_factor = "Mijn eigen factor"),
                   measurements_per_day = 3,
-                  max_network_size = 6)
+                  max_network_size = 6))
 }
 

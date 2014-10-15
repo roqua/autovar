@@ -20,7 +20,7 @@
 #' d<-load_file("../data/input/DataDndN_nonimputed_voorAndo.sav",log_level=3)
 #' d<-d$raw_data[,GN_COLUMNS]
 #' timestamp <- '2014-03-01'
-#' generate_networks(data = d,
+#' cat(generate_networks(data = d,
 #'                   timestamp = timestamp,
 #'                   always_include = 'uw_eigen_factor',
 #'                   pairs = c('opgewektheid','onrust',
@@ -49,7 +49,7 @@
 #'                                 eenzaamheid = "Eenzaamheid",
 #'                                 uw_eigen_factor = "Mijn eigen factor"),
 #'                   measurements_per_day = 3,
-#'                   max_network_size = 6)
+#'                   max_network_size = 6))
 #' @export
 generate_networks <- function(data, timestamp, always_include = NULL, pairs = NULL, positive_variables = NULL,
                               negative_variables= NULL, labels = list(), measurements_per_day = 3, max_network_size = 6) {
@@ -87,33 +87,27 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
     odata <- res$data
     first_measurement_index <- res$first_measurement_index
     timestamp <- res$timestamp
-    imin <- 0
-    imax <- 0
-    if (any(is.na(odata))) {
-      imin <- 1
-      imax <- 1
-    }
+    do_impute <- FALSE
+    if (any(is.na(odata)))
+      do_impute <- TRUE
     SIGNIFICANCES <- c(0.05,0.01)
     if (attempt > 1) SIGNIFICANCES <- c(0.05,0.01,0.005)
     for (signif in SIGNIFICANCES) {
-      for (ptime in imin:imax) {
-        ndata <- odata
-        if (ptime == 1) ndata <- impute_dataframe(odata,2,net_cfg)
-        if (ptime == 2) ndata <- impute_dataframe(odata,1,net_cfg)
-        if (any(is.na(ndata))) next # sometimes it fails
-        d<-load_dataframe(ndata,net_cfg,log_level=3)
-        d<-add_trend(d,log_level=3)
-        d<-set_timestamps(d,date_of_first_measurement=timestamp,
-                          first_measurement_index=first_measurement_index,
-                          measurements_per_day=net_cfg$measurements_per_day,log_level=3)
-        d<-var_main(d,names(ndata),significance=signif,log_level=3,
-                    criterion="AIC",include_squared_trend=TRUE,
-                    exclude_almost=TRUE,simple_models=TRUE,
-                    split_up_outliers=TRUE)
-        gn <<- d
-        if (length(d$accepted_models) > 0)
-          return(convert_to_graph(d,net_cfg))
-      }
+      ndata <- odata
+      if (do_impute) ndata <- impute_dataframe(odata,net_cfg)
+      if (any(is.na(ndata))) next # sometimes it fails
+      d<-load_dataframe(ndata,net_cfg,log_level=3)
+      d<-add_trend(d,log_level=3)
+      d<-set_timestamps(d,date_of_first_measurement=timestamp,
+                        first_measurement_index=first_measurement_index,
+                        measurements_per_day=net_cfg$measurements_per_day,log_level=3)
+      d<-var_main(d,names(ndata),significance=signif,log_level=3,
+                  criterion="AIC",include_squared_trend=TRUE,
+                  exclude_almost=TRUE,simple_models=TRUE,
+                  split_up_outliers=TRUE)
+      # gn <<- d
+      if (length(d$accepted_models) > 0)
+        return(convert_to_graph(d,net_cfg))
     }
   }
   NULL
@@ -126,12 +120,9 @@ check_config_integrity <- function(net_cfg) {
     if (varname %in% net_cfg$pairs)
       return(paste("always include var",varname,"also found in pairs"))
   }
-  for (varname in net_cfg$pairs) {
+  for (varname in net_cfg$pairs)
     if (!(varname %in% net_cfg$vars))
       return(paste("pair var",varname,"not found in data.frame"))
-    if (varname %in% net_cfg$always_include)
-      return(paste("pair var",varname,"also found in always include"))
-  }
   if (!is.null(net_cfg$pairs))
     for (i in seq(1,length(net_cfg$pairs),2))
       if (net_cfg$pairs[i] == net_cfg$pairs[i+1])

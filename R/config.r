@@ -145,3 +145,13 @@ load_test_data <- function() {
 generate_test_data <- function() {
   data.frame(id=rep(1,times=5),tijdstip=c(1,3,5,6,7),home=c('yes','no','yes',NA,'yes'))
 }
+generate_numerical_test_data <- function(n) {
+  ids <- rep(1,times=n)
+  tijdstips <- NULL
+  somethings <- NULL
+  for (i in 1:n) {
+    tijdstips <- c(tijdstips,ifelse(i%%4 == 0,NA,i))
+    somethings <- c(somethings,ifelse(i%%5 == 0,NA,i*i))
+  }
+  data.frame(id=ids,tijdstip=tijdstips,something=somethings)
+}

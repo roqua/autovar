@@ -5,6 +5,12 @@
 #' @param timestamp the date of the first measurement in the format \code{'yyyy-mm-dd'}
 #' @param net_cfg a net_cfg object providing metadata about the networks
 #' @return This function returns a list with three elements, \code{data} is the modified data frame, \code{first_measurement_index} is the possibly adjusted first_measurement index, and \code{timestamp} is the possibly updated timestamp (day).
+#' @examples
+#' data <- data.frame(id=c(NA,NA,NA,1,1,NA),tijdstip=c(NA,NA,NA,3,4,NA),something=c(NA,NA,NA,9,16,NA))
+#' data
+#' net_cfg <- new_net_cfg()
+#' net_cfg$measurements_per_day <- 2
+#' select_relevant_rows(data,'2014-05-06',net_cfg)
 #' @export
 select_relevant_rows <- function(data,timestamp,net_cfg) {
   mask <- rep(TRUE,nr_rows(data))
