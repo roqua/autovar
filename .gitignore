@@ -1,0 +1,6 @@
+.Rproj.user
+.Rhistory
+.RData
+.Rbuildignore
+autovar.Rproj
+packrat/packrat.opts
