@@ -7,6 +7,6 @@ To install, type the following:
 
     install.packages('devtools')
     require('devtools')
-    install_github('autovar', 'roqua')
+    install_github('roqua/autovar')
 
 Documentation for this package can be found [here](http://autovar.nl/docs).
