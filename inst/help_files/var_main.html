@@ -107,7 +107,7 @@ The above example includes a model with <code>lag=3</code> (so lags 1, 2, and 3 
       <dt>exclude_almost</dt>
       <dd>when <code>TRUE</code>, only Granger causalities with p-value <= 0.05 are included in the results. When <code>FALSE</code>, p-values between 0.05 and 0.10 are also included in results as "almost Granger causalities" that have half the weight of actual Granger causalities in the Granger causality summary graph.</dd>
       <dt>simple_models</dt>
-      <dd>when <code>TRUE</code>, only simple models are returned, meaning we don't add constrained models. Also, this setting forces <code>exogenous_max_iterations</code> to 1.</dd>
+      <dd>when <code>TRUE</code>, only simple models are returned, meaning we don't add constrained models. Also, this setting forces <code>exogenous_max_iterations</code> to 1 and forces the first iteration to search for outliers at the 2.5x std range (essentially skipping the first and second iteration).</dd>
       <dt>numcores</dt>
       <dd>is the number of cores to use in parallel for evaluation the model. When this variable is <code>1</code>, no parallel processing is used and all processing is done serially. This variable has to be an integer between 1 and 16. The default value is the detected number of cores on the system (using <code>detectCores()</code>). If the <code>log_level</code> is less than 3, the value for <code>numcores</code> is forced to 1 because output doesn't show up otherwise.</dd>
     </dl>

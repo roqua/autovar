@@ -2,9 +2,50 @@
 #'
 #' This function returns a JSON representation of a the graphs for the best valid model found in the given \code{av_state}.
 #' @param av_state an object of class \code{av_state}, containing at least one valid model
+#' @param net_cfg a net_cfg object providing metadata about the networks
 #' @return This function returns a string representing a json array of two networks.
+#' @examples
+#' GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
+#'                 'beweging', 'iets_betekenen', 'humor', 'buiten_zijn',
+#'                 'eigenwaarde', 'levenslust', 'onrust', 'somberheid',
+#'                 'lichamelijk_ongemak', 'tekortschieten', 'piekeren', 'eenzaamheid',
+#'                 'uw_eigen_factor')
+#' data<-load_file("../data/input/DataDndN_nonimputed_voorAndo.sav",log_level=3)
+#' data<-data$raw_data[,GN_COLUMNS]
+#' net_cfg <- new_net_cfg()
+#' net_cfg$vars <- unique(names(data))
+#' net_cfg$always_include <- 'uw_eigen_factor'
+#' net_cfg$pairs <- c('opgewektheid','onrust',
+#'                    'somberheid','ontspanning',
+#'                    'somberheid','onrust')
+#' net_cfg$positive_variables <- c('opgewektheid','ontspanning','hier_en_nu',
+#'                                 'concentratie', 'beweging','iets_betekenen',
+#'                                 'humor', 'buiten_zijn','eigenwaarde', 'levenslust')
+#' net_cfg$negative_variables <- c('onrust','somberheid','lichamelijk_ongemak',
+#'                                 'tekortschieten','piekeren','eenzaamheid')
+#' net_cfg$measurements_per_day <- 3
+#' net_cfg$max_network_size <- 6
+#' odata <- select_relevant_columns(data,net_cfg,FALSE,6)
+#' first_measurement_index <- 1
+#' timestamp <- '2014-05-06'
+#' res <- select_relevant_rows(odata,timestamp,net_cfg)
+#' odata <- res$data
+#' first_measurement_index <- res$first_measurement_index
+#' timestamp <- res$timestamp
+#' if (any(is.na(odata)))
+#'   odata <- impute_dataframe(odata,net_cfg)
+#' d<-load_dataframe(odata,net_cfg)
+#' d<-add_trend(d)
+#' d<-set_timestamps(d,date_of_first_measurement=timestamp,
+#'                     first_measurement_index=first_measurement_index,
+#'                     measurements_per_day=net_cfg$measurements_per_day)
+#' d<-var_main(d,names(odata),significance=0.01,log_level=3,
+#'               criterion="AIC",include_squared_trend=TRUE,
+#'               exclude_almost=TRUE,simple_models=TRUE,
+#'               split_up_outliers=TRUE)
+#' cat(convert_to_graph(d,net_cfg))
 #' @export
-convert_to_graph <- function(av_state) {
+convert_to_graph <- function(av_state,net_cfg) {
   rnames <- NULL
   nodedata <- NULL
   linkdata <- NULL
@@ -14,8 +55,8 @@ convert_to_graph <- function(av_state) {
   i <- 0
   for (varname in var_names) {
     nodedata <- rbind(nodedata,data.frame(index=nodecount,
-                                          name=format_property_name(unprefix_ln(varname)),
-                                          type=format_property_type(unprefix_ln(varname)),
+                                          name=format_property_name(unprefix_ln(varname),net_cfg),
+                                          type=format_property_type(unprefix_ln(varname),net_cfg),
                                           stringsAsFactors=FALSE))
     rnames <- c(rnames,varname)
     nodecount <- nodecount+1
@@ -35,8 +76,8 @@ convert_to_graph <- function(av_state) {
       for (varname in c(eqname,fromnodename)) {
         if (varname %in% rnames) next
         nodedata <- rbind(nodedata,data.frame(index=nodecount,
-                                              name=format_property_name(unprefix_ln(varname)),
-                                              type=format_property_type(unprefix_ln(varname)),
+                                              name=format_property_name(unprefix_ln(varname),net_cfg),
+                                              type=format_property_type(unprefix_ln(varname),net_cfg),
                                               stringsAsFactors=FALSE))
         rnames <- c(rnames,varname)
         nodecount <- nodecount+1
@@ -59,8 +100,8 @@ convert_to_graph <- function(av_state) {
       for (varname in c(var_names[[i]],var_names[[j]])) {
         if (varname %in% rnamesc) next
         nodedatac <- rbind(nodedatac,data.frame(index=nodecountc,
-                                                name=format_property_name(unprefix_ln(varname)),
-                                                type=format_property_type(unprefix_ln(varname)),
+                                                name=format_property_name(unprefix_ln(varname),net_cfg),
+                                                type=format_property_type(unprefix_ln(varname),net_cfg),
                                                 stringsAsFactors=FALSE))
         rnamesc <- c(rnamesc,varname)
         nodecountc <- nodecountc+1
@@ -73,9 +114,9 @@ convert_to_graph <- function(av_state) {
                                               stringsAsFactors=FALSE))
     }
   paste('[',
-        toString(toJSON(list(links=linkdata,nodes=nodedata))),
+        toString(toJSON(list(links=linkdata,nodes=nodedata))),     # dynamic
         ',',
-        toString(toJSON(list(links=linkdatac,nodes=nodedatac))),
+        toString(toJSON(list(links=linkdatac,nodes=nodedatac))),   # contemporaneous
         ']',sep="")
 }
 
@@ -83,28 +124,13 @@ correlation_significance <- function() {
   0.05
 }
 
-format_property_name <- function(rname) {
-  switch(rname,
-         ontspanning = "Ontspanning",
-         opgewektheid = "Opgewektheid",
-         hier_en_nu = "In het hier en nu leven",
-         concentratie = "Concentratie",
-         beweging = "Beweging",
-         iets_betekenen = "Iets betekenen",
-         humor = "Humor",
-         buiten_zijn = "Buiten zijn",
-         eigenwaarde = "Eigenwaarde",
-         levenslust = "Levenslust",
-         onrust = "Onrust",
-         somberheid = "Somberheid",
-         lichamelijk_ongemak = "Lichamelijk ongemak",
-         tekortschieten = "Tekortschieten",
-         piekeren = "Piekeren",
-         eenzaamheid = "Eenzaamheid",
-         uw_eigen_factor = "Mijn eigen factor")
+format_property_name <- function(rname,net_cfg) {
+  label <- net_cfg$labels[[rname]]
+  if (!is.null(label)) return(label)
+  rname
 }
-format_property_type <- function(rname) {
-  bal <- property_balance(rname)
+format_property_type <- function(rname,net_cfg) {
+  bal <- property_balance(rname,net_cfg)
   if (bal == 1) return('Positief')
   if (bal == -1) return('Negatief')
   'Neutraal'

@@ -40,12 +40,14 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre><div>select_relevant_columns(data, failsafe&nbsp;=&nbsp;FALSE, number_of_columns&nbsp;=&nbsp;6, log_level&nbsp;=&nbsp;0)</div></pre>
+    <pre><div>select_relevant_columns(data, net_cfg, failsafe&nbsp;=&nbsp;FALSE, number_of_columns&nbsp;=&nbsp;6, log_level&nbsp;=&nbsp;0)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
       <dt>data</dt>
       <dd>a data frame of 17 columns (ontspanning, opgewektheid, hier_en_nu, concentratie, beweging, iets_betekenen, humor, buiten_zijn, eigenwaarde, levenslust, onrust, somberheid, lichamelijk_ongemak, tekortschieten, piekeren, eenzaamheid, uw_eigen_factor) and 90 rows</dd>
+      <dt>net_cfg</dt>
+      <dd>a net_cfg object providing metadata about the networks</dd>
       <dt>failsafe</dt>
       <dd>does not include any pairs by default and simply returns the up to 6 column names with lowest z_skewness that have an MSSD above the threshold. <code>failsafe</code> defaults to <code>FALSE</code>.</dd>
       <dt>number_of_columns</dt>
@@ -72,7 +74,46 @@
       <p>This function returns a subset of the columns in the given data frame that are considered most relevant for time series analysis.</p>
   
     </div>
-      </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>GN_COLUMNS &lt;- c(&#39;ontspanning&#39;, &#39;opgewektheid&#39;, &#39;hier_en_nu&#39;, &#39;concentratie&#39;,
+                &#39;beweging&#39;, &#39;iets_betekenen&#39;, &#39;humor&#39;, &#39;buiten_zijn&#39;,
+                &#39;eigenwaarde&#39;, &#39;levenslust&#39;, &#39;onrust&#39;, &#39;somberheid&#39;,
+                &#39;lichamelijk_ongemak&#39;, &#39;tekortschieten&#39;, &#39;piekeren&#39;, &#39;eenzaamheid&#39;,
+                &#39;uw_eigen_factor&#39;)
+data&lt;-load_file(&quot;../data/input/DataDndN_nonimputed_voorAndo.sav&quot;)
+</div>
+<div class='output'>load_file loaded SPSS file with 32 columns:
+ [1] &quot;roqua_id (scl)&quot;              &quot;patient_id (nom)&quot;            &quot;mad_diary_id (scl)&quot;         
+ [4] &quot;mad_diary_protocol (nom)&quot;    &quot;mad_diary_project (nom)&quot;     &quot;mad_diary_measurement (nom)&quot;
+ [7] &quot;mad_diary_notes (nom)&quot;       &quot;mad_diary_location (nom)&quot;    &quot;mad_diary_invited_at (scl)&quot; 
+[10] &quot;mad_diary_emailed_at (nom)&quot;  &quot;mad_diary_open_from (scl)&quot;   &quot;mad_diary_compl_by (nom)&quot;   
+[13] &quot;mad_diary_date (nom)&quot;        &quot;mad_diary_variant (nom)&quot;     &quot;mad_diary_tekst6 (nom)&quot;     
+[16] &quot;ontspanning (scl)&quot;           &quot;opgewektheid (scl)&quot;          &quot;hier_en_nu (scl)&quot;           
+[19] &quot;concentratie (scl)&quot;          &quot;beweging (scl)&quot;              &quot;iets_betekenen (scl)&quot;       
+[22] &quot;humor (scl)&quot;                 &quot;buiten_zijn (scl)&quot;           &quot;eigenwaarde (scl)&quot;          
+[25] &quot;levenslust (scl)&quot;            &quot;onrust (scl)&quot;                &quot;somberheid (scl)&quot;           
+[28] &quot;lichamelijk_ongemak (scl)&quot;   &quot;tekortschieten (scl)&quot;        &quot;piekeren (scl)&quot;             
+[31] &quot;eenzaamheid (scl)&quot;           &quot;uw_eigen_factor (scl)&quot;      
+</div>
+<div class='input'>data&lt;-data$raw_data[,GN_COLUMNS]
+net_cfg &lt;- new_net_cfg()
+net_cfg$vars &lt;- unique(names(data))
+net_cfg$always_include &lt;- &#39;uw_eigen_factor&#39;
+net_cfg$pairs &lt;- c(&#39;opgewektheid&#39;,&#39;onrust&#39;,
+                   &#39;somberheid&#39;,&#39;ontspanning&#39;,
+                   &#39;somberheid&#39;,&#39;onrust&#39;)
+net_cfg$positive_variables &lt;- c(&#39;opgewektheid&#39;,&#39;ontspanning&#39;,&#39;hier_en_nu&#39;,
+                                &#39;concentratie&#39;, &#39;beweging&#39;,&#39;iets_betekenen&#39;,
+                                &#39;humor&#39;, &#39;buiten_zijn&#39;,&#39;eigenwaarde&#39;, &#39;levenslust&#39;)
+net_cfg$negative_variables &lt;- c(&#39;onrust&#39;,&#39;somberheid&#39;,&#39;lichamelijk_ongemak&#39;,
+                                &#39;tekortschieten&#39;,&#39;piekeren&#39;,&#39;eenzaamheid&#39;)
+names(select_relevant_columns(data,net_cfg,FALSE,6))
+</div>
+<div class='output'>[1] &quot;uw_eigen_factor&quot; &quot;somberheid&quot;      &quot;ontspanning&quot;     &quot;piekeren&quot;        &quot;hier_en_nu&quot;     
+[6] &quot;humor&quot;          
+</div></pre>
+  </div>
   <div class="span4">
     <!-- <ul>
       <li>select_relevant_columns</li>

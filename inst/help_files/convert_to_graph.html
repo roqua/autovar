@@ -40,12 +40,14 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre><div>convert_to_graph(av_state)</div></pre>
+    <pre><div>convert_to_graph(av_state, net_cfg)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
       <dt>av_state</dt>
       <dd>an object of class <code>av_state</code>, containing at least one valid model</dd>
+      <dt>net_cfg</dt>
+      <dd>a net_cfg object providing metadata about the networks</dd>
     </dl>
     
     <div class="Convert best model to graph">
@@ -66,7 +68,72 @@
       <p>This function returns a JSON representation of a the graphs for the best valid model found in the given <code>av_state</code>.</p>
   
     </div>
-      </div>
+    
+    <h2 id="examples">Examples</h2>
+    <pre class="examples"><div class='input'>GN_COLUMNS &lt;- c(&#39;ontspanning&#39;, &#39;opgewektheid&#39;, &#39;hier_en_nu&#39;, &#39;concentratie&#39;,
+                &#39;beweging&#39;, &#39;iets_betekenen&#39;, &#39;humor&#39;, &#39;buiten_zijn&#39;,
+                &#39;eigenwaarde&#39;, &#39;levenslust&#39;, &#39;onrust&#39;, &#39;somberheid&#39;,
+                &#39;lichamelijk_ongemak&#39;, &#39;tekortschieten&#39;, &#39;piekeren&#39;, &#39;eenzaamheid&#39;,
+                &#39;uw_eigen_factor&#39;)
+data&lt;-load_file(&quot;../data/input/DataDndN_nonimputed_voorAndo.sav&quot;,log_level=3)
+data&lt;-data$raw_data[,GN_COLUMNS]
+net_cfg &lt;- new_net_cfg()
+net_cfg$vars &lt;- unique(names(data))
+net_cfg$always_include &lt;- &#39;uw_eigen_factor&#39;
+net_cfg$pairs &lt;- c(&#39;opgewektheid&#39;,&#39;onrust&#39;,
+                   &#39;somberheid&#39;,&#39;ontspanning&#39;,
+                   &#39;somberheid&#39;,&#39;onrust&#39;)
+net_cfg$positive_variables &lt;- c(&#39;opgewektheid&#39;,&#39;ontspanning&#39;,&#39;hier_en_nu&#39;,
+                                &#39;concentratie&#39;, &#39;beweging&#39;,&#39;iets_betekenen&#39;,
+                                &#39;humor&#39;, &#39;buiten_zijn&#39;,&#39;eigenwaarde&#39;, &#39;levenslust&#39;)
+net_cfg$negative_variables &lt;- c(&#39;onrust&#39;,&#39;somberheid&#39;,&#39;lichamelijk_ongemak&#39;,
+                                &#39;tekortschieten&#39;,&#39;piekeren&#39;,&#39;eenzaamheid&#39;)
+net_cfg$measurements_per_day &lt;- 3
+net_cfg$max_network_size &lt;- 6
+odata &lt;- select_relevant_columns(data,net_cfg,FALSE,6)
+first_measurement_index &lt;- 1
+timestamp &lt;- &#39;2014-05-06&#39;
+res &lt;- select_relevant_rows(odata,timestamp,net_cfg)
+odata &lt;- res$data
+first_measurement_index &lt;- res$first_measurement_index
+timestamp &lt;- res$timestamp
+if (any(is.na(odata)))
+  odata &lt;- impute_dataframe(odata,net_cfg)
+d&lt;-load_dataframe(odata,net_cfg)
+</div>
+<div class='output'>load_dataframe loaded data.frame with 6 columns:
+[1] &quot;uw_eigen_factor (scl)&quot; &quot;somberheid (scl)&quot;      &quot;ontspanning (scl)&quot;    
+[4] &quot;piekeren (scl)&quot;        &quot;hier_en_nu (scl)&quot;      &quot;humor (scl)&quot;          
+</div>
+<div class='input'>d&lt;-add_trend(d)
+</div>
+<div class='output'>add_trend: add trend and squared trend columns: index and index2
+</div>
+<div class='input'>d&lt;-set_timestamps(d,date_of_first_measurement=timestamp,
+                    first_measurement_index=first_measurement_index,
+                    measurements_per_day=net_cfg$measurements_per_day)
+</div>
+<div class='output'>set_timestamps: dates range from 2014-05-06 to 2014-06-03
+set_timestamps: using additional exogenous variables in models:
+    Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Morning, Afternoon 
+</div>
+<div class='input'>d&lt;-var_main(d,names(odata),significance=0.01,log_level=3,
+              criterion=&quot;AIC&quot;,include_squared_trend=TRUE,
+              exclude_almost=TRUE,simple_models=TRUE,
+              split_up_outliers=TRUE)
+</div>
+<div class='output'>
+====================
+var_main(av_state, vars = c(&quot;uw_eigen_factor&quot;, &quot;somberheid&quot;, &quot;ontspanning&quot;, &quot;piekeren&quot;, &quot;hier_en_nu&quot;, &quot;humor&quot;), significance = 0.01, exogenous_max_iterations = 1, log_level = 3, criterion = &quot;AIC&quot;, include_squared_trend = TRUE, split_up_outliers = TRUE, exclude_almost = TRUE, simple_models = TRUE, numcores = 8L)
+
+Starting VAR (using 8 cores) with variables: uw_eigen_factor, somberheid, ontspanning, piekeren, hier_en_nu, humor
+
+Done. Processed 71 distinct models, of which 3 were valid.
+</div>
+<div class='input'>cat(convert_to_graph(d,net_cfg))
+</div>
+<div class='output'>[{&quot;links&quot;:[{&quot;source&quot;:3,&quot;target&quot;:5,&quot;coef&quot;:&quot;0.453730352170528&quot;}],&quot;nodes&quot;:[{&quot;index&quot;:0,&quot;name&quot;:&quot;uw_eigen_factor&quot;,&quot;type&quot;:&quot;Neutraal&quot;},{&quot;index&quot;:1,&quot;name&quot;:&quot;somberheid&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:2,&quot;name&quot;:&quot;ontspanning&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:3,&quot;name&quot;:&quot;piekeren&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:4,&quot;name&quot;:&quot;hier_en_nu&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:5,&quot;name&quot;:&quot;humor&quot;,&quot;type&quot;:&quot;Positief&quot;}]},{&quot;links&quot;:[{&quot;source&quot;:1,&quot;target&quot;:0,&quot;coef&quot;:&quot;-0.683435741631862&quot;},{&quot;source&quot;:2,&quot;target&quot;:0,&quot;coef&quot;:&quot;0.407329361526893&quot;},{&quot;source&quot;:3,&quot;target&quot;:0,&quot;coef&quot;:&quot;-0.499020727964&quot;},{&quot;source&quot;:4,&quot;target&quot;:0,&quot;coef&quot;:&quot;0.222064555473176&quot;},{&quot;source&quot;:2,&quot;target&quot;:1,&quot;coef&quot;:&quot;-0.531678169453571&quot;},{&quot;source&quot;:3,&quot;target&quot;:1,&quot;coef&quot;:&quot;0.75259932265981&quot;},{&quot;source&quot;:3,&quot;target&quot;:2,&quot;coef&quot;:&quot;-0.640999143413689&quot;},{&quot;source&quot;:4,&quot;target&quot;:2,&quot;coef&quot;:&quot;0.396387733643993&quot;},{&quot;source&quot;:5,&quot;target&quot;:2,&quot;coef&quot;:&quot;0.2172318440011&quot;},{&quot;source&quot;:4,&quot;target&quot;:3,&quot;coef&quot;:&quot;-0.421132147155897&quot;},{&quot;source&quot;:5,&quot;target&quot;:3,&quot;coef&quot;:&quot;-0.241366941948704&quot;}],&quot;nodes&quot;:[{&quot;index&quot;:0,&quot;name&quot;:&quot;uw_eigen_factor&quot;,&quot;type&quot;:&quot;Neutraal&quot;},{&quot;index&quot;:1,&quot;name&quot;:&quot;somberheid&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:2,&quot;name&quot;:&quot;ontspanning&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:3,&quot;name&quot;:&quot;piekeren&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:4,&quot;name&quot;:&quot;hier_en_nu&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:5,&quot;name&quot;:&quot;humor&quot;,&quot;type&quot;:&quot;Positief&quot;}]}]</div></pre>
+  </div>
   <div class="span4">
     <!-- <ul>
       <li>convert_to_graph</li>

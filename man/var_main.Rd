@@ -73,7 +73,7 @@ The above example includes a model with \code{lag=3} (so lags 1, 2, and 3 are in
 
 \item{exclude_almost}{when \code{TRUE}, only Granger causalities with p-value <= 0.05 are included in the results. When \code{FALSE}, p-values between 0.05 and 0.10 are also included in results as "almost Granger causalities" that have half the weight of actual Granger causalities in the Granger causality summary graph.}
 
-\item{simple_models}{when \code{TRUE}, only simple models are returned, meaning we don't add constrained models. Also, this setting forces \code{exogenous_max_iterations} to 1.}
+\item{simple_models}{when \code{TRUE}, only simple models are returned, meaning we don't add constrained models. Also, this setting forces \code{exogenous_max_iterations} to 1 and forces the first iteration to search for outliers at the 2.5x std range (essentially skipping the first and second iteration).}
 
 \item{numcores}{is the number of cores to use in parallel for evaluation the model. When this variable is \code{1}, no parallel processing is used and all processing is done serially. This variable has to be an integer between 1 and 16. The default value is the detected number of cores on the system (using \code{detectCores()}). If the \code{log_level} is less than 3, the value for \code{numcores} is forced to 1 because output doesn't show up otherwise.}
 }
