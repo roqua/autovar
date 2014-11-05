@@ -10,7 +10,7 @@
 #' @param labels a list where keys are variable names and values are labels.
 #' @param measurements_per_day an integer in [1,16] denoting the number of measurements per day. Defaults to 3.
 #' @param max_network_size an integer in [2,6] denoting the number of nodes to include in the networks initially. Defaults to 6.
-#' @return This function returns a string representing a json array of two networks.
+#' @return This function returns a string representing a json array of two networks and an array of the top links.
 #' @examples
 #' GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
 #'                 'beweging', 'iets_betekenen', 'humor', 'buiten_zijn',

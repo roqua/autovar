@@ -50,6 +50,7 @@ convert_to_graph <- function(av_state,net_cfg) {
   nodedata <- NULL
   linkdata <- NULL
   nodecount <- 0
+  nodedegree <- list()
   res <- av_state$accepted_models[[1]]$varest$varresult
   var_names <- names(res)
   i <- 0
@@ -64,6 +65,9 @@ convert_to_graph <- function(av_state,net_cfg) {
   nodedatac <- nodedata
   nodecountc <- nodecount
   rnamesc <- rnames
+  # create a data.frame of significant connections, order it by coefficient strength
+  linkstr <- NULL
+  # dynamic eqs
   for (equation in res) {
     i <- i+1
     eqsum <- summary(equation)
@@ -72,7 +76,14 @@ convert_to_graph <- function(av_state,net_cfg) {
       if (fromnodename == eqname) next
       p_val <- eqsum$coefficients[paste(fromnodename,'.l1',sep=""),4]
       if (p_val > 0.05) next
+      nodedegree[[fromnodename]] <- ifelse(is.null(nodedegree[[fromnodename]]),0,nodedegree[[fromnodename]]) + 1
+      nodedegree[[eqname]] <- ifelse(is.null(nodedegree[[eqname]]),0,nodedegree[[eqname]]) + 1
       coef <- eqsum$coefficients[paste(fromnodename,'.l1',sep=""),1]
+      linkstr <- rbind(linkstr,data.frame(source=unprefix_ln(fromnodename),
+                                          target=unprefix_ln(eqname),
+                                          coef=abs(coef),
+                                          sign=sign(coef),
+                                          stringsAsFactors=FALSE))
       for (varname in c(eqname,fromnodename)) {
         if (varname %in% rnames) next
         nodedata <- rbind(nodedata,data.frame(index=nodecount,
@@ -90,6 +101,15 @@ convert_to_graph <- function(av_state,net_cfg) {
                                             stringsAsFactors=FALSE))
     }
   }
+  linkstr <- linkstr[with(linkstr,order(linkstr$coef,decreasing=TRUE)),]
+  # get a list of nodes with maximum node degree
+  maxdeg <- 0
+  for (degree in nodedegree)
+    maxdeg <- max(maxdeg,degree)
+  maxdeg_nodes <- NULL
+  for (varname in names(nodedegree))
+    if (nodedegree[[varname]] == maxdeg)
+      maxdeg_nodes <- c(maxdeg_nodes,unprefix_ln(varname))
   # contemp eqs
   linkdatac <- NULL
   signmat <- significance_matrix(summary(av_state$accepted_models[[1]]$varest))
@@ -106,17 +126,61 @@ convert_to_graph <- function(av_state,net_cfg) {
         rnamesc <- c(rnamesc,varname)
         nodecountc <- nodecountc+1
       }
-      tonode   <- which(var_names[[i]] == rnamesc) -1
+      tonode   <- which(var_names[[i]] == rnamesc) -1 
       fromnode <- which(var_names[[j]] == rnamesc) -1
       linkdatac <- rbind(linkdatac,data.frame(source=fromnode,
                                               target=tonode,
                                               coef=toString(signmat[j*2-1,i]),
                                               stringsAsFactors=FALSE))
     }
+  # generate textual dynamic graph summary (array of arrays)
+  graphsum <- NULL
+  # first connection is the strongest one of the maxdeg_nodes
+  nr_links <- dim(linkstr)[1]
+  usedlinks <- list()
+  usedlinks[1:nr_links] <- 0
+  seen_positive_target <- FALSE
+  for (i in 1:nr_links) {
+    if (linkstr[i,]$source %in% maxdeg_nodes || linkstr[i,]$target %in% maxdeg_nodes) {
+      graphsum <- rbind(graphsum,data.frame(source=linkstr[i,]$source,
+                                            target=linkstr[i,]$target,
+                                            sign=linkstr[i,]$sign,
+                                            stringsAsFactors=FALSE))
+      usedlinks[[i]] <- 1
+      if (is_positive_property(linkstr[i,]$target,net_cfg))
+        seen_positive_target <- TRUE
+      break
+    }
+  }
+  # second connection is the strongest one that hasn't been used yet
+  for (i in 1:nr_links) {
+    if (usedlinks[[i]] == 1) next
+    graphsum <- rbind(graphsum,data.frame(source=linkstr[i,]$source,
+                                          target=linkstr[i,]$target,
+                                          sign=linkstr[i,]$sign,
+                                          stringsAsFactors=FALSE))
+    usedlinks[[i]] <- 1
+    if (is_positive_property(linkstr[i,]$target,net_cfg))
+      seen_positive_target <- TRUE
+    break
+  }
+  # if all used so far had a negative target, this target has to be positive,
+  for (i in 1:nr_links) {
+    if (usedlinks[[i]] == 1) next
+    if (!seen_positive_target && !is_positive_property(linkstr[i,]$target,net_cfg)) next
+    graphsum <- rbind(graphsum,data.frame(source=linkstr[i,]$source,
+                                          target=linkstr[i,]$target,
+                                          sign=linkstr[i,]$sign,
+                                          stringsAsFactors=FALSE))
+    usedlinks[[i]] <- 1
+    break
+  }
   paste('[',
         toString(toJSON(list(links=linkdata,nodes=nodedata))),     # dynamic
         ',',
         toString(toJSON(list(links=linkdatac,nodes=nodedatac))),   # contemporaneous
+        ',',
+        toString(toJSON(graphsum)),
         ']',sep="")
 }
 
