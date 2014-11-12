@@ -16,9 +16,9 @@ generate_networks(data, timestamp, always_include = NULL, pairs = NULL,
 
 \item{pairs}{a vector of variable names in the form \code{c('pair1a','pair1b','pair2a','pair2b','pair3a',...)}. In other words: it is a vector of even length in which each two subsequent positions are seen as a pair. The pairs are treated such that only one pair or one variable of the pairs is included in the networks.}
 
-\item{positive_variables}{a vector of names of variables that measure a positive effect (e.g., happiness). Variable names not occurring in the \code{positive_variables} or \code{negative_variables} list are considered neutral.}
+\item{positive_variables}{a vector of names of variables that measure a positive affect (e.g., happiness). Variable names not occurring in the \code{positive_variables} or \code{negative_variables} list are considered neutral.}
 
-\item{negative_variables}{a vector of names of variables that measure a negative effect (e.g., sadness). Variable names not occurring in the \code{positive_variables} or \code{negative_variables} list are considered neutral.}
+\item{negative_variables}{a vector of names of variables that measure a negative affect (e.g., sadness). Variable names not occurring in the \code{positive_variables} or \code{negative_variables} list are considered neutral.}
 
 \item{labels}{a list where keys are variable names and values are labels.}
 

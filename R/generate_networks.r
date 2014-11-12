@@ -5,8 +5,8 @@
 #' @param timestamp the date of the first measurement in the format \code{'yyyy-mm-dd'}. If multiple measurements are taken per day, the first measurement (row) in the data frame should correspond to the first measurement on that day.
 #' @param always_include a vector of variable names that should always be included in the network if possible. Can also be \code{NULL}, in which case no variables are included by default.
 #' @param pairs a vector of variable names in the form \code{c('pair1a','pair1b','pair2a','pair2b','pair3a',...)}. In other words: it is a vector of even length in which each two subsequent positions are seen as a pair. The pairs are treated such that only one pair or one variable of the pairs is included in the networks.
-#' @param positive_variables a vector of names of variables that measure a positive effect (e.g., happiness). Variable names not occurring in the \code{positive_variables} or \code{negative_variables} list are considered neutral.
-#' @param negative_variables a vector of names of variables that measure a negative effect (e.g., sadness). Variable names not occurring in the \code{positive_variables} or \code{negative_variables} list are considered neutral.
+#' @param positive_variables a vector of names of variables that measure a positive affect (e.g., happiness). Variable names not occurring in the \code{positive_variables} or \code{negative_variables} list are considered neutral.
+#' @param negative_variables a vector of names of variables that measure a negative affect (e.g., sadness). Variable names not occurring in the \code{positive_variables} or \code{negative_variables} list are considered neutral.
 #' @param labels a list where keys are variable names and values are labels.
 #' @param measurements_per_day an integer in [1,16] denoting the number of measurements per day. Defaults to 3.
 #' @param max_network_size an integer in [2,6] denoting the number of nodes to include in the networks initially. Defaults to 6.
