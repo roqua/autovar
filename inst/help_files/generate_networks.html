@@ -32,16 +32,16 @@
 
     <div class="container">
       <header>
-        
+
       </header>
-      
+
       <h1>Return a JSON array of network data of a fitting model</h1>
 
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
     <pre><div>generate_networks(data, timestamp, always_include&nbsp;=&nbsp;NULL, pairs&nbsp;=&nbsp;NULL, positive_variables&nbsp;=&nbsp;NULL, negative_variables&nbsp;=&nbsp;NULL, labels&nbsp;=&nbsp;list(), measurements_per_day&nbsp;=&nbsp;3, max_network_size&nbsp;=&nbsp;6)</div></pre>
-    
+
     <h2>Arguments</h2>
     <dl>
       <dt>data</dt>
@@ -53,9 +53,9 @@
       <dt>pairs</dt>
       <dd>a vector of variable names in the form <code>c('pair1a','pair1b','pair2a','pair2b','pair3a',...)</code>. In other words: it is a vector of even length in which each two subsequent positions are seen as a pair. The pairs are treated such that only one pair or one variable of the pairs is included in the networks.</dd>
       <dt>positive_variables</dt>
-      <dd>a vector of names of variables that measure a positive effect (e.g., happiness). Variable names not occurring in the <code>positive_variables</code> or <code>negative_variables</code> list are considered neutral.</dd>
+      <dd>a vector of names of variables that measure a positive affect (e.g., happiness). Variable names not occurring in the <code>positive_variables</code> or <code>negative_variables</code> list are considered neutral.</dd>
       <dt>negative_variables</dt>
-      <dd>a vector of names of variables that measure a negative effect (e.g., sadness). Variable names not occurring in the <code>positive_variables</code> or <code>negative_variables</code> list are considered neutral.</dd>
+      <dd>a vector of names of variables that measure a negative affect (e.g., sadness). Variable names not occurring in the <code>positive_variables</code> or <code>negative_variables</code> list are considered neutral.</dd>
       <dt>labels</dt>
       <dd>a list where keys are variable names and values are labels.</dd>
       <dt>measurements_per_day</dt>
@@ -63,26 +63,26 @@
       <dt>max_network_size</dt>
       <dd>an integer in [2,6] denoting the number of nodes to include in the networks initially. Defaults to 6.</dd>
     </dl>
-    
+
     <div class="Return a JSON array of network data of a fitting model">
       <h2>Return a JSON array of network data of a fitting model</h2>
-      
+
     </div>
 
     <div class="Value">
       <h2>Value</h2>
-      
+
       <p>This function returns a string representing a json array of two networks and an array of the top links.</p>
-  
+
     </div>
 
     <div class="Description">
       <h2>Description</h2>
-      
+
       <p>This function uses repeated calls to <code><a href='var_main.html'>var_main</a></code> to find a fitting model for the data provided and then calls <code><a href='convert_to_graph.html'>convert_to_graph</a></code> to return a JSON representation of best valid model found.</p>
-  
+
     </div>
-    
+
     <h2 id="examples">Examples</h2>
     <pre class="examples"><div class='input'>GN_COLUMNS &lt;- c(&#39;ontspanning&#39;, &#39;opgewektheid&#39;, &#39;hier_en_nu&#39;, &#39;concentratie&#39;,
                 &#39;beweging&#39;, &#39;iets_betekenen&#39;, &#39;humor&#39;, &#39;buiten_zijn&#39;,
@@ -144,13 +144,13 @@ Done. Processed 72 distinct models, of which 2 were valid.
       <li>generate_networks</li>
     </ul>
     <ul>
-      
+
     </ul> -->
-      
-        
+
+
   </div>
 </div>
-      
+
       <footer>
       <p class="pull-right"><a href="#">Back to top</a></p>
 <p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
