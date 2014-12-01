@@ -27,7 +27,7 @@ generate_networks(data, timestamp, always_include = NULL, pairs = NULL,
 \item{max_network_size}{an integer in [2,6] denoting the number of nodes to include in the networks initially. Defaults to 6.}
 }
 \value{
-This function returns a string representing a json array of two networks.
+This function returns a string representing a json array of two networks and an array of the top links.
 }
 \description{
 This function uses repeated calls to \code{\link{var_main}} to find a fitting model for the data provided and then calls \code{\link{convert_to_graph}} to return a JSON representation of best valid model found.
