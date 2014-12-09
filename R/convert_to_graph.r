@@ -101,7 +101,8 @@ convert_to_graph <- function(av_state,net_cfg) {
                                             stringsAsFactors=FALSE))
     }
   }
-  linkstr <- linkstr[with(linkstr,order(linkstr$coef,decreasing=TRUE)),]
+  if (!is.null(linkstr))
+    linkstr <- linkstr[with(linkstr,order(linkstr$coef,decreasing=TRUE)),]
   # get a list of nodes with maximum node degree
   maxdeg <- 0
   for (degree in nodedegree)
@@ -136,11 +137,14 @@ convert_to_graph <- function(av_state,net_cfg) {
   # generate textual dynamic graph summary (array of arrays)
   graphsum <- NULL
   # first connection is the strongest one of the maxdeg_nodes
-  nr_links <- dim(linkstr)[1]
+  nr_links <- 0
+  if (!is.null(linkstr))
+    nr_links <- dim(linkstr)[1]
   usedlinks <- list()
   usedlinks[1:nr_links] <- 0
   seen_positive_target <- FALSE
   for (i in 1:nr_links) {
+    if (i > nr_links) break
     if (linkstr[i,]$source %in% maxdeg_nodes || linkstr[i,]$target %in% maxdeg_nodes) {
       graphsum <- rbind(graphsum,data.frame(source=linkstr[i,]$source,
                                             target=linkstr[i,]$target,
@@ -154,6 +158,7 @@ convert_to_graph <- function(av_state,net_cfg) {
   }
   # second connection is the strongest one that hasn't been used yet
   for (i in 1:nr_links) {
+    if (i > nr_links) break
     if (usedlinks[[i]] == 1) next
     graphsum <- rbind(graphsum,data.frame(source=linkstr[i,]$source,
                                           target=linkstr[i,]$target,
@@ -166,6 +171,7 @@ convert_to_graph <- function(av_state,net_cfg) {
   }
   # if all used so far had a negative target, this target has to be positive,
   for (i in 1:nr_links) {
+    if (i > nr_links) break
     if (usedlinks[[i]] == 1) next
     if (!seen_positive_target && !is_positive_property(linkstr[i,]$target,net_cfg)) next
     graphsum <- rbind(graphsum,data.frame(source=linkstr[i,]$source,
