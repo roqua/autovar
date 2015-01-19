@@ -96,8 +96,7 @@ contemporaneous_correlations_plot <- function(av_state) {
     E(a)$label <- graphi$edgelabels
     E(a)$color <- graphi$edgecolors
     cat("before plot\n")
-    print(dev.list())
-    print(dev.cur())
+    dev.flush()
     plot(a,
          incenter=!graphi$curved,
          edge.arrow.size=2,
@@ -115,7 +114,7 @@ contemporaneous_correlations_plot <- function(av_state) {
          main="Contemporaneous correlations",
          sub=paste('found significant contemporaneous correlations in',graphi$allcount - graphi$nonecount,'out of',graphi$allcount,'valid models'))
     igraph_legend_concor()
-    grDevices::dev.flush()
+    dev.flush()
     cat("after plot\n")
     gname <- gsub("\\.[^ ]{3,4}$","",basename(av_state$real_file_name))
     gname <- paste(gname,"_concor",sep="")
