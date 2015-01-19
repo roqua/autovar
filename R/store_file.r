@@ -85,7 +85,21 @@ determineLevel <- function(data_column) {
     integer=determineLevelNumeric,
     factor=determineLevelFactor
   )
+  if (is.null(determine_function)) determine_function <- determineLevelCharacter
   determine_function(data_column)
+}
+determineLevelNumeric <- function(data_column) {
+  '(SCALE)'
+}
+determineLevelFactor <- function(data_column) {
+  if (length(levels(data_column)) > 2) {
+    '(ORDINAL)'
+  } else {
+    '(NOMINAL)'
+  }
+}
+determineLevelCharacter <- function(data_column) {
+  '(NOMINAL)'
 }
 determineFormat <- function(data_column) {
   determine_function <- switch(class(data_column),
@@ -93,10 +107,8 @@ determineFormat <- function(data_column) {
     integer=determineFormatNumeric,
     factor=determineFormatFactor
   )
+  if (is.null(determine_function)) determine_function <- determineFormatCharacter
   determine_function(data_column)
-}
-determineLevelNumeric <- function(data_column) {
-  '(SCALE)'
 }
 determineFormatNumeric <- function(data_column) {
   if (all(is.wholenumber(data_column))) {
@@ -105,12 +117,9 @@ determineFormatNumeric <- function(data_column) {
     '(F8.2)'
   }
 }
-determineLevelFactor <- function(data_column) {
-  if (length(levels(data_column)) > 2) {
-    '(ORDINAL)'
-  } else {
-    '(NOMINAL)'
-  }
+determineFormatCharacter <- function(data_column) {
+  length <- max(1,max(nchar(as.character(data_column))))
+  paste("(A", length, ")", sep = "")
 }
 determineFormatFactor <- function(data_column) {
   '(F8)'
@@ -136,20 +145,19 @@ writeMyForeignSPSS <- function (df, datafile, codefile, varnames = NULL) {
     }
     varnames <- gsub("[^[:alnum:]_\\$@#]", "\\.", varnames)
     dl.varnames <- varnames
-    if (any(chv <- sapply(df, is.character))) {
-        lengths <- sapply(df[chv], function(v) max(nchar(v)))
+    if (any(chv <- sapply(df, is_unknown))) {
+        lengths <- sapply(df[chv], function(v) max(nchar(as.character(v))))
         if (any(lengths > 255L))
             stop("Cannot handle character variables longer than 255")
         lengths <- paste("(A", lengths, ")", sep = "")
-        star <- ifelse(c(FALSE, diff(which(chv) > 1L)), " *",
-            " ")
-        dl.varnames[chv] <- paste(star, dl.varnames[chv], lengths)
+        #star <- ifelse(c(FALSE, diff(which(chv) > 1L)), " *", " ")
+        dl.varnames[chv] <- paste(dl.varnames[chv], lengths)
     }
     cat("SET DECIMAL DOT.\n\n", file = codefile)
     cat("DATA LIST FILE=", adQuote(datafile), " free (\",\")\n",
         file = codefile, append = TRUE)
     cat("/", dl.varnames, " .\n\n", file = codefile, append = TRUE)
-    cat("FORMATS", adF8(dl.varnames,df), " .\n\n", file = codefile, append = TRUE)
+    cat("FORMATS", adF8(varnames,df), " .\n\n", file = codefile, append = TRUE)
     cat("VARIABLE LABELS\n", file = codefile, append = TRUE)
     cat(paste(varnames, adQuote(varlabels), "\n"), ".\n", file = codefile,
         append = TRUE)
@@ -166,13 +174,15 @@ writeMyForeignSPSS <- function (df, datafile, codefile, varnames = NULL) {
         cat(".\n", file = codefile, append = TRUE)
     }
     cat("\nVARIABLE LEVEL\n", file = codefile, append = TRUE)
-    for (v in dl.varnames) {
+    for (v in varnames) {
       cat(" /", v, determineLevel(df[[v]]),"\n",file = codefile, append = TRUE)
     }
     cat(".\n", file = codefile, append = TRUE)
     cat("\nEXECUTE.\n", file = codefile, append = TRUE)
 }
-
+is_unknown <- function(x) {
+  class(x) != "numeric" && class(x) != "integer" && class(x) != "factor"
+}
 writeMyForeignSPSS_inline <- function (df, codefile, varnames = NULL) {
     dfn <- lapply(df, function(x) if (is.factor(x))
         as.numeric(x)-1
@@ -188,14 +198,13 @@ writeMyForeignSPSS_inline <- function (df, codefile, varnames = NULL) {
     }
     varnames <- gsub("[^[:alnum:]_\\$@#]", "\\.", varnames)
     dl.varnames <- varnames
-    if (any(chv <- sapply(df, is.character))) {
-        lengths <- sapply(df[chv], function(v) max(nchar(v)))
+    if (any(chv <- sapply(df, is_unknown))) {
+        lengths <- sapply(df[chv], function(v) max(nchar(as.character(v))))
         if (any(lengths > 255L))
             stop("Cannot handle character variables longer than 255")
         lengths <- paste("(A", lengths, ")", sep = "")
-        star <- ifelse(c(FALSE, diff(which(chv) > 1L)), " *",
-            " ")
-        dl.varnames[chv] <- paste(star, dl.varnames[chv], lengths)
+        #star <- ifelse(c(FALSE, diff(which(chv) > 1L)), " *", " ")
+        dl.varnames[chv] <- paste(dl.varnames[chv], lengths)
     }
     cat("SET DECIMAL DOT.\n\n", file = codefile)
     cat("DATA LIST free (\",\")\n",
@@ -205,7 +214,7 @@ writeMyForeignSPSS_inline <- function (df, codefile, varnames = NULL) {
     write.table(dfn, file = codefile, row.names = FALSE, col.names = FALSE,
                 sep = ",", append = TRUE, quote = FALSE, na = "", eol = ",\n")
     cat("END DATA.\n\n", file = codefile, append = TRUE)
-    cat("FORMATS", adF8(dl.varnames,df), " .\n\n", file = codefile, append = TRUE)
+    cat("FORMATS", adF8(varnames,df), " .\n\n", file = codefile, append = TRUE)
     cat("VARIABLE LABELS\n", file = codefile, append = TRUE)
     cat(paste(varnames, adQuote(varlabels), "\n"), ".\n", file = codefile,
         append = TRUE)
@@ -222,7 +231,7 @@ writeMyForeignSPSS_inline <- function (df, codefile, varnames = NULL) {
         cat(".\n", file = codefile, append = TRUE)
     }
     cat("\nVARIABLE LEVEL\n", file = codefile, append = TRUE)
-    for (v in dl.varnames) {
+    for (v in varnames) {
       cat(" /", v, determineLevel(df[[v]]),"\n",file = codefile, append = TRUE)
     }
     cat(".\n", file = codefile, append = TRUE)
