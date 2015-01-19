@@ -1,6 +1,8 @@
 contemporaneous_correlations_graph <- function(av_state) {
   count <- list()
   value <- list()
+  cat("contemporaneous correlations graph test\n")
+  print(av_state$vars)
   vrs <- av_state$vars
   if (is.null(vrs) || length(vrs) < 2 || 
       is.null(av_state$accepted_models) ||
