@@ -127,7 +127,6 @@ vargranger_plot <- function(av_state) {
       })
     E(a)$label <- graphi$edgelabels
     E(a)$color <- graphi$edgecolors
-    cat("before plot\n")
     plot(a,
          edge.arrow.size=2,
          edge.arrow.width=2,
@@ -144,9 +143,6 @@ vargranger_plot <- function(av_state) {
          main="Granger causality",
          sub=paste('found significant Granger causalities in',graphi$allcount - graphi$nonecount,'out of',graphi$allcount,'valid models'))
     igraph_legend()
-    dev.flush()
-    cat("after plot\n")
-    if (FALSE) {
     gname <- gsub("\\.[^ ]{3,4}$","",basename(av_state$real_file_name))
     fname <- gname
     i <- 0
@@ -176,11 +172,10 @@ vargranger_plot <- function(av_state) {
       file.remove(fname2)
       fname <- fname1
     }
-    #if (interactive() && !exists("currently_generating_help_files")) {
+    if (interactive() && !exists("currently_generating_help_files")) {
       scat(av_state$log_level,3,
            "\nGranger causality plot saved to \"",
            fname,"\" (",file.info(fname)$size,")\n",sep='')
-    #}
     }
     invisible(a)
   }
