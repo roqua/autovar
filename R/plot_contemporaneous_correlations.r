@@ -96,7 +96,6 @@ contemporaneous_correlations_plot <- function(av_state) {
     E(a)$label <- graphi$edgelabels
     E(a)$color <- graphi$edgecolors
     cat("before plot\n")
-    dev.flush()
     plot(a,
          incenter=!graphi$curved,
          edge.arrow.size=2,
@@ -116,6 +115,7 @@ contemporaneous_correlations_plot <- function(av_state) {
     igraph_legend_concor()
     dev.flush()
     cat("after plot\n")
+    if (FALSE) {
     gname <- gsub("\\.[^ ]{3,4}$","",basename(av_state$real_file_name))
     gname <- paste(gname,"_concor",sep="")
     fname <- gname
@@ -151,6 +151,7 @@ contemporaneous_correlations_plot <- function(av_state) {
            "\nContemporaneous correlations plot saved to \"",
            fname,"\" (",file.info(fname)$size,")\n",sep='')
     #}
+    }
     invisible(a)
   }
 }
