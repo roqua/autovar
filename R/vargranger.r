@@ -172,11 +172,11 @@ vargranger_plot <- function(av_state) {
       file.remove(fname2)
       fname <- fname1
     }
-    if (interactive() && !exists("currently_generating_help_files")) {
+    #if (interactive() && !exists("currently_generating_help_files")) {
       scat(av_state$log_level,3,
            "\nGranger causality plot saved to \"",
            fname,"\" (",file.info(fname)$size,")\n",sep='')
-    }
+    #}
     invisible(a)
   }
 }
