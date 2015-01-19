@@ -96,6 +96,7 @@ contemporaneous_correlations_plot <- function(av_state) {
     E(a)$label <- graphi$edgelabels
     E(a)$color <- graphi$edgecolors
     cat("before plot\n")
+    print(dev.list())
     print(dev.cur())
     plot(a,
          incenter=!graphi$curved,
