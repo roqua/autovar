@@ -1,8 +1,6 @@
 contemporaneous_correlations_graph <- function(av_state) {
   count <- list()
   value <- list()
-  cat("contemporaneous correlations graph test\n")
-  print(av_state$vars)
   vrs <- av_state$vars
   if (is.null(vrs) || length(vrs) < 2 || 
       is.null(av_state$accepted_models) ||
@@ -77,6 +75,8 @@ contemporaneous_correlations_graph <- function(av_state) {
 # TODO: can easily use one function for both graphs
 contemporaneous_correlations_plot <- function(av_state) {
   graphi <- contemporaneous_correlations_graph(av_state)
+  cat("at graphi\n")
+  print(graphi)
   if (!is.null(graphi)) {
     graphstring <- graphi$str
     # TODO: check if temp files are cleaned up
