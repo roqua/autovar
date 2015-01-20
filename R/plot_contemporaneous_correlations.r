@@ -78,7 +78,7 @@ contemporaneous_correlations_plot <- function(av_state) {
   if (!is.null(graphi)) {
     graphstring <- graphi$str
     # TODO: check if temp files are cleaned up
-    file <- tempfile()
+    file <- tempfile(tmpdir=getwd())
     #cat("tempfile:",file,"\n")
     cat(graphstring, file = file)
     a <- read.graph(file,format="ncol",directed=TRUE,weights="yes")
