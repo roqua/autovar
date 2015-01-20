@@ -326,7 +326,7 @@ $('#knitForm').submit(function(event) {
       url = $form.attr('action'),
       rcode = '{library(autovar); library(knitr); library(markdown);' +
               'sub(".*<body>(.*)</body>.*", "\\\\1", ' +
-              'markdownToHTML(text = knit(text = "```{r}\n opts_chunk$set(fig.keep=\'all\',dev=\'png\')\n\n```\n\n```{r,fig.width='+fwid+',fig.height='+fhei+'}\n' + term + '\n```\n")))}';
+              'markdownToHTML(text = knit(text = "```{r}\n opts_chunk$set(fig.keep=\'all\',dev=\'png\',fig.show=\'asis\')\n\n```\n\n```{r,fig.width='+fwid+',fig.height='+fhei+'}\n' + term + '\n```\n")))}';
   /* Send the data using post and put the results in a div */
   $('textarea[name="x"]').attr('value',rcode);
   $("#outputframe").replaceWith('<iframe name="outputframe" id="outputframe"></iframe>');

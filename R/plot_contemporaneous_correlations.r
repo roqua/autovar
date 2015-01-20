@@ -75,7 +75,6 @@ contemporaneous_correlations_graph <- function(av_state) {
 # TODO: can easily use one function for both graphs
 contemporaneous_correlations_plot <- function(av_state) {
   graphi <- contemporaneous_correlations_graph(av_state)
-  Sys.sleep(1)
   if (!is.null(graphi)) {
     graphstring <- graphi$str
     # TODO: check if temp files are cleaned up
