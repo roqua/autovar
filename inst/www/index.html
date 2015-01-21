@@ -65,6 +65,12 @@
     form {
       margin: 0;
     }
+    .on-top {
+      width:50%;
+      margin: 20px auto;
+      display:block;
+      box-shadow: 0px 0px 20px #888888;
+    }
   </style>
 <style type="text/css">
 body, td {
@@ -289,6 +295,29 @@ hljs.initHighlightingOnLoad();
   </p>
   </div>
   </form>
+</div>
+<div class='show-initially' style='margin-top:40px'>
+    <h2>About</h2>
+    <p>Autovar can be used to find VAR models for time series data. Its main functionality is producing a list of VAR models that do not invalidate the model assumptions. Autovar can summarize over the models to provide insight into, e.g., significant contemporaneous correlation and Granger causalities present in the data set.</p>
+
+    <p>While Autovar is available as an <a href="https://github.com/roqua/autovar" target="_blank">R package</a>, part of its functionality is exposed through this web application, running some of the exported Autovar functions (depending on the options selected) and showing the results.</p>
+
+
+    <h2>Example data sets and use</h2>
+    <ul>
+      <li><a href="http://autovar.nl/datasets/aug_pp5_da.sav">aug_pp5_da.sav</a></li>
+      <li><a href="http://autovar.nl/datasets/Dataset45Jdaggem.dta">Dataset45Jdaggem.dta</a></li>
+    </ul>
+    <p>To reproduce the results from one of the data sets shown in our JBHI paper, please download the <a href="http://autovar.nl/datasets/Dataset45Jdaggem.dta">Dataset45Jdaggem.dta</a> data set file.
+    Load the file up in Autovar by clicking "Choose file" above. The UI will then change as it reads the columns from the data set. Set it to select the "Stre" and "Musc" columns as shown below.</p>
+    <img src="ui_input.png" class="on-top" />
+    <p>Here, we opt to include lag 0 models as well by ticking the box.</p>
+    <p>Optionally, we can provide Autovar with some more information about the data set. For example, if we know that this data set describes a study with a single  measurement per day, and the first measurement was performed on the 3rd of March, we can specify this as shown in the image below. Setting timestamps enables Autovar to generate and possibly include dummy variables for days and day parts in its models, to account for cyclity if needed.</p>
+    <img src="ui_exogenous_variables.png" class="on-top" />
+    <p>Pressing "Run" will then show the output of running a series of functions exported by the Autovar package.</p>
+    <p>For the selected settings, Autovar will load the data set using <a href="http://autovar.nl/docs/load_file.html" target="_blank">load_file</a>, add a trend column using <a href="http://autovar.nl/docs/add_trend.html" target="_blank">add_trend</a>, add day dummy columns using <a href="http://autovar.nl/docs/set_timestamps.html" target="_blank">set_timestamps</a>, plot the variables using <a href="http://autovar.nl/docs/visualize.html" target="_blank">visualize</a> (not required), and then look for var models and summarize over then by calling <a href="http://autovar.nl/docs/var_main.html" target="_blank">var_main</a>. The source code for all these functions is publicly available on <a href="https://github.com/roqua/autovar/tree/master/R" target="_blank">GitHub</a>. Please see the <a href="http://autovar.nl/docs" target="_blank">docs</a> section for a full list of available functions.</p>
+
+  <p>Another data set that can be analyzed is presented in <a href="http://autovar.nl/datasets/aug_pp5_da.sav">aug_pp5_da.sav</a>. This data set works with all settings at default. Simply click "Choose file" to select the data set, select "Activity" and "Depression" as VAR columns, and press "Run."</p>
 </div>
 </div>
 <div class='control-group hide-initially'>
@@ -657,6 +686,7 @@ $('#knitForm').submit(function(event) {
       $('#varnames,#exovrs').attr('size',Math.min($('#varnames')[0].length,10));
       $('#loadingtext').html('Select .sav or .dta file containing the data set.');
       $('.hide-initially').removeClass('hide-initially');
+      $('.show-initially').hide();
       resizeBoxes();
     } else {
       if (data.substring(0,4) == "[1] ") {
