@@ -62,21 +62,18 @@
 </dd>
     </dl>
     
-    <div class="Order the rows in a data set">
-      <h2>Order the rows in a data set</h2>
-      
-    </div>
-
     <div class="Value">
       <h2>Value</h2>
-      
-      <p>This function returns the modified <code>av_state</code> object. After the substitutions, the data sets in <code>av_state$data</code> are sorted by their <code>id_field</code> value. This sorting step moves any rows with value <code>NA</code> for the <code>id_field</code> to the end.</p>
+
+      <p><dl>
+This function returns the modified <code>av_state</code> object. After the substitutions, the data sets in <code>av_state$data</code> are sorted by their <code>id_field</code> value. This sorting step moves any rows with value <code>NA</code> for the <code>id_field</code> to the end.
+</dl></p>
   
     </div>
 
     <div class="Description">
       <h2>Description</h2>
-      
+
       <p>This function determines the order of the data rows in the data set. For vector autoregression, you may want to use this to make sure that the data set is sorted by the date/time column, i.e., the supplied <code>id_field</code> parameter is often a measurement index (e.g., <code>'tijdstip'</code>). The <code>id_field</code> column has to be numeric. This function will also add a squared column to the data frame and include the order_by colum and its squared values as exogenous_variables.</p>
   
     </div>

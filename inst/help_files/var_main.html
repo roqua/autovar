@@ -112,21 +112,18 @@ The above example includes a model with <code>lag=3</code> (so lags 1, 2, and 3 
       <dd>is the number of cores to use in parallel for evaluation the model. When this variable is <code>1</code>, no parallel processing is used and all processing is done serially. This variable has to be an integer between 1 and 16. The default value is the detected number of cores on the system (using <code>detectCores()</code>). If the <code>log_level</code> is less than 3, the value for <code>numcores</code> is forced to 1 because output doesn't show up otherwise.</dd>
     </dl>
     
-    <div class="Determine possibly optimal models for Vector Autoregression">
-      <h2>Determine possibly optimal models for Vector Autoregression</h2>
-      
-    </div>
-
     <div class="Value">
       <h2>Value</h2>
-      
-      <p>This function returns the modified <code>av_state</code> object. The lists of accepted and rejected models can be retrieved through <code>av_state$accepted_models</code> and <code>av_state$rejected_models</code>. To print these, use <code>print_accepted_models(av_state)</code> and <code>print_rejected_models(av_state)</code>.</p>
+
+      <p><dl>
+This function returns the modified <code>av_state</code> object. The lists of accepted and rejected models can be retrieved through <code>av_state$accepted_models</code> and <code>av_state$rejected_models</code>. To print these, use <code>print_accepted_models(av_state)</code> and <code>print_rejected_models(av_state)</code>.
+</dl></p>
   
     </div>
 
     <div class="Description">
       <h2>Description</h2>
-      
+
       <p>This function generates and tests possible VAR models for the specified variables. The only required arguments are <code>av_state</code> and <code>vars</code>.</p>
   
     </div>
@@ -153,7 +150,7 @@ Starting VAR (using 8 cores) with variables: Activity_hours, Depression
 Done. Processed 9 distinct models, of which 2 were valid.
 Tested 18 of 144 ( 12.50%) of the combinatorial search space at the given lags (1, 2).
 </div>
-<p><img src='var_main-5.png' alt='' width='400' height='400' /></p>
+<p><img src='var_main-5.png' alt='' width='540' height='400' /></p>
 <div class='output'>
 Granger causality legend:
    +   majority positive associations
@@ -170,7 +167,7 @@ Granger causality summary of all 2 valid models:
 Granger causality summary of all 1 valid unrestricted models:
   100.00%   Depression     -Granger causes- Activity_hours   (1 almost) (sign: 1 -)
 </div>
-<p><img src='var_main-7.png' alt='' width='400' height='400' /></p>
+<p><img src='var_main-7.png' alt='' width='540' height='400' /></p>
 <div class='output'>
 Summary of all valid models:
   lag:

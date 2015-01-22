@@ -50,21 +50,18 @@
       <dd>the name of a column in the data set</dd>
     </dl>
     
-    <div class="Split up a data set into different subsets">
-      <h2>Split up a data set into different subsets</h2>
-      
-    </div>
-
     <div class="Value">
       <h2>Value</h2>
-      
-      <p>This function returns the modified <code>av_state</code> object.</p>
+
+      <p><dl>
+This function returns the modified <code>av_state</code> object.
+</dl></p>
   
     </div>
 
     <div class="Description">
       <h2>Description</h2>
-      
+
       <p>This function splits up the initial data set into multiple sets based on their value for <code>id_field</code>. For example, if we have a data set with a field named <code>id</code>  that has values ranging from 11 to 15, calling <code>av_state <- group_by('id')</code> will set <code>av_state$data</code> to a list of five items. This list is ordered by the value of the id field. Then, we can use <code>av_state$data[[1]]</code> (or equivalently, <code>av_state$data[['11']]</code>) to retrieve the rows in the data set that have <code>id</code> 11. Likewise, use <code>av_state$data[[2]]</code> or <code>av_state$data[['12']]</code> for rows with <code>id</code> 12. This function can only be called once per <code>av_state</code>.</p>
   
     </div>

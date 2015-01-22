@@ -52,21 +52,18 @@
       <dd>a net_cfg object providing metadata about the networks</dd>
     </dl>
     
-    <div class="Select and return the relevant rows">
-      <h2>Select and return the relevant rows</h2>
-      
-    </div>
-
     <div class="Value">
       <h2>Value</h2>
-      
-      <p>This function returns a list with three elements, <code>data</code> is the modified data frame, <code>first_measurement_index</code> is the possibly adjusted first_measurement index, and <code>timestamp</code> is the possibly updated timestamp (day).</p>
+
+      <p><dl>
+This function returns a list with three elements, <code>data</code> is the modified data frame, <code>first_measurement_index</code> is the possibly adjusted first_measurement index, and <code>timestamp</code> is the possibly updated timestamp (day).
+</dl></p>
   
     </div>
 
     <div class="Description">
       <h2>Description</h2>
-      
+
       <p>This function returns the data frame with the beginning and trailing rows that are all NA removed, it also returns updated <code>first_measurement_index</code> and <code>timestamp</code> variables. The timestamp may advance as a result of the data frame starting with three or more NA's.</p>
   
     </div>

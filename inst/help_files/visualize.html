@@ -60,14 +60,9 @@ When the <code>columns</code> argument is given a vector of column names, the co
 The arguments of this function work much like the ones described above for individual <code>factor</code> columns. The added optional <code>labels</code> argument should be a vector of the same length as the <code>columns</code> argument, specifying custom names for the columns. This argument is ignored when <code>type='LINE'</code>.</dd>
     </dl>
     
-    <div class="Visualize columns of the data set">
-      <h2>Visualize columns of the data set</h2>
-      
-    </div>
-
     <div class="Description">
       <h2>Description</h2>
-      
+
       <p>This function works with single or multiple columns. When given an array of multiple columns as <code>columns</code> argument, all nonnumeric columns are converted to numeric class in the plot. This function creates a combined plot with individual plots for each identified group (if the <code><a href='group_by.html'>group_by</a></code> was used) in the current data set. Any supplied arguments other than the ones described are passed on to the plotting functions.</p>
   
     </div>
@@ -84,12 +79,12 @@ visualize(av_state,c(&#39;sum_minuten_licht&#39;,&#39;sum_minuten_zwaar&#39;,
           labels=c(&#39;licht werk&#39;,&#39;zwaar werk&#39;,&#39;vrije tijd&#39;,&#39;sport&#39;),
           type=&#39;BAR&#39;,horiz=TRUE)
 </div>
-<p><img src='visualize-2.png' alt='' width='400' height='400' /></p>
+<p><img src='visualize-2.png' alt='' width='540' height='400' /></p>
 <div class='input'>visualize(av_state,c(&#39;sum_minuten_licht&#39;,&#39;sum_minuten_zwaar&#39;,
           &#39;minuten_vrijetijd&#39;,&#39;minuten_sport&#39;),
           type=&#39;DOT&#39;,xlab=&#39;minuten&#39;)
 </div>
-<p><img src='visualize-4.png' alt='' width='400' height='400' /></p>
+<p><img src='visualize-4.png' alt='' width='540' height='400' /></p>
 <div class='input'>visualize(av_state,c(&#39;sum_minuten_licht&#39;,&#39;sum_minuten_zwaar&#39;,
           &#39;minuten_vrijetijd&#39;,&#39;minuten_sport&#39;))
 </div>
@@ -97,7 +92,7 @@ visualize(av_state,c(&#39;sum_minuten_licht&#39;,&#39;sum_minuten_zwaar&#39;,
 Removed 24 rows containing missing values (geom_point).</strong>
 <strong class='warning'>Warning message:
 Removed 34 rows containing missing values (geom_point).</strong>
-<p><img src='visualize-8.png' alt='' width='400' height='400' /></p></pre>
+<p><img src='visualize-8.png' alt='' width='540' height='400' /></p></pre>
   </div>
   <div class="span4">
     <!-- <ul>

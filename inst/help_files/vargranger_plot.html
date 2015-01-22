@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>print_rejected_models. autovar 0.1-1</title>
+<title>vargranger_plot. autovar 0.1-1</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -35,12 +35,12 @@
         
       </header>
       
-      <h1>Print a list of rejected models after a call to var_main</h1>
+      <h1>Plot the Granger causality summary</h1>
 
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre><div>print_rejected_models(av_state)</div></pre>
+    <pre><div>vargranger_plot(av_state)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
@@ -51,13 +51,13 @@
     <div class="Description">
       <h2>Description</h2>
 
-      <p>This function prints the list of rejected models when <code>av_state</code> is the result of a call to <code><a href='var_main.html'>var_main</a></code>.</p>
+      <p>This function plots a summary of the Granger causality relations found in the valid models found. It is called as part of <code><a href='var_summary.html'>var_summary</a></code>.</p>
   
     </div>
     
     <h2 id="examples">Examples</h2>
     <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/pp5 nieuw compleet.sav&quot;,log_level=3)
-av_state &lt;- var_main(av_state,c(&#39;SomBewegUur&#39;,&#39;SomPHQ&#39;),criterion=&quot;BIC&quot;,log_level=3)
+av_state &lt;- var_main(av_state,c(&#39;SomBewegUur&#39;,&#39;SomPHQ&#39;),criterion=&#39;BIC&#39;,log_level=3)
 </div>
 <div class='output'>
 ====================
@@ -70,7 +70,7 @@ Starting VAR (using 8 cores) with variables: SomBewegUur, SomPHQ
 Done. Processed 9 distinct models, of which 2 were valid.
 Tested 18 of 72 ( 25.00%) of the combinatorial search space at the given lags (1, 2).
 </div>
-<p><img src='print_rejected_models-3.png' alt='' width='540' height='400' /></p>
+<p><img src='vargranger_plot-3.png' alt='' width='540' height='400' /></p>
 <div class='output'>
 Granger causality legend:
    +   majority positive associations
@@ -87,7 +87,7 @@ Granger causality summary of all 2 valid models:
 Granger causality summary of all 1 valid unrestricted models:
   100.00%   SomPHQ      -Granger causes- SomBewegUur   (1 almost) (sign: 1 -)
 </div>
-<p><img src='print_rejected_models-5.png' alt='' width='540' height='400' /></p>
+<p><img src='vargranger_plot-5.png' alt='' width='540' height='400' /></p>
 <div class='output'>
 Summary of all valid models:
   lag:
@@ -118,44 +118,13 @@ B: (AIC: 388.391 (orig: 47.879), BIC: 404.875 (orig: 64.363)) : SomPHQ almost -G
 
 </div>
 <div class='input'># av_state is the result of a call to var_main
-print_rejected_models(av_state)
+vargranger_plot(av_state)
 </div>
-<div class='output'>[[1]]
-(AIC: 419.717, BIC: 432.079) : SomPHQ -Granger causes- SomBewegUur (0.0396)
-  lag: 1 
-[[2]]
-(AIC: 402.451 (orig: 61.939), BIC: 414.813 (orig: 74.301)) : SomPHQ almost -Granger causes- SomBewegUur (0.0584)
-  apply_log_transform: TRUE
-  lag: 1 
-[[3]]
-(AIC: 418.12, BIC: 438.55) : SomPHQ almost -Granger causes- SomBewegUur (0.0549)
-  lag: 2 
-[[4]]
-(AIC: 407.16 (orig: 66.648), BIC: 427.59 (orig: 87.078)) : SomPHQ almost -Granger causes- SomBewegUur (0.0563)
-  apply_log_transform: TRUE
-  lag: 2 
-[[5]]
-(AIC: 392.123, BIC: 408.607) : SomPHQ -Granger causes- SomBewegUur (0.0425)
-  exogenous_variables: 
-    3.5x std of res. SomPHQ (obs.: 27)
-  lag: 1 
-[[6]]
-(AIC: 388.449, BIC: 412.966) : SomPHQ almost -Granger causes- SomBewegUur (0.0509)
-  exogenous_variables: 
-    3.5x std of res. SomPHQ (obs.: 27)
-  lag: 2 
-[[7]]
-(AIC: 391.178 (orig: 50.666), BIC: 415.695 (orig: 75.183)) : SomPHQ ~Granger causes~ SomBewegUur (0.0475)
-  apply_log_transform: TRUE
-  exogenous_variables: 
-    3.5x std of res. lnSomPHQ (obs.: 27)
-  lag: 2 
-
-</div></pre>
+<p><img src='vargranger_plot-8.png' alt='' width='540' height='400' /></p></pre>
   </div>
   <div class="span4">
     <!-- <ul>
-      <li>print_rejected_models</li>
+      <li>vargranger_plot</li>
     </ul>
     <ul>
       
