@@ -394,7 +394,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   donemsg <- paste("\nDone. Processed",av_state$model_cnt,"distinct models, of which",
                    length(av_state$accepted_models),
                    ifelse(length(av_state$accepted_models) == 1,"was","were"),"valid.\n")
-  if (av_state$simple_models) {
+  if (av_state$simple_models || !interactive()) {
     scat(av_state$log_level,3,donemsg)
   } else {
     var_summary(av_state,donemsg)

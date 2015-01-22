@@ -558,6 +558,7 @@ function var_main(str) {
     str = str+ ',exogenous_variables=c('+$('#exovrs_line').val()+')'
   }
   str = str+ ')\n}))\n'
+  str = str+ 'var_summary(d,\'\\n\')\n'
   str = str+ 'print_best_models(d)\n'
   return str;
 }
