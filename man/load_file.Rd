@@ -2,14 +2,14 @@
 % Please edit documentation in R/load_file.r
 \name{load_file}
 \alias{load_file}
-\title{Load a data set from a .sav or a .dta file}
+\title{Load a data set from a .sav, .dta, or .csv file}
 \usage{
-load_file(filename, file_type = c("SPSS", "STATA"), log_level = 0)
+load_file(filename, file_type = c("SPSS", "STATA", "CSV"), log_level = 0)
 }
 \arguments{
 \item{filename}{path and filename of the data set to load. The path can be relative to the current working directory.}
 
-\item{file_type}{specifies whether the file contains STATA or SPSS data. This argument is optional. When not specified, it is determined from the file name, i.e., .dta extensions are treated as STATA files and .sav extensions are treated as SPSS files.}
+\item{file_type}{specifies whether the file contains STATA, SPSS, or CSV data. This argument is optional. When not specified, it is determined from the file name, i.e., .dta extensions are treated as STATA files, .sav extensions are treated as SPSS files, and .csv extensions are treated as CSV files.}
 
 \item{log_level}{sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about the data set that was loaded.}
 }
