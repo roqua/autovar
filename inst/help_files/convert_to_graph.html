@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-<title>convert_to_graph. autovar 0.1-1</title>
+<title>convert_to_graph. autovar 0.2-0</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="">
 
@@ -20,7 +20,7 @@
     <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="#">autovar 0.1-1</a>
+      <a class="brand" href="#">autovar 0.2-0</a>
       <div class="nav">
         <ul class="nav">
           <li><a href="index.html"><i class="icon-home icon-white"></i> Index</a></li>
@@ -125,11 +125,11 @@ var_main(av_state, vars = c(&quot;uw_eigen_factor&quot;, &quot;somberheid&quot;,
 
 Starting VAR (using 8 cores) with variables: uw_eigen_factor, somberheid, ontspanning, piekeren, hier_en_nu, humor
 
-Done. Processed 72 distinct models, of which 2 were valid.
+Done. Processed 72 distinct models, of which 3 were valid.
 </div>
 <div class='input'>cat(convert_to_graph(d,net_cfg))
 </div>
-<div class='output'>[{&quot;links&quot;:[{&quot;source&quot;:3,&quot;target&quot;:5,&quot;coef&quot;:&quot;0.453539983433784&quot;}],&quot;nodes&quot;:[{&quot;index&quot;:0,&quot;name&quot;:&quot;uw_eigen_factor&quot;,&quot;type&quot;:&quot;Neutraal&quot;},{&quot;index&quot;:1,&quot;name&quot;:&quot;somberheid&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:2,&quot;name&quot;:&quot;ontspanning&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:3,&quot;name&quot;:&quot;piekeren&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:4,&quot;name&quot;:&quot;hier_en_nu&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:5,&quot;name&quot;:&quot;humor&quot;,&quot;type&quot;:&quot;Positief&quot;}]},{&quot;links&quot;:[{&quot;source&quot;:1,&quot;target&quot;:0,&quot;coef&quot;:&quot;-0.6853342429164&quot;},{&quot;source&quot;:2,&quot;target&quot;:0,&quot;coef&quot;:&quot;0.407169586229697&quot;},{&quot;source&quot;:3,&quot;target&quot;:0,&quot;coef&quot;:&quot;-0.501797130195404&quot;},{&quot;source&quot;:4,&quot;target&quot;:0,&quot;coef&quot;:&quot;0.22152817172736&quot;},{&quot;source&quot;:2,&quot;target&quot;:1,&quot;coef&quot;:&quot;-0.530767980115494&quot;},{&quot;source&quot;:3,&quot;target&quot;:1,&quot;coef&quot;:&quot;0.752296500733089&quot;},{&quot;source&quot;:3,&quot;target&quot;:2,&quot;coef&quot;:&quot;-0.641547713506168&quot;},{&quot;source&quot;:4,&quot;target&quot;:2,&quot;coef&quot;:&quot;0.399062326086078&quot;},{&quot;source&quot;:5,&quot;target&quot;:2,&quot;coef&quot;:&quot;0.217775443296656&quot;},{&quot;source&quot;:4,&quot;target&quot;:3,&quot;coef&quot;:&quot;-0.424407297389734&quot;},{&quot;source&quot;:5,&quot;target&quot;:3,&quot;coef&quot;:&quot;-0.246568274370003&quot;}],&quot;nodes&quot;:[{&quot;index&quot;:0,&quot;name&quot;:&quot;uw_eigen_factor&quot;,&quot;type&quot;:&quot;Neutraal&quot;},{&quot;index&quot;:1,&quot;name&quot;:&quot;somberheid&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:2,&quot;name&quot;:&quot;ontspanning&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:3,&quot;name&quot;:&quot;piekeren&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:4,&quot;name&quot;:&quot;hier_en_nu&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:5,&quot;name&quot;:&quot;humor&quot;,&quot;type&quot;:&quot;Positief&quot;}]},[{&quot;source&quot;:&quot;piekeren&quot;,&quot;target&quot;:&quot;humor&quot;,&quot;sign&quot;:1}]]</div></pre>
+<div class='output'>[{&quot;links&quot;:[{&quot;source&quot;:3,&quot;target&quot;:5,&quot;coef&quot;:&quot;0.47267713212763&quot;}],&quot;nodes&quot;:[{&quot;index&quot;:0,&quot;name&quot;:&quot;uw_eigen_factor&quot;,&quot;type&quot;:&quot;Neutraal&quot;},{&quot;index&quot;:1,&quot;name&quot;:&quot;somberheid&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:2,&quot;name&quot;:&quot;ontspanning&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:3,&quot;name&quot;:&quot;piekeren&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:4,&quot;name&quot;:&quot;hier_en_nu&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:5,&quot;name&quot;:&quot;humor&quot;,&quot;type&quot;:&quot;Positief&quot;}]},{&quot;links&quot;:[{&quot;source&quot;:1,&quot;target&quot;:0,&quot;coef&quot;:&quot;-0.686495372377359&quot;},{&quot;source&quot;:2,&quot;target&quot;:0,&quot;coef&quot;:&quot;0.408674819220411&quot;},{&quot;source&quot;:3,&quot;target&quot;:0,&quot;coef&quot;:&quot;-0.502459634651945&quot;},{&quot;source&quot;:4,&quot;target&quot;:0,&quot;coef&quot;:&quot;0.219487280328663&quot;},{&quot;source&quot;:2,&quot;target&quot;:1,&quot;coef&quot;:&quot;-0.533519613287072&quot;},{&quot;source&quot;:3,&quot;target&quot;:1,&quot;coef&quot;:&quot;0.753546393092858&quot;},{&quot;source&quot;:3,&quot;target&quot;:2,&quot;coef&quot;:&quot;-0.639113492603159&quot;},{&quot;source&quot;:4,&quot;target&quot;:2,&quot;coef&quot;:&quot;0.39096455387022&quot;},{&quot;source&quot;:5,&quot;target&quot;:2,&quot;coef&quot;:&quot;0.214221748245091&quot;},{&quot;source&quot;:4,&quot;target&quot;:3,&quot;coef&quot;:&quot;-0.4180303807999&quot;},{&quot;source&quot;:5,&quot;target&quot;:3,&quot;coef&quot;:&quot;-0.243734657071089&quot;},{&quot;source&quot;:5,&quot;target&quot;:4,&quot;coef&quot;:&quot;0.212482645897747&quot;}],&quot;nodes&quot;:[{&quot;index&quot;:0,&quot;name&quot;:&quot;uw_eigen_factor&quot;,&quot;type&quot;:&quot;Neutraal&quot;},{&quot;index&quot;:1,&quot;name&quot;:&quot;somberheid&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:2,&quot;name&quot;:&quot;ontspanning&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:3,&quot;name&quot;:&quot;piekeren&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:4,&quot;name&quot;:&quot;hier_en_nu&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:5,&quot;name&quot;:&quot;humor&quot;,&quot;type&quot;:&quot;Positief&quot;}]},[{&quot;source&quot;:&quot;piekeren&quot;,&quot;target&quot;:&quot;humor&quot;,&quot;sign&quot;:1}]]</div></pre>
   </div>
   <div class="span4">
     <!-- <ul>
