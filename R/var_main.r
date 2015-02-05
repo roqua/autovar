@@ -34,10 +34,15 @@
 #' @param include_squared_trend determines whether the square of the trend is included if the trend is included for a model. The trend variable is specified using the \code{\link{order_by}} function.
 #' @param normalize_data determines whether the endogenous variables should be normalized.
 #' @param include_lag_zero determines whether models at lag order 0 are should be considered. These are models at lag 1 with constrained lag-1 parameters in all equations.
-#' @param split_up_outliers determines whether each outlier should have its own exogenous variable. This will make a difference for restricted models only, and only when there is a variable with multiple outliers.
+#' @param split_up_outliers determines whether each outlier should have its own exogenous variable. This will make a difference only when there is a variable with multiple outliers.
 #' @param format_output_like_stata when \code{TRUE}, all constraints and exogenous variables are always shown (i.e., it will now show exogenous variables that were included but constrained in all equations), and the constraints are formatted like in Stata.
 #' @param exclude_almost when \code{TRUE}, only Granger causalities with p-value <= 0.05 are included in the results. When \code{FALSE}, p-values between 0.05 and 0.10 are also included in results as "almost Granger causalities" that have half the weight of actual Granger causalities in the Granger causality summary graph.
-#' @param simple_models when \code{TRUE}, only simple models are returned, meaning we don't add constrained models. Also, this setting forces \code{exogenous_max_iterations} to 1 and forces the first iteration to search for outliers at the 2.5x std range (essentially skipping the first and second iteration).
+#' @param simple_models when \code{TRUE}, four changes are made in the way Autovar works. \itemize{
+#' \item \code{1} - Sets autovar to search only for lag 1 and lag 2 models. Additionally, the lag 2 models are restricted in the sense that only the autoregressive lag 2 is used, i.e., the cross-lagged parameters for lag 2 are constrained.
+#' \item \code{2} - The normality assumption (sktest) no longer tests for kurtosis (only for skewness).
+#' \item \code{3} - \code{exogenous_max_iterations} is set to 1, meaning we only search one iteration deep for masking outliers, and in this iteration, points that are 2.5xstd away in the residuals or in the squared residuals are masked as outliers.
+#' \item \code{4} - Autovar no longer adds constrained versions of the valid models to the list of accepted models.
+#' }
 #' @param numcores is the number of cores to use in parallel for evaluation the model. When this variable is \code{1}, no parallel processing is used and all processing is done serially. This variable has to be an integer between 1 and 16. The default value is the detected number of cores on the system (using \code{detectCores()}). If the \code{log_level} is less than 3, the value for \code{numcores} is forced to 1 because output doesn't show up otherwise.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples

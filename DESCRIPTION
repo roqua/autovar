@@ -1,6 +1,6 @@
 Package: autovar
-Version: 0.1-1
-Date: 2014-07-07
+Version: 0.2-0
+Date: 2015-02-05
 Title: Automated Vector Autoregression Model Creation
 Authors@R: c(person("Ando","Emerencia",role = c("aut","cre"),
     email = "ando.emerencia@gmail.com"))
@@ -28,6 +28,6 @@ Depends:
 Suggests:
     testthat,
     roxygen2
-Description: A package to simplify the process from raw SPSS or
-    STATA data to VAR models.
+Description: A package to simplify the process from raw
+    data to VAR models.
 License: Unlimited
