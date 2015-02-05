@@ -435,6 +435,15 @@ A: (AIC: 1253.375 (orig: 277.265), BIC: 1274.814 (orig: 298.704)) : Musc ~Grange
 </div>
 </div>
 <div class='control-group'>
+<label class='control-label'>Simple models</label>
+<div class='controls'>
+  <label class='checkbox'>
+    <input type='checkbox' id='simple_models'>Search for simple models only
+  </label>
+  <span class='help-block'>Use only when you have a large (>=4) number of variables and when using Autovar normally runs for more than 10 minutes. Enabling this option will override some settings to make Autovar run faster, but return fewer/worse models.</span>
+</div>
+</div>
+<div class='control-group'>
 <label class='control-label'>Model evaluation</label>
 <div class='controls'>
   <label class='checkbox'>
@@ -544,6 +553,9 @@ function var_main(str) {
   }
   if ($('#lutkepohl_restrictions').is(':checked')) {
     str = str+ ',restrictions.verify_validity_in_every_step=FALSE,restrictions.extensive_search=FALSE'
+  }
+  if ($('#simple_models').is(':checked')) {
+    str = str+ ',simple_models=TRUE'
   }
   if ($('#use_bic').is(':checked')) {
     str = str+ ',criterion="BIC"'
