@@ -74,11 +74,11 @@ The above example includes a model with \code{lag=3} (so lags 1, 2, and 3 are in
 
 \item{exclude_almost}{when \code{TRUE}, only Granger causalities with p-value <= 0.05 are included in the results. When \code{FALSE}, p-values between 0.05 and 0.10 are also included in results as "almost Granger causalities" that have half the weight of actual Granger causalities in the Granger causality summary graph.}
 
-\item{simple_models}{when \code{TRUE}, four changes are made in the way Autovar works. \itemize{
-\item \code{1} - Sets autovar to search only for lag 1 and lag 2 models. Additionally, the lag 2 models are restricted in the sense that only the autoregressive lag 2 is used, i.e., the cross-lagged parameters for lag 2 are constrained.
-\item \code{2} - The normality assumption (sktest) no longer tests for kurtosis (only for skewness).
-\item \code{3} - \code{exogenous_max_iterations} is set to 1, meaning we only search one iteration deep for masking outliers, and in this iteration, points that are 2.5xstd away in the residuals or in the squared residuals are masked as outliers.
-\item \code{4} - Autovar no longer adds constrained versions of the valid models to the list of accepted models.
+\item{simple_models}{when \code{TRUE}, four changes are made in the way Autovar works. \enumerate{
+\item Sets autovar to search only for lag 1 and lag 2 models. Additionally, the lag 2 models are restricted in the sense that only the autoregressive lag 2 is used, i.e., the cross-lagged parameters for lag 2 are constrained.
+\item The normality assumption (sktest) no longer tests for kurtosis (only for skewness).
+\item \code{exogenous_max_iterations} is set to 1, meaning we only search one iteration deep for masking outliers, and in this iteration, points that are 2.5xstd away in the residuals or in the squared residuals are masked as outliers.
+\item Autovar no longer adds constrained versions of the valid models to the list of accepted models.
 }}
 
 \item{numcores}{is the number of cores to use in parallel for evaluation the model. When this variable is \code{1}, no parallel processing is used and all processing is done serially. This variable has to be an integer between 1 and 16. The default value is the detected number of cores on the system (using \code{detectCores()}). If the \code{log_level} is less than 3, the value for \code{numcores} is forced to 1 because output doesn't show up otherwise.}

@@ -107,16 +107,16 @@ The above example includes a model with <code>lag=3</code> (so lags 1, 2, and 3 
       <dt>exclude_almost</dt>
       <dd>when <code>TRUE</code>, only Granger causalities with p-value <= 0.05 are included in the results. When <code>FALSE</code>, p-values between 0.05 and 0.10 are also included in results as "almost Granger causalities" that have half the weight of actual Granger causalities in the Granger causality summary graph.</dd>
       <dt>simple_models</dt>
-      <dd>when <code>TRUE</code>, four changes are made in the way Autovar works. <ul>
-<li> <code>1</code> - Sets autovar to search only for lag 1 and lag 2 models. Additionally, the lag 2 models are restricted in the sense that only the autoregressive lag 2 is used, i.e., the cross-lagged parameters for lag 2 are constrained.
+      <dd>when <code>TRUE</code>, four changes are made in the way Autovar works. <ol>
+<li> Sets autovar to search only for lag 1 and lag 2 models. Additionally, the lag 2 models are restricted in the sense that only the autoregressive lag 2 is used, i.e., the cross-lagged parameters for lag 2 are constrained.
 </li>
-<li> <code>2</code> - The normality assumption (sktest) no longer tests for kurtosis (only for skewness).
+<li> The normality assumption (sktest) no longer tests for kurtosis (only for skewness).
 </li>
-<li> <code>3</code> - <code>exogenous_max_iterations</code> is set to 1, meaning we only search one iteration deep for masking outliers, and in this iteration, points that are 2.5xstd away in the residuals or in the squared residuals are masked as outliers.
+<li> <code>exogenous_max_iterations</code> is set to 1, meaning we only search one iteration deep for masking outliers, and in this iteration, points that are 2.5xstd away in the residuals or in the squared residuals are masked as outliers.
 </li>
-<li> <code>4</code> - Autovar no longer adds constrained versions of the valid models to the list of accepted models.
+<li> Autovar no longer adds constrained versions of the valid models to the list of accepted models.
 </li>
-</ul>
+</ol>
 </dd>
       <dt>numcores</dt>
       <dd>is the number of cores to use in parallel for evaluation the model. When this variable is <code>1</code>, no parallel processing is used and all processing is done serially. This variable has to be an integer between 1 and 16. The default value is the detected number of cores on the system (using <code>detectCores()</code>). If the <code>log_level</code> is less than 3, the value for <code>numcores</code> is forced to 1 because output doesn't show up otherwise.</dd>
