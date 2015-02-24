@@ -4,7 +4,7 @@
 \alias{add_derived_column}
 \title{Add a new column using data from other columns}
 \usage{
-add_derived_column(av_state, name, columns, operation = c("SUM", "LN",
+add_derived_column(av_state, name, columns, operation = c("SUM", "AVG", "LN",
   "MINUTES_TO_HOURS", "SQUARED"), log_level = 0)
 }
 \arguments{
@@ -16,6 +16,7 @@ add_derived_column(av_state, name, columns, operation = c("SUM", "LN",
 
 \item{operation}{this argument has three possible values: \itemize{
 \item \code{'SUM'} - The new column is the sum of the columns specified in the columns argument. So for this option, the columns argument is an array of column names. Values in the summation of columns that are NA are treated as if they're zero. Columns that are not numeric are transformed to numeric. For example, Factor columns are transformed to numbers starting at 0 for the first factor level.
+\item \code{'AVG'} - The new column is the average of the columns specified in the columns argument. For each row, the resulting column has the average value of all columns that are not NA on that row, or NA otherwise.
 \item \code{'LN'} - The new column is the natural logarithm of the specified column in columns. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column. Note that values are increased if necessary so that the resulting column has no negative values.
 \item \code{'MINUTES_TO_HOURS'} - The new column is the values of the specified column divided by 60. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column.
 \item \code{'SQUARED'} - The new column ise the square of the values of the specified column. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column.

@@ -6,6 +6,7 @@
 #' @param columns the existing columns that the new column will be based on
 #' @param operation this argument has three possible values: \itemize{
 #' \item \code{'SUM'} - The new column is the sum of the columns specified in the columns argument. So for this option, the columns argument is an array of column names. Values in the summation of columns that are NA are treated as if they're zero. Columns that are not numeric are transformed to numeric. For example, Factor columns are transformed to numbers starting at 0 for the first factor level.
+#' \item \code{'AVG'} - The new column is the average of the columns specified in the columns argument. For each row, the resulting column has the average value of all columns that are not NA on that row, or NA otherwise.
 #' \item \code{'LN'} - The new column is the natural logarithm of the specified column in columns. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column. Note that values are increased if necessary so that the resulting column has no negative values.
 #' \item \code{'MINUTES_TO_HOURS'} - The new column is the values of the specified column divided by 60. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column.
 #' \item \code{'SQUARED'} - The new column ise the square of the values of the specified column. Thus, for this option, the columns argument is simply the name of a single column. This operation does not work on columns that are not numeric. Values in the original column that are NA are left as NA in the new column.
@@ -25,11 +26,12 @@
 #'                                operation='LN')
 #' av_state$data[[1]][c('SomBewegen','SomBewegUur','lnSomBewegUur')]
 #' @export
-add_derived_column <- function(av_state,name,columns,operation=c('SUM','LN','MINUTES_TO_HOURS','SQUARED'),log_level=0) {
+add_derived_column <- function(av_state,name,columns,operation=c('SUM','AVG','LN','MINUTES_TO_HOURS','SQUARED'),log_level=0) {
   assert_av_state(av_state)
   operation <- match.arg(operation)
   operation <- switch(operation,
     SUM = add_derived_column_sum,
+    AVG = add_derived_column_avg,
     LN = add_derived_column_ln,
     MINUTES_TO_HOURS = add_derived_column_mtoh,
     SQUARED = add_derived_column_squared
@@ -65,6 +67,33 @@ add_derived_column_sum <- function(columns,data_frame,subset,log_level) {
     # for sum, default value is 0
     data_column[is.na(data_column)] <- 0
     csum <- csum + data_column
+  }
+  csum
+}
+
+add_derived_column_avg <- function(columns,data_frame,subset,log_level) {
+  csum <- NULL
+  for (column in columns) {
+    data_column <- data_frame[[column]]
+    if (is.null(data_column))
+      stop(paste("column",column,"does not exist for subset",subset))
+  }
+  for (i in 1:(dim(data_frame)[1])) {
+    if (i > dim(data_frame)[1]) break;
+    sum_val <- 0
+    sum_count <- 0
+    for (column in columns) {
+      col_val <- data_frame[[column]][i]
+      if (is.na(col_val)) next;
+      col_val <- as.numeric(col_val)
+      sum_val <- sum_val + col_val
+      sum_count <- sum_count + 1
+    }
+    if (sum_count > 0) {
+      csum <- c(csum,sum_val/sum_count)
+    } else {
+      csum <- c(csum,NA)
+    }
   }
   csum
 }
