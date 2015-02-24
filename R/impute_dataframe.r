@@ -2,29 +2,33 @@
 #'
 #' This function uses the Amelia package to impute a given data frame and return the imputed values.
 #' @param df a data frame
-#' @param net_cfg a net_cfg object providing metadata about the networks
+#' @param measurements_per_day The number of measurements per day in the diary study
+#' @param repetitions The amount of times the Amelia call should be averaged over. Defaults to 30. The actual number of imputations is five times the value for \code{repetitions}, since Amelia's values are already averaged over five runs.
 #' @return This function returns the modified data frame.
 #' @examples
 #' data <- generate_numerical_test_data(40)
 #' data
-#' impute_dataframe(data,list(measurements_per_day=1))
+#' impute_dataframe(data,measurements_per_day=1)
 #' @export
-impute_dataframe <- function(df,net_cfg) {
-  r <- impute_dataframe_aux(df,net_cfg)
-  for (i in 1:29)
-    r <- r + impute_dataframe_aux(df,net_cfg)
-  r/30
+impute_dataframe <- function(df,measurements_per_day,repetitions=30) {
+  if (repetitions < 1) stop("repetitions has to be at least 1")
+  r <- impute_dataframe_aux(df,measurements_per_day)
+  if (repetitions > 1) {
+    for (i in 1:(repetitions-1))
+      r <- r + impute_dataframe_aux(df,measurements_per_day)
+  }
+  r/repetitions
 }
-impute_dataframe_aux <- function(df,net_cfg) {
+impute_dataframe_aux <- function(df,measurements_per_day) {
   ncols <- ncol(df)
   if (is.null(ncols) || ncols == 0) return(df)
   if (is.null(nrow(df)) || nrow(df) == 0) return(df)
   df$time <- 1:nrow(df)
-  df$daypart <- rep(0:(net_cfg$measurements_per_day -1),nrow(df))[1:nrow(df)]
+  df$daypart <- rep(0:(measurements_per_day -1),nrow(df))[1:nrow(df)]
   constant_columns <- NULL
   for (i in 1:ncol(df)) {
-    colname = names(df)[i]
-    if (!any(is.na(df[,colname])) && all(df[,colname] == df[1,colname]))
+    colname = names(df)[i]    
+    if (all(is.na(df[,colname])) || var(df[,colname], na.rm = TRUE) == 0)
       constant_columns <- c(constant_columns,colname)
   }
   noms <- 'daypart'

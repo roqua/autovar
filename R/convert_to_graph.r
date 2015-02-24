@@ -33,7 +33,7 @@
 #' first_measurement_index <- res$first_measurement_index
 #' timestamp <- res$timestamp
 #' if (any(is.na(odata)))
-#'   odata <- impute_dataframe(odata,net_cfg)
+#'   odata <- impute_dataframe(odata,net_cfg$measurements_per_day)
 #' d<-load_dataframe(odata,net_cfg)
 #' d<-add_trend(d)
 #' d<-set_timestamps(d,date_of_first_measurement=timestamp,
