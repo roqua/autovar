@@ -147,11 +147,11 @@ generate_test_data <- function() {
 }
 generate_numerical_test_data <- function(n) {
   ids <- rep(1,times=n)
-  tijdstips <- NULL
+  somevals <- NULL
   somethings <- NULL
   for (i in 1:n) {
-    tijdstips <- c(tijdstips,ifelse(i%%4 == 0,NA,i))
-    somethings <- c(somethings,ifelse(i%%5 == 0,NA,i*i))
+    somevals <- c(somevals,ifelse(runif(1) < 0.25,NA,runif(1,1,n)))
+    somethings <- c(somethings,ifelse(runif(1) > 0.8,NA,runif(1,1,n)*runif(1,1,n)))
   }
-  data.frame(id=ids,tijdstip=tijdstips,something=somethings)
+  data.frame(id=ids,someval=somevals,something=somethings)
 }

@@ -4,12 +4,14 @@
 \alias{impute_dataframe}
 \title{Impute missing values in a data.frame using EM imputation}
 \usage{
-impute_dataframe(df, net_cfg)
+impute_dataframe(df, measurements_per_day, repetitions = 30)
 }
 \arguments{
 \item{df}{a data frame}
 
-\item{net_cfg}{a net_cfg object providing metadata about the networks}
+\item{measurements_per_day}{The number of measurements per day in the diary study}
+
+\item{repetitions}{The amount of times the Amelia call should be averaged over. Defaults to 30. The actual number of imputations is five times the value for \code{repetitions}, since Amelia's values are already averaged over five runs.}
 }
 \value{
 This function returns the modified data frame.
@@ -20,6 +22,6 @@ This function uses the Amelia package to impute a given data frame and return th
 \examples{
 data <- generate_numerical_test_data(40)
 data
-impute_dataframe(data,list(measurements_per_day=1))
+impute_dataframe(data,measurements_per_day=1)
 }
 

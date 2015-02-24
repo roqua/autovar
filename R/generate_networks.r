@@ -94,7 +94,7 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
     if (attempt > 1) SIGNIFICANCES <- c(0.05,0.01,0.005)
     for (signif in SIGNIFICANCES) {
       ndata <- odata
-      if (do_impute) ndata <- impute_dataframe(odata,net_cfg)
+      if (do_impute) ndata <- impute_dataframe(odata,net_cfg$measurements_per_day)
       if (any(is.na(ndata))) next # sometimes it fails
       d<-load_dataframe(ndata,net_cfg,log_level=3)
       d<-add_trend(d,log_level=3)
