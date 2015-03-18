@@ -28,8 +28,11 @@ impute_dataframe_aux <- function(df,measurements_per_day) {
   constant_columns <- NULL
   for (i in 1:ncol(df)) {
     colname = names(df)[i]    
-    if (all(is.na(df[,colname])) || var(df[,colname], na.rm = TRUE) == 0)
+    if (all(is.na(df[,colname])) || var(df[,colname], na.rm = TRUE) == 0) {
       constant_columns <- c(constant_columns,colname)
+      if (!is.na(mean(df[,colname], na.rm = TRUE)))
+        df[,colname] <- mean(df[,colname], na.rm = TRUE)
+    }
   }
   noms <- 'daypart'
   if ('daypart' %in% constant_columns)
