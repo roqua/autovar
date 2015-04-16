@@ -3,6 +3,7 @@
 #' This function returns a JSON representation of a the graphs for the best valid model found in the given \code{av_state}.
 #' @param av_state an object of class \code{av_state}, containing at least one valid model
 #' @param net_cfg a net_cfg object providing metadata about the networks
+#' @param forced_variable a variable that, if not \code{NULL}, will be the target of the third connection in the top three of connections that is returned by this function.
 #' @return This function returns a string representing a json array of two networks.
 #' @examples
 #' GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
@@ -45,7 +46,7 @@
 #'               split_up_outliers=TRUE)
 #' cat(convert_to_graph(d,net_cfg))
 #' @export
-convert_to_graph <- function(av_state,net_cfg) {
+convert_to_graph <- function(av_state,net_cfg,forced_variable = NULL) {
   rnames <- NULL
   nodedata <- NULL
   linkdata <- NULL
@@ -169,17 +170,35 @@ convert_to_graph <- function(av_state,net_cfg) {
       seen_positive_target <- TRUE
     break
   }
-  # if all used so far had a negative target, this target has to be positive,
-  for (i in 1:nr_links) {
-    if (i > nr_links) break
-    if (usedlinks[[i]] == 1) next
-    if (!seen_positive_target && !is_positive_property(linkstr[i,]$target,net_cfg)) next
-    graphsum <- rbind(graphsum,data.frame(source=linkstr[i,]$source,
-                                          target=linkstr[i,]$target,
-                                          sign=linkstr[i,]$sign,
-                                          stringsAsFactors=FALSE))
-    usedlinks[[i]] <- 1
-    break
+  
+  # two scenarios for the third connection:
+  if (is.null(forced_variable) || is.null(net_cfg$incident_to_best_of)) {
+    # if all used so far had a negative target, this target has to be positive.
+    for (i in 1:nr_links) {
+      if (i > nr_links) break
+      if (usedlinks[[i]] == 1) next
+      if (!seen_positive_target && !is_positive_property(linkstr[i,]$target,net_cfg)) next
+      graphsum <- rbind(graphsum,data.frame(source=linkstr[i,]$source,
+                                            target=linkstr[i,]$target,
+                                            sign=linkstr[i,]$sign,
+                                            stringsAsFactors=FALSE))
+      usedlinks[[i]] <- 1
+      break
+    }
+  } else {
+    # find the strongest unused link that starts at one of the variables in net_cfg$incident_to_best_of
+    # and ends at the forced_variable variable
+    for (i in 1:nr_links) {
+      if (i > nr_links) break
+      if (usedlinks[[i]] == 1) next
+      if (linkstr[i,]$target != forced_variable || !(linkstr[i,]$source %in% net_cfg$incident_to_best_of)) next
+      graphsum <- rbind(graphsum,data.frame(source=linkstr[i,]$source,
+                                            target=linkstr[i,]$target,
+                                            sign=linkstr[i,]$sign,
+                                            stringsAsFactors=FALSE))
+      usedlinks[[i]] <- 1
+      break
+    }
   }
   paste('[',
         toString(toJSON(list(links=linkdata,nodes=nodedata))),     # dynamic

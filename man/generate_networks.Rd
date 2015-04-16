@@ -5,7 +5,8 @@
 \title{Return a JSON array of network data of a fitting model}
 \usage{
 generate_networks(data, timestamp, always_include = NULL, pairs = NULL,
-  positive_variables = NULL, negative_variables = NULL, labels = list(),
+  positive_variables = NULL, negative_variables = NULL,
+  pick_best_of = NULL, incident_to_best_of = NULL, labels = list(),
   measurements_per_day = 3, max_network_size = 6)
 }
 \arguments{
@@ -20,6 +21,10 @@ generate_networks(data, timestamp, always_include = NULL, pairs = NULL,
 \item{positive_variables}{a vector of names of variables that measure a positive affect (e.g., happiness). Variable names not occurring in the \code{positive_variables} or \code{negative_variables} list are considered neutral.}
 
 \item{negative_variables}{a vector of names of variables that measure a negative affect (e.g., sadness). Variable names not occurring in the \code{positive_variables} or \code{negative_variables} list are considered neutral.}
+
+\item{pick_best_of}{a vector of variable names of which one should always be included in the network. Can also be \code{NULL} (the default value), in which case no variable is always included (unless specified by \code{always_include}).}
+
+\item{incident_to_best_of}{if \code{pick_best_of} is not NULL, a choice is made between the networks generated at each iteration based on which has the most incoming edges that originate from nodes listed in the vector of variable names \code{incident_to_best_of}.}
 
 \item{labels}{a list where keys are variable names and values are labels.}
 
