@@ -155,9 +155,9 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
           if (is.null(net_cfg$pick_best_of) || is.null(net_cfg$incident_to_best_of))
             return(convert_to_graph(d,net_cfg))
           current_graph <- convert_to_graph(d,net_cfg,forced_variable = net_cfg$pick_best_of[[idx]])
-          current_number_of_incident_edges <- number_of_edges(current_graph, # TODO: should be the labels of these nodes:
-                                                              from_nodes = label_nodes(net_cfg$incident_to_best_of),
-                                                              to_node = label_nodes(net_cfg$pick_best_of[[idx]]))
+          current_number_of_incident_edges <- number_of_edges(current_graph,
+                                                              from_nodes = label_nodes(net_cfg$incident_to_best_of,net_cfg),
+                                                              to_node = label_nodes(net_cfg$pick_best_of[[idx]],net_cfg))
           if (current_number_of_incident_edges > most_incident_edges) {
             most_incident_edges <- current_number_of_incident_edges
             best_graph <- current_graph
