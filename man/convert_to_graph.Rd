@@ -4,12 +4,14 @@
 \alias{convert_to_graph}
 \title{Convert best model to graph}
 \usage{
-convert_to_graph(av_state, net_cfg)
+convert_to_graph(av_state, net_cfg, forced_variable = NULL)
 }
 \arguments{
 \item{av_state}{an object of class \code{av_state}, containing at least one valid model}
 
 \item{net_cfg}{a net_cfg object providing metadata about the networks}
+
+\item{forced_variable}{a variable that, if not \code{NULL}, will be the target of the third connection in the top three of connections that is returned by this function.}
 }
 \value{
 This function returns a string representing a json array of two networks.
