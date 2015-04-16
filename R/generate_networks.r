@@ -7,6 +7,8 @@
 #' @param pairs a vector of variable names in the form \code{c('pair1a','pair1b','pair2a','pair2b','pair3a',...)}. In other words: it is a vector of even length in which each two subsequent positions are seen as a pair. The pairs are treated such that only one pair or one variable of the pairs is included in the networks.
 #' @param positive_variables a vector of names of variables that measure a positive affect (e.g., happiness). Variable names not occurring in the \code{positive_variables} or \code{negative_variables} list are considered neutral.
 #' @param negative_variables a vector of names of variables that measure a negative affect (e.g., sadness). Variable names not occurring in the \code{positive_variables} or \code{negative_variables} list are considered neutral.
+#' @param pick_best_of a vector of variable names of which one should always be included in the network. Can also be \code{NULL} (the default value), in which case no variable is always included (unless specified by \code{always_include}).
+#' @param incident_to_best_of if \code{pick_best_of} is not NULL, a choice is made between the networks generated at each iteration based on which has the most incoming edges that originate from nodes listed in the vector of variable names \code{incident_to_best_of}.
 #' @param labels a list where keys are variable names and values are labels.
 #' @param measurements_per_day an integer in [1,16] denoting the number of measurements per day. Defaults to 3.
 #' @param max_network_size an integer in [2,6] denoting the number of nodes to include in the networks initially. Defaults to 6.
@@ -52,7 +54,8 @@
 #'                   max_network_size = 6))
 #' @export
 generate_networks <- function(data, timestamp, always_include = NULL, pairs = NULL, positive_variables = NULL,
-                              negative_variables= NULL, labels = list(), measurements_per_day = 3, max_network_size = 6) {
+                              negative_variables= NULL, pick_best_of = NULL, incident_to_best_of = NULL, 
+                              labels = list(), measurements_per_day = 3, max_network_size = 6) {
   if (class(data) != "data.frame") return("Data argument is not a data.frame")
   if (class(timestamp) != "character") return("Timestamp argument is not a character string")
   if (nchar(timestamp) != 10) return("Wrong timestamp format, should be: yyyy-mm-dd")
@@ -64,6 +67,8 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
   net_cfg$pairs <- pairs
   net_cfg$positive_variables <- unique(positive_variables)
   net_cfg$negative_variables <- unique(negative_variables)
+  net_cfg$pick_best_of <- unique(pick_best_of)
+  net_cfg$incident_to_best_of <- unique(incident_to_best_of)
   net_cfg$labels <- labels
   if (!(measurements_per_day %in% 1:16)) return("measurements_per_day needs to be in 1:16")
   net_cfg$measurements_per_day <- measurements_per_day
@@ -80,37 +85,108 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
       # once with balancing and once without.
       number_of_columns <- net_cfg$max_network_size+2-attempt
     }
-    odata <- select_relevant_columns(data,net_cfg,fail_safe,number_of_columns,log_level=3)
-    if (is.null(odata)) next
-    first_measurement_index <- 1
-    res <- select_relevant_rows(odata,timestamp,net_cfg)
-    odata <- res$data
-    first_measurement_index <- res$first_measurement_index
-    timestamp <- res$timestamp
-    do_impute <- FALSE
-    if (any(is.na(odata)))
-      do_impute <- TRUE
+    list_of_column_configs <- list()
+    if (is.null(net_cfg$pick_best_of) || is.null(net_cfg$incident_to_best_of)) {
+      list_of_column_configs <- c(list_of_column_configs,list(select_relevant_columns(data,net_cfg,fail_safe,number_of_columns,log_level=3)))
+    } else {
+      for (idx in 1:length(net_cfg$pick_best_of)) {
+        force_include_var <- net_cfg$pick_best_of[[idx]]
+        force_exclude_vars <- net_cfg$pick_best_of[net_cfg$pick_best_of != force_include_var]
+        # below statement goes wrong if there is not at least TWO columns that are not force excluded (does not happen in current use)
+        filtered_data <- data[,!(names(data) %in% force_exclude_vars)]
+        list_of_column_configs <- c(list_of_column_configs,list(select_relevant_columns(filtered_data,net_cfg,
+                                                                                        fail_safe,
+                                                                                        number_of_columns,
+                                                                                        log_level=3,
+                                                                                        force_include=force_include_var)))
+      }
+    }
+    
+    # Imputation + cutting rows part
+    new_list_of_column_configs <- list()
+    for (i in 1:length(list_of_column_configs)) {
+      odata <- list_of_column_configs[[i]]
+      if (is.null(odata)) {
+        new_list_of_column_configs <- c(new_list_of_column_configs,list(NULL))
+        next
+      }
+      first_measurement_index <- 1
+      res <- select_relevant_rows(odata,timestamp,net_cfg)
+      odata <- res$data
+      first_measurement_index <- res$first_measurement_index
+      new_timestamp <- res$timestamp
+      if (any(is.na(odata)))
+        odata <- impute_dataframe(odata,net_cfg$measurements_per_day)
+      if (any(is.na(odata))) {
+        new_list_of_column_configs <- c(new_list_of_column_configs,list(NULL))
+        next # sometimes it fails
+      }
+      new_list_of_column_configs <- c(new_list_of_column_configs,list(list(timestamp = new_timestamp,
+                                                                           first_measurement_index = first_measurement_index,
+                                                                           data = odata)))
+    }
+    list_of_column_configs <- new_list_of_column_configs
+    
+    # Loop over significances here
     SIGNIFICANCES <- c(0.05,0.01)
     if (attempt > 1) SIGNIFICANCES <- c(0.05,0.01,0.005)
     for (signif in SIGNIFICANCES) {
-      ndata <- odata
-      if (do_impute) ndata <- impute_dataframe(odata,net_cfg$measurements_per_day)
-      if (any(is.na(ndata))) next # sometimes it fails
-      d<-load_dataframe(ndata,net_cfg,log_level=3)
-      d<-add_trend(d,log_level=3)
-      d<-set_timestamps(d,date_of_first_measurement=timestamp,
-                        first_measurement_index=first_measurement_index,
-                        measurements_per_day=net_cfg$measurements_per_day,log_level=3)
-      d<-var_main(d,names(ndata),significance=signif,log_level=3,
-                  criterion="AIC",include_squared_trend=TRUE,
-                  exclude_almost=TRUE,simple_models=TRUE,
-                  split_up_outliers=TRUE)
-      # gn <<- d
-      if (length(d$accepted_models) > 0)
-        return(convert_to_graph(d,net_cfg))
+      best_graph <- NULL
+      most_incident_edges <- -1
+      for (idx in 1:length(list_of_column_configs)) {
+        column_config <- list_of_column_configs[[idx]]
+        if (is.null(column_config)) next
+        new_timestamp <- column_config$timestamp
+        ndata <- column_config$data
+        first_measurement_index <- column_config$first_measurement_index
+        
+        # Start Autovar procedure from here
+        d<-load_dataframe(ndata,net_cfg,log_level=3)
+        d<-add_trend(d,log_level=3)
+        d<-set_timestamps(d,date_of_first_measurement=new_timestamp,
+                          first_measurement_index=first_measurement_index,
+                          measurements_per_day=net_cfg$measurements_per_day,log_level=3)
+        d<-var_main(d,names(ndata),significance=signif,log_level=3,
+                    criterion="AIC",include_squared_trend=TRUE,
+                    exclude_almost=TRUE,simple_models=TRUE,
+                    split_up_outliers=TRUE)
+        if (length(d$accepted_models) > 0) {
+          if (is.null(net_cfg$pick_best_of) || is.null(net_cfg$incident_to_best_of))
+            return(convert_to_graph(d,net_cfg))
+          current_graph <- convert_to_graph(d,net_cfg,forced_variable = net_cfg$pick_best_of[[idx]])
+          current_number_of_incident_edges <- number_of_edges(current_graph,
+                                                              from_nodes = label_nodes(net_cfg$incident_to_best_of,net_cfg),
+                                                              to_node = label_nodes(net_cfg$pick_best_of[[idx]],net_cfg))
+          if (current_number_of_incident_edges > most_incident_edges) {
+            most_incident_edges <- current_number_of_incident_edges
+            best_graph <- current_graph
+          }
+        }
+      }
+      if (!is.null(best_graph))
+        return(best_graph)
     }
   }
   NULL
+}
+label_nodes <- function(node_vector, net_cfg) {
+  r <- NULL
+  for (node in node_vector)
+    r <- c(r, format_property_name(node, net_cfg))
+  r
+}
+number_of_edges <- function(graph, from_nodes, to_node) {
+  dynamic_graph <- fromJSON(graph)[[1]]
+  if (is.null(dynamic_graph$links) || (class(dynamic_graph$links) == 'character' && dynamic_graph$links == '')) return(0)
+  to_node_index <- dynamic_graph$nodes$index[dynamic_graph$nodes$name == to_node]
+  from_node_indices <- dynamic_graph$nodes$index[dynamic_graph$nodes$name %in% from_nodes]
+  r <- 0
+  for (idx in 1:nrow(dynamic_graph$links)) {
+    cur_row <- dynamic_graph$links[idx,]
+    if (cur_row$target == to_node_index && cur_row$source %in% from_node_indices)
+      r <- r + 1
+  }
+  r
 }
 
 check_config_integrity <- function(net_cfg) {
@@ -133,6 +209,12 @@ check_config_integrity <- function(net_cfg) {
   for (varname in net_cfg$negative_variables)
     if (!(varname %in% net_cfg$vars))
       return(paste("negative variable",varname,"not found in data.frame"))
+  for (varname in net_cfg$pick_best_of)
+    if (!(varname %in% net_cfg$vars))
+      return(paste("pick_best_of variable",varname,"not found in data.frame"))
+  for (varname in net_cfg$incident_to_best_of)
+    if (!(varname %in% net_cfg$vars))
+      return(paste("incident_to_best_of variable",varname,"not found in data.frame"))
   for (varname in net_cfg$vars)
     if (varname %in% net_cfg$positive_variables && varname %in% net_cfg$negative_variables)
       return(paste("variable",varname,"cannot be both positive and negative"))

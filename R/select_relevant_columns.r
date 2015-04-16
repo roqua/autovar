@@ -6,6 +6,7 @@
 #' @param failsafe does not include any pairs by default and simply returns the up to 6 column names with lowest z_skewness that have an MSSD above the threshold. \code{failsafe} defaults to \code{FALSE}.
 #' @param number_of_columns the maximum number of columns to return
 #' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity.
+#' @param force_include a single column name that should always be included in the column selection (regardless of mssd, z_skewness, failsafe).
 #' @return This function returns the modified data frame consisting of at most 6 columns.
 #' @examples
 #' GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
@@ -28,12 +29,16 @@
 #'                                 'tekortschieten','piekeren','eenzaamheid')
 #' names(select_relevant_columns(data,net_cfg,FALSE,6))
 #' @export
-select_relevant_columns <- function(data, net_cfg, failsafe = FALSE, number_of_columns = 6, log_level = 0) {
+select_relevant_columns <- function(data, net_cfg, failsafe = FALSE, number_of_columns = 6, log_level = 0, force_include = NULL) {
   mssds <- psych::mssd(data)
   rnames <- NULL
+  all_columns <- colnames(data)
   if (failsafe) { # perform option b
-    all_columns <- net_cfg$vars
-    remaining_columns <- select_mssd_columns(all_columns,mssds)
+    if (!is.null(force_include))
+      rnames <- c(rnames, force_include)
+    remaining_columns <- all_columns
+    remaining_columns <- remove_from_vector(remaining_columns,force_include)
+    remaining_columns <- select_mssd_columns(remaining_columns,mssds)
     if (length(remaining_columns) > 0) {
       df <- data[,remaining_columns]
       skews <- z_skewness_columns(df)
@@ -46,6 +51,9 @@ select_relevant_columns <- function(data, net_cfg, failsafe = FALSE, number_of_c
       rnames <- rnames[1:number_of_columns]
     return(data[,rnames])
   }
+  # force include vars
+  if (!is.null(force_include))
+    rnames <- c(rnames, force_include)
   # always include vars
   skews <- z_skewness_columns(data)
   for (varname in net_cfg$always_include)
@@ -89,7 +97,9 @@ select_relevant_columns <- function(data, net_cfg, failsafe = FALSE, number_of_c
     }
   }
   # calculate these are all vars minus pairs and minus always_include
-  remaining_columns <- remove_from_vector(net_cfg$vars,net_cfg$always_include)
+  remaining_columns <- all_columns
+  remaining_columns <- remove_from_vector(remaining_columns,force_include)
+  remaining_columns <- remove_from_vector(remaining_columns,net_cfg$always_include)
   remaining_columns <- remove_from_vector(remaining_columns,net_cfg$pairs)
   extra_columns <- select_mssd_columns(remaining_columns,mssds)
   if (length(extra_columns) > 0) {
