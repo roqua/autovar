@@ -150,7 +150,6 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
                     criterion="AIC",include_squared_trend=TRUE,
                     exclude_almost=TRUE,simple_models=TRUE,
                     split_up_outliers=TRUE)
-        # gn <<- d
         if (length(d$accepted_models) > 0) {
           if (is.null(net_cfg$pick_best_of) || is.null(net_cfg$incident_to_best_of))
             return(convert_to_graph(d,net_cfg))
