@@ -30,3 +30,6 @@ Documentation for this package can be found [here](http://autovar.nl/docs).
     av_state <- var_main(av_state, vars = c("Depression", "Activity"),
                          lag_max = 3,
                          log_level = 3)
+    
+    # Show the best models found
+    print_best_models(av_state)
