@@ -128,7 +128,7 @@ convert_to_graph <- function(av_state,net_cfg,forced_variable = NULL) {
         rnamesc <- c(rnamesc,varname)
         nodecountc <- nodecountc+1
       }
-      tonode   <- which(var_names[[i]] == rnamesc) -1 
+      tonode   <- which(var_names[[i]] == rnamesc) -1
       fromnode <- which(var_names[[j]] == rnamesc) -1
       linkdatac <- rbind(linkdatac,data.frame(source=fromnode,
                                               target=tonode,
@@ -170,7 +170,7 @@ convert_to_graph <- function(av_state,net_cfg,forced_variable = NULL) {
       seen_positive_target <- TRUE
     break
   }
-  
+
   # two scenarios for the third connection:
   if (is.null(forced_variable) || is.null(net_cfg$incident_to_best_of)) {
     # if all used so far had a negative target, this target has to be positive.
@@ -200,13 +200,39 @@ convert_to_graph <- function(av_state,net_cfg,forced_variable = NULL) {
       break
     }
   }
-  paste('[',
-        toString(toJSON(list(links=linkdata,nodes=nodedata))),     # dynamic
-        ',',
-        toString(toJSON(list(links=linkdatac,nodes=nodedatac))),   # contemporaneous
-        ',',
-        toString(toJSON(graphsum)),
-        ']',sep="")
+  result <- paste('[',
+                  toString(toJSON(list(
+                    links = linkdata,nodes = nodedata
+                  ))),     # dynamic
+                  ',',
+                  toString(toJSON(list(
+                    links = linkdatac,nodes = nodedatac
+                  ))),   # contemporaneous
+                  ',',
+                  toString(toJSON(graphsum)), sep = "")
+  if (net_cfg$include_model) {
+    result <- paste(result, ',',
+                    toString(toJSON(list(
+                      data = list(
+                        header = colnames(av_state$accepted_models[[1]]$varest$datamat),
+                        body = as.matrix(av_state$accepted_models[[1]]$varest$datamat)
+                      ),
+                      coefs = list(
+                        header = colnames(coef(av_state$accepted_models[[1]]$varest)[[1]]),
+                        body = lapply(coef(av_state$accepted_models[[1]]$varest),matrix_as_list)
+                      )
+                    ))), sep = "")
+  }
+  result <- paste(result,']',sep = "")
+  result
+}
+
+matrix_as_list <- function(mat) {
+  r <- list()
+  cn <- rownames(mat)
+  for (i in 1:nrow(mat))
+    r[[cn[[i]]]] <- unname(mat[i,])
+  r
 }
 
 correlation_significance <- function() {
