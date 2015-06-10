@@ -210,7 +210,7 @@ convert_to_graph <- function(av_state,net_cfg,forced_variable = NULL) {
                   ))),   # contemporaneous
                   ',',
                   toString(toJSON(graphsum)), sep = "")
-  if (net_cfg$include_model) {
+  if (!is.null(net_cfg$include_model) && net_cfg$include_model) {
     result <- paste(result, ',',
                     toString(toJSON(list(
                       data = list(
