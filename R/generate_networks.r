@@ -12,6 +12,7 @@
 #' @param labels a list where keys are variable names and values are labels.
 #' @param measurements_per_day an integer in [1,16] denoting the number of measurements per day. Defaults to 3.
 #' @param max_network_size an integer in [2,6] denoting the number of nodes to include in the networks initially. Defaults to 6.
+#' @param include_model determines whether the imputed data set and coefficients of the best model should be returned in the network JSON. Defaults to \code{FALSE}.
 #' @return This function returns a string representing a json array of two networks and an array of the top links.
 #' @examples
 #' GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
@@ -54,8 +55,9 @@
 #'                   max_network_size = 6))
 #' @export
 generate_networks <- function(data, timestamp, always_include = NULL, pairs = NULL, positive_variables = NULL,
-                              negative_variables= NULL, pick_best_of = NULL, incident_to_best_of = NULL, 
-                              labels = list(), measurements_per_day = 3, max_network_size = 6) {
+                              negative_variables= NULL, pick_best_of = NULL, incident_to_best_of = NULL,
+                              labels = list(), measurements_per_day = 3, max_network_size = 6,
+                              include_model = FALSE) {
   if (class(data) != "data.frame") return("Data argument is not a data.frame")
   if (class(timestamp) != "character") return("Timestamp argument is not a character string")
   if (nchar(timestamp) != 10) return("Wrong timestamp format, should be: yyyy-mm-dd")
@@ -70,6 +72,7 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
   net_cfg$pick_best_of <- unique(pick_best_of)
   net_cfg$incident_to_best_of <- unique(incident_to_best_of)
   net_cfg$labels <- labels
+  net_cfg$include_model <- include_model
   if (!(measurements_per_day %in% 1:16)) return("measurements_per_day needs to be in 1:16")
   net_cfg$measurements_per_day <- measurements_per_day
   if (!(max_network_size %in% 2:6)) return("max_network_size needs to be in 2:6")
@@ -101,7 +104,7 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
                                                                                         force_include=force_include_var)))
       }
     }
-    
+
     # Imputation + cutting rows part
     new_list_of_column_configs <- list()
     for (i in 1:length(list_of_column_configs)) {
@@ -126,7 +129,7 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
                                                                            data = odata)))
     }
     list_of_column_configs <- new_list_of_column_configs
-    
+
     # Loop over significances here
     SIGNIFICANCES <- c(0.05,0.01)
     if (attempt > 1) SIGNIFICANCES <- c(0.05,0.01,0.005)
@@ -139,7 +142,7 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
         new_timestamp <- column_config$timestamp
         ndata <- column_config$data
         first_measurement_index <- column_config$first_measurement_index
-        
+
         # Start Autovar procedure from here
         d<-load_dataframe(ndata,net_cfg,log_level=3)
         d<-add_trend(d,log_level=3)
@@ -268,5 +271,6 @@ generate_network <- function(data, timestamp) {
                                   eenzaamheid = "Eenzaamheid",
                                   uw_eigen_factor = "Mijn eigen factor"),
                     measurements_per_day = 3,
-                    max_network_size = 6)
+                    max_network_size = 6,
+                    include_model = TRUE)
 }
