@@ -14,6 +14,18 @@
 <!--[if lt IE 9]>
   <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
   </head>
 
   <body>
@@ -160,7 +172,6 @@ Starting VAR (using 8 cores) with variables: Activity_hours, Depression
 Done. Processed 9 distinct models, of which 2 were valid.
 Tested 18 of 144 ( 12.50%) of the combinatorial search space at the given lags (1, 2).
 </div>
-<p><img src='var_main-5.png' alt='' width='540' height='400' /></p>
 <div class='output'>
 Granger causality legend:
    +   majority positive associations
@@ -177,7 +188,6 @@ Granger causality summary of all 2 valid models:
 Granger causality summary of all 1 valid unrestricted models:
   100.00%   Depression     -Granger causes- Activity_hours   (1 almost) (sign: 1 -)
 </div>
-<p><img src='var_main-7.png' alt='' width='540' height='400' /></p>
 <div class='output'>
 Summary of all valid models:
   lag:

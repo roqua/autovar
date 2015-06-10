@@ -14,6 +14,18 @@
 <!--[if lt IE 9]>
   <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
   </head>
 
   <body>
@@ -49,6 +61,30 @@ install_github(&#39;roqua/autovar&#39;)
 </code></pre>
 
 <p>Documentation for this package can be found <a href="http://autovar.nl/docs">here</a>.</p>
+
+<h5>Example Use</h5>
+
+<pre><code>library(&#39;autovar&#39;)
+
+# Example data sets can be found on https://autovar.nl
+av_state &lt;- load_file(&quot;/path/to/file.dta&quot;)
+
+# Include models with (and without) trends in the search
+av_state &lt;- add_trend(av_state)
+
+# Include models with (and without) day dummies in the search
+av_state &lt;- set_timestamps(av_state,          
+                           date_of_first_measurement = &quot;2015-12-31&quot;,
+                           measurements_per_day = 1)
+
+# Search for VAR models for the variables Depression and Activity up to lag 3.
+av_state &lt;- var_main(av_state, vars = c(&quot;Depression&quot;, &quot;Activity&quot;),
+                     lag_max = 3,
+                     log_level = 3)
+
+# Show the best models found
+print_best_models(av_state)
+</code></pre>
 
 
     <h2>Help topics</h2>
@@ -147,9 +183,9 @@ install_github(&#39;roqua/autovar&#39;)
     <h2>Dependencies</h2>
     <ul>
       <li><strong>Depends</strong>: Amelia, e1071, foreign, ggplot2, gridExtra, igraph, jsonlite, knitr, markdown, norm, parallel, psych, RcppArmadillo, reshape2, stringr, TimeProjection, urca, vars</li>
-      <li><strong>Imports</strong>: </li>
+      
       <li><strong>Suggests</strong>: testthat, roxygen2</li>
-      <li><strong>Extends</strong>: </li>
+      
     </ul>
     <h2>Authors</h2>
     <ul>
