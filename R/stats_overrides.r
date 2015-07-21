@@ -8,6 +8,8 @@ myprintCoefmat <- function (x, digits = max(3L, getOption("digits") - 2L), signi
           ...) 
 {
   x <- order_coefficients(x)
+  if (class(x) == 'numeric')
+    x <- as.matrix(x)
   if (is.null(d <- dim(x)) || length(d) != 2L) 
     stop("'x' must be coefficient matrix/data frame")
   nc <- d[2L]
