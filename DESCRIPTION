@@ -21,6 +21,7 @@ Depends:
     psych,
     RcppArmadillo,
     reshape2,
+    stringi,
     stringr,
     TimeProjection,
     urca,
