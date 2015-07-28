@@ -4,11 +4,11 @@
 #' @param av_state an object of class \code{av_state}
 #' @param vars the vector of variables on which to perform vector autoregression. These should be the names of existing columns in the data sets of \code{av_state}.
 #' @param lag_max limits the highest possible number of lags that will be used in a model. This number sets the maximum limit in the search for optimal lags.
-#' @param significance the maximum P-value for which results are seen as significant. This argument is used in Granger causality tests, Portmanteau tests, and Jarque-Bera tests.
+#' @param significance the maximum P-value for which results are seen as significant. This argument is used in Granger causality tests, contemporaneous associations tests, and residual tests.
 #' @param exogenous_max_iterations determines how many times we should try to exclude additional outliers for a variable. This argument should be a number between 1 and 3: \itemize{
-#' \item \code{1} - When Jarque-Bera tests fail, having \code{exogenous_max_iterations = 1} will only try with removing 3.5x std. outliers for the residuals of variables using exogenous dummy variables.
-#' \item \code{2} - When \code{exogenous_max_iterations = 2}, the program will also try with removing 3x std. outliers if JB tests still fail.
-#' \item \code{3} - When \code{exogenous_max_iterations = 3}, the program will also try with removing 2.5x std. outliers (not only from the residuals but also from the squares of the residuals) if JB tests still fail.
+#' \item \code{1} - When residual tests fail, having \code{exogenous_max_iterations = 1} will only try with removing 3.5x std. outliers for the residuals of variables using exogenous dummy variables.
+#' \item \code{2} - When \code{exogenous_max_iterations = 2}, the program will also try with removing 3x std. outliers if residual tests still fail.
+#' \item \code{3} - When \code{exogenous_max_iterations = 3}, the program will also try with removing 2.5x std. outliers (not only from the residuals but also from the squares of the residuals) if residual tests still fail.
 #' }
 #' @param subset specifies which data subset the VAR analysis should run on. The VAR analysis only runs on one data subset at a time. If not specified, the first subset is used (corresponding to \code{av_state$data[[1]]}).
 #' @param log_level sets the minimum level of output that should be shown. It should be a number between 0 and 3. A lower level means more verbosity. \code{0} = debug, \code{1} = test detail, \code{2} = test outcomes, \code{3} = normal. The default is set to the value of \code{av_state$log_level} or if that doesn't exist, to \code{0}. If this argument was specified, the original value of \code{av_state$log_level} is be restored at the end of \code{var_main}.
@@ -41,7 +41,7 @@
 #' \item Sets autovar to search only for lag 1 and lag 2 models. Additionally, the lag 2 models are restricted in the sense that only the autoregressive lag 2 is used, i.e., the cross-lagged parameters for lag 2 are constrained.
 #' \item The normality assumption (sktest) no longer tests for kurtosis (only for skewness).
 #' \item \code{exogenous_max_iterations} is set to 1, meaning we only search one iteration deep for masking outliers, and in this iteration, points that are 2.5xstd away in the residuals or in the squared residuals are masked as outliers.
-#' \item Autovar no longer adds constrained versions of the valid models to the list of accepted models.
+#' \item Autovar no longer considers constrained versions of the valid models.
 #' }
 #' @param numcores is the number of cores to use in parallel for evaluation the model. When this variable is \code{1}, no parallel processing is used and all processing is done serially. This variable has to be an integer between 1 and 16. The default value is the detected number of cores on the system (using \code{detectCores()}). If the \code{log_level} is less than 3, the value for \code{numcores} is forced to 1 because output doesn't show up otherwise.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
