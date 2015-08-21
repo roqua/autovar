@@ -4,7 +4,7 @@
 #' @param av_state an object of class \code{av_state}
 #' @param id_field the name of a column in the data set
 #' @param impute_method this argument has four possible values: \itemize{
-#' \item \code{'BEST_FIT'} - This is not an impute method itself, but tells the function to determine the optimal impute method and use that. This is the default choice for \code{impute_method} when it is not specified.
+#' \item \code{'BEST_FIT'} - This is not an imputation method itself, but tells the function to determine the optimal imputation method and use that. This is the default choice for \code{impute_method} when it is not specified.
 #' \item \code{'ONE_MISSING'} - Only works when the \code{id_field} in each data subset is an integer range with exactly one value missing and exactly one \code{NA} value. The \code{NA} value is then substituted by the missing index.
 #' \item \code{'ADD_MISSING'} - Does not work when one or more rows have an \code{NA} value for \code{id_field}. Only works for integer ranges of \code{id_field} with single increments. Works by adding rows for all missing values in the range between the minimum and maximum value of \code{id_field}. All values in the added rows are \code{NA} except for the \code{id_field} and the field used for grouping the data (if there was one).
 #' \item \code{'NONE'} - No imputation is performed.

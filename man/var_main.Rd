@@ -22,12 +22,12 @@ var_main(av_state, vars, lag_max = 2, significance = 0.05,
 
 \item{lag_max}{limits the highest possible number of lags that will be used in a model. This number sets the maximum limit in the search for optimal lags.}
 
-\item{significance}{the maximum P-value for which results are seen as significant. This argument is used in Granger causality tests, Portmanteau tests, and Jarque-Bera tests.}
+\item{significance}{the maximum P-value for which results are seen as significant. This argument is used in Granger causality tests, contemporaneous associations tests, and residual tests.}
 
 \item{exogenous_max_iterations}{determines how many times we should try to exclude additional outliers for a variable. This argument should be a number between 1 and 3: \itemize{
-\item \code{1} - When Jarque-Bera tests fail, having \code{exogenous_max_iterations = 1} will only try with removing 3.5x std. outliers for the residuals of variables using exogenous dummy variables.
-\item \code{2} - When \code{exogenous_max_iterations = 2}, the program will also try with removing 3x std. outliers if JB tests still fail.
-\item \code{3} - When \code{exogenous_max_iterations = 3}, the program will also try with removing 2.5x std. outliers (not only from the residuals but also from the squares of the residuals) if JB tests still fail.
+\item \code{1} - When residual tests fail, having \code{exogenous_max_iterations = 1} will only try with removing 3.5x std. outliers for the residuals of variables using exogenous dummy variables.
+\item \code{2} - When \code{exogenous_max_iterations = 2}, the program will also try with removing 3x std. outliers if residual tests still fail.
+\item \code{3} - When \code{exogenous_max_iterations = 3}, the program will also try with removing 2.5x std. outliers (not only from the residuals but also from the squares of the residuals) if residual tests still fail.
 }}
 
 \item{subset}{specifies which data subset the VAR analysis should run on. The VAR analysis only runs on one data subset at a time. If not specified, the first subset is used (corresponding to \code{av_state$data[[1]]}).}
@@ -78,7 +78,7 @@ The above example includes a model with \code{lag=3} (so lags 1, 2, and 3 are in
 \item Sets autovar to search only for lag 1 and lag 2 models. Additionally, the lag 2 models are restricted in the sense that only the autoregressive lag 2 is used, i.e., the cross-lagged parameters for lag 2 are constrained.
 \item The normality assumption (sktest) no longer tests for kurtosis (only for skewness).
 \item \code{exogenous_max_iterations} is set to 1, meaning we only search one iteration deep for masking outliers, and in this iteration, points that are 2.5xstd away in the residuals or in the squared residuals are masked as outliers.
-\item Autovar no longer adds constrained versions of the valid models to the list of accepted models.
+\item Autovar no longer considers constrained versions of the valid models.
 }}
 
 \item{numcores}{is the number of cores to use in parallel for evaluation the model. When this variable is \code{1}, no parallel processing is used and all processing is done serially. This variable has to be an integer between 1 and 16. The default value is the detected number of cores on the system (using \code{detectCores()}). If the \code{log_level} is less than 3, the value for \code{numcores} is forced to 1 because output doesn't show up otherwise.}

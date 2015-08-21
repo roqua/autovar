@@ -95,17 +95,14 @@ This function returns the modified data frame consisting of at most 6 columns.
 data&lt;-load_file(&quot;../data/input/DataDndN_nonimputed_voorAndo.sav&quot;)
 </div>
 <div class='output'>load_file loaded SPSS file with 32 columns:
- [1] &quot;roqua_id (scl)&quot;              &quot;patient_id (nom)&quot;            &quot;mad_diary_id (scl)&quot;         
- [4] &quot;mad_diary_protocol (nom)&quot;    &quot;mad_diary_project (nom)&quot;     &quot;mad_diary_measurement (nom)&quot;
- [7] &quot;mad_diary_notes (nom)&quot;       &quot;mad_diary_location (nom)&quot;    &quot;mad_diary_invited_at (scl)&quot; 
-[10] &quot;mad_diary_emailed_at (nom)&quot;  &quot;mad_diary_open_from (scl)&quot;   &quot;mad_diary_compl_by (nom)&quot;   
-[13] &quot;mad_diary_date (nom)&quot;        &quot;mad_diary_variant (nom)&quot;     &quot;mad_diary_tekst6 (nom)&quot;     
-[16] &quot;ontspanning (scl)&quot;           &quot;opgewektheid (scl)&quot;          &quot;hier_en_nu (scl)&quot;           
-[19] &quot;concentratie (scl)&quot;          &quot;beweging (scl)&quot;              &quot;iets_betekenen (scl)&quot;       
-[22] &quot;humor (scl)&quot;                 &quot;buiten_zijn (scl)&quot;           &quot;eigenwaarde (scl)&quot;          
-[25] &quot;levenslust (scl)&quot;            &quot;onrust (scl)&quot;                &quot;somberheid (scl)&quot;           
-[28] &quot;lichamelijk_ongemak (scl)&quot;   &quot;tekortschieten (scl)&quot;        &quot;piekeren (scl)&quot;             
-[31] &quot;eenzaamheid (scl)&quot;           &quot;uw_eigen_factor (scl)&quot;      
+ [1] &quot;roqua_id (scl)&quot;              &quot;patient_id (nom)&quot;            &quot;mad_diary_id (scl)&quot;          &quot;mad_diary_protocol (nom)&quot;   
+ [5] &quot;mad_diary_project (nom)&quot;     &quot;mad_diary_measurement (nom)&quot; &quot;mad_diary_notes (nom)&quot;       &quot;mad_diary_location (nom)&quot;   
+ [9] &quot;mad_diary_invited_at (scl)&quot;  &quot;mad_diary_emailed_at (nom)&quot;  &quot;mad_diary_open_from (scl)&quot;   &quot;mad_diary_compl_by (nom)&quot;   
+[13] &quot;mad_diary_date (nom)&quot;        &quot;mad_diary_variant (nom)&quot;     &quot;mad_diary_tekst6 (nom)&quot;      &quot;ontspanning (scl)&quot;          
+[17] &quot;opgewektheid (scl)&quot;          &quot;hier_en_nu (scl)&quot;            &quot;concentratie (scl)&quot;          &quot;beweging (scl)&quot;             
+[21] &quot;iets_betekenen (scl)&quot;        &quot;humor (scl)&quot;                 &quot;buiten_zijn (scl)&quot;           &quot;eigenwaarde (scl)&quot;          
+[25] &quot;levenslust (scl)&quot;            &quot;onrust (scl)&quot;                &quot;somberheid (scl)&quot;            &quot;lichamelijk_ongemak (scl)&quot;  
+[29] &quot;tekortschieten (scl)&quot;        &quot;piekeren (scl)&quot;              &quot;eenzaamheid (scl)&quot;           &quot;uw_eigen_factor (scl)&quot;      
 </div>
 <div class='input'>data&lt;-data$raw_data[,GN_COLUMNS]
 net_cfg &lt;- new_net_cfg()
