@@ -74,6 +74,8 @@ coefs_and_pvalues <- function(varest) {
   for (eqname in restriction_matrix_rownames(varest)) {
     coefs <- summ$varresult[[eqname]]$coefficients
     if (!is.null(coefs) && dim(coefs)[[1]] != 1) {
+      if ('index2' %in% rownames(coefs))
+        coefs <- coefs[rownames(coefs) != 'index',]
       pvalues_v <- c(pvalues_v,coefs[,4])
       eqnames_v <- c(eqnames_v,rep(eqname,length(coefs[,4])))
       varnames_v <- c(varnames_v,rownames(coefs))
