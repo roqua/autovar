@@ -211,11 +211,16 @@ convert_to_graph <- function(av_state,net_cfg,forced_variable = NULL) {
                   ',',
                   toString(toJSON(graphsum)), sep = "")
   if (!is.null(net_cfg$include_model) && net_cfg$include_model) {
+    exogen_mat <- exogen_matrix(av_state$accepted_models[[1]]$varest)
     result <- paste(result, ',',
                     toString(toJSON(list(
-                      data = list(
-                        header = colnames(av_state$accepted_models[[1]]$varest$datamat),
-                        body = as.matrix(av_state$accepted_models[[1]]$varest$datamat)
+                      endogen = list(
+                        header = colnames(av_state$accepted_models[[1]]$varest$y),
+                        body = as.matrix(av_state$accepted_models[[1]]$varest$y)
+                      ),
+                      exogen = list(
+                        header = colnames(exogen_mat),
+                        body = as.matrix(exogen_mat)
                       ),
                       coefs = list(
                         header = colnames(coef(av_state$accepted_models[[1]]$varest)[[1]]),
@@ -225,6 +230,17 @@ convert_to_graph <- function(av_state,net_cfg,forced_variable = NULL) {
   }
   result <- paste(result,']',sep = "")
   result
+}
+
+exogen_matrix <- function(varest) {
+  endogen_names <- dimnames(varest$y)[[2]]
+  column_names <- dimnames(varest$datamat)[[2]]
+  exogen_names <- NULL
+  for (column_name in column_names) {
+    if (gsub("\\.l[[:digit:]]+$", "", column_name) %in% endogen_names) next
+    exogen_names <- c(exogen_names, column_name)
+  }
+  varest$datamat[, exogen_names]
 }
 
 matrix_as_list <- function(mat) {
