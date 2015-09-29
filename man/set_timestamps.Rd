@@ -6,7 +6,8 @@
 \usage{
 set_timestamps(av_state, subset_id = 1, date_of_first_measurement,
   measurements_per_day = 1, log_level = 0, first_measurement_index = 1,
-  add_days_as_exogenous = TRUE, add_dayparts_as_exogenous = TRUE)
+  add_days_as_exogenous = TRUE, add_dayparts_as_exogenous = TRUE,
+  add_weekend_as_exogenous = FALSE)
 }
 \arguments{
 \item{av_state}{an object of class \code{av_state}}
@@ -24,6 +25,8 @@ set_timestamps(av_state, subset_id = 1, date_of_first_measurement,
 \item{add_days_as_exogenous}{adds days as exogenous dummy variables to VAR models.}
 
 \item{add_dayparts_as_exogenous}{adds day parts as exogenous dummy variables to VAR models.}
+
+\item{add_weekend_as_exogenous}{adds one exogenous variable named \code{Weekend} to the VAR models. This variable is 1 for weekend days (Saturday and Sunday) and 0 otherwise. By specifying \code{add_days_as_exogenous = FALSE} and \code{add_weekend_as_exogenous = TRUE}, the weekend is used instead of day dummies in the evaluation of models.}
 }
 \value{
 This function returns the modified \code{av_state} object.
