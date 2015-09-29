@@ -9,6 +9,7 @@
 #' @param first_measurement_index is used to specify that the first day of measurements has fewer than \code{measurements_per_day} measurements. Here, we assume that the measurements in the data set still form a connected sequence. In other words, the assumption is that the missing measurements of the first day precede the first measurement in the data set. For example, by specifying \code{measurements_per_day = 3, first_measurement_index = 2}, the first measurement in the data set will be treated as the second measurement of that day. So the first two measurements in the data set will be tagged with \code{Afternoon} and \code{Evening}, and the third measurement in the data set will be tagged with \code{Morning} of the next day.
 #' @param add_days_as_exogenous adds days as exogenous dummy variables to VAR models.
 #' @param add_dayparts_as_exogenous adds day parts as exogenous dummy variables to VAR models.
+#' @param add_weekend_as_exogenous adds one exogenous variable named \code{Weekend} to the VAR models. This variable is 1 for weekend days (Saturday and Sunday) and 0 otherwise. By specifying \code{add_days_as_exogenous = FALSE} and \code{add_weekend_as_exogenous = TRUE}, the weekend is used instead of day dummies in the evaluation of models.
 #' @return This function returns the modified \code{av_state} object.
 #' @examples
 #' av_state <- load_file("../data/input/pp4 nieuw compleet met 140min.sav",log_level=3)
@@ -28,7 +29,8 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
                            measurements_per_day=1,log_level=0,
                            first_measurement_index=1,
                            add_days_as_exogenous=TRUE,
-                           add_dayparts_as_exogenous=TRUE) {
+                           add_dayparts_as_exogenous=TRUE,
+                           add_weekend_as_exogenous=FALSE) {
   assert_av_state(av_state)
   if (class(subset_id) == 'numeric' && !any(subset_id == 1:length(av_state$data))) {
     stop(paste(subset_id,"does not identify a data set"))
@@ -48,16 +50,25 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
                                     measurements_per_day,
                                     first_measurement_index,
                                     add_days_as_exogenous,
-                                    add_dayparts_as_exogenous)
+                                    add_dayparts_as_exogenous,
+                                    add_weekend_as_exogenous)
   added_columns <- column_info$columns
   exovrs_d <- column_info$exovrs_d
   exovrs_h <- column_info$exovrs_h
+  exovrs_w <- column_info$exovrs_w
   signif_columns_d <- NULL
+  av_state$day_dummies <- NULL
+
   if (!is.null(exovrs_d)) {
     signif_columns_d <- significant_columns(added_columns,exovrs_d)
     if (!is.null(signif_columns_d)) {
-      av_state$day_dummies <- signif_columns_d
+      av_state$day_dummies <- c(av_state$day_dummies, signif_columns_d)
     }
+  }
+  signif_columns_w <- NULL
+  if (!is.null(exovrs_w)) {
+    signif_columns_w <- 'Weekend'
+    av_state$day_dummies <- c(av_state$day_dummies, signif_columns_w)
   }
   signif_columns_h <- NULL
   if (!is.null(exovrs_h)) {
@@ -67,7 +78,7 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
     }
   }
   av_state$data[[subset_id]] <- cbind(av_state$data[[subset_id]],added_columns)
-  signif_columns <- c(signif_columns_d,signif_columns_h)
+  signif_columns <- c(signif_columns_d,signif_columns_h,signif_columns_w)
   tsspan <- timeSequence(from=next_day(from),
                length.out=ceiling((length(data_frame[[1]])-(measurements_per_day-first_measurement_index+1))/measurements_per_day),
                by="day")
@@ -90,7 +101,7 @@ next_day <- function(daystr) {
 
 set_timestamps_aux <- function(from,length_out,measurements_per_day,
                                first_measurement_index,add_days_as_exogenous,
-                               add_dayparts_as_exogenous) {
+                               add_dayparts_as_exogenous,add_weekend_as_exogenous) {
   firstday <- rep(weekdays(timeSequence(from=from,length.out=1,by="day")),
                   each=measurements_per_day-first_measurement_index+1)
   restofdays <- rep(weekdays(timeSequence(from=next_day(from),
@@ -120,6 +131,21 @@ set_timestamps_aux <- function(from,length_out,measurements_per_day,
     names(r)[[length(names(r))]] <- weekday_en
   }
   
+  exovrs_w <- NULL
+  weekend_indices <- weekday_labels[c(1,7)]
+  weekend_column <- as.numeric(weekdayidx %in% weekend_indices)
+  if (length(unique(weekend_column)) > 1) {
+    if (add_weekend_as_exogenous) {
+      exovrs_w <- 'Weekend'
+    }
+    if (is.null(r)) {
+      r <- data.frame(weekend_column)
+    } else {
+      r <- cbind(r,weekend_column)
+    }
+    names(r)[[length(names(r))]] <- 'Weekend'
+  }
+
   hfirstday <- daypart_string(measurements_per_day)[first_measurement_index:measurements_per_day]
   hrestofdays <- rep(daypart_string(measurements_per_day),
                      times=ceiling(length_out/measurements_per_day))
@@ -141,7 +167,7 @@ set_timestamps_aux <- function(from,length_out,measurements_per_day,
       names(r)[[length(names(r))]] <- hour_column
     }
   }
-  list(columns=r,exovrs_d=exovrs_d,exovrs_h=exovrs_h)
+  list(columns=r,exovrs_d=exovrs_d,exovrs_h=exovrs_h,exovrs_w=exovrs_w)
 }
 
 daypart_string <- function(len) {
