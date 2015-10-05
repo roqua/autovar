@@ -47,7 +47,6 @@
 #' cat(convert_to_graph(d,net_cfg))
 #' @export
 convert_to_graph <- function(av_state,net_cfg,forced_variable = NULL) {
-  gn <<- av_state
   rnames <- NULL
   nodedata <- NULL
   linkdata <- NULL
