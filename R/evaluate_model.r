@@ -232,6 +232,9 @@ run_var <- function(data,lag,simple_models,...) {
   } else {
     m <- VAR(data,p = lag,...)
   }
+  full_params <- list(...)
+  if (!is.null(full_params$exogen))
+    m$exogen <- full_params$exogen
   m
 }
 
