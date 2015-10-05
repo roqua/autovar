@@ -47,6 +47,7 @@
 #' cat(convert_to_graph(d,net_cfg))
 #' @export
 convert_to_graph <- function(av_state,net_cfg,forced_variable = NULL) {
+  gn <<- av_state
   rnames <- NULL
   nodedata <- NULL
   linkdata <- NULL
@@ -233,14 +234,9 @@ convert_to_graph <- function(av_state,net_cfg,forced_variable = NULL) {
 }
 
 exogen_matrix <- function(varest) {
-  endogen_names <- dimnames(varest$y)[[2]]
-  column_names <- dimnames(varest$datamat)[[2]]
-  exogen_names <- NULL
-  for (column_name in column_names) {
-    if (gsub("\\.l[[:digit:]]+$", "", column_name) %in% endogen_names) next
-    exogen_names <- c(exogen_names, column_name)
-  }
-  varest$datamat[, exogen_names]
+  exog_matrix <- matrix(1, nrow = varest$totobs, ncol = 1, dimnames = list(NULL, 'const'))
+  exog_matrix <- cbind(exog_matrix, varest$exogen)
+  exog_matrix
 }
 
 matrix_as_list <- function(mat) {
