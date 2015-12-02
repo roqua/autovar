@@ -277,5 +277,5 @@ generate_network <- function(data, timestamp) {
 
 generate_networks_debug <- function(...) {
   tryCatch(generate_networks(...),
-           error = function(e) { e$message <- paste(e$message,paste(traceback(), collapse = "\n"), collapse = "\n"); stop(e) })
+           error = function(e) { e$message <- paste(e$message, "\n", paste(sys.calls(), "\n", collapse = "\n"), collapse = "\n"); stop(e) })
 }
