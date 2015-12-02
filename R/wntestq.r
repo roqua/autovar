@@ -30,7 +30,7 @@ determine_pt_lags <- function(varest) {
 }
 
 portmanteau_test <- function(varest) {
-  st <- serial.test(varest,lags.pt=determine_pt_lags(varest))
+  st_resid <- resid(varest)
   h <- determine_pt_lags(varest)
   n <- varest$obs
   qs <- NULL
@@ -40,10 +40,10 @@ portmanteau_test <- function(varest) {
   ons <- NULL
   isq <- NULL
   pst <- NULL
-  for (i in 1:(dim(st$resid)[2])) {
-    if(i>(dim(st$resid)[2])) { break }
-    name <- dimnames(st$resid)[[2]][i]
-    data <- st$resid[,i]
+  for (i in 1:(dim(st_resid)[2])) {
+    if(i>(dim(st_resid)[2])) { break }
+    name <- dimnames(st_resid)[[2]][i]
+    data <- st_resid[,i]
     q <- portmanteau_test_statistic(data,n,h)
     p <- chi_squared_prob(q,h)
     qs <- c(qs,q)

@@ -93,6 +93,8 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
       list_of_column_configs <- c(list_of_column_configs,list(select_relevant_columns(data,net_cfg,fail_safe,number_of_columns,log_level=3)))
     } else {
       for (idx in 1:length(net_cfg$pick_best_of)) {
+        if (psych::mssd(data[,net_cfg$pick_best_of[[idx]]]) <= mssd_threshold())
+          next
         force_include_var <- net_cfg$pick_best_of[[idx]]
         force_exclude_vars <- net_cfg$pick_best_of[net_cfg$pick_best_of != force_include_var]
         # below statement goes wrong if there is not at least TWO columns that are not force excluded (does not happen in current use)

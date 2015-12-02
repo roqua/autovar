@@ -47,10 +47,25 @@ pperron_test <- function(av_state,lag,apply_log_transform) {
 }
 
 urppdf <- function(varname,name,av_state,x,model,lag) {
+  urpp <- NULL
   if (lag == -1) {
-    urpp <- ur.pp(x,type='Z-tau',model=model,lags='short')
+    suppressWarnings(tryCatch(urpp <- ur.pp(x,type='Z-tau',model=model,lags='short'),error=function(e) { }))
   } else {
-    urpp <- ur.pp(x,type='Z-tau',model=model,use.lag=lag)
+    suppressWarnings(tryCatch(urpp <- ur.pp(x,type='Z-tau',model=model,use.lag=lag),error=function(e) { }))
+  }
+  if (is.null(urpp)) {
+    # If everything is collinear, we don't need a trend
+    return(data.frame(name=name,
+                      varname=varname,
+                      model=model,
+                      lag=lag,
+                      trend_p=1,
+                      trend_p_signif=1,
+                      teststat=1,
+                      five_crit_val=0.05,
+                      teststat_signif=FALSE,
+                      needs_trend=FALSE,
+                      stringsAsFactors=FALSE))
   }
   sum <- urca::summary(urpp)
   if (model == 'trend') {

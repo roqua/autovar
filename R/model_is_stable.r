@@ -15,8 +15,16 @@ model_is_stable <- function(varest,log_level=0) {
 }
 
 varstable_graph <- function(varest) {
-  eigvals <- roots(varest,modulus=FALSE)
-  mod_eigvals <- roots(varest,modulus=TRUE)
+  eigvals <- NULL
+  suppressWarnings(tryCatch(eigvals <- roots(varest,modulus=FALSE),error=function(e) { }))
+  mod_eigvals <- NULL
+  suppressWarnings(tryCatch(mod_eigvals <- roots(varest,modulus=TRUE),error=function(e) { }))
+  if (is.null(mod_eigvals) || is.null(eigvals)) {
+    # This can occur if the matrix could not be inverted.
+    varcount <- ncol(varest$y)
+    eigvals <- rep(1,varcount)
+    mod_eigvals <- rep(1,varcount)
+  }
   ret <- data.frame(Eigenvalue=eigvals,Modulus=mod_eigvals)
   ret
 }
