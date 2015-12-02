@@ -274,3 +274,14 @@ generate_network <- function(data, timestamp) {
                     max_network_size = 6,
                     include_model = TRUE)
 }
+
+
+generate_networks_debug_aux <- function(...) {
+  tryCatch(generate_networks(...),
+           error = function(e) { global_opencpu_result <<- traceback(); stop(e) })
+}
+generate_networks_debug <- function(...) {
+  global_opencpu_result <<- NULL
+  global_opencpu_result <<- generate_networks_debug_aux(...)
+  global_opencpu_result
+}
