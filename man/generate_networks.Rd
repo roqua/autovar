@@ -7,7 +7,8 @@
 generate_networks(data, timestamp, always_include = NULL, pairs = NULL,
   positive_variables = NULL, negative_variables = NULL,
   pick_best_of = NULL, incident_to_best_of = NULL, labels = list(),
-  measurements_per_day = 3, max_network_size = 6, include_model = FALSE)
+  measurements_per_day = 3, max_network_size = 6, include_model = FALSE,
+  second_significances = c(0.05, 0.01, 0.005))
 }
 \arguments{
 \item{data}{a data frame. Each row is a measurement. Each column is an endogenous variable.}
@@ -33,6 +34,8 @@ generate_networks(data, timestamp, always_include = NULL, pairs = NULL,
 \item{max_network_size}{an integer in [2,6] denoting the number of nodes to include in the networks initially. Defaults to 6.}
 
 \item{include_model}{determines whether the imputed data set and coefficients of the best model should be returned in the network JSON. Defaults to \code{FALSE}.}
+
+\item{second_significances}{is the vector of significance levels to be used after the first attempt.}
 }
 \value{
 This function returns a string representing a json array of two networks and an array of the top links.
