@@ -84,6 +84,7 @@ Starting VAR (using 8 cores) with variables: SomBewegUur, SomPHQ
 Done. Processed 17 distinct models, of which 2 were valid.
 Tested 25 of 72 ( 34.72%) of the combinatorial search space at the given lags (1, 2).
 </div>
+<p><img src='var_info-3.png' alt='' width='540' height='400' /></p>
 <div class='output'>
 Granger causality legend:
    +   majority positive associations
@@ -101,6 +102,7 @@ Granger causality summary of all 2 valid models:
 Granger causality summary of all 1 valid unrestricted models:
   100.00%   SomBewegUur -Granger causes- SomPHQ        (1 model) (sign: 1 -)
 </div>
+<p><img src='var_info-5.png' alt='' width='540' height='400' /></p>
 <div class='output'>
 Summary of all valid models:
   lag:
@@ -137,7 +139,6 @@ B: (AIC: 633.66, BIC: 667.524) : SomBewegUur -Granger causes- SomPHQ (0.0463)
 <div class='input'># av_state is the result of a call to var_main
 var_info(av_state$accepted_models[[1]]$varest)
 </div>
-<p><img src='var_info-6.png' alt='' width='540' height='400' /></p>
 <div class='output'>
 VAR Estimation Results:
 ========================= 
