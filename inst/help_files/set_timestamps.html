@@ -52,7 +52,7 @@
 <div class="row">
   <div class="span8">
     <h2>Usage</h2>
-    <pre><div>set_timestamps(av_state, subset_id&nbsp;=&nbsp;1, date_of_first_measurement, measurements_per_day&nbsp;=&nbsp;1, log_level&nbsp;=&nbsp;0, first_measurement_index&nbsp;=&nbsp;1, add_days_as_exogenous&nbsp;=&nbsp;TRUE, add_dayparts_as_exogenous&nbsp;=&nbsp;TRUE)</div></pre>
+    <pre><div>set_timestamps(av_state, subset_id&nbsp;=&nbsp;1, date_of_first_measurement, measurements_per_day&nbsp;=&nbsp;1, log_level&nbsp;=&nbsp;0, first_measurement_index&nbsp;=&nbsp;1, add_days_as_exogenous&nbsp;=&nbsp;TRUE, add_dayparts_as_exogenous&nbsp;=&nbsp;TRUE, add_weekend_as_exogenous&nbsp;=&nbsp;FALSE)</div></pre>
     
     <h2>Arguments</h2>
     <dl>
@@ -72,6 +72,8 @@
       <dd>adds days as exogenous dummy variables to VAR models.</dd>
       <dt>add_dayparts_as_exogenous</dt>
       <dd>adds day parts as exogenous dummy variables to VAR models.</dd>
+      <dt>add_weekend_as_exogenous</dt>
+      <dd>adds one exogenous variable named <code>Weekend</code> to the VAR models. This variable is 1 for weekend days (Saturday and Sunday) and 0 otherwise. By specifying <code>add_days_as_exogenous = FALSE</code> and <code>add_weekend_as_exogenous = TRUE</code>, the weekend is used instead of day dummies in the evaluation of models.</dd>
     </dl>
     
     <div class="Value">
