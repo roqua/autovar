@@ -196,7 +196,7 @@ model_lag <- function(av_state,model) {
 
 determine_var_order <- function(dta,log_level,...) {
   # default type is const
-  c <- VARselect(dta,...)
+  c <- vars::VARselect(dta,...)
   scat(log_level,1,"\nOptimum lag length according to selection criteria (up to a max of ",
       list(...)$lag.max,"):\n",sep='')
   sprint(log_level,1,c$selection)
@@ -209,28 +209,28 @@ run_var <- function(data,lag,simple_models,...) {
   # (specifies what the rest term in the formula should be)
   m <- NULL
   if (lag == 0) {
-    m <- VAR(data,p = 1,...)
+    m <- vars::VAR(data,p = 1,...)
     resmat <- rep.int(1,length(restriction_matrix_colnames(m)))
     resmat[1:(length(colnames(m$y)))] <- 0
     resmat <- rep(resmat,length(colnames(m$y)))
-    m <- restrict(m,
+    m <- vars::restrict(m,
              method="manual",
              resmat=format_restriction_matrix(m,resmat))
     m <- add_intercepts(m)
   } else if (lag == 2 && simple_models) {
     # restricting second lag in all models but the one using it
-    m <- VAR(data,p = lag,...)
+    m <- vars::VAR(data,p = lag,...)
     resmat <- rep.int(1,length(restriction_matrix_colnames(m)))
     nr_vars <- (length(colnames(m$y)))
     resmat[(nr_vars+1):(2*nr_vars)] <- 0
     resmat <- rep(resmat,length(colnames(m$y)))
     resmat[seq(nr_vars+1,length(resmat),length(restriction_matrix_colnames(m))+1)] <- 1
-    m <- restrict(m,
+    m <- vars::restrict(m,
                   method="manual",
                   resmat=format_restriction_matrix(m,resmat))
     m <- add_intercepts(m)
   } else {
-    m <- VAR(data,p = lag,...)
+    m <- vars::VAR(data,p = lag,...)
   }
   full_params <- list(...)
   if (!is.null(full_params$exogen))

@@ -99,7 +99,7 @@ myprintCoefmat <- function (x, digits = max(3L, getOption("digits") - 2L), signi
 
 order_coefficients <- function(mtx) {
   dnames <- dimnames(mtx)[[1]]
-  vars<-!is.na(str_locate(dnames,"\\.l[0-9]+$")[,1])
+  vars<-!is.na(stringr::str_locate(dnames,"\\.l[0-9]+$")[,1])
   matching_indices <- which(vars)
   nonmatching_indices <- which(!vars)
   reorder_m<-order(dnames[matching_indices])

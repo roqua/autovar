@@ -49,9 +49,9 @@ pperron_test <- function(av_state,lag,apply_log_transform) {
 urppdf <- function(varname,name,av_state,x,model,lag) {
   urpp <- NULL
   if (lag == -1) {
-    suppressWarnings(tryCatch(urpp <- ur.pp(x,type='Z-tau',model=model,lags='short'),error=function(e) { }))
+    suppressWarnings(tryCatch(urpp <- urca::ur.pp(x,type='Z-tau',model=model,lags='short'),error=function(e) { }))
   } else {
-    suppressWarnings(tryCatch(urpp <- ur.pp(x,type='Z-tau',model=model,use.lag=lag),error=function(e) { }))
+    suppressWarnings(tryCatch(urpp <- urca::ur.pp(x,type='Z-tau',model=model,use.lag=lag),error=function(e) { }))
   }
   if (is.null(urpp)) {
     # If everything is collinear, we don't need a trend

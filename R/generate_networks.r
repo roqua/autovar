@@ -184,7 +184,7 @@ label_nodes <- function(node_vector, net_cfg) {
   r
 }
 number_of_edges <- function(graph, from_nodes, to_node) {
-  dynamic_graph <- fromJSON(graph)[[1]]
+  dynamic_graph <- jsonlite::fromJSON(graph)[[1]]
   if (is.null(dynamic_graph$links) || (class(dynamic_graph$links) == 'character' && dynamic_graph$links == '')) return(0)
   to_node_index <- dynamic_graph$nodes$index[dynamic_graph$nodes$name == to_node]
   from_node_indices <- dynamic_graph$nodes$index[dynamic_graph$nodes$name %in% from_nodes]

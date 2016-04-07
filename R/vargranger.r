@@ -355,7 +355,7 @@ granger_causality_sign <- function(varest,exname,eqname) {
       dimnames(coefs) <- list(d1names[selnames],d2names)
     }
     dnames <- dimnames(coefs)[[1]]
-    vars <- !is.na(str_locate(dnames,paste(exname,"\\.l[0-9]+$",sep=''))[,1])
+    vars <- !is.na(stringr::str_locate(dnames,paste(exname,"\\.l[0-9]+$",sep=''))[,1])
     if (length(vars) != 0) {
       matching_indices <- which(vars)
       mcoefs <- coefs[matching_indices,1]
@@ -668,7 +668,7 @@ causality2 <- function (x, cause = NULL, equation = NULL, vcov. = NULL, boot = F
     Cmat[i, index[i]] <- 1
   }
   Dmat <- vars:::.duplicate(K)
-  Dinv <- ginv(Dmat)
+  Dinv <- MASS::ginv(Dmat)
   lambda.w <- obs %*% t(sig.vech) %*% t(Cmat) %*% solve(2 * 
                                                           Cmat %*% Dinv %*% kronecker(sigma.u, sigma.u) %*% t(Dinv) %*% 
                                                           t(Cmat)) %*% Cmat %*% sig.vech

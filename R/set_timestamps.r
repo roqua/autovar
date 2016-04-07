@@ -45,7 +45,7 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
       stop(paste("first_measurement_index",first_measurement_index,"is invalid"))
     }
   }
-  from <- timeDate(as.Date(timeDate(date_of_first_measurement)))
+  from <- timeDate::timeDate(as.Date(timeDate::timeDate(date_of_first_measurement)))
   column_info <- set_timestamps_aux(from,length(data_frame[[1]]),
                                     measurements_per_day,
                                     first_measurement_index,
@@ -79,7 +79,7 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
   }
   av_state$data[[subset_id]] <- cbind(av_state$data[[subset_id]],added_columns)
   signif_columns <- c(signif_columns_d,signif_columns_h,signif_columns_w)
-  tsspan <- timeSequence(from=next_day(from),
+  tsspan <- timeDate::timeSequence(from=next_day(from),
                length.out=ceiling((length(data_frame[[1]])-(measurements_per_day-first_measurement_index+1))/measurements_per_day),
                by="day")
   scat(log_level,2,"set_timestamps: dates range from ",
@@ -95,22 +95,22 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
 }
 
 next_day <- function(daystr) {
-  as.character(timeSequence(from=timeDate(as.Date(timeDate(daystr))),
+  as.character(timeDate::timeSequence(from=timeDate::timeDate(as.Date(timeDate::timeDate(daystr))),
                             length.out=2,by="day")[2])
 }
 
 set_timestamps_aux <- function(from,length_out,measurements_per_day,
                                first_measurement_index,add_days_as_exogenous,
                                add_dayparts_as_exogenous,add_weekend_as_exogenous) {
-  firstday <- rep(weekdays(timeSequence(from=from,length.out=1,by="day")),
-                  each=measurements_per_day-first_measurement_index+1)
-  restofdays <- rep(weekdays(timeSequence(from=next_day(from),
+  firstday <- rep(weekdays(as.Date(timeDate::timeSequence(from=from,length.out=1,by="day")), FALSE),
+                  each=measurements_per_day-first_measurement_index + 1)
+  restofdays <- rep(weekdays(as.Date(timeDate::timeSequence(from=next_day(from),
                                           length.out=ceiling(length_out/measurements_per_day),
-                                          by="day")),each=measurements_per_day)
+                                          by="day")), FALSE),each=measurements_per_day)
   weekdayidx <- c(firstday,restofdays)[1:length_out]
-  weekday_labels <- weekdays(as.Date(timeSequence(from = "2012-01-01",
+  weekday_labels <- weekdays(as.Date(timeDate::timeSequence(from = "2012-01-01",
                                                   to = "2012-01-07",
-                                                  by = "day")))
+                                                  by = "day")), FALSE)
   weekday_labels_en <- c('Sunday','Monday','Tuesday','Wednesday',
                          'Thursday','Friday','Saturday')
   r <- NULL

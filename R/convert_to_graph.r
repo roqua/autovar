@@ -201,19 +201,19 @@ convert_to_graph <- function(av_state,net_cfg,forced_variable = NULL) {
     }
   }
   result <- paste('[',
-                  toString(toJSON(list(
+                  toString(jsonlite::toJSON(list(
                     links = linkdata,nodes = nodedata
                   ))),     # dynamic
                   ',',
-                  toString(toJSON(list(
+                  toString(jsonlite::toJSON(list(
                     links = linkdatac,nodes = nodedatac
                   ))),   # contemporaneous
                   ',',
-                  toString(toJSON(graphsum)), sep = "")
+                  toString(jsonlite::toJSON(graphsum)), sep = "")
   if (!is.null(net_cfg$include_model) && net_cfg$include_model) {
     exogen_mat <- exogen_matrix(av_state$accepted_models[[1]]$varest)
     result <- paste(result, ',',
-                    toString(toJSON(list(
+                    toString(jsonlite::toJSON(list(
                       endogen = list(
                         header = colnames(av_state$accepted_models[[1]]$varest$y),
                         body = as.matrix(av_state$accepted_models[[1]]$varest$y)
