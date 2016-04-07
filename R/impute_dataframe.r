@@ -38,6 +38,7 @@ impute_dataframe_aux <- function(df,measurements_per_day) {
   if ('daypart' %in% constant_columns)
     noms <- NULL
   mdf <- df[!(names(df) %in% constant_columns)]
+  ncols_imputed <- ncol(mdf) - 2
   a_out <- amelia(mdf,
                   tol=0.1, # higher tolerance to reach conversion faster
                   ts="time",
@@ -53,7 +54,7 @@ impute_dataframe_aux <- function(df,measurements_per_day) {
   # calculate the mean imputation data set
   mean_imp <- .2 * Reduce('+',a_out_imps)
   # do not return time or daypart
-  mdf <- mean_imp[,1:ncols]
+  mdf <- mean_imp[,1:ncols_imputed]
   df[!(names(df) %in% constant_columns)] <- mdf
   df[,1:ncols]
 }
