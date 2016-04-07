@@ -79,7 +79,7 @@ load_file_spss <- function(av_state) {
 }
 
 load_file_stata <- function(av_state) {
-  av_state$raw_data <- read.dta(av_state$file_name)
+  av_state$raw_data <- foreign::read.dta(av_state$file_name)
   av_state$data <- list(multiple=av_state$raw_data)
   av_state
 }
@@ -90,7 +90,7 @@ load_file_csv <- function(av_state) {
   open(fd)
   first_line <- readLines(fd,n=1)
   close(fd)
-  if (str_count(first_line,";") >= str_count(first_line,","))
+  if (stringr::str_count(first_line,";") >= stringr::str_count(first_line,","))
     av_state$raw_data <- read.csv2(av_state$file_name)
   else
     av_state$raw_data <- read.csv(av_state$file_name)

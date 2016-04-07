@@ -68,7 +68,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      format_output_like_stata=FALSE,
                      exclude_almost=FALSE,
                      simple_models=FALSE,
-                     numcores=detectCores()) {
+                     numcores=parallel::detectCores()) {
   assert_av_state(av_state)
   # lag_max is the global maximum lags used
   # significance is the limit
@@ -250,8 +250,8 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
   pm <- NULL
   cl <- NULL
   if (av_state$numcores > 1) {
-    cl <- makeCluster(av_state$numcores,type="PSOCK")
-    clusterCall(cl,setup_cluster)
+    cl <- parallel::makeCluster(av_state$numcores,type="PSOCK")
+    parallel::clusterCall(cl,setup_cluster)
     next_model_queue <- model_queue
     while (TRUE) {
       if (length(next_model_queue) == 0) break
@@ -259,7 +259,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
       addedmodelcnt <- 0
       tmcnt <- length(model_queue)
       ilist <- tmcnt-length(next_model_queue)+(1:length(next_model_queue))
-      pmlist <- clusterMap(cl,process_model,next_model_queue,ilist,
+      pmlist <- parallel::clusterMap(cl,process_model,next_model_queue,ilist,
                            MoreArgs=list(av_state=av_state,totmodelcnt=tmcnt),
                            SIMPLIFY=FALSE,USE.NAMES=FALSE)
       all_added_models <- list()
@@ -327,7 +327,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
         addedmodelcnt <- 0
         tmcnt <- length(model_queue)
         ilist <- tmcnt-length(next_model_queue)+(1:length(next_model_queue))
-        pmlist <- clusterMap(cl,process_model,next_model_queue,ilist,
+        pmlist <- parallel::clusterMap(cl,process_model,next_model_queue,ilist,
                              MoreArgs=list(av_state=av_state,totmodelcnt=tmcnt),
                              SIMPLIFY=FALSE,USE.NAMES=FALSE)
         all_added_models <- list()
@@ -381,7 +381,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     scat(av_state$log_level,2,'\n> Done.\n')
   }
   if (av_state$numcores > 1) {
-    stopCluster(cl)
+    parallel::stopCluster(cl)
   }
   accepted_models <- remove_lag_duplicates(av_state,accepted_models)
   accepted_models <- remove_restriction_duplicates(av_state,accepted_models)

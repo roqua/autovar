@@ -95,7 +95,7 @@ coefs_and_pvalues <- function(varest) {
 
 model_without_term <- function(varest, eqname, varname) {
   resmat <- update_restriction_matrix(varest,eqname,varname,0)
-  varest_new <- restrict(varest,
+  varest_new <- vars::restrict(varest,
                          method="manual",
                          resmat=format_restriction_matrix(varest,resmat))
   varest_new <- add_intercepts(varest_new)
@@ -142,11 +142,11 @@ format_restriction <- function(varest,idx,skip_to_be_excluded,format_output_like
                                        skip_to_be_excluded) && !format_output_like_stata) {
     NULL
   } else {
-    if(format_output_like_stata) {
+    if (format_output_like_stata) {
       secondpart <- paste("[",get_rowname(idx,cnames,rnames),"]",
                           get_colname(idx,cnames),sep='')
-      secondpart <- str_replace(secondpart,"^(\\[[^]]+\\])(.*?)\\.l([0-9]+)$","\\1L\\3\\.\\2")
-      secondpart <- str_replace(secondpart,"(\\]L)1(\\.)","\\1\\2")
+      secondpart <- stringr::str_replace(secondpart,"^(\\[[^]]+\\])(.*?)\\.l([0-9]+)$","\\1L\\3\\.\\2")
+      secondpart <- stringr::str_replace(secondpart,"(\\]L)1(\\.)","\\1\\2")
       secondpart
     } else {
       paste("[",get_rowname(idx,cnames,rnames),"]",

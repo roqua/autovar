@@ -25,7 +25,7 @@ select_relevant_rows <- function(data,timestamp,net_cfg) {
   first_meas_idx <- 1+((firstvalidrow+meas_per_day-1)%%meas_per_day)
   days_to_advance <- (firstvalidrow-1)%/%meas_per_day
   if (days_to_advance > 0)
-    timestamp <- as.character(timeSequence(from=timeDate(as.Date(timeDate(timestamp))),
+    timestamp <- as.character(timeDate::timeSequence(from=timeDate::timeDate(as.Date(timeDate::timeDate(timestamp))),
                                            length.out=days_to_advance+1,by="day")[days_to_advance+1])
   lastvalidrow <- 0
   for (i in nr_rows(data):1)

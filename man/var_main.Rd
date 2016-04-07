@@ -13,7 +13,8 @@ var_main(av_state, vars, lag_max = 2, significance = 0.05,
   use_varsoc = FALSE, use_pperron = TRUE, include_squared_trend = FALSE,
   normalize_data = FALSE, include_lag_zero = FALSE,
   split_up_outliers = FALSE, format_output_like_stata = FALSE,
-  exclude_almost = FALSE, simple_models = FALSE, numcores = detectCores())
+  exclude_almost = FALSE, simple_models = FALSE,
+  numcores = parallel::detectCores())
 }
 \arguments{
 \item{av_state}{an object of class \code{av_state}}
