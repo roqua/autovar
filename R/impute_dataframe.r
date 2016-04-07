@@ -39,7 +39,7 @@ impute_dataframe_aux <- function(df,measurements_per_day) {
     noms <- NULL
   mdf <- df[!(names(df) %in% constant_columns)]
   ncols_imputed <- ncol(mdf) - 2
-  a_out <- amelia(mdf,
+  a_out <- Amelia::amelia(mdf,
                   tol=0.1, # higher tolerance to reach conversion faster
                   ts="time",
                   lags=1:(ncol(mdf)-1-ifelse(is.null(noms),0,1)),
