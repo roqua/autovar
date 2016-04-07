@@ -102,11 +102,11 @@ next_day <- function(daystr) {
 set_timestamps_aux <- function(from,length_out,measurements_per_day,
                                first_measurement_index,add_days_as_exogenous,
                                add_dayparts_as_exogenous,add_weekend_as_exogenous) {
-  firstday <- rep(weekdays(timeDate::timeSequence(from=from,length.out=1,by="day"), FALSE),
-                  each=measurements_per_day-first_measurement_index+1)
-  restofdays <- rep(weekdays(timeDate::timeSequence(from=next_day(from),
+  firstday <- rep(weekdays(as.Date(timeDate::timeSequence(from=from,length.out=1,by="day")), FALSE),
+                  each=measurements_per_day-first_measurement_index + 1)
+  restofdays <- rep(weekdays(as.Date(timeDate::timeSequence(from=next_day(from),
                                           length.out=ceiling(length_out/measurements_per_day),
-                                          by="day"), FALSE),each=measurements_per_day)
+                                          by="day")), FALSE),each=measurements_per_day)
   weekdayidx <- c(firstday,restofdays)[1:length_out]
   weekday_labels <- weekdays(as.Date(timeDate::timeSequence(from = "2012-01-01",
                                                   to = "2012-01-07",
