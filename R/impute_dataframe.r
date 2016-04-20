@@ -38,6 +38,7 @@ impute_dataframe_aux <- function(df,measurements_per_day) {
   if ('daypart' %in% constant_columns)
     noms <- NULL
   mdf <- df[!(names(df) %in% constant_columns)]
+  if (!any(is.na(mdf))) return(df[,1:ncols])
   ncols_imputed <- ncol(mdf) - 2
   a_out <- Amelia::amelia(mdf,
                   tol=0.1, # higher tolerance to reach conversion faster
