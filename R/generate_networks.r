@@ -316,7 +316,7 @@ generate_networks_clean <- function(data, timestamp, always_include = NULL, pair
   new_negative_variables <- negative_variables[!(negative_variables %in% empty_columns)]
   new_pick_best_of <- pick_best_of[!(pick_best_of %in% empty_columns)]
   new_incident_to_best_of <- incident_to_best_of[!(incident_to_best_of %in% empty_columns)]
-  new_labels = labels[names(labels)[!(names(labels) %in% empty_columns)]]
+  new_labels <- labels[names(labels)[!(names(labels) %in% empty_columns)]]
   generate_networks(data = new_data,
                     timestamp = timestamp,
                     always_include = new_always_include,
