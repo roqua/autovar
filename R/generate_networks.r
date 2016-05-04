@@ -285,3 +285,49 @@ generate_networks_debug <- function(...) {
   tryCatch(generate_networks(...),
            error = function(e) { e$message <- paste(e$message, "\n", paste(sys.calls(), "\n", collapse = "\n"), collapse = "\n"); stop(e) })
 }
+
+generate_networks_clean <- function(data, timestamp, always_include = NULL, pairs = NULL, positive_variables = NULL,
+                                    negative_variables = NULL, pick_best_of = NULL, incident_to_best_of = NULL,
+                                    labels = list(), measurements_per_day = 3, max_network_size = 6,
+                                    include_model = FALSE, second_significances = c(0.05,0.01,0.005)) {
+  orig_col_count <- length(colnames(data))
+  column_names <- colnames(data)
+  empty_columns <- NULL
+  for (i in 1:orig_col_count) {
+    column_name <- column_names[i]
+    column_data <- data[[column_name]]
+    if (all(is.na(column_data)))
+      empty_columns <- c(empty_columns, column_name)
+  }
+  new_data <- data[, column_names[!(column_names %in% empty_columns)]]
+  new_always_include <- always_include[!(always_include %in% empty_columns)]
+  new_pairs <- NULL
+  if (!is.null(pairs)) {
+    i <- 1
+    while (i < length(pairs)) {
+      pair_first <- pairs[i]
+      pair_second <- pairs[i + 1]
+      i <- i + 2
+      if (pair_first %in% empty_columns || pair_second %in% empty_columns) next
+      new_pairs <- c(new_pairs, pair_first, pair_second)
+    }
+  }
+  new_positive_variables <- positive_variables[!(positive_variables %in% empty_columns)]
+  new_negative_variables <- negative_variables[!(negative_variables %in% empty_columns)]
+  new_pick_best_of <- pick_best_of[!(pick_best_of %in% empty_columns)]
+  new_incident_to_best_of <- incident_to_best_of[!(incident_to_best_of %in% empty_columns)]
+  new_labels <- labels[names(labels)[!(names(labels) %in% empty_columns)]]
+  generate_networks(data = new_data,
+                    timestamp = timestamp,
+                    always_include = new_always_include,
+                    pairs = new_pairs,
+                    positive_variables = new_positive_variables,
+                    negative_variables = new_negative_variables,
+                    pick_best_of = new_pick_best_of,
+                    incident_to_best_of = new_incident_to_best_of,
+                    labels = new_labels,
+                    measurements_per_day = measurements_per_day,
+                    max_network_size = max_network_size,
+                    include_model = include_model,
+                    second_significances = second_significances)
+}
