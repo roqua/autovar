@@ -328,6 +328,6 @@ generate_networks_clean <- function(data, timestamp, always_include = NULL, pair
                     labels = new_labels,
                     measurements_per_day = measurements_per_day,
                     max_network_size = max_network_size,
-                    include_model = FALSE,
+                    include_model = include_model,
                     second_significances = second_significances)
 }
