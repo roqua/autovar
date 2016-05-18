@@ -1,6 +1,6 @@
-#' Add dummy variables for weekdays and hours of the day
+#' Add dummy variables for weekdays and day parts
 #' 
-#' This function adds dummy columns for weekdays (named \code{Sunday}, \code{Monday}, \code{Tuesday}, \code{Wednesday}, \code{Thursday}, \code{Friday} and \code{Saturday}) and hours of the day to the given subset of the specified data set. These are used by \code{\link{var_main}} to find better models by removing cyclicity from the data set.
+#' This function adds dummy columns for weekdays (named \code{Sunday}, \code{Monday}, \code{Tuesday}, \code{Wednesday}, \code{Thursday}, \code{Friday} and \code{Saturday}) and day parts (\code{morning}, \code{afternoon}) to the given subset of the specified data set. These are used by \code{\link{var_main}} to find better models by removing cyclicity from the data set.
 #' @param av_state an object of class \code{av_state}
 #' @param subset_id either an integer subset index or the the value for the \code{id_field} column that was used in the \code{\link{group_by}} function. The \code{subset_id} argument is required if the data set is grouped into multiple data sets (i.e., if the \code{\link{group_by}} function was used), in which case the function works on the specified data subset.
 #' @param date_of_first_measurement the date of the first measurement. This argument should be given in the format: \code{"yyyy-mm-dd"}, e.g., \code{"2004-03-28"}.

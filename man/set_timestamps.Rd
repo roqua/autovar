@@ -2,7 +2,7 @@
 % Please edit documentation in R/set_timestamps.r
 \name{set_timestamps}
 \alias{set_timestamps}
-\title{Add dummy variables for weekdays and hours of the day}
+\title{Add dummy variables for weekdays and day parts}
 \usage{
 set_timestamps(av_state, subset_id = 1, date_of_first_measurement,
   measurements_per_day = 1, log_level = 0, first_measurement_index = 1,
@@ -32,7 +32,7 @@ set_timestamps(av_state, subset_id = 1, date_of_first_measurement,
 This function returns the modified \code{av_state} object.
 }
 \description{
-This function adds dummy columns for weekdays (named \code{Sunday}, \code{Monday}, \code{Tuesday}, \code{Wednesday}, \code{Thursday}, \code{Friday} and \code{Saturday}) and hours of the day to the given subset of the specified data set. These are used by \code{\link{var_main}} to find better models by removing cyclicity from the data set.
+This function adds dummy columns for weekdays (named \code{Sunday}, \code{Monday}, \code{Tuesday}, \code{Wednesday}, \code{Thursday}, \code{Friday} and \code{Saturday}) and day parts (\code{morning}, \code{afternoon}) to the given subset of the specified data set. These are used by \code{\link{var_main}} to find better models by removing cyclicity from the data set.
 }
 \examples{
 av_state <- load_file("../data/input/pp4 nieuw compleet met 140min.sav",log_level=3)
