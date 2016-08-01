@@ -100,8 +100,7 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
         }
         force_include_var <- net_cfg$pick_best_of[[idx]]
         force_exclude_vars <- net_cfg$pick_best_of[net_cfg$pick_best_of != force_include_var]
-        # below statement goes wrong if there is not at least TWO columns that are not force excluded (does not happen in current use)
-        filtered_data <- data[,!(names(data) %in% force_exclude_vars)]
+        filtered_data <- data[!(names(data) %in% force_exclude_vars)]
         list_of_column_configs <- c(list_of_column_configs,list(select_relevant_columns(filtered_data,net_cfg,
                                                                                         fail_safe,
                                                                                         number_of_columns,
@@ -299,7 +298,7 @@ generate_networks_clean <- function(data, timestamp, always_include = NULL, pair
     if (all(is.na(column_data)))
       empty_columns <- c(empty_columns, column_name)
   }
-  new_data <- data[, column_names[!(column_names %in% empty_columns)]]
+  new_data <- data[column_names[!(column_names %in% empty_columns)]]
   new_always_include <- always_include[!(always_include %in% empty_columns)]
   new_pairs <- NULL
   if (!is.null(pairs)) {

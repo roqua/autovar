@@ -40,7 +40,7 @@ select_relevant_columns <- function(data, net_cfg, failsafe = FALSE, number_of_c
     remaining_columns <- remove_from_vector(remaining_columns,force_include)
     remaining_columns <- select_mssd_columns(remaining_columns,mssds)
     if (length(remaining_columns) > 0) {
-      df <- data[,remaining_columns]
+      df <- data[remaining_columns]
       skews <- z_skewness_columns(df)
       remaining_order <- order_by_quantity_unbalanced(remaining_columns,skews)
       rnames <- c(rnames,remaining_columns[remaining_order])
@@ -49,7 +49,7 @@ select_relevant_columns <- function(data, net_cfg, failsafe = FALSE, number_of_c
     }
     if (length(rnames) > number_of_columns)
       rnames <- rnames[1:number_of_columns]
-    return(data[,rnames])
+    return(data[rnames])
   }
   # force include vars
   if (!is.null(force_include))
@@ -103,7 +103,7 @@ select_relevant_columns <- function(data, net_cfg, failsafe = FALSE, number_of_c
   remaining_columns <- remove_from_vector(remaining_columns,net_cfg$pairs)
   extra_columns <- select_mssd_columns(remaining_columns,mssds)
   if (length(extra_columns) > 0) {
-    df <- data[,extra_columns]
+    df <- data[extra_columns]
     skews <- z_skewness_columns(df)
     bal <- sentiment_balance(rnames,net_cfg)
     extra_order <- NULL
@@ -119,7 +119,7 @@ select_relevant_columns <- function(data, net_cfg, failsafe = FALSE, number_of_c
     rnames <- rnames[1:number_of_columns]
   if (length(rnames) == 0)
     return(NULL)
-  data[,rnames]
+  data[rnames]
 }
 
 remove_from_vector <- function(a,b) {
