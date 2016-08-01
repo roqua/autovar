@@ -310,7 +310,7 @@ process_restricted_varest <- function(varest, cause, equation) {
     varest$p <- sum(orestricts[names(orestricts) %in% get_lag_varnames(varest,cause)])
     excluded_names <- names(orestricts)[which(orestricts == 0)]
     # 0 means exclude
-    varest$datamat <- varest$datamat[, !(colnames(varest$datamat) %in% excluded_names)]
+    varest$datamat <- varest$datamat[!(colnames(varest$datamat) %in% excluded_names)]
   }
   varest
 }
