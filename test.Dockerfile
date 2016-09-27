@@ -10,7 +10,5 @@ RUN ./inst/bash/install-package-dependencies.sh
 
 ADD ./ /autovar
 
-RUN R --no-save --quiet -e 'devtools::document()'
 RUN R CMD INSTALL --no-multiarch --with-keep.source /autovar
 RUN R CMD build /autovar
-
