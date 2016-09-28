@@ -93,32 +93,20 @@ This function returns the modified <code>av_state</code> object.
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/pp4 nieuw compleet met 140min.sav&quot;,log_level=3)
-av_state &lt;- set_timestamps(av_state,date_of_first_measurement=&quot;2010-04-14&quot;)
-</div>
-<div class='output'>set_timestamps: dates range from 2010-04-14 to 2010-06-17
-set_timestamps: using additional exogenous variables in models:
-    Sunday, Monday, Tuesday, Wednesday, Thursday, Friday 
-</div>
-<div class='input'>
-# an example with multiple measurements per day:
-av_state &lt;- load_file(&quot;../data/input/ID68 basisbestand.sav&quot;,log_level=3)
-av_state &lt;- set_timestamps(av_state,date_of_first_measurement=&quot;2012-07-12&quot;,
-                           measurements_per_day=3)
-</div>
-<div class='output'>set_timestamps: dates range from 2012-07-12 to 2012-08-10
-set_timestamps: using additional exogenous variables in models:
-    Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Morning, Afternoon 
-</div>
-<div class='input'>
-# same data set, but one extra day because the first day only has one measurement
-av_state &lt;- load_file(&quot;../data/input/ID68 basisbestand.sav&quot;,log_level=3)
-av_state &lt;- set_timestamps(av_state,date_of_first_measurement=&quot;2012-07-12&quot;,
-                           measurements_per_day=3,first_measurement_index=3)
-</div>
-<div class='output'>set_timestamps: dates range from 2012-07-12 to 2012-08-11
-set_timestamps: using additional exogenous variables in models:
-    Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Morning, Afternoon 
+    <pre class="examples"><div class='input'>## Not run: 
+# av_state &lt;- load_file(&quot;../data/input/pp4 nieuw compleet met 140min.sav&quot;,log_level=3)
+# av_state &lt;- set_timestamps(av_state,date_of_first_measurement=&quot;2010-04-14&quot;)
+# 
+# # an example with multiple measurements per day:
+# av_state &lt;- load_file(&quot;../data/input/ID68 basisbestand.sav&quot;,log_level=3)
+# av_state &lt;- set_timestamps(av_state,date_of_first_measurement=&quot;2012-07-12&quot;,
+#                            measurements_per_day=3)
+# 
+# # same data set, but one extra day because the first day only has one measurement
+# av_state &lt;- load_file(&quot;../data/input/ID68 basisbestand.sav&quot;,log_level=3)
+# av_state &lt;- set_timestamps(av_state,date_of_first_measurement=&quot;2012-07-12&quot;,
+#                            measurements_per_day=3,first_measurement_index=3)
+# ## End(Not run)
 </div></pre>
   </div>
   <div class="span4">

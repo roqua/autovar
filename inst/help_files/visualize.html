@@ -80,31 +80,24 @@ The arguments of this function work much like the ones described above for indiv
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/RuwedataAngela.sav&quot;,log_level=3)
-av_state &lt;- add_derived_column(av_state,&#39;sum_minuten_licht&#39;,
-              c(&#39;minuten_woonwerk&#39;,&#39;minuten_werk_licht&#39;,
-                &#39;minuten_licht_huishouden&#39;))
-av_state &lt;- add_derived_column(av_state,&#39;sum_minuten_zwaar&#39;,
-              c(&#39;minuten_zwaarhuishouden&#39;,&#39;minuten_zwaar_werk&#39;))
-visualize(av_state,c(&#39;sum_minuten_licht&#39;,&#39;sum_minuten_zwaar&#39;,
-          &#39;minuten_vrijetijd&#39;,&#39;minuten_sport&#39;),
-          labels=c(&#39;licht werk&#39;,&#39;zwaar werk&#39;,&#39;vrije tijd&#39;,&#39;sport&#39;),
-          type=&#39;BAR&#39;,horiz=TRUE)
-</div>
-<p><img src='visualize-2.png' alt='' width='540' height='400' /></p>
-<div class='input'>visualize(av_state,c(&#39;sum_minuten_licht&#39;,&#39;sum_minuten_zwaar&#39;,
-          &#39;minuten_vrijetijd&#39;,&#39;minuten_sport&#39;),
-          type=&#39;DOT&#39;,xlab=&#39;minuten&#39;)
-</div>
-<p><img src='visualize-4.png' alt='' width='540' height='400' /></p>
-<div class='input'>visualize(av_state,c(&#39;sum_minuten_licht&#39;,&#39;sum_minuten_zwaar&#39;,
-          &#39;minuten_vrijetijd&#39;,&#39;minuten_sport&#39;))
-</div>
-<strong class='warning'>Warning message:
-Removed 24 rows containing missing values (geom_point).</strong>
-<strong class='warning'>Warning message:
-Removed 34 rows containing missing values (geom_point).</strong>
-<p><img src='visualize-8.png' alt='' width='540' height='400' /></p></pre>
+    <pre class="examples"><div class='input'>## Not run: 
+# av_state &lt;- load_file(&quot;../data/input/RuwedataAngela.sav&quot;,log_level=3)
+# av_state &lt;- add_derived_column(av_state,&#39;sum_minuten_licht&#39;,
+#               c(&#39;minuten_woonwerk&#39;,&#39;minuten_werk_licht&#39;,
+#                 &#39;minuten_licht_huishouden&#39;))
+# av_state &lt;- add_derived_column(av_state,&#39;sum_minuten_zwaar&#39;,
+#               c(&#39;minuten_zwaarhuishouden&#39;,&#39;minuten_zwaar_werk&#39;))
+# visualize(av_state,c(&#39;sum_minuten_licht&#39;,&#39;sum_minuten_zwaar&#39;,
+#           &#39;minuten_vrijetijd&#39;,&#39;minuten_sport&#39;),
+#           labels=c(&#39;licht werk&#39;,&#39;zwaar werk&#39;,&#39;vrije tijd&#39;,&#39;sport&#39;),
+#           type=&#39;BAR&#39;,horiz=TRUE)
+# visualize(av_state,c(&#39;sum_minuten_licht&#39;,&#39;sum_minuten_zwaar&#39;,
+#           &#39;minuten_vrijetijd&#39;,&#39;minuten_sport&#39;),
+#           type=&#39;DOT&#39;,xlab=&#39;minuten&#39;)
+# visualize(av_state,c(&#39;sum_minuten_licht&#39;,&#39;sum_minuten_zwaar&#39;,
+#           &#39;minuten_vrijetijd&#39;,&#39;minuten_sport&#39;))
+# ## End(Not run)
+</div></pre>
   </div>
   <div class="span4">
     <!-- <ul>

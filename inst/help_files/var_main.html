@@ -151,76 +151,14 @@ This function returns the modified <code>av_state</code> object. The lists of ac
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/Activity and depression pp5 Angela.dta&quot;,log_level=3)
-av_state &lt;- group_by(av_state,&#39;id&#39;)
-</div>
-<div class='output'>group_by: identified 1 groups based on distinct values for attribute &#39;id&#39;
-</div>
-<div class='input'>av_state &lt;- order_by(av_state,&#39;Day&#39;)
-av_state &lt;- add_derived_column(av_state,&#39;Activity_hours&#39;,&#39;Activity&#39;,
-                               operation=&#39;MINUTES_TO_HOURS&#39;)
-av_state &lt;- var_main(av_state,c(&#39;Activity_hours&#39;,&#39;Depression&#39;),log_level=3)
-</div>
-<div class='output'>
-====================
-var_main(av_state, vars = c(&quot;Activity_hours&quot;, &quot;Depression&quot;), log_level = 3, numcores = 8L)
-
-Starting VAR (using 8 cores) with variables: Activity_hours, Depression
-
-====================
-
-Done. Processed 9 distinct models, of which 2 were valid.
-Tested 18 of 144 ( 12.50%) of the combinatorial search space at the given lags (1, 2).
-</div>
-<p><img src='var_main-5.png' alt='' width='540' height='400' /></p>
-<div class='output'>
-Granger causality legend:
-   +   majority positive associations
-   ~   majority mixed pos/neg associations within models
-   -   majority negative associations
-   #   mixed pos/neg associations among models
-
-Granger causality summary of all 8 unrestricted models:
-  100.00%   Depression     -Granger causes- Activity_hours   (3 models +5 almost) (sign: 1 ~, 7 -)
-
-Granger causality summary of all 2 valid models:
-  100.00%   Depression     -Granger causes- Activity_hours   (1 model +1 almost) (sign: 2 -)
-
-Granger causality summary of all 1 valid unrestricted models:
-  100.00%   Depression     -Granger causes- Activity_hours   (1 almost) (sign: 1 -)
-</div>
-<p><img src='var_main-7.png' alt='' width='540' height='400' /></p>
-<div class='output'>
-Summary of all valid models:
-  lag:
-    100.00%   1   (2 models)
-
-  apply_log_transform:
-    100.00%   TRUE   (2 models)
-
-  include_trend_vars:
-    100.00%   FALSE   (2 models)
-
-The valid models (sorted by AIC score):
-A: (AIC: 386.23 (orig: 45.718), BIC: 398.593 (orig: 58.081)) : Depression -Granger causes- Activity_hours (0.0417)
-  Lag: 1
-  Log transform: YES
-  Exogenous variables: 
-    Depression outliers (3.5x std. of res.): 27
-  Constraints:  
-    [lnActivity_hours]lnActivity_hours.l1 = 0
-    [lnDepression]lnActivity_hours.l1 = 0
-  Resulting Formulas:  
-    lnActivity_hours = lnDepression.l1 + const + Depression_outliers
-    lnDepression = lnDepression.l1 + const + Depression_outliers
-
-B: (AIC: 388.391 (orig: 47.879), BIC: 404.875 (orig: 64.363)) : Depression almost -Granger causes- Activity_hours (0.0726)
-  Lag: 1
-  Log transform: YES
-  Exogenous variables: 
-    Depression outliers (3.5x std. of res.): 27
-  Constraints:  none
-
+    <pre class="examples"><div class='input'>## Not run: 
+# av_state &lt;- load_file(&quot;../data/input/Activity and depression pp5 Angela.dta&quot;,log_level=3)
+# av_state &lt;- group_by(av_state,&#39;id&#39;)
+# av_state &lt;- order_by(av_state,&#39;Day&#39;)
+# av_state &lt;- add_derived_column(av_state,&#39;Activity_hours&#39;,&#39;Activity&#39;,
+#                                operation=&#39;MINUTES_TO_HOURS&#39;)
+# av_state &lt;- var_main(av_state,c(&#39;Activity_hours&#39;,&#39;Depression&#39;),log_level=3)
+# ## End(Not run)
 </div></pre>
   </div>
   <div class="span4">

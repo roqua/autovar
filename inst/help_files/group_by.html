@@ -79,37 +79,12 @@ This function returns the modified <code>av_state</code> object.
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/RuwedataAngela.sav&quot;,log_level=3)
-print(av_state)
-</div>
-<div class='output'>
-file_name: /Users/ando/Dropbox/work/work/r/code/preprocessing/../data/input/RuwedataAngela.sav 
-real_file_name: ../data/input/RuwedataAngela.sav 
-file_type: SPSS 
-raw_data: 318 samples with 35 features [missing: 22.47% (2501)]
-data: 
-  multiple: 318 samples with 35 features [missing: 22.47% (2501)]
-
-</div>
-<div class='input'>av_state &lt;- group_by(av_state,&#39;id&#39;)
-</div>
-<div class='output'>group_by: identified 5 groups based on distinct values for attribute &#39;id&#39;
-</div>
-<div class='input'>print(av_state)
-</div>
-<div class='output'>
-file_name: /Users/ando/Dropbox/work/work/r/code/preprocessing/../data/input/RuwedataAngela.sav 
-real_file_name: ../data/input/RuwedataAngela.sav 
-file_type: SPSS 
-raw_data: 318 samples with 35 features [missing: 22.47% (2501)]
-data: 
-  1: 85 samples with 35 features [missing: 18.05% (537)]
-  2: 95 samples with 35 features [missing: 31.76% (1056)]
-  3: 14 samples with 35 features [missing: 18.57% (91)]
-  4: 65 samples with 35 features [missing: 20.18% (459)]
-  5: 59 samples with 35 features [missing: 17.34% (358)]
-group_by: id 
-
+    <pre class="examples"><div class='input'>## Not run: 
+# av_state &lt;- load_file(&quot;../data/input/RuwedataAngela.sav&quot;,log_level=3)
+# print(av_state)
+# av_state &lt;- group_by(av_state,&#39;id&#39;)
+# print(av_state)
+# ## End(Not run)
 </div></pre>
   </div>
   <div class="span4">
