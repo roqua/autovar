@@ -16,6 +16,7 @@
 #' @param second_significances is the vector of significance levels to be used after the first attempt.
 #' @return This function returns a string representing a json array of two networks and an array of the top links.
 #' @examples
+#' \dontrun{
 #' GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
 #'                 'beweging', 'iets_betekenen', 'humor', 'buiten_zijn',
 #'                 'eigenwaarde', 'levenslust', 'onrust', 'somberheid',
@@ -54,6 +55,7 @@
 #'                                 uw_eigen_factor = "Mijn eigen factor"),
 #'                   measurements_per_day = 3,
 #'                   max_network_size = 6))
+#' }
 #' @export
 generate_networks <- function(data, timestamp, always_include = NULL, pairs = NULL, positive_variables = NULL,
                               negative_variables= NULL, pick_best_of = NULL, incident_to_best_of = NULL,

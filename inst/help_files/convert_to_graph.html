@@ -81,69 +81,48 @@ This function returns a string representing a json array of two networks.
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>GN_COLUMNS &lt;- c(&#39;ontspanning&#39;, &#39;opgewektheid&#39;, &#39;hier_en_nu&#39;, &#39;concentratie&#39;,
-                &#39;beweging&#39;, &#39;iets_betekenen&#39;, &#39;humor&#39;, &#39;buiten_zijn&#39;,
-                &#39;eigenwaarde&#39;, &#39;levenslust&#39;, &#39;onrust&#39;, &#39;somberheid&#39;,
-                &#39;lichamelijk_ongemak&#39;, &#39;tekortschieten&#39;, &#39;piekeren&#39;, &#39;eenzaamheid&#39;,
-                &#39;uw_eigen_factor&#39;)
-data&lt;-load_file(&quot;../data/input/DataDndN_nonimputed_voorAndo.sav&quot;,log_level=3)
-data&lt;-data$raw_data[,GN_COLUMNS]
-net_cfg &lt;- new_net_cfg()
-net_cfg$vars &lt;- unique(names(data))
-net_cfg$always_include &lt;- &#39;uw_eigen_factor&#39;
-net_cfg$pairs &lt;- c(&#39;opgewektheid&#39;,&#39;onrust&#39;,
-                   &#39;somberheid&#39;,&#39;ontspanning&#39;,
-                   &#39;somberheid&#39;,&#39;onrust&#39;)
-net_cfg$positive_variables &lt;- c(&#39;opgewektheid&#39;,&#39;ontspanning&#39;,&#39;hier_en_nu&#39;,
-                                &#39;concentratie&#39;, &#39;beweging&#39;,&#39;iets_betekenen&#39;,
-                                &#39;humor&#39;, &#39;buiten_zijn&#39;,&#39;eigenwaarde&#39;, &#39;levenslust&#39;)
-net_cfg$negative_variables &lt;- c(&#39;onrust&#39;,&#39;somberheid&#39;,&#39;lichamelijk_ongemak&#39;,
-                                &#39;tekortschieten&#39;,&#39;piekeren&#39;,&#39;eenzaamheid&#39;)
-net_cfg$measurements_per_day &lt;- 3
-net_cfg$max_network_size &lt;- 6
-odata &lt;- select_relevant_columns(data,net_cfg,FALSE,6)
-first_measurement_index &lt;- 1
-timestamp &lt;- &#39;2014-05-06&#39;
-res &lt;- select_relevant_rows(odata,timestamp,net_cfg)
-odata &lt;- res$data
-first_measurement_index &lt;- res$first_measurement_index
-timestamp &lt;- res$timestamp
-if (any(is.na(odata)))
-  odata &lt;- impute_dataframe(odata,net_cfg$measurements_per_day)
-d&lt;-load_dataframe(odata,net_cfg)
-</div>
-<div class='output'>load_dataframe loaded data.frame with 6 columns:
-[1] &quot;uw_eigen_factor (scl)&quot; &quot;somberheid (scl)&quot;      &quot;ontspanning (scl)&quot;     &quot;piekeren (scl)&quot;       
-[5] &quot;hier_en_nu (scl)&quot;      &quot;humor (scl)&quot;          
-</div>
-<div class='input'>d&lt;-add_trend(d)
-</div>
-<div class='output'>add_trend: add trend and squared trend columns: index and index2
-</div>
-<div class='input'>d&lt;-set_timestamps(d,date_of_first_measurement=timestamp,
-                    first_measurement_index=first_measurement_index,
-                    measurements_per_day=net_cfg$measurements_per_day)
-</div>
-<div class='output'>set_timestamps: dates range from 2014-05-06 to 2014-06-03
-set_timestamps: using additional exogenous variables in models:
-    Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Morning, Afternoon 
-</div>
-<div class='input'>d&lt;-var_main(d,names(odata),significance=0.01,log_level=3,
-              criterion=&quot;AIC&quot;,include_squared_trend=TRUE,
-              exclude_almost=TRUE,simple_models=TRUE,
-              split_up_outliers=TRUE)
-</div>
-<div class='output'>
-====================
-var_main(av_state, vars = c(&quot;uw_eigen_factor&quot;, &quot;somberheid&quot;, &quot;ontspanning&quot;, &quot;piekeren&quot;, &quot;hier_en_nu&quot;, &quot;humor&quot;), significance = 0.01, exogenous_max_iterations = 1, log_level = 3, criterion = &quot;AIC&quot;, include_squared_trend = TRUE, split_up_outliers = TRUE, exclude_almost = TRUE, simple_models = TRUE, numcores = 8L)
-
-Starting VAR (using 8 cores) with variables: uw_eigen_factor, somberheid, ontspanning, piekeren, hier_en_nu, humor
-
-Done. Processed 73 distinct models, of which 2 were valid.
-</div>
-<div class='input'>cat(convert_to_graph(d,net_cfg))
-</div>
-<div class='output'>[{&quot;links&quot;:[{&quot;source&quot;:3,&quot;target&quot;:5,&quot;coef&quot;:&quot;0.434293087689892&quot;},{&quot;source&quot;:4,&quot;target&quot;:5,&quot;coef&quot;:&quot;0.191087014693073&quot;}],&quot;nodes&quot;:[{&quot;index&quot;:0,&quot;name&quot;:&quot;uw_eigen_factor&quot;,&quot;type&quot;:&quot;Neutraal&quot;},{&quot;index&quot;:1,&quot;name&quot;:&quot;somberheid&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:2,&quot;name&quot;:&quot;ontspanning&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:3,&quot;name&quot;:&quot;piekeren&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:4,&quot;name&quot;:&quot;hier_en_nu&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:5,&quot;name&quot;:&quot;humor&quot;,&quot;type&quot;:&quot;Positief&quot;}]},{&quot;links&quot;:[{&quot;source&quot;:1,&quot;target&quot;:0,&quot;coef&quot;:&quot;-0.719397573121258&quot;},{&quot;source&quot;:2,&quot;target&quot;:0,&quot;coef&quot;:&quot;0.380152124355508&quot;},{&quot;source&quot;:3,&quot;target&quot;:0,&quot;coef&quot;:&quot;-0.480843046043661&quot;},{&quot;source&quot;:5,&quot;target&quot;:0,&quot;coef&quot;:&quot;0.26556323344153&quot;},{&quot;source&quot;:2,&quot;target&quot;:1,&quot;coef&quot;:&quot;-0.486687375225758&quot;},{&quot;source&quot;:3,&quot;target&quot;:1,&quot;coef&quot;:&quot;0.722802123033899&quot;},{&quot;source&quot;:5,&quot;target&quot;:1,&quot;coef&quot;:&quot;-0.219657774023184&quot;},{&quot;source&quot;:3,&quot;target&quot;:2,&quot;coef&quot;:&quot;-0.640714143584592&quot;},{&quot;source&quot;:4,&quot;target&quot;:2,&quot;coef&quot;:&quot;0.40166406892226&quot;},{&quot;source&quot;:5,&quot;target&quot;:2,&quot;coef&quot;:&quot;0.293728942443868&quot;},{&quot;source&quot;:4,&quot;target&quot;:3,&quot;coef&quot;:&quot;-0.414551898243106&quot;},{&quot;source&quot;:5,&quot;target&quot;:3,&quot;coef&quot;:&quot;-0.376037115730738&quot;},{&quot;source&quot;:5,&quot;target&quot;:4,&quot;coef&quot;:&quot;0.290023264563612&quot;}],&quot;nodes&quot;:[{&quot;index&quot;:0,&quot;name&quot;:&quot;uw_eigen_factor&quot;,&quot;type&quot;:&quot;Neutraal&quot;},{&quot;index&quot;:1,&quot;name&quot;:&quot;somberheid&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:2,&quot;name&quot;:&quot;ontspanning&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:3,&quot;name&quot;:&quot;piekeren&quot;,&quot;type&quot;:&quot;Negatief&quot;},{&quot;index&quot;:4,&quot;name&quot;:&quot;hier_en_nu&quot;,&quot;type&quot;:&quot;Positief&quot;},{&quot;index&quot;:5,&quot;name&quot;:&quot;humor&quot;,&quot;type&quot;:&quot;Positief&quot;}]},[{&quot;source&quot;:&quot;piekeren&quot;,&quot;target&quot;:&quot;humor&quot;,&quot;sign&quot;:1},{&quot;source&quot;:&quot;hier_en_nu&quot;,&quot;target&quot;:&quot;humor&quot;,&quot;sign&quot;:1}]]</div></pre>
+    <pre class="examples"><div class='input'>## Not run: 
+# GN_COLUMNS &lt;- c(&#39;ontspanning&#39;, &#39;opgewektheid&#39;, &#39;hier_en_nu&#39;, &#39;concentratie&#39;,
+#                 &#39;beweging&#39;, &#39;iets_betekenen&#39;, &#39;humor&#39;, &#39;buiten_zijn&#39;,
+#                 &#39;eigenwaarde&#39;, &#39;levenslust&#39;, &#39;onrust&#39;, &#39;somberheid&#39;,
+#                 &#39;lichamelijk_ongemak&#39;, &#39;tekortschieten&#39;, &#39;piekeren&#39;, &#39;eenzaamheid&#39;,
+#                 &#39;uw_eigen_factor&#39;)
+# data&lt;-load_file(&quot;../data/input/DataDndN_nonimputed_voorAndo.sav&quot;,log_level=3)
+# data&lt;-data$raw_data[,GN_COLUMNS]
+# net_cfg &lt;- new_net_cfg()
+# net_cfg$vars &lt;- unique(names(data))
+# net_cfg$always_include &lt;- &#39;uw_eigen_factor&#39;
+# net_cfg$pairs &lt;- c(&#39;opgewektheid&#39;,&#39;onrust&#39;,
+#                    &#39;somberheid&#39;,&#39;ontspanning&#39;,
+#                    &#39;somberheid&#39;,&#39;onrust&#39;)
+# net_cfg$positive_variables &lt;- c(&#39;opgewektheid&#39;,&#39;ontspanning&#39;,&#39;hier_en_nu&#39;,
+#                                 &#39;concentratie&#39;, &#39;beweging&#39;,&#39;iets_betekenen&#39;,
+#                                 &#39;humor&#39;, &#39;buiten_zijn&#39;,&#39;eigenwaarde&#39;, &#39;levenslust&#39;)
+# net_cfg$negative_variables &lt;- c(&#39;onrust&#39;,&#39;somberheid&#39;,&#39;lichamelijk_ongemak&#39;,
+#                                 &#39;tekortschieten&#39;,&#39;piekeren&#39;,&#39;eenzaamheid&#39;)
+# net_cfg$measurements_per_day &lt;- 3
+# net_cfg$max_network_size &lt;- 6
+# odata &lt;- select_relevant_columns(data,net_cfg,FALSE,6)
+# first_measurement_index &lt;- 1
+# timestamp &lt;- &#39;2014-05-06&#39;
+# res &lt;- select_relevant_rows(odata,timestamp,net_cfg)
+# odata &lt;- res$data
+# first_measurement_index &lt;- res$first_measurement_index
+# timestamp &lt;- res$timestamp
+# if (any(is.na(odata)))
+#   odata &lt;- impute_dataframe(odata,net_cfg$measurements_per_day)
+# d&lt;-load_dataframe(odata,net_cfg)
+# d&lt;-add_trend(d)
+# d&lt;-set_timestamps(d,date_of_first_measurement=timestamp,
+#                     first_measurement_index=first_measurement_index,
+#                     measurements_per_day=net_cfg$measurements_per_day)
+# d&lt;-var_main(d,names(odata),significance=0.01,log_level=3,
+#               criterion=&quot;AIC&quot;,include_squared_trend=TRUE,
+#               exclude_almost=TRUE,simple_models=TRUE,
+#               split_up_outliers=TRUE)
+# cat(convert_to_graph(d,net_cfg))
+# ## End(Not run)
+</div></pre>
   </div>
   <div class="span4">
     <!-- <ul>
@@ -159,7 +138,7 @@ Done. Processed 73 distinct models, of which 2 were valid.
       
       <footer>
       <p class="pull-right"><a href="#">Back to top</a></p>
-<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="https://getbootstrap.com/2.0.4/">bootstrap</a>.</p>
       </footer>
     </div>
   </body>

@@ -15,9 +15,11 @@ plot_barchart(av_state, x, y, ...)
 This function plots the bar chart for the AIC and BIC scores of the accepted models and compares the Manual AIC and BIC scores graphically.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
 av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_level=3)
 # av_state is the result of a call to var_main
 plot_barchart(av_state,20.02,61.48)
+}
 }
 

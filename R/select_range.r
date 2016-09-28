@@ -8,6 +8,7 @@
 #' @param end indicates which values should be included. Values that are \code{<= end} are included. This argument is optional if \code{begin} is specified.
 #' @return This function returns the modified \code{av_state} object.
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/pp2 nieuw compleet_64dagen.sav",log_level=3)
 #' av_state <- order_by(av_state,'tijdstip')
 #' print(av_state)
@@ -24,6 +25,7 @@
 #' av_state <- select_range(av_state,column='lnSomPHQ',begin=0,end=2)
 #' print(av_state)
 #' av_state$data[[1]]['lnSomPHQ']
+#' }
 #' @export
 select_range <- function(av_state,subset_id=1,column,begin,end) {
   assert_av_state(av_state)

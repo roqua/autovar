@@ -35,6 +35,7 @@ This function returns the modified \code{av_state} object.
 This function adds dummy columns for weekdays (named \code{Sunday}, \code{Monday}, \code{Tuesday}, \code{Wednesday}, \code{Thursday}, \code{Friday} and \code{Saturday}) and day parts (\code{morning}, \code{afternoon}) to the given subset of the specified data set. These are used by \code{\link{var_main}} to find better models by removing cyclicity from the data set.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/pp4 nieuw compleet met 140min.sav",log_level=3)
 av_state <- set_timestamps(av_state,date_of_first_measurement="2010-04-14")
 
@@ -47,5 +48,6 @@ av_state <- set_timestamps(av_state,date_of_first_measurement="2012-07-12",
 av_state <- load_file("../data/input/ID68 basisbestand.sav",log_level=3)
 av_state <- set_timestamps(av_state,date_of_first_measurement="2012-07-12",
                            measurements_per_day=3,first_measurement_index=3)
+}
 }
 

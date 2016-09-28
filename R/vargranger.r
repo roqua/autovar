@@ -111,10 +111,12 @@ igraph_legend <- function() {
 #' This function plots a summary of the Granger causality relations found in the valid models found. It is called as part of \code{\link{var_summary}}.
 #' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
 #' av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion='BIC',log_level=3)
 #' # av_state is the result of a call to var_main
 #' vargranger_plot(av_state)
+#' }
 #' @export
 vargranger_plot <- function(av_state) {
   graphi <- vargranger_graph(av_state)

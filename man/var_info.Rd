@@ -15,10 +15,12 @@ var_info(varest, log_level = 0)
 This function prints a summary and the output of the tests for a VAR model. The tests it shows are the Eigenvalue stability condition, the Portmanteau tests, the Jarque-Bera tests, the sk tests, the Granger causality Wald tests, and Stata's \code{estat ic}.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/pp1 nieuw compleet.sav",log_level=3)
 av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion='BIC',log_level=3)
 # av_state is the result of a call to var_main
 var_info(av_state$accepted_models[[1]]$varest)
 var_info(av_state$rejected_models[[1]]$varest)
+}
 }
 

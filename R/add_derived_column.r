@@ -14,6 +14,7 @@
 #' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about converting columns or increasing values for the 'LN' option.
 #' @return This function returns the modified \code{av_state} object.
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/RuwedataAngela.sav")
 #' av_state <- add_derived_column(av_state,'SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4',
 #'                                'PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),
@@ -25,6 +26,7 @@
 #' av_state <- add_derived_column(av_state,'lnSomBewegUur','SomBewegUur',
 #'                                operation='LN')
 #' av_state$data[[1]][c('SomBewegen','SomBewegUur','lnSomBewegUur')]
+#' }
 #' @export
 add_derived_column <- function(av_state,name,columns,operation=c('SUM','AVG','LN','MINUTES_TO_HOURS','SQUARED'),log_level=0) {
   assert_av_state(av_state)

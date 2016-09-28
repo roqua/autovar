@@ -44,6 +44,7 @@ This function returns a string representing a json array of two networks and an 
 This function uses repeated calls to \code{\link{var_main}} to find a fitting model for the data provided and then calls \code{\link{convert_to_graph}} to return a JSON representation of best valid model found.
 }
 \examples{
+\dontrun{
 GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
                 'beweging', 'iets_betekenen', 'humor', 'buiten_zijn',
                 'eigenwaarde', 'levenslust', 'onrust', 'somberheid',
@@ -82,5 +83,6 @@ cat(generate_networks(data = d,
                                 uw_eigen_factor = "Mijn eigen factor"),
                   measurements_per_day = 3,
                   max_network_size = 6))
+}
 }
 

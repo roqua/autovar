@@ -89,72 +89,16 @@ This function returns the modified <code>av_state</code> object.
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/RuwedataAngela.sav&quot;,log_level=3)
-av_state &lt;- group_by(av_state,&#39;id&#39;)
-</div>
-<div class='output'>group_by: identified 5 groups based on distinct values for attribute &#39;id&#39;
-</div>
-<div class='input'>print(av_state)
-</div>
-<div class='output'>
-file_name: /Users/ando/Dropbox/work/work/r/code/preprocessing/../data/input/RuwedataAngela.sav 
-real_file_name: ../data/input/RuwedataAngela.sav 
-file_type: SPSS 
-raw_data: 318 samples with 35 features [missing: 22.47% (2501)]
-data: 
-  1: 85 samples with 35 features [missing: 18.05% (537)]
-  2: 95 samples with 35 features [missing: 31.76% (1056)]
-  3: 14 samples with 35 features [missing: 18.57% (91)]
-  4: 65 samples with 35 features [missing: 20.18% (459)]
-  5: 59 samples with 35 features [missing: 17.34% (358)]
-group_by: id 
-
-</div>
-<div class='input'>av_statea &lt;- impute_missing_values(av_state,&#39;norm_bewegen&#39;)
-</div>
-<div class='output'>impute_missing_values: imputing values for columns: norm_bewegen...
-impute_missing_values: imputed 1 (&lt;=1.18%) missing values for subset 1
-impute_missing_values: imputed 17 (&lt;=17.89%) missing values for subset 2
-impute_missing_values: imputed a total of 18 values.
-</div>
-<div class='input'>print(av_statea)
-</div>
-<div class='output'>
-file_name: /Users/ando/Dropbox/work/work/r/code/preprocessing/../data/input/RuwedataAngela.sav 
-real_file_name: ../data/input/RuwedataAngela.sav 
-file_type: SPSS 
-raw_data: 318 samples with 35 features [missing: 22.47% (2501)]
-data: 
-  1: 85 samples with 35 features [missing: 18.02% (536)]
-  2: 95 samples with 35 features [missing: 31.25% (1039)]
-  3: 14 samples with 35 features [missing: 18.57% (91)]
-  4: 65 samples with 35 features [missing: 20.18% (459)]
-  5: 59 samples with 35 features [missing: 17.34% (358)]
-group_by: id 
-
-</div>
-<div class='input'>av_stateb &lt;- impute_missing_values(av_state,c(&#39;norm_bewegen&#39;,
-                                   &#39;minuten_woonwerk&#39;),subset_ids=1)
-</div>
-<div class='output'>impute_missing_values: imputing values for columns: norm_bewegen, minuten_woonwerk...
-impute_missing_values: imputed 1 (&lt;=1.18%) missing values for subset 1
-impute_missing_values: imputed a total of 1 values.
-</div>
-<div class='input'>print(av_stateb)
-</div>
-<div class='output'>
-file_name: /Users/ando/Dropbox/work/work/r/code/preprocessing/../data/input/RuwedataAngela.sav 
-real_file_name: ../data/input/RuwedataAngela.sav 
-file_type: SPSS 
-raw_data: 318 samples with 35 features [missing: 22.47% (2501)]
-data: 
-  1: 85 samples with 35 features [missing: 18.02% (536)]
-  2: 95 samples with 35 features [missing: 31.76% (1056)]
-  3: 14 samples with 35 features [missing: 18.57% (91)]
-  4: 65 samples with 35 features [missing: 20.18% (459)]
-  5: 59 samples with 35 features [missing: 17.34% (358)]
-group_by: id 
-
+    <pre class="examples"><div class='input'>## Not run: 
+# av_state &lt;- load_file(&quot;../data/input/RuwedataAngela.sav&quot;,log_level=3)
+# av_state &lt;- group_by(av_state,&#39;id&#39;)
+# print(av_state)
+# av_statea &lt;- impute_missing_values(av_state,&#39;norm_bewegen&#39;)
+# print(av_statea)
+# av_stateb &lt;- impute_missing_values(av_state,c(&#39;norm_bewegen&#39;,
+#                                    &#39;minuten_woonwerk&#39;),subset_ids=1)
+# print(av_stateb)
+# ## End(Not run)
 </div></pre>
   </div>
   <div class="span4">
@@ -171,7 +115,7 @@ group_by: id
       
       <footer>
       <p class="pull-right"><a href="#">Back to top</a></p>
-<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="https://getbootstrap.com/2.0.4/">bootstrap</a>.</p>
       </footer>
     </div>
   </body>

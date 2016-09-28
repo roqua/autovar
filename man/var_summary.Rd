@@ -15,10 +15,12 @@ var_summary(av_state, msg = NULL)
 This function repeats the output that is shown after a call of var_main.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
 av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion='BIC',log_level=3)
 # av_state is the result of a call to var_main
 # var_summary just repeats the results of var_main
 var_summary(av_state)
+}
 }
 

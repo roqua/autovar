@@ -13,9 +13,11 @@ print_rejected_models(av_state)
 This function prints the list of rejected models when \code{av_state} is the result of a call to \code{\link{var_main}}.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
 av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_level=3)
 # av_state is the result of a call to var_main
 print_rejected_models(av_state)
+}
 }
 
