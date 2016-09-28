@@ -79,10 +79,12 @@ contemporaneous_correlations_graph <- function(av_state) {
 #' This function plots a summary of the contemporaneous correlations found in the valid models found. It is called as part of \code{\link{var_summary}}.
 #' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
 #' av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion='BIC',log_level=3)
 #' # av_state is the result of a call to var_main
 #' contemporaneous_correlations_plot(av_state)
+#' }
 #' @export
 contemporaneous_correlations_plot <- function(av_state) {
   graphi <- contemporaneous_correlations_graph(av_state)

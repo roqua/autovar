@@ -68,101 +68,12 @@
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/pp5 nieuw compleet.sav&quot;,log_level=3)
-av_state &lt;- var_main(av_state,c(&#39;SomBewegUur&#39;,&#39;SomPHQ&#39;),criterion=&quot;BIC&quot;,log_level=3)
-</div>
-<div class='output'>
-====================
-var_main(av_state, vars = c(&quot;SomBewegUur&quot;, &quot;SomPHQ&quot;), log_level = 3, criterion = &quot;BIC&quot;, numcores = 8L)
-
-Starting VAR (using 8 cores) with variables: SomBewegUur, SomPHQ
-
-====================
-
-Done. Processed 9 distinct models, of which 2 were valid.
-Tested 18 of 72 ( 25.00%) of the combinatorial search space at the given lags (1, 2).
-</div>
-<p><img src='print_rejected_models-3.png' alt='' width='540' height='400' /></p>
-<div class='output'>
-Granger causality legend:
-   +   majority positive associations
-   ~   majority mixed pos/neg associations within models
-   -   majority negative associations
-   #   mixed pos/neg associations among models
-
-Granger causality summary of all 8 unrestricted models:
-  100.00%   SomPHQ      -Granger causes- SomBewegUur   (3 models +5 almost) (sign: 1 ~, 7 -)
-
-Granger causality summary of all 2 valid models:
-  100.00%   SomPHQ      -Granger causes- SomBewegUur   (1 model +1 almost) (sign: 2 -)
-
-Granger causality summary of all 1 valid unrestricted models:
-  100.00%   SomPHQ      -Granger causes- SomBewegUur   (1 almost) (sign: 1 -)
-</div>
-<p><img src='print_rejected_models-5.png' alt='' width='540' height='400' /></p>
-<div class='output'>
-Summary of all valid models:
-  lag:
-    100.00%   1   (2 models)
-
-  apply_log_transform:
-    100.00%   TRUE   (2 models)
-
-The valid models (sorted by BIC score):
-A: (AIC: 386.23 (orig: 45.718), BIC: 398.593 (orig: 58.081)) : SomPHQ -Granger causes- SomBewegUur (0.0417)
-  Lag: 1
-  Log transform: YES
-  Exogenous variables: 
-    SomPHQ outliers (3.5x std. of res.): 27
-  Constraints:  
-    [lnSomBewegUur]lnSomBewegUur.l1 = 0
-    [lnSomPHQ]lnSomBewegUur.l1 = 0
-  Resulting Formulas:  
-    lnSomBewegUur = lnSomPHQ.l1 + const + SomPHQ_outliers
-    lnSomPHQ = lnSomPHQ.l1 + const + SomPHQ_outliers
-
-B: (AIC: 388.391 (orig: 47.879), BIC: 404.875 (orig: 64.363)) : SomPHQ almost -Granger causes- SomBewegUur (0.0726)
-  Lag: 1
-  Log transform: YES
-  Exogenous variables: 
-    SomPHQ outliers (3.5x std. of res.): 27
-  Constraints:  none
-
-</div>
-<div class='input'># av_state is the result of a call to var_main
-print_rejected_models(av_state)
-</div>
-<div class='output'>[[1]]
-(AIC: 419.717, BIC: 432.079) : SomPHQ -Granger causes- SomBewegUur (0.0396)
-  lag: 1 
-[[2]]
-(AIC: 402.451 (orig: 61.939), BIC: 414.813 (orig: 74.301)) : SomPHQ almost -Granger causes- SomBewegUur (0.0584)
-  apply_log_transform: TRUE
-  lag: 1 
-[[3]]
-(AIC: 418.12, BIC: 438.55) : SomPHQ almost -Granger causes- SomBewegUur (0.0549)
-  lag: 2 
-[[4]]
-(AIC: 407.16 (orig: 66.648), BIC: 427.59 (orig: 87.078)) : SomPHQ almost -Granger causes- SomBewegUur (0.0563)
-  apply_log_transform: TRUE
-  lag: 2 
-[[5]]
-(AIC: 392.123, BIC: 408.607) : SomPHQ -Granger causes- SomBewegUur (0.0425)
-  exogenous_variables: 
-    3.5x std of res. SomPHQ (obs.: 27)
-  lag: 1 
-[[6]]
-(AIC: 388.449, BIC: 412.966) : SomPHQ almost -Granger causes- SomBewegUur (0.0509)
-  exogenous_variables: 
-    3.5x std of res. SomPHQ (obs.: 27)
-  lag: 2 
-[[7]]
-(AIC: 391.178 (orig: 50.666), BIC: 415.695 (orig: 75.183)) : SomPHQ ~Granger causes~ SomBewegUur (0.0475)
-  apply_log_transform: TRUE
-  exogenous_variables: 
-    3.5x std of res. lnSomPHQ (obs.: 27)
-  lag: 2 
-
+    <pre class="examples"><div class='input'>## Not run: 
+# av_state &lt;- load_file(&quot;../data/input/pp5 nieuw compleet.sav&quot;,log_level=3)
+# av_state &lt;- var_main(av_state,c(&#39;SomBewegUur&#39;,&#39;SomPHQ&#39;),criterion=&quot;BIC&quot;,log_level=3)
+# # av_state is the result of a call to var_main
+# print_rejected_models(av_state)
+# ## End(Not run)
 </div></pre>
   </div>
   <div class="span4">
@@ -179,7 +90,7 @@ print_rejected_models(av_state)
       
       <footer>
       <p class="pull-right"><a href="#">Back to top</a></p>
-<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="https://getbootstrap.com/2.0.4/">bootstrap</a>.</p>
       </footer>
     </div>
   </body>

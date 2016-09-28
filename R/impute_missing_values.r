@@ -10,6 +10,7 @@
 #' }
 #' @return This function returns the modified \code{av_state} object.
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
 #' av_state <- group_by(av_state,'id')
 #' print(av_state)
@@ -18,6 +19,7 @@
 #' av_stateb <- impute_missing_values(av_state,c('norm_bewegen',
 #'                                    'minuten_woonwerk'),subset_ids=1)
 #' print(av_stateb)
+#' }
 #' @export
 impute_missing_values <- function(av_state,columns,subset_ids='ALL',type=c('SIMPLE','EM')) {
   assert_av_state(av_state)

@@ -91,15 +91,11 @@ This function returns the modified <code>av_state</code> object. After the subst
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/RuwedataAngela.sav&quot;,log_level=3)
-av_state &lt;- group_by(av_state,&#39;id&#39;)
-</div>
-<div class='output'>group_by: identified 5 groups based on distinct values for attribute &#39;id&#39;
-</div>
-<div class='input'>av_state &lt;- order_by(av_state,&#39;tijdstip&#39;,impute_method=&#39;ONE_MISSING&#39;)
-</div>
-<div class='output'>order_by_impute_one_missing imputed 35 for one row of id = 1 
-order_by: missing values went from 18.05% (537) to 18.02% (536) for subset 1 (ONE_MISSING)
+    <pre class="examples"><div class='input'>## Not run: 
+# av_state &lt;- load_file(&quot;../data/input/RuwedataAngela.sav&quot;,log_level=3)
+# av_state &lt;- group_by(av_state,&#39;id&#39;)
+# av_state &lt;- order_by(av_state,&#39;tijdstip&#39;,impute_method=&#39;ONE_MISSING&#39;)
+# ## End(Not run)
 </div></pre>
   </div>
   <div class="span4">
@@ -116,7 +112,7 @@ order_by: missing values went from 18.05% (537) to 18.02% (536) for subset 1 (ON
       
       <footer>
       <p class="pull-right"><a href="#">Back to top</a></p>
-<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="https://getbootstrap.com/2.0.4/">bootstrap</a>.</p>
       </footer>
     </div>
   </body>

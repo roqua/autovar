@@ -11,6 +11,7 @@
 #'                 title="",...)}.
 #' The arguments of this function work much like the ones described above for individual \code{factor} columns. The added optional \code{labels} argument should be a vector of the same length as the \code{columns} argument, specifying custom names for the columns. This argument is ignored when \code{type='LINE'}.
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
 #' av_state <- add_derived_column(av_state,'sum_minuten_licht',
 #'               c('minuten_woonwerk','minuten_werk_licht',
@@ -26,6 +27,7 @@
 #'           type='DOT',xlab='minuten')
 #' visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar',
 #'           'minuten_vrijetijd','minuten_sport'))
+#' }
 #' @export
 visualize <- function(av_state,columns,...) {
   assert_av_state(av_state)
@@ -217,10 +219,12 @@ visualize_lines  <- function(av_state,columns,labels,title,...) {
 #' 
 #' @param varest the varest object.
 #' @examples
+#' \dontrun{
 #' d<-load_file("../data/input/pp4 nieuw compleet met 140min.sav",log_level=3)
 #' d<-set_timestamps(d,date_of_first_measurement='2010-04-14')
 #' d<-var_main(d,c('SomBewegUur','SomPHQ'),log_level=3,exogenous_variables='Work')
 #' visualize_residuals(d$accepted_models[[1]]$varest)
+#' }
 #' @export
 visualize_residuals <- function(varest) {
   ress <- resid(varest)

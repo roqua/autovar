@@ -9,6 +9,7 @@
 #' @param force_include a single column name that should always be included in the column selection (regardless of mssd, z_skewness, failsafe).
 #' @return This function returns the modified data frame consisting of at most 6 columns.
 #' @examples
+#' \dontrun{
 #' GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
 #'                 'beweging', 'iets_betekenen', 'humor', 'buiten_zijn',
 #'                 'eigenwaarde', 'levenslust', 'onrust', 'somberheid',
@@ -28,6 +29,7 @@
 #' net_cfg$negative_variables <- c('onrust','somberheid','lichamelijk_ongemak',
 #'                                 'tekortschieten','piekeren','eenzaamheid')
 #' names(select_relevant_columns(data,net_cfg,FALSE,6))
+#' }
 #' @export
 select_relevant_columns <- function(data, net_cfg, failsafe = FALSE, number_of_columns = 6, log_level = 0, force_include = NULL) {
   mssds <- psych::mssd(data)

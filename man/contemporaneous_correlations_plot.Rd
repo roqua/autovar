@@ -13,9 +13,11 @@ contemporaneous_correlations_plot(av_state)
 This function plots a summary of the contemporaneous correlations found in the valid models found. It is called as part of \code{\link{var_summary}}.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
 av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion='BIC',log_level=3)
 # av_state is the result of a call to var_main
 contemporaneous_correlations_plot(av_state)
+}
 }
 

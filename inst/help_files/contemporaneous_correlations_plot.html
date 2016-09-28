@@ -68,71 +68,13 @@
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/pp5 nieuw compleet.sav&quot;,log_level=3)
-av_state &lt;- var_main(av_state,c(&#39;SomBewegUur&#39;,&#39;SomPHQ&#39;),criterion=&#39;BIC&#39;,log_level=3)
-</div>
-<div class='output'>
-====================
-var_main(av_state, vars = c(&quot;SomBewegUur&quot;, &quot;SomPHQ&quot;), log_level = 3, criterion = &quot;BIC&quot;, numcores = 8L)
-
-Starting VAR (using 8 cores) with variables: SomBewegUur, SomPHQ
-
-====================
-
-Done. Processed 9 distinct models, of which 2 were valid.
-Tested 18 of 72 ( 25.00%) of the combinatorial search space at the given lags (1, 2).
-</div>
-<p><img src='contemporaneous_correlations_plot-3.png' alt='' width='540' height='400' /></p>
-<div class='output'>
-Granger causality legend:
-   +   majority positive associations
-   ~   majority mixed pos/neg associations within models
-   -   majority negative associations
-   #   mixed pos/neg associations among models
-
-Granger causality summary of all 8 unrestricted models:
-  100.00%   SomPHQ      -Granger causes- SomBewegUur   (3 models +5 almost) (sign: 1 ~, 7 -)
-
-Granger causality summary of all 2 valid models:
-  100.00%   SomPHQ      -Granger causes- SomBewegUur   (1 model +1 almost) (sign: 2 -)
-
-Granger causality summary of all 1 valid unrestricted models:
-  100.00%   SomPHQ      -Granger causes- SomBewegUur   (1 almost) (sign: 1 -)
-</div>
-<p><img src='contemporaneous_correlations_plot-5.png' alt='' width='540' height='400' /></p>
-<div class='output'>
-Summary of all valid models:
-  lag:
-    100.00%   1   (2 models)
-
-  apply_log_transform:
-    100.00%   TRUE   (2 models)
-
-The valid models (sorted by BIC score):
-A: (AIC: 386.23 (orig: 45.718), BIC: 398.593 (orig: 58.081)) : SomPHQ -Granger causes- SomBewegUur (0.0417)
-  Lag: 1
-  Log transform: YES
-  Exogenous variables: 
-    SomPHQ outliers (3.5x std. of res.): 27
-  Constraints:  
-    [lnSomBewegUur]lnSomBewegUur.l1 = 0
-    [lnSomPHQ]lnSomBewegUur.l1 = 0
-  Resulting Formulas:  
-    lnSomBewegUur = lnSomPHQ.l1 + const + SomPHQ_outliers
-    lnSomPHQ = lnSomPHQ.l1 + const + SomPHQ_outliers
-
-B: (AIC: 388.391 (orig: 47.879), BIC: 404.875 (orig: 64.363)) : SomPHQ almost -Granger causes- SomBewegUur (0.0726)
-  Lag: 1
-  Log transform: YES
-  Exogenous variables: 
-    SomPHQ outliers (3.5x std. of res.): 27
-  Constraints:  none
-
-</div>
-<div class='input'># av_state is the result of a call to var_main
-contemporaneous_correlations_plot(av_state)
-</div>
-<p><img src='contemporaneous_correlations_plot-8.png' alt='' width='540' height='400' /></p></pre>
+    <pre class="examples"><div class='input'>## Not run: 
+# av_state &lt;- load_file(&quot;../data/input/pp5 nieuw compleet.sav&quot;,log_level=3)
+# av_state &lt;- var_main(av_state,c(&#39;SomBewegUur&#39;,&#39;SomPHQ&#39;),criterion=&#39;BIC&#39;,log_level=3)
+# # av_state is the result of a call to var_main
+# contemporaneous_correlations_plot(av_state)
+# ## End(Not run)
+</div></pre>
   </div>
   <div class="span4">
     <!-- <ul>
@@ -148,7 +90,7 @@ contemporaneous_correlations_plot(av_state)
       
       <footer>
       <p class="pull-right"><a href="#">Back to top</a></p>
-<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="https://getbootstrap.com/2.0.4/">bootstrap</a>.</p>
       </footer>
     </div>
   </body>

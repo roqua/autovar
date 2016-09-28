@@ -46,12 +46,14 @@
 #' @param numcores is the number of cores to use in parallel for evaluation the model. When this variable is \code{1}, no parallel processing is used and all processing is done serially. This variable has to be an integer between 1 and 16. The default value is the detected number of cores on the system (using \code{detectCores()}). If the \code{log_level} is less than 3, the value for \code{numcores} is forced to 1 because output doesn't show up otherwise.
 #' @return This function returns the modified \code{av_state} object. The lists of accepted and rejected models can be retrieved through \code{av_state$accepted_models} and \code{av_state$rejected_models}. To print these, use \code{print_accepted_models(av_state)} and \code{print_rejected_models(av_state)}.
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta",log_level=3)
 #' av_state <- group_by(av_state,'id')
 #' av_state <- order_by(av_state,'Day')
 #' av_state <- add_derived_column(av_state,'Activity_hours','Activity',
 #'                                operation='MINUTES_TO_HOURS')
 #' av_state <- var_main(av_state,c('Activity_hours','Depression'),log_level=3)
+#' }
 #' @export
 var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      exogenous_max_iterations=2,subset=1,log_level=av_state$log_level,
@@ -644,11 +646,13 @@ default_model_props <- function() {
 #' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
 #' @param msg an optional message to display at the start. If this argument is \code{NULL}, a default message is shown instead.
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
 #' av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion='BIC',log_level=3)
 #' # av_state is the result of a call to var_main
 #' # var_summary just repeats the results of var_main
 #' var_summary(av_state)
+#' }
 #' @export
 var_summary <- function(av_state,msg=NULL) {
   if (is.null(msg)) {
@@ -675,10 +679,12 @@ var_summary <- function(av_state,msg=NULL) {
 #' The best model is the measured with the lowest AIC+BIC value.
 #' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
 #' av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_level=3)
 #' # av_state is the result of a call to var_main
 #' print_best_models(av_state)
+#' }
 #' @export
 print_best_models <- function(av_state) {
   logm <- find_models(av_state$accepted_models,list(apply_log_transform = TRUE))
@@ -893,10 +899,12 @@ search_space_used <- function(av_state) {
 #' This function prints the list of accepted models when \code{av_state} is the result of a call to \code{\link{var_main}}. The printed list of models is sorted by AIC+BIC score.
 #' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
 #' av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_level=3)
 #' # av_state is the result of a call to var_main
 #' print_accepted_models(av_state)
+#' }
 #' @export
 print_accepted_models <- function(av_state) {
   print(av_state$accepted_models,av_state)
@@ -907,10 +915,12 @@ print_accepted_models <- function(av_state) {
 #' This function prints the list of rejected models when \code{av_state} is the result of a call to \code{\link{var_main}}.
 #' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
 #' av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_level=3)
 #' # av_state is the result of a call to var_main
 #' print_rejected_models(av_state)
+#' }
 #' @export
 print_rejected_models <- function(av_state) {
   print(av_state$rejected_models,av_state)

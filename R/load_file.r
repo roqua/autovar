@@ -6,8 +6,10 @@
 #' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about the data set that was loaded.
 #' @return This function returns the newly created \code{av_state} object.
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/RuwedataAngela.sav")
 #' print(av_state)
+#' }
 #' @export
 load_file <- function(filename,file_type = c('SPSS','STATA','CSV'),log_level=0) {
   av_state <- new_av_state()

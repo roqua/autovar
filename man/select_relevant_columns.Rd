@@ -27,6 +27,7 @@ This function returns the modified data frame consisting of at most 6 columns.
 This function returns a subset of the columns in the given data frame that are considered most relevant for time series analysis.
 }
 \examples{
+\dontrun{
 GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
                 'beweging', 'iets_betekenen', 'humor', 'buiten_zijn',
                 'eigenwaarde', 'levenslust', 'onrust', 'somberheid',
@@ -46,5 +47,6 @@ net_cfg$positive_variables <- c('opgewektheid','ontspanning','hier_en_nu',
 net_cfg$negative_variables <- c('onrust','somberheid','lichamelijk_ongemak',
                                 'tekortschieten','piekeren','eenzaamheid')
 names(select_relevant_columns(data,net_cfg,FALSE,6))
+}
 }
 

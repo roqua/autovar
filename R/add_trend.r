@@ -7,10 +7,12 @@
 #' @param varname the name of the newly created indexing column. Will be postfixed with underscores if the column already exists
 #' @param log_level sets the minimum level of output that should be shown (a number between 0 and 3). A lower level means more verbosity. Specify a log_level of 3 to hide messages about the columns being added.
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/pp1 nieuw compleet.sav")
 #' av_state <- add_trend(av_state)
 #' column_names_output(av_state)
 #' av_state$data[[1]][c('index','index2')]
+#' }
 #' @export
 add_trend <- function(av_state, subset_id = 1, varname = 'index',log_level = 0) {
   assert_av_state(av_state)
