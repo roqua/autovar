@@ -97,139 +97,19 @@ This function returns the modified <code>av_state</code> object.
     </div>
     
     <h2 id="examples">Examples</h2>
-    <pre class="examples"><div class='input'>av_state &lt;- load_file(&quot;../data/input/RuwedataAngela.sav&quot;)
-</div>
-<div class='output'>load_file loaded SPSS file with 35 columns:
- [1] &quot;id (scl)&quot;                       &quot;geslacht (nom)&quot;                 &quot;leeftijd (scl)&quot;                
- [4] &quot;datum_MI (scl)&quot;                 &quot;roken (nom)&quot;                    &quot;BMI (scl)&quot;                     
- [7] &quot;depressie_verleden (scl)&quot;       &quot;hartfalen (nom)&quot;                &quot;tijdstip (scl)&quot;                
-[10] &quot;norm_bewegen (nom)&quot;             &quot;woon_werk (nom)&quot;                &quot;minuten_woonwerk (scl)&quot;        
-[13] &quot;licht_matigwerk (nom)&quot;          &quot;minuten_werk_licht (scl)&quot;       &quot;zwaar_werk (nom)&quot;              
-[16] &quot;minuten_zwaar_werk (scl)&quot;       &quot;licht_huishouden (nom)&quot;         &quot;minuten_licht_huishouden (scl)&quot;
-[19] &quot;zwaar_huishouden (nom)&quot;         &quot;minuten_zwaarhuishouden (scl)&quot;  &quot;vrije_tijd (nom)&quot;              
-[22] &quot;minuten_vrijetijd (scl)&quot;        &quot;sport (nom)&quot;                    &quot;minuten_sport (scl)&quot;           
-[25] &quot;PHQ1 (nom)&quot;                     &quot;PHQ2 (nom)&quot;                     &quot;PHQ3 (nom)&quot;                    
-[28] &quot;PHQ4 (nom)&quot;                     &quot;PHQ5 (nom)&quot;                     &quot;PHQ6 (nom)&quot;                    
-[31] &quot;PHQ7 (nom)&quot;                     &quot;PHQ8 (nom)&quot;                     &quot;PHQ9 (nom)&quot;                    
-[34] &quot;beperking (nom)&quot;                &quot;angst (nom)&quot;                   
-</div>
-<div class='input'>av_state &lt;- add_derived_column(av_state,&#39;SomPHQ&#39;,c(&#39;PHQ1&#39;,&#39;PHQ2&#39;,&#39;PHQ3&#39;,&#39;PHQ4&#39;,
-                               &#39;PHQ5&#39;,&#39;PHQ6&#39;,&#39;PHQ7&#39;,&#39;PHQ8&#39;,&#39;PHQ9&#39;),
-                               operation=&#39;SUM&#39;)
-</div>
-<div class='output'>column PHQ1 is not numeric: converting... (for subset 1)
-</div>
-<div class='input'>column_names_output(av_state)
-</div>
-<div class='output'> [1] &quot;id (scl)&quot;                       &quot;geslacht (nom)&quot;                 &quot;leeftijd (scl)&quot;                
- [4] &quot;datum_MI (scl)&quot;                 &quot;roken (nom)&quot;                    &quot;BMI (scl)&quot;                     
- [7] &quot;depressie_verleden (scl)&quot;       &quot;hartfalen (nom)&quot;                &quot;tijdstip (scl)&quot;                
-[10] &quot;norm_bewegen (nom)&quot;             &quot;woon_werk (nom)&quot;                &quot;minuten_woonwerk (scl)&quot;        
-[13] &quot;licht_matigwerk (nom)&quot;          &quot;minuten_werk_licht (scl)&quot;       &quot;zwaar_werk (nom)&quot;              
-[16] &quot;minuten_zwaar_werk (scl)&quot;       &quot;licht_huishouden (nom)&quot;         &quot;minuten_licht_huishouden (scl)&quot;
-[19] &quot;zwaar_huishouden (nom)&quot;         &quot;minuten_zwaarhuishouden (scl)&quot;  &quot;vrije_tijd (nom)&quot;              
-[22] &quot;minuten_vrijetijd (scl)&quot;        &quot;sport (nom)&quot;                    &quot;minuten_sport (scl)&quot;           
-[25] &quot;PHQ1 (nom)&quot;                     &quot;PHQ2 (nom)&quot;                     &quot;PHQ3 (nom)&quot;                    
-[28] &quot;PHQ4 (nom)&quot;                     &quot;PHQ5 (nom)&quot;                     &quot;PHQ6 (nom)&quot;                    
-[31] &quot;PHQ7 (nom)&quot;                     &quot;PHQ8 (nom)&quot;                     &quot;PHQ9 (nom)&quot;                    
-[34] &quot;beperking (nom)&quot;                &quot;angst (nom)&quot;                    &quot;SomPHQ (scl)&quot;                  
-</div>
-<div class='input'>av_state &lt;- load_file(&quot;../data/input/pp1 nieuw compleet.sav&quot;,log_level=3)
-av_state &lt;- add_derived_column(av_state,&#39;SomBewegUur&#39;,&#39;SomBewegen&#39;,
-                               operation=&#39;MINUTES_TO_HOURS&#39;)
-av_state &lt;- add_derived_column(av_state,&#39;lnSomBewegUur&#39;,&#39;SomBewegUur&#39;,
-                               operation=&#39;LN&#39;)
-</div>
-<div class='output'>add_derived_column_ln: increasing all values of column SomBewegUur by 1 for subset 1 
-</div>
-<div class='input'>av_state$data[[1]][c(&#39;SomBewegen&#39;,&#39;SomBewegUur&#39;,&#39;lnSomBewegUur&#39;)]
-</div>
-<div class='output'>   SomBewegen SomBewegUur lnSomBewegUur
-1    378.0895    6.301492      1.988079
-2    180.0000    3.000000      1.386294
-3    240.0000    4.000000      1.609438
-4    143.6881    2.394801      1.222245
-5    180.0000    3.000000      1.386294
-6    390.0000    6.500000      2.014903
-7    420.0000    7.000000      2.079442
-8    390.0000    6.500000      2.014903
-9    420.0000    7.000000      2.079442
-10   420.0000    7.000000      2.079442
-11   420.0000    7.000000      2.079442
-12   420.0000    7.000000      2.079442
-13     0.0000    0.000000      0.000000
-14   343.6143    5.726906      1.906115
-15   420.0000    7.000000      2.079442
-16   420.0000    7.000000      2.079442
-17   420.0000    7.000000      2.079442
-18   360.0000    6.000000      1.945910
-19   420.0000    7.000000      2.079442
-20   360.0000    6.000000      1.945910
-21   390.0000    6.500000      2.014903
-22   390.0000    6.500000      2.014903
-23   240.0000    4.000000      1.609438
-24   330.0000    5.500000      1.871802
-25   330.0000    5.500000      1.871802
-26   300.0000    5.000000      1.791759
-27   420.0000    7.000000      2.079442
-28   330.0000    5.500000      1.871802
-29   390.0000    6.500000      2.014903
-30   420.0000    7.000000      2.079442
-31   440.0000    7.333333      2.120264
-32   580.0000    9.666667      2.367124
-33   720.0000   12.000000      2.564949
-34   651.4983   10.858305      2.473028
-35   600.0000   10.000000      2.397895
-36   540.0000    9.000000      2.302585
-37   580.0000    9.666667      2.367124
-38   580.0000    9.666667      2.367124
-39   720.0000   12.000000      2.564949
-40   530.0000    8.833333      2.285778
-41   600.0000   10.000000      2.397895
-42   780.0000   13.000000      2.639057
-43   480.0000    8.000000      2.197225
-44   620.0000   10.333333      2.427748
-45   620.0000   10.333333      2.427748
-46   540.0000    9.000000      2.302585
-47   510.0000    8.500000      2.251292
-48   660.0000   11.000000      2.484907
-49   690.0000   11.500000      2.525729
-50   540.0000    9.000000      2.302585
-51   570.0000    9.500000      2.351375
-52   410.0000    6.833333      2.058388
-53   450.0000    7.500000      2.140066
-54   420.0000    7.000000      2.079442
-55   420.0000    7.000000      2.079442
-56   300.0000    5.000000      1.791759
-57   330.0000    5.500000      1.871802
-58   455.7621    7.596035      2.151301
-59   480.0000    8.000000      2.197225
-60   480.0000    8.000000      2.197225
-61   500.0000    8.333333      2.233592
-62   740.0000   12.333333      2.590267
-63   370.0000    6.166667      1.969441
-64   460.0000    7.666667      2.159484
-65   431.4594    7.190991      2.103035
-66   480.0000    8.000000      2.197225
-67   440.0000    7.333333      2.120264
-68   450.0000    7.500000      2.140066
-69   480.0000    8.000000      2.197225
-70   420.0000    7.000000      2.079442
-71   480.0000    8.000000      2.197225
-72   360.0000    6.000000      1.945910
-73   270.0000    4.500000      1.704748
-74   360.0000    6.000000      1.945910
-75   300.0000    5.000000      1.791759
-76   300.0000    5.000000      1.791759
-77   360.0000    6.000000      1.945910
-78   403.6609    6.727682      2.044809
-79   400.0000    6.666667      2.036882
-80   270.0000    4.500000      1.704748
-81   350.0000    5.833333      1.921813
-82   335.0000    5.583333      1.884541
-83   330.0000    5.500000      1.871802
-84   300.0000    5.000000      1.791759
-85   485.0631    8.084385      2.206557
+    <pre class="examples"><div class='input'>## Not run: 
+# av_state &lt;- load_file(&quot;../data/input/RuwedataAngela.sav&quot;)
+# av_state &lt;- add_derived_column(av_state,&#39;SomPHQ&#39;,c(&#39;PHQ1&#39;,&#39;PHQ2&#39;,&#39;PHQ3&#39;,&#39;PHQ4&#39;,
+#                                &#39;PHQ5&#39;,&#39;PHQ6&#39;,&#39;PHQ7&#39;,&#39;PHQ8&#39;,&#39;PHQ9&#39;),
+#                                operation=&#39;SUM&#39;)
+# column_names_output(av_state)
+# av_state &lt;- load_file(&quot;../data/input/pp1 nieuw compleet.sav&quot;,log_level=3)
+# av_state &lt;- add_derived_column(av_state,&#39;SomBewegUur&#39;,&#39;SomBewegen&#39;,
+#                                operation=&#39;MINUTES_TO_HOURS&#39;)
+# av_state &lt;- add_derived_column(av_state,&#39;lnSomBewegUur&#39;,&#39;SomBewegUur&#39;,
+#                                operation=&#39;LN&#39;)
+# av_state$data[[1]][c(&#39;SomBewegen&#39;,&#39;SomBewegUur&#39;,&#39;lnSomBewegUur&#39;)]
+# ## End(Not run)
 </div></pre>
   </div>
   <div class="span4">
@@ -246,7 +126,7 @@ av_state &lt;- add_derived_column(av_state,&#39;lnSomBewegUur&#39;,&#39;SomBeweg
       
       <footer>
       <p class="pull-right"><a href="#">Back to top</a></p>
-<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="http://twitter.github.com/bootstrap">bootstrap</a>.</p>
+<p>Built by <a href="https://github.com/hadley/staticdocs">staticdocs</a>. Styled with <a href="https://getbootstrap.com/2.0.4/">bootstrap</a>.</p>
       </footer>
     </div>
   </body>

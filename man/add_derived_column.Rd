@@ -31,6 +31,7 @@ This function returns the modified \code{av_state} object.
 This function adds a new column, based on existing columns, to all identified groups in the given data set.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/RuwedataAngela.sav")
 av_state <- add_derived_column(av_state,'SomPHQ',c('PHQ1','PHQ2','PHQ3','PHQ4',
                                'PHQ5','PHQ6','PHQ7','PHQ8','PHQ9'),
@@ -42,5 +43,6 @@ av_state <- add_derived_column(av_state,'SomBewegUur','SomBewegen',
 av_state <- add_derived_column(av_state,'lnSomBewegUur','SomBewegUur',
                                operation='LN')
 av_state$data[[1]][c('SomBewegen','SomBewegUur','lnSomBewegUur')]
+}
 }
 
