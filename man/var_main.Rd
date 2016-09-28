@@ -91,11 +91,13 @@ This function returns the modified \code{av_state} object. The lists of accepted
 This function generates and tests possible VAR models for the specified variables. The only required arguments are \code{av_state} and \code{vars}.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/Activity and depression pp5 Angela.dta",log_level=3)
 av_state <- group_by(av_state,'id')
 av_state <- order_by(av_state,'Day')
 av_state <- add_derived_column(av_state,'Activity_hours','Activity',
                                operation='MINUTES_TO_HOURS')
 av_state <- var_main(av_state,c('Activity_hours','Depression'),log_level=3)
+}
 }
 

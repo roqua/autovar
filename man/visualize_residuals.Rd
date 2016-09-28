@@ -13,9 +13,11 @@ visualize_residuals(varest)
 This function takes a varest object and plots the residuals and the squared residuals.
 }
 \examples{
+\dontrun{
 d<-load_file("../data/input/pp4 nieuw compleet met 140min.sav",log_level=3)
 d<-set_timestamps(d,date_of_first_measurement='2010-04-14')
 d<-var_main(d,c('SomBewegUur','SomPHQ'),log_level=3,exogenous_variables='Work')
 visualize_residuals(d$accepted_models[[1]]$varest)
+}
 }
 

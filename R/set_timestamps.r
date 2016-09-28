@@ -12,6 +12,7 @@
 #' @param add_weekend_as_exogenous adds one exogenous variable named \code{Weekend} to the VAR models. This variable is 1 for weekend days (Saturday and Sunday) and 0 otherwise. By specifying \code{add_days_as_exogenous = FALSE} and \code{add_weekend_as_exogenous = TRUE}, the weekend is used instead of day dummies in the evaluation of models.
 #' @return This function returns the modified \code{av_state} object.
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/pp4 nieuw compleet met 140min.sav",log_level=3)
 #' av_state <- set_timestamps(av_state,date_of_first_measurement="2010-04-14")
 #' 
@@ -24,6 +25,7 @@
 #' av_state <- load_file("../data/input/ID68 basisbestand.sav",log_level=3)
 #' av_state <- set_timestamps(av_state,date_of_first_measurement="2012-07-12",
 #'                            measurements_per_day=3,first_measurement_index=3)
+#' }
 #' @export
 set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
                            measurements_per_day=1,log_level=0,

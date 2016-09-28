@@ -19,9 +19,11 @@ add_trend(av_state, subset_id = 1, varname = "index", log_level = 0)
 This function adds a column to a dataset, running from 1 to the length of the data set. If the data set is segmented using the group_by function, a column is added for every subset.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/pp1 nieuw compleet.sav")
 av_state <- add_trend(av_state)
 column_names_output(av_state)
 av_state$data[[1]][c('index','index2')]
+}
 }
 

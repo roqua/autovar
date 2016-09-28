@@ -26,6 +26,7 @@ This function returns the modified \code{av_state} object.
 This function can impute data for values that are missing (i.e., for values that are \code{NA}). It outputs for every subset how many values were imputed (for all columns total) along with a percentage (following \code{<=}). This percentage is the percentage of the column with the highest percentage of imputed values, i.e., if multiple columns were specified, it is the percentage of values that were imputed of the column that had relatively most \code{NA} values.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
 av_state <- group_by(av_state,'id')
 print(av_state)
@@ -34,5 +35,6 @@ print(av_statea)
 av_stateb <- impute_missing_values(av_state,c('norm_bewegen',
                                    'minuten_woonwerk'),subset_ids=1)
 print(av_stateb)
+}
 }
 

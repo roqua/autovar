@@ -22,6 +22,7 @@ The arguments of this function work much like the ones described above for indiv
 This function works with single or multiple columns. When given an array of multiple columns as \code{columns} argument, all nonnumeric columns are converted to numeric class in the plot. This function creates a combined plot with individual plots for each identified group (if the \code{\link{group_by}} was used) in the current data set. Any supplied arguments other than the ones described are passed on to the plotting functions.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
 av_state <- add_derived_column(av_state,'sum_minuten_licht',
               c('minuten_woonwerk','minuten_werk_licht',
@@ -37,5 +38,6 @@ visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar',
           type='DOT',xlab='minuten')
 visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar',
           'minuten_vrijetijd','minuten_sport'))
+}
 }
 

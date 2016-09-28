@@ -19,10 +19,12 @@ store_file(av_state, filename, inline_data, file_type = c("SPSS", "STATA"))
 This function exports all subsets in the specified \code{av_state} to individual output files. All output files are subsequently packed in a .tar file. Data sets with less than 80 columns are stored inline in the .sas script, otherwise, the data is stored in separate files.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/ID68 basisbestand.sav",log_level=3)
 av_state <- add_trend(av_state)
 av_state <- set_timestamps(av_state,date_of_first_measurement="2012-07-12",
                            measurements_per_day=3,log_level=3)
 store_file(av_state)
+}
 }
 

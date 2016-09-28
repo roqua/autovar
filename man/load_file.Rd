@@ -20,7 +20,9 @@ This function returns the newly created \code{av_state} object.
 This function prints the columns of the loaded data set. The abbreviation \code{(scl)} is used to denote scale (numeric) columns, and \code{(nom)} is used to denote nominal (factor) columns. The function returns an object of class \code{av_state}. Objects of this class are used throughout this package to store VAR data sets, models, and results.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/RuwedataAngela.sav")
 print(av_state)
+}
 }
 

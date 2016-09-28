@@ -26,8 +26,10 @@ This function returns the modified \code{av_state} object. After the substitutio
 This function determines the order of the data rows in the data set. For vector autoregression, you may want to use this to make sure that the data set is sorted by the date/time column, i.e., the supplied \code{id_field} parameter is often a measurement index (e.g., \code{'tijdstip'}). The \code{id_field} column has to be numeric. This function will also add a squared column to the data frame and include the order_by colum and its squared values as exogenous_variables.
 }
 \examples{
+\dontrun{
 av_state <- load_file("../data/input/RuwedataAngela.sav",log_level=3)
 av_state <- group_by(av_state,'id')
 av_state <- order_by(av_state,'tijdstip',impute_method='ONE_MISSING')
+}
 }
 

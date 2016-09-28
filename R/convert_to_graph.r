@@ -6,6 +6,7 @@
 #' @param forced_variable a variable that, if not \code{NULL}, will be the target of the third connection in the top three of connections that is returned by this function.
 #' @return This function returns a string representing a json array of two networks.
 #' @examples
+#' \dontrun{
 #' GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
 #'                 'beweging', 'iets_betekenen', 'humor', 'buiten_zijn',
 #'                 'eigenwaarde', 'levenslust', 'onrust', 'somberheid',
@@ -45,6 +46,7 @@
 #'               exclude_almost=TRUE,simple_models=TRUE,
 #'               split_up_outliers=TRUE)
 #' cat(convert_to_graph(d,net_cfg))
+#' }
 #' @export
 convert_to_graph <- function(av_state,net_cfg,forced_variable = NULL) {
   rnames <- NULL

@@ -20,6 +20,7 @@ This function returns a string representing a json array of two networks.
 This function returns a JSON representation of a the graphs for the best valid model found in the given \code{av_state}.
 }
 \examples{
+\dontrun{
 GN_COLUMNS <- c('ontspanning', 'opgewektheid', 'hier_en_nu', 'concentratie',
                 'beweging', 'iets_betekenen', 'humor', 'buiten_zijn',
                 'eigenwaarde', 'levenslust', 'onrust', 'somberheid',
@@ -59,5 +60,6 @@ d<-var_main(d,names(odata),significance=0.01,log_level=3,
               exclude_almost=TRUE,simple_models=TRUE,
               split_up_outliers=TRUE)
 cat(convert_to_graph(d,net_cfg))
+}
 }
 

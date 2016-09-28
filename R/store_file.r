@@ -6,11 +6,13 @@
 #' @param inline_data boolean argument to determine whether data should be stored inline in the .sas script. This argument is optional, and defaults to \code{TRUE} if the data set has less than 80 columns, and to \code{FALSE} otherwise.
 #' @param file_type sets the type of file export that should be used. Currently, only \code{'SPSS'} is supported.
 #' @examples
+#' \dontrun{
 #' av_state <- load_file("../data/input/ID68 basisbestand.sav",log_level=3)
 #' av_state <- add_trend(av_state)
 #' av_state <- set_timestamps(av_state,date_of_first_measurement="2012-07-12",
 #'                            measurements_per_day=3,log_level=3)
 #' store_file(av_state)
+#' }
 #' @export
 store_file <- function(av_state,filename,inline_data,file_type = c('SPSS','STATA')) {
   assert_av_state(av_state)
