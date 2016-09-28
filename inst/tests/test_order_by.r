@@ -60,7 +60,7 @@ test_that('order_by() does ONE_MISSING imputation and ordering correctly',{
 test_that('order_by() does NONE imputation and ordering correctly',{
   av_state <- load_test_data()
   av_state$data[[1]] <- data.frame(id=rep(1,times=5),tijdstip=c(5,3,4,1,2),home=c('yes','no','yes',NA,'yes'))
-  expect_output({av_state <- order_by(av_state,'tijdstip')},'^$')
+  expect_output({av_state <- order_by(av_state,'tijdstip')},NA)
   expect_equal(av_state$data[[1]]$tijdstip,1:5)
   expect_equal(av_state$data[[1]]$home,factor(c(NA,'yes','no','yes','yes')))
 })
