@@ -9,7 +9,7 @@ To install, type the following:
     require('devtools')
     install_github('roqua/autovar')
 
-If you're using Windows and the above steps give you errors, try the following alternate way to install Autovar:
+If you're using **Windows** and the above steps give you errors, try the following alternate way to install Autovar:
 
     unloadNamespace('autovar')
     download.file('https://autovar.nl/binaries/autovar_0.2-0.zip',destfile='autovar_0.2-0.zip'); install.packages('autovar_0.2-0.zip',repos = NULL)
