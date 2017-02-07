@@ -9,6 +9,12 @@ To install, type the following:
     require('devtools')
     install_github('roqua/autovar')
 
+If you're using Windows and the above steps give you errors, try the following alternate way to install Autovar:
+
+    download.file('https://autovar.nl/binaries/autovar_0.2-0.zip',destfile='autovar_0.2-0.zip'); install.packages('autovar_0.2-0.zip',repos = NULL)
+    install.packages(c('Amelia','e1071','foreign','ggplot2','gridExtra','igraph','jsonlite','knitr','markdown','norm','parallel','psych','RcppArmadillo','reshape2','stringi','stringr','TimeProjection','urca','vars'))
+    library('autovar')
+
 Documentation for this package can be found [here](http://autovar.nl/docs).
 
 ##### Example Use
