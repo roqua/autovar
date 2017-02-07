@@ -27,7 +27,7 @@ impute_dataframe_aux <- function(df,measurements_per_day) {
   df$daypart <- rep(0:(measurements_per_day -1),nrow(df))[1:nrow(df)]
   constant_columns <- NULL
   for (i in 1:ncol(df)) {
-    colname = names(df)[i]    
+    colname = names(df)[i]
     if (all(is.na(df[,colname])) || is.na(var(df[,colname], na.rm = TRUE)) || var(df[,colname], na.rm = TRUE) == 0) {
       constant_columns <- c(constant_columns,colname)
       if (!is.na(mean(df[,colname], na.rm = TRUE)))
@@ -35,11 +35,14 @@ impute_dataframe_aux <- function(df,measurements_per_day) {
     }
   }
   noms <- 'daypart'
-  if ('daypart' %in% constant_columns)
+  nr_time_cols <- 2
+  if ('daypart' %in% constant_columns) {
     noms <- NULL
+    nr_time_cols <- nr_time_cols - 1
+  }
   mdf <- df[!(names(df) %in% constant_columns)]
   if (!any(is.na(mdf))) return(df[1:ncols])
-  ncols_imputed <- ncol(mdf) - 2
+  ncols_imputed <- ncol(mdf) - nr_time_cols
   a_out <- Amelia::amelia(mdf,
                   tol=0.1, # higher tolerance to reach conversion faster
                   ts="time",
