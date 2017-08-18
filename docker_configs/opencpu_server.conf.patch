@@ -7,9 +7,10 @@
 -    "rlimit.fsize": 1e8,
 +    "rlimit.fsize": 1e9,
      "rlimit.nproc": 50,
-     "timelimit.get": 600,
+-    "timelimit.get": 600,
++    "timelimit.get": 4800,
 -    "timelimit.post": 90,
-+    "timelimit.post": 600,
++    "timelimit.post": 4800,
      "timelimit.webhook": 900,
      "preload": ["ggplot2", "lattice"]
  }
