@@ -50,4 +50,3 @@ av_state <- set_timestamps(av_state,date_of_first_measurement="2012-07-12",
                            measurements_per_day=3,first_measurement_index=3)
 }
 }
-

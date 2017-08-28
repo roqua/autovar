@@ -100,4 +100,3 @@ av_state <- add_derived_column(av_state,'Activity_hours','Activity',
 av_state <- var_main(av_state,c('Activity_hours','Depression'),log_level=3)
 }
 }
-

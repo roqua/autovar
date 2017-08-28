@@ -37,4 +37,3 @@ av_stateb <- impute_missing_values(av_state,c('norm_bewegen',
 print(av_stateb)
 }
 }
-

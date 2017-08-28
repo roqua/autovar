@@ -32,4 +32,3 @@ av_state <- group_by(av_state,'id')
 av_state <- order_by(av_state,'tijdstip',impute_method='ONE_MISSING')
 }
 }
-

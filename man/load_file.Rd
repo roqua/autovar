@@ -25,4 +25,3 @@ av_state <- load_file("../data/input/RuwedataAngela.sav")
 print(av_state)
 }
 }
-

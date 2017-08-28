@@ -27,4 +27,3 @@ av_state <- set_timestamps(av_state,date_of_first_measurement="2012-07-12",
 store_file(av_state)
 }
 }
-

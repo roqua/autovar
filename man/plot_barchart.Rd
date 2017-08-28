@@ -22,4 +22,3 @@ av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_leve
 plot_barchart(av_state,20.02,61.48)
 }
 }
-

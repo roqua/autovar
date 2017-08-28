@@ -26,4 +26,3 @@ net_cfg <- new_net_cfg()
 net_cfg$measurements_per_day <- 2
 select_relevant_rows(data,'2014-05-06',net_cfg)
 }
-

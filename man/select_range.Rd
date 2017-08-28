@@ -43,4 +43,3 @@ print(av_state)
 av_state$data[[1]]['lnSomPHQ']
 }
 }
-
