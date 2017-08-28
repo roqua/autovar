@@ -25,4 +25,3 @@ av_state <- group_by(av_state,'id')
 print(av_state)
 }
 }
-

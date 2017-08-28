@@ -23,4 +23,3 @@ var_info(av_state$accepted_models[[1]]$varest)
 var_info(av_state$rejected_models[[1]]$varest)
 }
 }
-

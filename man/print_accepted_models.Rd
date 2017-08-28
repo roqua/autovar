@@ -20,4 +20,3 @@ av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion="BIC",log_leve
 print_accepted_models(av_state)
 }
 }
-

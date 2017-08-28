@@ -49,4 +49,3 @@ net_cfg$negative_variables <- c('onrust','somberheid','lichamelijk_ongemak',
 names(select_relevant_columns(data,net_cfg,FALSE,6))
 }
 }
-

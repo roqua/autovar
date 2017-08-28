@@ -20,4 +20,3 @@ d<-var_main(d,c('SomBewegUur','SomPHQ'),log_level=3,exogenous_variables='Work')
 visualize_residuals(d$accepted_models[[1]]$varest)
 }
 }
-

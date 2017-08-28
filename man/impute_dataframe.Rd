@@ -24,4 +24,3 @@ data <- generate_numerical_test_data(40)
 data
 impute_dataframe(data,measurements_per_day=1)
 }
-

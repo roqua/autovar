@@ -40,4 +40,3 @@ visualize(av_state,c('sum_minuten_licht','sum_minuten_zwaar',
           'minuten_vrijetijd','minuten_sport'))
 }
 }
-
