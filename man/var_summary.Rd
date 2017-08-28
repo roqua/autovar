@@ -23,4 +23,3 @@ av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion='BIC',log_leve
 var_summary(av_state)
 }
 }
-

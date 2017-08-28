@@ -85,4 +85,3 @@ cat(generate_networks(data = d,
                   max_network_size = 6))
 }
 }
-

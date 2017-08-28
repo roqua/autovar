@@ -17,4 +17,3 @@ This function returns a string representing a json array of two networks.
 \description{
 This function uses repeated calls to \code{\link{var_main}} to find a fitting model for the data provided and then calls \code{\link{convert_to_graph}} to return a JSON representation of best valid model found.
 }
-

@@ -45,4 +45,3 @@ av_state <- add_derived_column(av_state,'lnSomBewegUur','SomBewegUur',
 av_state$data[[1]][c('SomBewegen','SomBewegUur','lnSomBewegUur')]
 }
 }
-

@@ -62,4 +62,3 @@ d<-var_main(d,names(odata),significance=0.01,log_level=3,
 cat(convert_to_graph(d,net_cfg))
 }
 }
-

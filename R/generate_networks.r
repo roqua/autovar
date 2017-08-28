@@ -82,6 +82,9 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
   net_cfg$max_network_size <- max_network_size
   check_res <- check_config_integrity(net_cfg)
   if (!is.null(check_res)) return(check_res)
+  mycores <- parallel::detectCores()
+  if (is.na(mycores))
+    mycores <- 1
   for (attempt in 1:(net_cfg$max_network_size)) {
     fail_safe <- FALSE
     number_of_columns <- net_cfg$max_network_size
@@ -158,7 +161,7 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
         d<-var_main(d,names(ndata),significance=signif,log_level=3,
                     criterion="AIC",include_squared_trend=TRUE,
                     exclude_almost=TRUE,simple_models=TRUE,
-                    split_up_outliers=TRUE)
+                    split_up_outliers=TRUE,numcores=mycores)
         if (length(d$accepted_models) > 0) {
           if (is.null(net_cfg$pick_best_of) || is.null(net_cfg$incident_to_best_of))
             return(convert_to_graph(d,net_cfg))

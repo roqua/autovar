@@ -23,4 +23,3 @@ This function constructs an object of class \code{av_state} based on a given \co
 av_state <- load_dataframe(generate_test_data(),new_net_cfg())
 print(av_state)
 }
-

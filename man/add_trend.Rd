@@ -26,4 +26,3 @@ column_names_output(av_state)
 av_state$data[[1]][c('index','index2')]
 }
 }
-

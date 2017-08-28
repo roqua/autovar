@@ -20,4 +20,3 @@ av_state <- var_main(av_state,c('SomBewegUur','SomPHQ'),criterion='BIC',log_leve
 vargranger_plot(av_state)
 }
 }
-
