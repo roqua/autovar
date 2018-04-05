@@ -5,6 +5,7 @@ Title: Automated Vector Autoregression Model Creation
 Authors@R: c(person("Ando","Emerencia",role = c("aut","cre"),
     email = "ando.emerencia@gmail.com"))
 Author: Ando Emerencia
+BugReports: https://github.com/roqua/autovar/issues
 Maintainer: Ando Emerencia <ando.emerencia@gmail.com>
 Depends:
     Amelia,
