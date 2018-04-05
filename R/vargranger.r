@@ -349,7 +349,7 @@ granger_causality_sign <- function(varest,exname,eqname) {
   d1names <- dimnames(coefs)[[1]]
   d2names <- dimnames(coefs)[[2]]
   # 2* because of almost Granger causalities
-  selnames <- which(coefs[,4] <= 2*av_state_significance(varest))
+  selnames <- which(coefs[,4] <= 2*0.05)
   coefs <- coefs[selnames,]
   if (length(coefs) > 0) {
     if (class(coefs) != "matrix") {
@@ -382,7 +382,7 @@ vargranger_to_string <- function(varest,res,include_significance=TRUE) {
   # res is a vargranger_aux result
   str <- NULL
   for (row in df_in_rows(res)) {
-    if (row$P <= av_state_significance(varest)) {
+    if (row$P <= 0.05) {
       ssign <- granger_causality_sign(varest,row$Excluded,row$Equation)
       str <- c(str,paste(unprefix_ln(row$Excluded),
                          ' ',ssign,'Granger causes',ssign,' ',
@@ -390,7 +390,7 @@ vargranger_to_string <- function(varest,res,include_significance=TRUE) {
                          ifelse(include_significance,
                                 paste(' (',signif(row$P,digits=3),')',sep=''),
                                 ''),sep=''))
-    } else if (row$P <= 2*av_state_significance(varest)) {
+    } else if (row$P <= 2*0.05) {
       ssign <- granger_causality_sign(varest,row$Excluded,row$Equation)
       str <- c(str,paste(unprefix_ln(row$Excluded),
                          ' almost ',ssign,'Granger causes',ssign,' ',
@@ -431,7 +431,7 @@ vargranger_list <- function(lst,exclude_almost) {
     res <- vargranger_call(varest)
     noneflag <- TRUE
     for (row in df_in_rows(res)) {
-      if ((row$P <= av_state_significance(varest) ) || (row$P <= 2*av_state_significance(varest) && !exclude_almost)) {
+      if ((row$P <= 0.05) || (row$P <= 2*0.05 && !exclude_almost)) {
         noneflag <- FALSE
         gsign <- granger_causality_sign(varest,row$Excluded,row$Equation)
         causevr <- unprefix_ln(row$Excluded)
@@ -456,7 +456,7 @@ vargranger_list <- function(lst,exclude_almost) {
         } else if (gsign == " ") {
           llst[[cmbvr]]$signnone <- llst[[cmbvr]]$signnone + 1
         }
-        if (row$P <= av_state_significance(varest)) {
+        if (row$P <= 0.05) {
           llst[[cmbvr]]$cnt <- llst[[cmbvr]]$cnt +1
         } else {
           llst[[cmbvr]]$cnta <- llst[[cmbvr]]$cnta +1

@@ -24,7 +24,7 @@ contemporaneous_correlations_graph <- function(av_state) {
     foundsomething <- FALSE
     for (i in 1:(n-1))
       for (j in (i+1):n) {
-        if (signmat[j*2,i] > av_state_significance(model$varest) || signmat[j*2-1,i] == 0) {
+        if (signmat[j*2,i] > 0.05 || signmat[j*2-1,i] == 0) {
           t <- paste(sort(c(vrs[[i]],vrs[[j]])),collapse="  ")
           count[[t]] <- count[[t]]+1
         } else {

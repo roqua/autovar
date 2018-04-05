@@ -4,7 +4,7 @@
 #' @param av_state an object of class \code{av_state}
 #' @param vars the vector of variables on which to perform vector autoregression. These should be the names of existing columns in the data sets of \code{av_state}.
 #' @param lag_max limits the highest possible number of lags that will be used in a model. This number sets the maximum limit in the search for optimal lags.
-#' @param significance the maximum P-value for which results are seen as significant. This argument is used in Granger causality tests, contemporaneous associations tests, and residual tests.
+#' @param significance the maximum P-value for which results are seen as significant. This argument is used only in the residual tests.
 #' @param exogenous_max_iterations determines how many times we should try to exclude additional outliers for a variable. This argument should be a number between 1 and 3: \itemize{
 #' \item \code{1} - When residual tests fail, having \code{exogenous_max_iterations = 1} will only try with removing 3.5x std. outliers for the residuals of variables using exogenous dummy variables.
 #' \item \code{2} - When \code{exogenous_max_iterations = 2}, the program will also try with removing 3x std. outliers if residual tests still fail.
