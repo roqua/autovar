@@ -209,7 +209,7 @@ run_var <- function(data,lag,simple_models,...) {
   # (specifies what the rest term in the formula should be)
   m <- NULL
   if (lag == 0) {
-    m <- vars::VAR(data,p = 1,...)
+    m <- estimate_var_model(data, p, ...)
     resmat <- rep.int(1,length(restriction_matrix_colnames(m)))
     resmat[1:(length(colnames(m$y)))] <- 0
     resmat <- rep(resmat,length(colnames(m$y)))
@@ -218,8 +218,9 @@ run_var <- function(data,lag,simple_models,...) {
              resmat=format_restriction_matrix(m,resmat))
     m <- add_intercepts(m)
   } else if (lag == 2 && simple_models) {
+    m <- estimate_var_model(data, p, ...)
+
     # restricting second lag in all models but the one using it
-    m <- vars::VAR(data,p = lag,...)
     resmat <- rep.int(1,length(restriction_matrix_colnames(m)))
     nr_vars <- (length(colnames(m$y)))
     resmat[(nr_vars+1):(2*nr_vars)] <- 0
@@ -230,12 +231,23 @@ run_var <- function(data,lag,simple_models,...) {
                   resmat=format_restriction_matrix(m,resmat))
     m <- add_intercepts(m)
   } else {
-    m <- vars::VAR(data,p = lag,...)
+    m <- estimate_var_model(data, p, ...)
   }
   full_params <- list(...)
   if (!is.null(full_params$exogen))
     m$exogen <- full_params$exogen
   m
+}
+
+estimate_var_model <- function(data, lag, ...) {
+  # This fix is performed so the call to the VAR function does not include a
+  # ..1 whenever all of the ...'s elements are NULL. This matters when
+  # performing IRF, as it will use the call function to perform an update of
+  # the VAR model.
+  if(all(unlist(lapply(list(...), function(x) is.null(x))))){
+    return(vars::VAR(data, p = lag))
+  } 
+  return(vars::VAR(data, p = lag, ...))
 }
 
 add_intercepts <- function(varest) {
