@@ -209,7 +209,7 @@ run_var <- function(data,lag,simple_models,...) {
   # (specifies what the rest term in the formula should be)
   m <- NULL
   if (lag == 0) {
-    m <- estimate_var_model(data, p, ...)
+    m <- estimate_var_model(data, lag, ...)
     resmat <- rep.int(1,length(restriction_matrix_colnames(m)))
     resmat[1:(length(colnames(m$y)))] <- 0
     resmat <- rep(resmat,length(colnames(m$y)))
@@ -218,7 +218,7 @@ run_var <- function(data,lag,simple_models,...) {
              resmat=format_restriction_matrix(m,resmat))
     m <- add_intercepts(m)
   } else if (lag == 2 && simple_models) {
-    m <- estimate_var_model(data, p, ...)
+    m <- estimate_var_model(data, lag, ...)
 
     # restricting second lag in all models but the one using it
     resmat <- rep.int(1,length(restriction_matrix_colnames(m)))
@@ -231,7 +231,7 @@ run_var <- function(data,lag,simple_models,...) {
                   resmat=format_restriction_matrix(m,resmat))
     m <- add_intercepts(m)
   } else {
-    m <- estimate_var_model(data, p, ...)
+    m <- estimate_var_model(data, lag, ...)
   }
   full_params <- list(...)
   if (!is.null(full_params$exogen))
