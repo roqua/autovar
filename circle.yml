@@ -16,7 +16,7 @@ dependencies:
 
 test:
   override:
-    - docker run roqua/autovar-test R CMD check /autovar/autovar_0.2-0.tar.gz --no-manual --no-build-vignettes
+    - docker run roqua/autovar-test R CMD check /autovar/autovar_0.2-1.tar.gz --no-manual --no-build-vignettes
 
 deployment:
   release:
