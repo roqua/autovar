@@ -12,7 +12,7 @@ var_main(av_state, vars, lag_max = 2, significance = 0.05,
   restrictions.extensive_search = TRUE, criterion = c("AIC", "BIC"),
   use_varsoc = FALSE, use_pperron = TRUE, include_squared_trend = FALSE,
   normalize_data = FALSE, include_lag_zero = FALSE,
-  split_up_outliers = FALSE, format_output_like_stata = FALSE,
+  split_up_outliers = TRUE, format_output_like_stata = FALSE,
   exclude_almost = FALSE, simple_models = FALSE,
   numcores = parallel::detectCores())
 }
@@ -23,7 +23,7 @@ var_main(av_state, vars, lag_max = 2, significance = 0.05,
 
 \item{lag_max}{limits the highest possible number of lags that will be used in a model. This number sets the maximum limit in the search for optimal lags.}
 
-\item{significance}{the maximum P-value for which results are seen as significant. This argument is used in Granger causality tests, contemporaneous associations tests, and residual tests.}
+\item{significance}{the maximum P-value for which results are seen as significant. This argument is used only in the residual tests.}
 
 \item{exogenous_max_iterations}{determines how many times we should try to exclude additional outliers for a variable. This argument should be a number between 1 and 3: \itemize{
 \item \code{1} - When residual tests fail, having \code{exogenous_max_iterations = 1} will only try with removing 3.5x std. outliers for the residuals of variables using exogenous dummy variables.
@@ -69,7 +69,7 @@ The above example includes a model with \code{lag=3} (so lags 1, 2, and 3 are in
 
 \item{include_lag_zero}{determines whether models at lag order 0 are should be considered. These are models at lag 1 with constrained lag-1 parameters in all equations.}
 
-\item{split_up_outliers}{determines whether each outlier should have its own exogenous variable. This will make a difference only when there is a variable with multiple outliers.}
+\item{split_up_outliers}{determines whether each outlier should have its own exogenous variable. Defaults to TRUE. This will make a difference only when there is a variable with multiple outliers.}
 
 \item{format_output_like_stata}{when \code{TRUE}, all constraints and exogenous variables are always shown (i.e., it will now show exogenous variables that were included but constrained in all equations), and the constraints are formatted like in Stata.}
 

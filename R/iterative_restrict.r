@@ -87,7 +87,7 @@ coefs_and_pvalues <- function(varest) {
     NULL
   } else {
     df <- df[with(df,order(df$pvalue,decreasing=TRUE)),]
-    df <- df[df$pvalue > av_state_significance(varest) & df$varname != 'const',]
+    df <- df[df$pvalue > 0.05 & df$varname != 'const',]
     rownames(df) <- NULL
     df
   }

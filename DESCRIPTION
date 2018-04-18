@@ -1,10 +1,11 @@
 Package: autovar
-Version: 0.2-0
-Date: 2015-02-05
+Version: 0.2-1
+Date: 2018-04-18
 Title: Automated Vector Autoregression Model Creation
 Authors@R: c(person("Ando","Emerencia",role = c("aut","cre"),
     email = "ando.emerencia@gmail.com"))
 Author: Ando Emerencia
+BugReports: https://github.com/roqua/autovar/issues
 Maintainer: Ando Emerencia <ando.emerencia@gmail.com>
 Depends:
     Amelia,
