@@ -70,7 +70,7 @@ urppdf <- function(varname,name,av_state,x,model,lag) {
   sum <- urca::summary(urpp)
   if (model == 'trend') {
     trend_p <- sum@testreg$coefficients[rownames(sum@testreg$coefficients)=='trend',][[4]]
-    trend_p_signif <- trend_p<=av_state$significance
+    trend_p_signif <- trend_p<=0.05
   } else {
     trend_p <- 0
     trend_p_signif <- TRUE

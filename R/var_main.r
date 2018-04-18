@@ -4,7 +4,7 @@
 #' @param av_state an object of class \code{av_state}
 #' @param vars the vector of variables on which to perform vector autoregression. These should be the names of existing columns in the data sets of \code{av_state}.
 #' @param lag_max limits the highest possible number of lags that will be used in a model. This number sets the maximum limit in the search for optimal lags.
-#' @param significance the maximum P-value for which results are seen as significant. This argument is used in Granger causality tests, contemporaneous associations tests, and residual tests.
+#' @param significance the maximum P-value for which results are seen as significant. This argument is used only in the residual tests.
 #' @param exogenous_max_iterations determines how many times we should try to exclude additional outliers for a variable. This argument should be a number between 1 and 3: \itemize{
 #' \item \code{1} - When residual tests fail, having \code{exogenous_max_iterations = 1} will only try with removing 3.5x std. outliers for the residuals of variables using exogenous dummy variables.
 #' \item \code{2} - When \code{exogenous_max_iterations = 2}, the program will also try with removing 3x std. outliers if residual tests still fail.
@@ -34,7 +34,7 @@
 #' @param include_squared_trend determines whether the square of the trend is included if the trend is included for a model. The trend variable is specified using the \code{\link{order_by}} function.
 #' @param normalize_data determines whether the endogenous variables should be normalized.
 #' @param include_lag_zero determines whether models at lag order 0 are should be considered. These are models at lag 1 with constrained lag-1 parameters in all equations.
-#' @param split_up_outliers determines whether each outlier should have its own exogenous variable. This will make a difference only when there is a variable with multiple outliers.
+#' @param split_up_outliers determines whether each outlier should have its own exogenous variable. Defaults to TRUE. This will make a difference only when there is a variable with multiple outliers.
 #' @param format_output_like_stata when \code{TRUE}, all constraints and exogenous variables are always shown (i.e., it will now show exogenous variables that were included but constrained in all equations), and the constraints are formatted like in Stata.
 #' @param exclude_almost when \code{TRUE}, only Granger causalities with p-value <= 0.05 are included in the results. When \code{FALSE}, p-values between 0.05 and 0.10 are also included in results as "almost Granger causalities" that have half the weight of actual Granger causalities in the Granger causality summary graph.
 #' @param simple_models when \code{TRUE}, four changes are made in the way Autovar works. \enumerate{
@@ -66,7 +66,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
                      include_squared_trend=FALSE,
                      normalize_data=FALSE,
                      include_lag_zero=FALSE,
-                     split_up_outliers=FALSE,
+                     split_up_outliers=TRUE,
                      format_output_like_stata=FALSE,
                      exclude_almost=FALSE,
                      simple_models=FALSE,
