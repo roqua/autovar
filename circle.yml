@@ -16,15 +16,15 @@ dependencies:
 
 test:
   override:
-    - docker run roqua/autovar-test R CMD check /autovar/autovar_0.2-1.tar.gz --no-manual --no-build-vignettes
+    - docker run roqua/autovar-test R CMD check /autovar/autovar_0.2-2.tar.gz --no-manual --no-build-vignettes
 
 deployment:
   release:
     tag: /v[0-9]+(\.[0-9]+)*/
     commands:
       - docker build -t autovar .
-      - docker tag skating-predictions compsy/skating-predictions:staging
-      - docker tag skating-predictions compsy/skating-predictions:production
-      - docker tag skating-predictions compsy/skating-predictions:$(echo "$CIRCLE_TAG" | sed -e 's/v//g')
+      - docker tag autovar roqua/autovar:staging
+      - docker tag autovar roqua/autovar:production
+      - docker tag autovar roqua/autovar:$(echo "$CIRCLE_TAG" | sed -e 's/v//g')
       - docker login --email=$DOCKER_EMAIL -u "$DOCKER_USER" -p "$DOCKER_PASS"
       - docker push roqua/autovar
