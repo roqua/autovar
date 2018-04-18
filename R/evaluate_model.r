@@ -209,7 +209,7 @@ run_var <- function(data,lag,simple_models,...) {
   # (specifies what the rest term in the formula should be)
   m <- NULL
   if (lag == 0) {
-    m <- estimate_var_model(data, lag, ...)
+    m <- estimate_var_model(data, 1, ...)
     resmat <- rep.int(1,length(restriction_matrix_colnames(m)))
     resmat[1:(length(colnames(m$y)))] <- 0
     resmat <- rep(resmat,length(colnames(m$y)))
