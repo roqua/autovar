@@ -11,14 +11,11 @@ dependencies:
     - "~/docker"
   override:
     - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
-    #- docker build -t roqua/autovar-test -f test.Dockerfile .
     - docker build -t roqua/autovar -f Dockerfile .
-    #- mkdir -p ~/docker; docker save roqua/autovar-test > ~/docker/image.tar
     - mkdir -p ~/docker; docker save roqua/autovar > ~/docker/image.tar
 
 test:
   override:
-    #- docker run roqua/autovar-test R CMD check /autovar/autovar_0.2-2.tar.gz --no-manual --no-build-vignettes
     - docker run roqua/autovar R CMD check /autovar/autovar_0.2-2.tar.gz --no-manual --no-build-vignettes
 
 deployment:
