@@ -3,7 +3,6 @@
 #   2. docker run -p 80:80 autovar
 #   3. Go to <docker IP>/ocpu/test
 
-# Use builds from launchpad
 FROM compsy/opencpu-base
 
 WORKDIR /autovar
