@@ -204,12 +204,12 @@ determine_var_order <- function(dta,log_level,...) {
   lags
 }
 
-run_var <- function(data,lag,simple_models,...) {
+run_var <- function(data,lag,simple_models,exogen=NULL) {
   # default type is const
   # (specifies what the rest term in the formula should be)
   m <- NULL
   if (lag == 0) {
-    m <- estimate_var_model(data, 1, ...)
+    m <- estimate_var_model(data, 1, exogen=exogen)
     resmat <- rep.int(1,length(restriction_matrix_colnames(m)))
     resmat[1:(length(colnames(m$y)))] <- 0
     resmat <- rep(resmat,length(colnames(m$y)))
@@ -218,7 +218,7 @@ run_var <- function(data,lag,simple_models,...) {
              resmat=format_restriction_matrix(m,resmat))
     m <- add_intercepts(m)
   } else if (lag == 2 && simple_models) {
-    m <- estimate_var_model(data, lag, ...)
+    m <- estimate_var_model(data, lag, exogen=exogen)
 
     # restricting second lag in all models but the one using it
     resmat <- rep.int(1,length(restriction_matrix_colnames(m)))
@@ -231,23 +231,17 @@ run_var <- function(data,lag,simple_models,...) {
                   resmat=format_restriction_matrix(m,resmat))
     m <- add_intercepts(m)
   } else {
-    m <- estimate_var_model(data, lag, ...)
+    m <- estimate_var_model(data, lag, exogen=exogen)
   }
-  full_params <- list(...)
-  if (!is.null(full_params$exogen))
-    m$exogen <- full_params$exogen
+  if (!is.null(exogen))
+    m$exogen <- exogen
   m
 }
 
-estimate_var_model <- function(data, lag, ...) {
-  # This fix is performed so the call to the VAR function does not include a
-  # ..1 whenever all of the ...'s elements are NULL. This matters when
-  # performing IRF, as it will use the call function to perform an update of
-  # the VAR model.
-  if (all(unlist(lapply(list(...), function(x) is.null(x))))) {
-    return(vars::VAR(data, p = lag))
-  } 
-  return(vars::VAR(data, p = lag, ...))
+estimate_var_model <- function(data, lag, exogen) {
+  # Use p here, this is the variable the vars package expects 
+  p <- lag
+  return(vars::VAR(data, p = p, exogen = exogen))
 }
 
 add_intercepts <- function(varest) {
