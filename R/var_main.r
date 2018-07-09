@@ -271,7 +271,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
         if (!is.null(pm$accepted_model)) {
           accepted_models <- c(accepted_models,list(pm$accepted_model))
         } else if (!is.null(pm$rejected_model)) {
-          rejected_models <- c(rejected_models,list(pm$rejected_model))
+          #rejected_models <- c(rejected_models,list(pm$rejected_model))
         }
         if (!is.null(av_state$model_queue)) {
           for (model in av_state$model_queue) {
@@ -299,7 +299,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
       if (!is.null(pm$accepted_model)) {
         accepted_models <- c(accepted_models,list(pm$accepted_model))
       } else if (!is.null(pm$rejected_model)) {
-        rejected_models <- c(rejected_models,list(pm$rejected_model))
+        #rejected_models <- c(rejected_models,list(pm$rejected_model))
       }
       if (!is.null(av_state$model_queue)) {
         for (model in av_state$model_queue) {
@@ -339,7 +339,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
           if (!is.null(pm$accepted_model)) {
             accepted_models <- c(accepted_models,list(pm$accepted_model))
           } else if (!is.null(pm$rejected_model)) {
-            rejected_models <- c(rejected_models,list(pm$rejected_model))
+            #rejected_models <- c(rejected_models,list(pm$rejected_model))
           }
           if (!is.null(av_state$model_queue)) {
             for (model in av_state$model_queue) {
@@ -368,7 +368,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
         if (!is.null(pm$accepted_model)) {
           accepted_models <- c(accepted_models,list(pm$accepted_model))
         } else if (!is.null(pm$rejected_model)) {
-          rejected_models <- c(rejected_models,list(pm$rejected_model))
+          #rejected_models <- c(rejected_models,list(pm$rejected_model))
         }
         if (!is.null(av_state$model_queue)) {
           for (model in av_state$model_queue) {
