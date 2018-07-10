@@ -1,21 +1,20 @@
+defaults: &defaults
+  working_directory: /app
+  docker:
+    - image: docker:17.05.0-ce-git
+      environment:
+        R_LIBS_USER: ~/lib/R/library
+        _R_CHECK_FORCE_SUGGESTS_: FALSE
+        _R_CHECK_ASCII_DATA_: FALSE
+  working_directory: /caches
+
 version: 2
 jobs:
   build:
-    working_directory: /app
-    docker:
-      - image: docker:17.05.0-ce-git
-        environment:
-          R_LIBS_USER: ~/lib/R/library
-          _R_CHECK_FORCE_SUGGESTS_: FALSE
-          _R_CHECK_ASCII_DATA_: FALSE
+    <<: *defaults
     steps:
       - checkout
       - setup_remote_docker
-      - restore_cache:
-          keys:
-            - v1-{{ .Branch }}
-          paths:
-            - /caches/app.tar
       - run:
           name: Load Docker image layer cache
           command: |
@@ -30,11 +29,41 @@ jobs:
           command: |
             mkdir -p /caches
             docker save -o /caches/app.tar app
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - /caches
+
+  run_tests:
+    <<: *defaults
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - setup_remote_docker
       - run:
           name: Test the app
           command: |
             docker run app R CMD check /autovar/autovar_0.2-4.tar.gz --no-manual --no-build-vignettes
+
+  coverage:
+    <<: *defaults
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - setup_remote_docker
       - run:
           name: Codecov the app
           command: |
             docker run -e CODECOV_TOKEN app Rscript -e 'covr::codecov()'
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
+      - run_tests:
+          requires:
+            - build
+      - coverage:
+          requires:
+            - build
