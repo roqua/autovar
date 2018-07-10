@@ -84,7 +84,7 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
   if (!is.null(check_res)) return(check_res)
   #mycores <- parallel::detectCores()
   #if (is.na(mycores))
-  mycores <- 3
+  mycores <- 2
   for (attempt in 1:(net_cfg$max_network_size)) {
     fail_safe <- FALSE
     number_of_columns <- net_cfg$max_network_size
