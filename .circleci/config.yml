@@ -88,9 +88,36 @@ jobs:
           command: |
             docker run -e CODECOV_TOKEN app Rscript -e 'covr::codecov()'
 
+  deploy_to_docker:
+    <<: *defaults
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - setup_remote_docker
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/app.tar | true
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build --cache-from=app -t app -f Dockerfile .
+      - docker tag app roqua/autovar:staging
+      - docker tag app roqua/autovar:production
+      - docker tag app roqua/autovar:$(echo "$CIRCLE_TAG" | sed -e 's/v//g')
+      - docker login --email=$DOCKER_EMAIL -u "$DOCKER_USER" -p "$DOCKER_PASS"
+      - docker push roqua/autovar
+
 workflows:
   version: 2
   commit:
     jobs:
       - run_tests
       - coverage
+  deploy:
+    jobs:
+      - deploy_to_docker:
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
