@@ -41,13 +41,27 @@ jobs:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - setup_remote_docker
       - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/app.tar | true
+      - run:
           name: Build application Docker image
           command: |
             docker build --cache-from=app -t app -f Dockerfile .
       - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/app.tar app
+      - run:
           name: Test the app
           command: |
             docker run app R CMD check /autovar/autovar_0.2-4.tar.gz --no-manual --no-build-vignettes
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - /caches
 
   coverage:
     <<: *defaults
@@ -56,9 +70,19 @@ jobs:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - setup_remote_docker
       - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/app.tar | true
+      - run:
           name: Build application Docker image
           command: |
             docker build --cache-from=app -t app -f Dockerfile .
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/app.tar app
       - run:
           name: Codecov the app
           command: |
@@ -68,10 +92,5 @@ workflows:
   version: 2
   commit:
     jobs:
-      - build
-      - run_tests:
-          requires:
-            - build
-      - coverage:
-          requires:
-            - build
+      - run_tests
+      - coverage
