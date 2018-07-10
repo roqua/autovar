@@ -82,9 +82,9 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
   net_cfg$max_network_size <- max_network_size
   check_res <- check_config_integrity(net_cfg)
   if (!is.null(check_res)) return(check_res)
-  mycores <- parallel::detectCores()
-  if (is.na(mycores))
-    mycores <- 1
+  #mycores <- parallel::detectCores()
+  #if (is.na(mycores))
+  mycores <- 1
   for (attempt in 1:(net_cfg$max_network_size)) {
     fail_safe <- FALSE
     number_of_columns <- net_cfg$max_network_size
