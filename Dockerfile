@@ -7,6 +7,8 @@ FROM compsy/opencpu-base
 
 WORKDIR /autovar
 
+RUN apt-get install -y git-core
+
 ADD ./inst/bash/install-package-dependencies.sh /autovar/inst/bash/install-package-dependencies.sh
 RUN /autovar/inst/bash/install-package-dependencies.sh
 
