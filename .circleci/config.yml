@@ -12,8 +12,9 @@ jobs:
   run_tests:
     <<: *defaults
     steps:
-      #- restore_cache:
-      #    key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - checkout
       - setup_remote_docker
       - run:
           name: Load Docker image layer cache
@@ -41,8 +42,9 @@ jobs:
   coverage:
     <<: *defaults
     steps:
-      #- restore_cache:
-      #    key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - checkout
       - setup_remote_docker
       - run:
           name: Load Docker image layer cache
