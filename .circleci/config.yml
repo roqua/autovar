@@ -6,7 +6,6 @@ defaults: &defaults
         R_LIBS_USER: ~/lib/R/library
         _R_CHECK_FORCE_SUGGESTS_: FALSE
         _R_CHECK_ASCII_DATA_: FALSE
-  working_directory: /caches
 
 version: 2
 jobs:
