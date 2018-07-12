@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Test the app
           command: |
-            docker run app R CMD check /autovar/autovar_0.2-4.tar.gz --no-manual --no-build-vignettes
+            docker run app R CMD check /autovar/autovar_0.2-5.tar.gz --no-manual --no-build-vignettes
       - save_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
