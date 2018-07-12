@@ -70,6 +70,7 @@ jobs:
     steps:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - checkout
       - setup_remote_docker
       - run:
           name: Load Docker image layer cache
