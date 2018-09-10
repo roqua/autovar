@@ -247,7 +247,13 @@ estimate_var_model <- function(data, p, ...) {
   if (all(unlist(lapply(list(...), function(x) is.null(x))))) {
     return(vars::VAR(y = data, p = p))
   } 
-  return(vars::VAR(y = data, p = p, ...))
+  # Note the do.call here. Instead of running 
+  # vars::VAR(y = data, p = p, ...)
+  # we run this do.call in order to expand and explicitly include the ... and
+  # other params. This way, when we run the `update` function on the call of 
+  # this object, we can rely on all information being available in the object
+  # itself (instead of relying on global env).
+  return(do.call(vars::VAR, c(list(y=data, p=p), list(...))))
 }
 
 add_intercepts <- function(varest) {
