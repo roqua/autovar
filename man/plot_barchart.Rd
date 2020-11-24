@@ -9,7 +9,11 @@ plot_barchart(av_state, x, y, ...)
 \arguments{
 \item{av_state}{an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}}
 
-\item{manual_scores:}{The manual entries that are to be compared with the av_scores}
+\item{x}{The manual AIC score to be compared with the av_scores}
+
+\item{y}{The manual BIC score to be compared with the av_scores}
+
+\item{...}{Currently unused}
 }
 \description{
 This function plots the bar chart for the AIC and BIC scores of the accepted models and compares the Manual AIC and BIC scores graphically.

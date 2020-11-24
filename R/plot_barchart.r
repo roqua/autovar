@@ -1,9 +1,11 @@
 
 #' Plots a barchart of manual_score and the av_scores
-#' 
+#'
 #' This function plots the bar chart for the AIC and BIC scores of the accepted models and compares the Manual AIC and BIC scores graphically.
 #' @param av_state an object of class \code{av_state} that was the result of a call to \code{\link{var_main}}
-#' @param manual_scores:   The manual entries that are to be compared with the av_scores
+#' @param x The manual AIC score to be compared with the av_scores
+#' @param y The manual BIC score to be compared with the av_scores
+#' @param ... Currently unused
 #' @examples
 #' \dontrun{
 #' av_state <- load_file("../data/input/pp5 nieuw compleet.sav",log_level=3)
@@ -12,7 +14,7 @@
 #' plot_barchart(av_state,20.02,61.48)
 #' }
 #' @export
-plot_barchart <- function(av_state, x,y,...) {
+plot_barchart <- function(av_state, x, y, ...) {
   #generate data
   a <-NULL
   b <-NULL

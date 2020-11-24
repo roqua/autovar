@@ -27,6 +27,8 @@ Depends:
     TimeProjection,
     urca,
     vars
+Imports:
+    methods
 Suggests:
     testthat,
     roxygen2
