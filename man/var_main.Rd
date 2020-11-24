@@ -6,15 +6,15 @@
 \usage{
 var_main(av_state, vars, lag_max = 2, significance = 0.05,
   exogenous_max_iterations = 2, subset = 1,
-  log_level = av_state$log_level, small = FALSE, include_model = NULL,
-  exogenous_variables = NULL, use_sktest = TRUE,
-  restrictions.verify_validity_in_every_step = TRUE,
+  log_level = av_state$log_level, small = FALSE,
+  include_model = NULL, exogenous_variables = NULL,
+  use_sktest = TRUE, restrictions.verify_validity_in_every_step = TRUE,
   restrictions.extensive_search = TRUE, criterion = c("AIC", "BIC"),
-  use_varsoc = FALSE, use_pperron = TRUE, include_squared_trend = FALSE,
-  normalize_data = FALSE, include_lag_zero = FALSE,
-  split_up_outliers = TRUE, format_output_like_stata = FALSE,
-  exclude_almost = FALSE, simple_models = FALSE,
-  numcores = parallel::detectCores())
+  use_varsoc = FALSE, use_pperron = TRUE,
+  include_squared_trend = FALSE, normalize_data = FALSE,
+  include_lag_zero = FALSE, split_up_outliers = TRUE,
+  format_output_like_stata = FALSE, exclude_almost = FALSE,
+  simple_models = FALSE, numcores = parallel::detectCores())
 }
 \arguments{
 \item{av_state}{an object of class \code{av_state}}

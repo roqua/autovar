@@ -4,7 +4,8 @@
 \alias{store_file}
 \title{Export a modified data set as an SPSS readable .sas file}
 \usage{
-store_file(av_state, filename, inline_data, file_type = c("SPSS", "STATA"))
+store_file(av_state, filename, inline_data, file_type = c("SPSS",
+  "STATA"))
 }
 \arguments{
 \item{av_state}{an object of class \code{av_state}}

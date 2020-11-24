@@ -5,9 +5,9 @@
 \title{Add dummy variables for weekdays and day parts}
 \usage{
 set_timestamps(av_state, subset_id = 1, date_of_first_measurement,
-  measurements_per_day = 1, log_level = 0, first_measurement_index = 1,
-  add_days_as_exogenous = TRUE, add_dayparts_as_exogenous = TRUE,
-  add_weekend_as_exogenous = FALSE)
+  measurements_per_day = 1, log_level = 0,
+  first_measurement_index = 1, add_days_as_exogenous = TRUE,
+  add_dayparts_as_exogenous = TRUE, add_weekend_as_exogenous = FALSE)
 }
 \arguments{
 \item{av_state}{an object of class \code{av_state}}

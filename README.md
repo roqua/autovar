@@ -6,8 +6,7 @@ Autovar is an R package for automating and simplifying the process from raw data
 To install, type the following:
 
     install.packages('devtools')
-    require('devtools')
-    install_github('roqua/autovar')
+    devtools::install_github('roqua/autovar')
 
 If you're using **Windows** and the above steps give you errors, try the following alternate way to install Autovar:
 
