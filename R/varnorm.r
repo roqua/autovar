@@ -109,7 +109,7 @@ sample_skewness <- function(x,m) {
   dnom <- ((1/(n-m))*sumquads)^(3/2)
   sk <- (num/dnom)
   chii <- (sk^2)*n/6 # this is always correct
-  data.frame(Skewness=sk,chi2=chii,df=1,P=chi_squared_prob(chii,1))
+  data.frame(Skewness=sk,chi2=chii,df=1,P=chi_squared_prob(chii,1), stringsAsFactors = TRUE)
 }
 
 sample_kurtosis <- function(x,m) {
@@ -126,7 +126,7 @@ sample_kurtosis <- function(x,m) {
   dnom <- ((1/(n-m))*sumquads)^2
   sk <- (num/dnom)
   chii <- ((sk-3)^2)*n/24 # this is always correct
-  data.frame(Kurtosis=sk,chi2=chii,df=1,P=chi_squared_prob(chii,1))
+  data.frame(Kurtosis=sk,chi2=chii,df=1,P=chi_squared_prob(chii,1), stringsAsFactors = TRUE)
 }
 
 nr_pars_estimated_average <- function(varest) {
@@ -144,7 +144,7 @@ jb_test <- function(x,m) {
   k <- sample_kurtosis(x,m)
   jb <- (n/6)*(s$Skewness^2 + (1/4)*(k$Kurtosis-3)^2)
   df <- s$df+k$df
-  data.frame(chi2=jb,df=df,P=chi_squared_prob(jb,df))
+  data.frame(chi2=jb,df=df,P=chi_squared_prob(jb,df), stringsAsFactors = TRUE)
 }
 
 jb <- function(varest) {
@@ -168,7 +168,7 @@ jb <- function(varest) {
     df <- sum(jbtab$df)
     jbtab <- rbind(jbtab,data.frame(chi2=chi2,
                                 df=df,
-                                P=chi_squared_prob(chi2,df)))
+                                P=chi_squared_prob(chi2,df), stringsAsFactors = TRUE))
     names <- c(names,'ALL')
     dimnames(jbtab)[[1]] <- names
   }
@@ -192,7 +192,7 @@ jb <- function(varest) {
                    data.frame(Skewness=NA,
                               chi2=chi2,
                                 df=df,
-                                P=chi_squared_prob(chi2,df)))
+                                P=chi_squared_prob(chi2,df), stringsAsFactors = TRUE))
     names <- c(names,'ALL')
     dimnames(sktab)[[1]] <- names
   }
@@ -216,7 +216,7 @@ jb <- function(varest) {
                    data.frame(Kurtosis=NA,
                               chi2=chi2,
                               df=df,
-                              P=chi_squared_prob(chi2,df)))
+                              P=chi_squared_prob(chi2,df), stringsAsFactors = TRUE))
     names <- c(names,'ALL')
     dimnames(kttab)[[1]] <- names
   }

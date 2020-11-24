@@ -1,5 +1,5 @@
 #' Load a data set from a .sav, .dta, or .csv file
-#' 
+#'
 #' This function prints the columns of the loaded data set. The abbreviation \code{(scl)} is used to denote scale (numeric) columns, and \code{(nom)} is used to denote nominal (factor) columns. The function returns an object of class \code{av_state}. Objects of this class are used throughout this package to store VAR data sets, models, and results.
 #' @param filename path and filename of the data set to load. The path can be relative to the current working directory.
 #' @param file_type specifies whether the file contains STATA, SPSS, or CSV data. This argument is optional. When not specified, it is determined from the file name, i.e., .dta extensions are treated as STATA files, .sav extensions are treated as SPSS files, and .csv extensions are treated as CSV files.
@@ -54,9 +54,15 @@ column_names_output <- function(av_state) {
 }
 
 decorate_class <- function(data) {
-  if (is(data, "factor")) return "nom"
-  if (is(data, "numeric")) return "scl"
-  if (is(data, "integer")) return "scl"
+  if (is(data, "factor")) {
+    "nom"
+  } else if (is(data, "numeric")) {
+    "scl"
+  } else if (is(data, "integer")) {
+    "scl"
+  } else {
+    NULL
+  }
 }
 
 determine_file_type <- function(filename) {

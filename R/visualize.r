@@ -228,9 +228,9 @@ visualize_lines  <- function(av_state,columns,labels,title,...) {
 #' @export
 visualize_residuals <- function(varest) {
   ress <- resid(varest)
-  df <- as.data.frame(ress)
+  df <- as.data.frame(ress, stringsAsFactors = TRUE)
   sq_ress <- ress*ress
-  df2 <- as.data.frame(sq_ress)
+  df2 <- as.data.frame(sq_ress, stringsAsFactors = TRUE)
   plots <- list()
   plots[[1]] <- visualize_data_frame(df,'Residuals')
   plots[[2]] <- visualize_data_frame(df2,'Squared Residuals')

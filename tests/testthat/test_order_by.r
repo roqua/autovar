@@ -36,7 +36,7 @@ test_that('order_by() prints a warning when called with a sequence it cant compl
 
 test_that('order_by() does ADD_MISSING imputation and ordering correctly',{
   av_state <- load_test_data()
-  av_state$data[[1]] <- data.frame(id=rep(1,times=5),tijdstip=c(1,3,5,6,7),home=c('yes','no','yes',NA,'yes'))
+  av_state$data[[1]] <- data.frame(id=rep(1,times=5),tijdstip=c(1,3,5,6,7),home=c('yes','no','yes',NA,'yes'), stringsAsFactors = TRUE)
   capture.output({
     av_state <- group_by(av_state,'id')
   })
@@ -44,14 +44,14 @@ test_that('order_by() does ADD_MISSING imputation and ordering correctly',{
   expect_equal(av_state$data[[1]]$tijdstip,1:7)
   expect_equal(av_state$data[[1]]$id,rep(1,times=7))
   av_state <- load_test_data()
-  av_state$data[[1]] <- data.frame(id=rep(1,times=5),tijdstip=c(7,3,5,6,1),home=c('yes','no','yes',NA,'yes'))
+  av_state$data[[1]] <- data.frame(id=rep(1,times=5),tijdstip=c(7,3,5,6,1),home=c('yes','no','yes',NA,'yes'), stringsAsFactors = TRUE)
   expect_output({av_state <- order_by(av_state,'tijdstip')},'ADD_MISSING')
   expect_equal(av_state$data[[1]]$tijdstip,1:7)
 })
 
 test_that('order_by() does ONE_MISSING imputation and ordering correctly',{
   av_state <- load_test_data()
-  av_state$data[[1]] <- data.frame(id=rep(1,times=5),tijdstip=c(5,3,NA,1,2),home=c('yes','no','yes',NA,'yes'))
+  av_state$data[[1]] <- data.frame(id=rep(1,times=5),tijdstip=c(5,3,NA,1,2),home=c('yes','no','yes',NA,'yes'), stringsAsFactors = TRUE)
   expect_output({av_state <- order_by(av_state,'tijdstip')},'ONE_MISSING')
   expect_equal(av_state$data[[1]]$tijdstip,1:5)
   expect_equal(av_state$data[[1]]$home,factor(c(NA,'yes','no','yes','yes')))
@@ -59,7 +59,7 @@ test_that('order_by() does ONE_MISSING imputation and ordering correctly',{
 
 test_that('order_by() does NONE imputation and ordering correctly',{
   av_state <- load_test_data()
-  av_state$data[[1]] <- data.frame(id=rep(1,times=5),tijdstip=c(5,3,4,1,2),home=c('yes','no','yes',NA,'yes'))
+  av_state$data[[1]] <- data.frame(id=rep(1,times=5),tijdstip=c(5,3,4,1,2),home=c('yes','no','yes',NA,'yes'), stringsAsFactors = TRUE)
   expect_output({av_state <- order_by(av_state,'tijdstip')},NA)
   expect_equal(av_state$data[[1]]$tijdstip,1:5)
   expect_equal(av_state$data[[1]]$home,factor(c(NA,'yes','no','yes','yes')))

@@ -126,7 +126,7 @@ set_timestamps_aux <- function(from,length_out,measurements_per_day,
     weekday_en <- weekday_labels_en[[i]]
     rl <- as.numeric(weekdayidx == weekday)
     if (is.null(r)) {
-      r <- data.frame(rl)
+      r <- data.frame(rl, stringsAsFactors = TRUE)
     } else {
       r <- cbind(r,rl)
     }
@@ -141,7 +141,7 @@ set_timestamps_aux <- function(from,length_out,measurements_per_day,
       exovrs_w <- 'Weekend'
     }
     if (is.null(r)) {
-      r <- data.frame(weekend_column)
+      r <- data.frame(weekend_column, stringsAsFactors = TRUE)
     } else {
       r <- cbind(r,weekend_column)
     }
@@ -162,7 +162,7 @@ set_timestamps_aux <- function(from,length_out,measurements_per_day,
     for (hour_column in hour_columns) {
       rl <- as.numeric(houridx == hour_column)
       if (is.null(r)) {
-        r <- data.frame(rl)
+        r <- data.frame(rl, stringsAsFactors = TRUE)
       } else {
         r <- cbind(r,rl)
       }

@@ -2,7 +2,7 @@ context("evaluate model")
 
 context(" estimate_var_model")
 test_that("it should run the vars VAR function with the provided arguments ", {
-  cur.data <- data.frame(a = rnorm(10,0,1), b = runif(10,0,1))
+  cur.data <- data.frame(a = rnorm(10,0,1), b = runif(10,0,1), stringsAsFactors = TRUE)
   cur.lag <- 10
   called_count <<- 0
   with_mock(
@@ -18,7 +18,7 @@ test_that("it should run the vars VAR function with the provided arguments ", {
 })
 
 test_that("it should run the vars VAR function without the dots if they are all NULL", {
-  cur.data <- data.frame(a = rnorm(10,0,1), b = runif(10,0,1))
+  cur.data <- data.frame(a = rnorm(10,0,1), b = runif(10,0,1), stringsAsFactors = TRUE)
   cur.lag <- 10
   called_count <<- 0
   with_mock(
@@ -35,7 +35,7 @@ test_that("it should run the vars VAR function without the dots if they are all 
 })
 
 test_that("it should run the vars VAR function without the dots if they are not provided", {
-  cur.data <- data.frame(a = rnorm(10,0,1), b = runif(10,0,1))
+  cur.data <- data.frame(a = rnorm(10,0,1), b = runif(10,0,1), stringsAsFactors = TRUE)
   cur.lag <- 10
   called_count <<- 0
   with_mock(
@@ -52,7 +52,7 @@ test_that("it should run the vars VAR function without the dots if they are not 
 })
 
 test_that("it should run the vars VAR function with the dots if they are not all NULL", {
-  cur.data <- data.frame(a = rnorm(10,0,1), b = runif(10,0,1))
+  cur.data <- data.frame(a = rnorm(10,0,1), b = runif(10,0,1), stringsAsFactors = TRUE)
   cur.lag <- 10
   called_count <<- 0
   with_mock(

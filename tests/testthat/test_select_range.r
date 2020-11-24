@@ -36,7 +36,7 @@ test_that('select_range needs either begin or end specified',{
 test_that('select_range with begin works correctly',{
   av_state <- load_test_data()
   a <- data.frame(id=rep(1,times=5),tijdstip=c(7,3,5,6,1),
-                  home=c('yes','no','yes',NA,'yes'))
+                  home=c('yes','no','yes',NA,'yes'), stringsAsFactors = TRUE)
   av_state$data[[1]] <- a
   capture.output({
     av_state <- select_range(av_state,'multiple','tijdstip',begin=5)
@@ -48,7 +48,7 @@ test_that('select_range with begin works correctly',{
 test_that('select_range with end works correctly',{
   av_state <- load_test_data()
   a <- data.frame(id=rep(1,times=5),tijdstip=c(7,3,5,6,1),
-                  home=c('yes','no','yes',NA,'yes'))
+                  home=c('yes','no','yes',NA,'yes'), stringsAsFactors = TRUE)
   av_state$data[[1]] <- a
   capture.output({
     av_state <- select_range(av_state,'multiple','tijdstip',end=5)
@@ -60,7 +60,7 @@ test_that('select_range with end works correctly',{
 test_that('select_range with begin and end works correctly',{
   av_state <- load_test_data()
   a <- data.frame(id=rep(1,times=5),tijdstip=c(7,3,5,6,1),
-                  home=c('yes','no','yes',NA,'yes'))
+                  home=c('yes','no','yes',NA,'yes'), stringsAsFactors = TRUE)
   av_state$data[[1]] <- a
   capture.output({
     av_state <- select_range(av_state,'multiple','tijdstip',begin=6,end=7)

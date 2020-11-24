@@ -143,7 +143,7 @@ load_test_data <- function() {
 }
 
 generate_test_data <- function() {
-  data.frame(id=rep(1,times=5),tijdstip=c(1,3,5,6,7),home=c('yes','no','yes',NA,'yes'))
+  data.frame(id=rep(1,times=5),tijdstip=c(1,3,5,6,7),home=c('yes','no','yes',NA,'yes'), stringsAsFactors = TRUE)
 }
 generate_numerical_test_data <- function(n) {
   ids <- rep(1,times=n)
@@ -153,5 +153,5 @@ generate_numerical_test_data <- function(n) {
     tijdstips <- c(tijdstips,ifelse(runif(1) < 0.25,NA,runif(1,1,n)))
     somethings <- c(somethings,ifelse(runif(1) > 0.8,NA,runif(1,1,n)*runif(1,1,n)))
   }
-  data.frame(id=ids,tijdstip=tijdstips,something=somethings)
+  data.frame(id=ids,tijdstip=tijdstips,something=somethings, stringsAsFactors = TRUE)
 }
