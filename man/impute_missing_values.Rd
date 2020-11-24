@@ -4,8 +4,12 @@
 \alias{impute_missing_values}
 \title{Impute missing values}
 \usage{
-impute_missing_values(av_state, columns, subset_ids = "ALL",
-  type = c("SIMPLE", "EM"))
+impute_missing_values(
+  av_state,
+  columns,
+  subset_ids = "ALL",
+  type = c("SIMPLE", "EM")
+)
 }
 \arguments{
 \item{av_state}{an object of class \code{av_state}}

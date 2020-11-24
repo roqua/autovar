@@ -4,8 +4,7 @@
 \alias{load_file}
 \title{Load a data set from a .sav, .dta, or .csv file}
 \usage{
-load_file(filename, file_type = c("SPSS", "STATA", "CSV"),
-  log_level = 0)
+load_file(filename, file_type = c("SPSS", "STATA", "CSV"), log_level = 0)
 }
 \arguments{
 \item{filename}{path and filename of the data set to load. The path can be relative to the current working directory.}

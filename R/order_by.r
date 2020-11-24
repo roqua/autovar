@@ -22,7 +22,7 @@ order_by <- function(av_state,id_field,impute_method=c('BEST_FIT','ONE_MISSING',
   if (!is.null(av_state$order_by)) {
     stop("order_by can only be called once")
   }
-  if (class(av_state$data[[1]][[id_field]]) != 'numeric') {
+  if (!is(av_state$data[[1]][[id_field]], 'numeric')) {
     stop(paste("id_field",id_field,"has to be numeric, but is",class(av_state$data[[1]][[id_field]])))
   }
   av_state$order_by <- id_field

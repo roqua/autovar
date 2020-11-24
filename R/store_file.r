@@ -82,11 +82,10 @@ store_file_stata_separate <- function(...) {
 adQuote <- function (x) { paste("\"", x, "\"", sep = "") }
 is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) { is.na(x) | abs(x - round(x)) < tol }
 determineLevel <- function(data_column) {
-  determine_function <- switch(class(data_column),
-    numeric=determineLevelNumeric,
-    integer=determineLevelNumeric,
-    factor=determineLevelFactor
-  )
+  determine_function <- NULL
+  if (is(data_column, 'integer')) determine_function <- determineLevelNumeric
+  if (is(data_column, 'numeric')) determine_function <- determineLevelNumeric
+  if (is(data_column, 'factor')) determine_function <- determineLevelFactor
   if (is.null(determine_function)) determine_function <- determineLevelCharacter
   determine_function(data_column)
 }
@@ -104,11 +103,10 @@ determineLevelCharacter <- function(data_column) {
   '(NOMINAL)'
 }
 determineFormat <- function(data_column) {
-  determine_function <- switch(class(data_column),
-    numeric=determineFormatNumeric,
-    integer=determineFormatNumeric,
-    factor=determineFormatFactor
-  )
+  determine_function <- NULL
+  if (is(data_column, 'integer')) determine_function <- determineFormatNumeric
+  if (is(data_column, 'numeric')) determine_function <- determineFormatNumeric
+  if (is(data_column, 'factor')) determine_function <- determineFormatFactor
   if (is.null(determine_function)) determine_function <- determineFormatCharacter
   determine_function(data_column)
 }
@@ -183,7 +181,7 @@ writeMyForeignSPSS <- function (df, datafile, codefile, varnames = NULL) {
     cat("\nEXECUTE.\n", file = codefile, append = TRUE)
 }
 is_unknown <- function(x) {
-  class(x) != "numeric" && class(x) != "integer" && class(x) != "factor"
+  !is(x, "numeric") && !is(x, "integer") && !is(x, "factor")
 }
 writeMyForeignSPSS_inline <- function (df, codefile, varnames = NULL) {
     dfn <- lapply(df, function(x) if (is.factor(x))

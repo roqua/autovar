@@ -1,6 +1,6 @@
 Package: autovar
-Version: 0.2-5
-Date: 2018-07-12
+Version: 0.2-6
+Date: 2020-11-24
 Title: Automated Vector Autoregression Model Creation
 Authors@R: c(person("Ando","Emerencia",role = c("aut","cre"),
     email = "ando.emerencia@gmail.com"))
@@ -33,4 +33,4 @@ Suggests:
 Description: A package to simplify the process from raw
     data to VAR models.
 License: Unlimited
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1

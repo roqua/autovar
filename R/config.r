@@ -10,7 +10,7 @@ print.av_state <- function(x,...) {
       cat(paste(dim(x[[i]])[1],'samples with',dim(x[[i]])[2],'features'),
           " [missing: ",calc_missing(x[[i]]),"]\n",sep="")
     } else if (nn[i] == 'data') {
-      if (class(x[[i]]) == 'list') {
+      if (is(x[[i]], 'list')) {
         cat("\n")
         for (j in names(x[[i]])) {
          cat("  ",j,": ",paste(dim(x[[i]][[j]])[1],'samples with',dim(x[[i]][[j]])[2],'features'),
@@ -26,9 +26,9 @@ print.av_state <- function(x,...) {
                             'log_resids')) {
       cat("list with",length(x[[i]]),"models\n")
     } else {
-      if (class(x[[i]]) == 'var_model') {
+      if (is(x[[i]], 'var_model')) {
         print(x[[i]],x)
-      } else if (class(x[[i]]) == 'list') {
+      } else if (is(x[[i]], 'list')) {
         print(x[[i]])
       } else {
         cat(x[[i]],"\n")
@@ -81,7 +81,7 @@ var_model_to_string <- function(av_state,x,skip_restrict=FALSE) {
     if (str != '\n  ') {
       str <- paste(str,"\n  ",sep='')
     }
-    if (class(x[[i]]) == "data.frame") {
+    if (is(x[[i]], "data.frame")) {
       str <- paste(str,nn[i],": ",exogvars_to_string(av_state,x[[i]],x),sep='')
     } else {
       str <- paste(str,nn[i],": ",x[[i]],sep='')
@@ -127,7 +127,7 @@ new_av_state <- function() {
 }
 
 assert_av_state <- function(av_state) {
-  if (is.null(av_state) || class(av_state) != 'av_state') {
+  if (is.null(av_state) || !is(av_state, 'av_state')) {
     stop("invalid av_state argument")
   }
 }

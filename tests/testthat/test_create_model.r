@@ -2,7 +2,7 @@ context('create_model')
 
 test_that('create_model works correctly',{
   a <- create_model(NULL,test=1,something='two')
-  expect_equal(class(a),'var_model')
+  expect_true(is(a ,'var_model'))
   expect_equal(length(a),2)
   expect_equal(a$test,1)
   expect_equal(a$something,'two')

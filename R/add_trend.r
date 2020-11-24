@@ -16,7 +16,7 @@
 #' @export
 add_trend <- function(av_state, subset_id = 1, varname = 'index',log_level = 0) {
   assert_av_state(av_state)
-  if (class(subset_id) == 'numeric' && !any(subset_id == 1:length(av_state$data))) {
+  if (is(subset_id, 'numeric') && !any(subset_id == 1:length(av_state$data))) {
     stop(paste(subset_id,"does not identify a data set"))
   }
   data_frame <- av_state$data[[subset_id]]

@@ -165,7 +165,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
 
   # make sure that the VAR columns are of the numeric type
   for (mvar in av_state$vars) {
-    if (class(av_state$data[[av_state$subset]][[mvar]]) != "numeric") {
+    if (!is(av_state$data[[av_state$subset]][[mvar]], "numeric")) {
       scat(av_state$log_level,2,"column",mvar,"is not numeric, converting...\n")
       av_state$data[[av_state$subset]][[mvar]] <-
         as.numeric(av_state$data[[av_state$subset]][[mvar]])
@@ -174,7 +174,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
 
   # make sure that the exogenous columns are of the numeric type
   for (mvar in unique(c(av_state$exogenous_variables,av_state$day_dummies,av_state$trend_vars))) {
-    if (class(av_state$data[[av_state$subset]][[mvar]]) != "numeric") {
+    if (!is(av_state$data[[av_state$subset]][[mvar]], "numeric")) {
       scat(av_state$log_level,2,"column",mvar,"is not numeric, converting...\n")
       tv <- as.numeric(av_state$data[[av_state$subset]][[mvar]])
       av_state$data[[av_state$subset]][[mvar]] <- tv-min(tv)
@@ -233,7 +233,7 @@ var_main <- function(av_state,vars,lag_max=2,significance=0.05,
     }
   }
   if (!is.null(include_model)) {
-    if (class(include_model) != 'list') {
+    if (!is(include_model, 'list')) {
       stop(paste("the include_model object has to be of class list"))
     }
     new_model <- merge_lists(default_model,include_model)

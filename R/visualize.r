@@ -39,9 +39,9 @@ visualize <- function(av_state,columns,...) {
 }
 
 visualize_column <- function(av_state,column,...) {
-  if (class(av_state$data[[1]][[column]]) == "factor") {
+  if (is(av_state$data[[1]][[column]], "factor")) {
     visualize_nominal_column(av_state,column,...)
-  } else if (class(av_state$data[[1]][[column]]) == "numeric") {
+  } else if (is(av_state$data[[1]][[column]], "numeric")) {
     visualize_scale_column(av_state,column,...)
   } else {
     stop(paste("unknown column class",class(av_state$data[[1]][[column]]),
@@ -66,7 +66,7 @@ visualize_scale_column <- function(av_state,column,type=c('LINE','BOX'),title=""
   }
   for (data_frame in av_state$data) {
     idx <- idx+1
-    if (class(data_frame[[column]]) != "factor") {
+    if (!is(data_frame[[column]], "factor")) {
       data_frame[[column]][is.na(data_frame[[column]])] <- 0
     }
     visualize_method(av_state$order_by,column,data_frame[[column]],
@@ -160,7 +160,7 @@ visualize_columns <- function(av_state,columns,labels=columns,type=c('LINE','PIE
         i <- i+1
         clabel <- labels[[i]]
         ccolor <- ccolors[[i]]
-        if (class(data_frame[[column]]) != "numeric") {
+        if (!is(data_frame[[column]], "numeric")) {
           cat(paste("plotting nonnumeric column as numeric, converting...",column),"\n")
           data_frame[[column]] <- as.numeric(data_frame[[column]])
         }
@@ -196,7 +196,7 @@ visualize_lines  <- function(av_state,columns,labels,title,...) {
       if (all(column != names(data_frame))) {
         stop(paste("visualize: column name doesnt exist:",column,"for data subset:",j))
       }
-      if (class(data_frame[[column]]) != 'numeric') {
+      if (!is(data_frame[[column]], 'numeric')) {
         data_frame[[column]] <- as.numeric(data_frame[[column]])
       }
       if (is.null(df)) {
@@ -298,7 +298,7 @@ visualize_line <- function(order_by_field,column,y,main,acc=FALSE,...) {
   }
   mat <- sort(as.numeric(unique(y)))
   mlabels <- as.character(signif(mat,digits=2))
-  if (class(yorig) == 'factor' && !acc) {
+  if (is(yorig, 'factor') && !acc) {
     mat <- 0:length(levels(yorig))
     mlabels <- c('NA',levels(yorig))
   }

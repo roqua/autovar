@@ -2,7 +2,7 @@ context('config')
 
 test_that('new_av_state() defines av_state correctly', {
   av_state <- new_av_state()
-  expect_equal(class(av_state),'av_state')
+  expect_true(is(av_state ,'av_state'))
 })
 
 test_that('data_test.sav loads properly',{

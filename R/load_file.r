@@ -47,18 +47,16 @@ load_file <- function(filename,file_type = c('SPSS','STATA','CSV'),log_level=0) 
 column_names_output <- function(av_state) {
   dnames <- NULL
   for (name in names(av_state$data[[1]])) {
-    column_type <- decorate_class(class(av_state$data[[1]][[name]]))
+    column_type <- decorate_class(av_state$data[[1]][[name]])
     dnames <- c(dnames,paste(name," (",column_type,")",sep=""))
   }
   dnames
 }
 
-decorate_class <- function(classname) {
-  switch(classname,
-    factor = "nom",
-    numeric = "scl",
-    integer = "scl"
-  )
+decorate_class <- function(data) {
+  if (is(data, "factor")) return "nom"
+  if (is(data, "numeric")) return "scl"
+  if (is(data, "integer")) return "scl"
 }
 
 determine_file_type <- function(filename) {
