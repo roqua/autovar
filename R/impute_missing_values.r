@@ -39,7 +39,7 @@ impute_missing_values <- function(av_state,columns,subset_ids='ALL',type=c('SIMP
              paste(columns,collapse=', '),"...\n",sep=""))
   missing_before <- calc_missing_all(av_state)
   for (subset_id in subset_ids) {
-    if (class(subset_id) == 'numeric' && !any(subset_id == 1:length(av_state$data))) {
+    if (is(subset_id, 'numeric') && !any(subset_id == 1:length(av_state$data))) {
       warning(paste(subset_id,"does not identify a data set, skipping..."))
       next
     }
@@ -116,9 +116,9 @@ impute_simple <- function(column_data) {
   # check whether there are NA values:
   if (any(is.na(column_data))) {
     # what type is the column?
-    if (class(column_data) == "factor") {
+    if (is(column_data, "factor")) {
       impute_simple_factor(column_data)
-    } else if (class(column_data) == "numeric") {
+    } else if (is(column_data, "numeric")) {
       impute_simple_numeric(column_data)
     } else {
       warning(paste("unknown column class",

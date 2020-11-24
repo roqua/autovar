@@ -49,7 +49,8 @@ estat_ic <- function(varest) {
                     AIC=aic,
                     BIC=bic,
                     orig_AIC=realaic,
-                    orig_BIC=realbic)
+                    orig_BIC=realbic,
+                    stringsAsFactors = TRUE)
   res
 }
 

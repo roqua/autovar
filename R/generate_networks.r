@@ -61,8 +61,8 @@ generate_networks <- function(data, timestamp, always_include = NULL, pairs = NU
                               negative_variables= NULL, pick_best_of = NULL, incident_to_best_of = NULL,
                               labels = list(), measurements_per_day = 3, max_network_size = 6,
                               include_model = FALSE, second_significances = c(0.05,0.01,0.005)) {
-  if (class(data) != "data.frame") return("Data argument is not a data.frame")
-  if (class(timestamp) != "character") return("Timestamp argument is not a character string")
+  if (!is(data, "data.frame")) return("Data argument is not a data.frame")
+  if (!is(timestamp, "character")) return("Timestamp argument is not a character string")
   if (nchar(timestamp) != 10) return("Wrong timestamp format, should be: yyyy-mm-dd")
   net_cfg <- new_net_cfg()
   net_cfg$vars <- unique(names(data))
@@ -189,7 +189,7 @@ label_nodes <- function(node_vector, net_cfg) {
 }
 number_of_edges <- function(graph, from_nodes, to_node) {
   dynamic_graph <- jsonlite::fromJSON(graph)[[1]]
-  if (is.null(dynamic_graph$links) || (class(dynamic_graph$links) == 'character' && dynamic_graph$links == '')) return(0)
+  if (is.null(dynamic_graph$links) || (is(dynamic_graph$links, 'character') && dynamic_graph$links == '')) return(0)
   to_node_index <- dynamic_graph$nodes$index[dynamic_graph$nodes$name == to_node]
   from_node_indices <- dynamic_graph$nodes$index[dynamic_graph$nodes$name %in% from_nodes]
   r <- 0

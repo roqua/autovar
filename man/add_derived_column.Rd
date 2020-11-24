@@ -4,8 +4,13 @@
 \alias{add_derived_column}
 \title{Add a new column using data from other columns}
 \usage{
-add_derived_column(av_state, name, columns, operation = c("SUM", "AVG", "LN",
-  "MINUTES_TO_HOURS", "SQUARED"), log_level = 0)
+add_derived_column(
+  av_state,
+  name,
+  columns,
+  operation = c("SUM", "AVG", "LN", "MINUTES_TO_HOURS", "SQUARED"),
+  log_level = 0
+)
 }
 \arguments{
 \item{av_state}{an object of class \code{av_state}}

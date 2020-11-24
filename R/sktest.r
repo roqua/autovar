@@ -51,7 +51,8 @@ sktest <- function(varest) {
                       Pr_Skewness=2-2*pnorm(abs(Z1)),
                       Pr_Kurtosis=2-2*pnorm(abs(Z2)),
                       adj_chi2=-2*log(pp),
-                      P=pp)
+                      P=pp,
+                      stringsAsFactors = TRUE)
     if (i == 1) {
       sks <- skr
     } else {

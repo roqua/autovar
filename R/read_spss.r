@@ -141,7 +141,7 @@ read_spss <- function (file, use.value.labels = TRUE, to.data.frame = FALSE,
         attr(rval, "label.table") <- vl
     if (to.data.frame) {
         varlab <- attr(rval, "variable.labels")
-        rval <- as.data.frame(rval)
+        rval <- as.data.frame(rval, stringsAsFactors = TRUE)
         attr(rval, "variable.labels") <- varlab
         if (codepage > 500)
             attr(rval, "codepage") <- codepage

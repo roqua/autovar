@@ -2,7 +2,7 @@ context('generate_networks')
 
 test_that('new_net_cfg() defines net_cfg correctly', {
   net_cfg <- new_net_cfg()
-  expect_equal(class(net_cfg),'net_cfg')
+  expect_true(is(net_cfg ,'net_cfg'))
 })
 
 test_that('generate_networks accepts valid requests only',{

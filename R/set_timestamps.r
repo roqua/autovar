@@ -34,7 +34,7 @@ set_timestamps <- function(av_state,subset_id=1,date_of_first_measurement,
                            add_dayparts_as_exogenous=TRUE,
                            add_weekend_as_exogenous=FALSE) {
   assert_av_state(av_state)
-  if (class(subset_id) == 'numeric' && !any(subset_id == 1:length(av_state$data))) {
+  if (is(subset_id, 'numeric') && !any(subset_id == 1:length(av_state$data))) {
     stop(paste(subset_id,"does not identify a data set"))
   }
   data_frame <- av_state$data[[subset_id]]
@@ -126,7 +126,7 @@ set_timestamps_aux <- function(from,length_out,measurements_per_day,
     weekday_en <- weekday_labels_en[[i]]
     rl <- as.numeric(weekdayidx == weekday)
     if (is.null(r)) {
-      r <- data.frame(rl)
+      r <- data.frame(rl, stringsAsFactors = TRUE)
     } else {
       r <- cbind(r,rl)
     }
@@ -141,7 +141,7 @@ set_timestamps_aux <- function(from,length_out,measurements_per_day,
       exovrs_w <- 'Weekend'
     }
     if (is.null(r)) {
-      r <- data.frame(weekend_column)
+      r <- data.frame(weekend_column, stringsAsFactors = TRUE)
     } else {
       r <- cbind(r,weekend_column)
     }
@@ -162,7 +162,7 @@ set_timestamps_aux <- function(from,length_out,measurements_per_day,
     for (hour_column in hour_columns) {
       rl <- as.numeric(houridx == hour_column)
       if (is.null(r)) {
-        r <- data.frame(rl)
+        r <- data.frame(rl, stringsAsFactors = TRUE)
       } else {
         r <- cbind(r,rl)
       }

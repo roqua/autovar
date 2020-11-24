@@ -1,1 +1,10 @@
 exportPattern("^[[:alpha:]_]+")
+importFrom("grDevices", "colors", "dev.copy2pdf", "rainbow")
+importFrom("graphics", "axis", "barplot", "boxplot", "dotchart",
+           "lines", "mtext", "par", "pie", "polygon", "text", "title")
+importFrom("methods", "is")
+importFrom("stats", "coef", "na.omit", "pchisq", "pf", "pnorm",
+           "printCoefmat", "pt", "qnorm", "resid", "runif", "sd",
+           "symnum", "var", "vcov")
+importFrom("utils", "download.file", "read.csv", "read.csv2",
+           "write.table")

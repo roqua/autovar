@@ -29,7 +29,7 @@
 #' @export
 select_range <- function(av_state,subset_id=1,column,begin,end) {
   assert_av_state(av_state)
-  if (class(subset_id) == 'numeric' && !any(subset_id == 1:length(av_state$data))) {
+  if (is(subset_id, 'numeric') && !any(subset_id == 1:length(av_state$data))) {
     stop(paste(subset_id,"does not identify a data set"))
   }
   data_frame <- av_state$data[[subset_id]]
@@ -42,7 +42,7 @@ select_range <- function(av_state,subset_id=1,column,begin,end) {
   }
   data_column <- data_frame[[column]]
   if (is.null(data_column)) { stop(paste("column does not exist:",column)) }
-  if (class(data_column) != 'numeric') {
+  if (!is(data_column, 'numeric')) {
     stop(paste("column",column,"has to be numeric, but is",class(data_column)))
   }
   if (missing(begin) && missing(end)) {

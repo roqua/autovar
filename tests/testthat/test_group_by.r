@@ -23,7 +23,7 @@ test_that('group_by() can only be called once',{
 })
 
 test_that('split_up makes two subsets when there are two distinct values for the id_field',{
-  a <- data.frame(id=c(2,rep(1,times=3),2),tijdstip=c(1,3,5,6,7),home=c('yes','no','yes',NA,'yes'))  
+  a <- data.frame(id=c(2,rep(1,times=3),2),tijdstip=c(1,3,5,6,7),home=c('yes','no','yes',NA,'yes'), stringsAsFactors = TRUE)  
   b <- split_up(a,'id')
   d <- list()
   d[['1']] <- a[c(2,3,4),]
@@ -32,7 +32,7 @@ test_that('split_up makes two subsets when there are two distinct values for the
 })
 
 test_that('split_up filters out any NA values for id_field into a separate subset',{
-  a <- data.frame(id=c(NA,rep(1,times=3),NA),tijdstip=c(1,3,5,6,7),home=c('yes','no','yes',NA,'yes'))  
+  a <- data.frame(id=c(NA,rep(1,times=3),NA),tijdstip=c(1,3,5,6,7),home=c('yes','no','yes',NA,'yes'), stringsAsFactors = TRUE)  
   b <- split_up(a,'id')
   d <- list()
   d[['1']] <- a[c(2,3,4),]
@@ -41,7 +41,7 @@ test_that('split_up filters out any NA values for id_field into a separate subse
 })
 
 test_that('split_up doesnt sort rows in subsets but does sort its subset by id_field',{
-  a <- data.frame(id=c(2,rep(1,times=3),2),tijdstip=c(7,3,5,6,1),home=c('yes','no','yes',NA,'yes'))  
+  a <- data.frame(id=c(2,rep(1,times=3),2),tijdstip=c(7,3,5,6,1),home=c('yes','no','yes',NA,'yes'), stringsAsFactors = TRUE)  
   b <- split_up(a,'id')
   d <- list()
   d[['1']] <- a[c(2,3,4),]

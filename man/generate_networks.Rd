@@ -4,11 +4,21 @@
 \alias{generate_networks}
 \title{Return a JSON array of network data of a fitting model}
 \usage{
-generate_networks(data, timestamp, always_include = NULL, pairs = NULL,
-  positive_variables = NULL, negative_variables = NULL,
-  pick_best_of = NULL, incident_to_best_of = NULL, labels = list(),
-  measurements_per_day = 3, max_network_size = 6, include_model = FALSE,
-  second_significances = c(0.05, 0.01, 0.005))
+generate_networks(
+  data,
+  timestamp,
+  always_include = NULL,
+  pairs = NULL,
+  positive_variables = NULL,
+  negative_variables = NULL,
+  pick_best_of = NULL,
+  incident_to_best_of = NULL,
+  labels = list(),
+  measurements_per_day = 3,
+  max_network_size = 6,
+  include_model = FALSE,
+  second_significances = c(0.05, 0.01, 0.005)
+)
 }
 \arguments{
 \item{data}{a data frame. Each row is a measurement. Each column is an endogenous variable.}

@@ -4,8 +4,11 @@
 \alias{order_by}
 \title{Order the rows in a data set}
 \usage{
-order_by(av_state, id_field, impute_method = c("BEST_FIT", "ONE_MISSING",
-  "ADD_MISSING", "NONE"))
+order_by(
+  av_state,
+  id_field,
+  impute_method = c("BEST_FIT", "ONE_MISSING", "ADD_MISSING", "NONE")
+)
 }
 \arguments{
 \item{av_state}{an object of class \code{av_state}}

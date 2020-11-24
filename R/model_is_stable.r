@@ -25,6 +25,6 @@ varstable_graph <- function(varest) {
     eigvals <- rep(1,varcount)
     mod_eigvals <- rep(1,varcount)
   }
-  ret <- data.frame(Eigenvalue=eigvals,Modulus=mod_eigvals)
+  ret <- data.frame(Eigenvalue=eigvals,Modulus=mod_eigvals, stringsAsFactors = TRUE)
   ret
 }

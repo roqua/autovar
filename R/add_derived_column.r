@@ -55,7 +55,7 @@ add_derived_column_sum <- function(columns,data_frame,subset,log_level) {
     if (is.null(data_column)) {
       stop(paste("column",column,"does not exist for subset",subset))
     }
-    if (class(data_column) != 'numeric') {
+    if (!is(data_column, 'numeric')) {
       if (warnflag) {
         warnflag <- FALSE
         mywarn <- paste("column",column,"is not numeric: converting...")
@@ -105,7 +105,7 @@ add_derived_column_ln <- function(column,data_frame,subset,log_level) {
   if (is.null(data_column)) {
     stop(paste("column",column,"does not exist for subset",subset))
   }
-  if (class(data_column) != 'numeric') {
+  if (!is(data_column, 'numeric')) {
     stop(paste("column",column,"is not numeric for subset",subset))
   }
   # for ln, default value is 1
@@ -127,7 +127,7 @@ add_derived_column_mtoh <- function(column,data_frame,subset,log_level) {
   if (is.null(data_column)) {
     stop(paste("column",column,"does not exist for subset",subset))
   }
-  if (class(data_column) != 'numeric') {
+  if (!is(data_column, 'numeric')) {
     stop(paste("column",column,"is not numeric for subset",subset))
   }
   data_column <- data_column/60
@@ -139,7 +139,7 @@ add_derived_column_squared <- function(column,data_frame,subset,log_level) {
   if (is.null(data_column)) {
     stop(paste("column",column,"does not exist for subset",subset))
   }
-  if (class(data_column) != 'numeric') {
+  if (!is(data_column, 'numeric')) {
     stop(paste("column",column,"is not numeric for subset",subset))
   }
   data_column <- data_column*data_column
