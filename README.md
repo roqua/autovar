@@ -12,7 +12,8 @@ If you're using **Windows** and the above steps give you errors, try the followi
 
     unloadNamespace('autovar')
     download.file('https://autovar.nl/binaries/autovar_0.2-6.zip',destfile='autovar_0.2-6.zip'); install.packages('autovar_0.2-6.zip',repos = NULL)
-    install.packages(c('Amelia','e1071','foreign','ggplot2','gridExtra','igraph','jsonlite','knitr','markdown','norm','parallel','psych','RcppArmadillo','reshape2','stringi','stringr','TimeProjection','urca','vars'))
+    install.packages(c('Amelia','e1071','foreign','ggplot2','gridExtra','igraph','jsonlite','knitr','markdown','norm','parallel','psych','RcppArmadillo','reshape2','stringi','stringr','urca','vars','devtools'))
+    devtools::install_github("TimeProjection", "jeffwong")
     library('autovar')
 
 Documentation for this package can be found [here](https://autovar.nl/docs).
