@@ -6,7 +6,7 @@ Autovar is an R package for automating and simplifying the process from raw data
 To install, type the following:
 
     install.packages('devtools')
-    devtools::install_github("TimeProjection", "jeffwong")
+    devtools::install_github('jeffwong/TimeProjection')
     devtools::install_github('roqua/autovar')
 
 If you're using **Windows** and the above steps give you errors, try the following alternate way to install Autovar:
@@ -14,7 +14,7 @@ If you're using **Windows** and the above steps give you errors, try the followi
     unloadNamespace('autovar')
     download.file('https://autovar.nl/binaries/autovar_0.2-6.zip',destfile='autovar_0.2-6.zip'); install.packages('autovar_0.2-6.zip',repos = NULL)
     install.packages(c('Amelia','e1071','foreign','ggplot2','gridExtra','igraph','jsonlite','knitr','markdown','norm','parallel','psych','RcppArmadillo','reshape2','stringi','stringr','urca','vars','devtools'))
-    devtools::install_github("TimeProjection", "jeffwong")
+    devtools::install_github('jeffwong/TimeProjection')
     library('autovar')
 
 Documentation for this package can be found [here](https://autovar.nl/docs).
