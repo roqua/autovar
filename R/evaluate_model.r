@@ -239,15 +239,21 @@ run_var <- function(data,lag,simple_models,...) {
   m
 }
 
-estimate_var_model <- function(data, lag, ...) {
+estimate_var_model <- function(data, p, ...) {
   # This fix is performed so the call to the VAR function does not include a
   # ..1 whenever all of the ...'s elements are NULL. This matters when
   # performing IRF, as it will use the call function to perform an update of
   # the VAR model.
   if (all(unlist(lapply(list(...), function(x) is.null(x))))) {
-    return(vars::VAR(data, p = lag))
+    return(vars::VAR(y = data, p = p))
   } 
-  return(vars::VAR(data, p = lag, ...))
+  # Note the do.call here. Instead of running 
+  # vars::VAR(y = data, p = p, ...)
+  # we run this do.call in order to expand and explicitly include the ... and
+  # other params. This way, when we run the `update` function on the call of 
+  # this object, we can rely on all information being available in the object
+  # itself (instead of relying on global env).
+  return(do.call(vars::VAR, c(list(y=data, p=p), list(...))))
 }
 
 add_intercepts <- function(varest) {
